@@ -1,4 +1,5 @@
 import request from '@/utils/request'
+import { praseStrEmpty } from "@/utils/ruoyi";
 
 // 查询用户列表
 export function listUser(query) {
@@ -12,7 +13,7 @@ export function listUser(query) {
 // 查询用户详细
 export function getUser(userId) {
   return request({
-    url: '/system/user/' + userId,
+    url: '/system/user/' + praseStrEmpty(userId),
     method: 'get'
   })
 }
@@ -114,5 +115,13 @@ export function uploadAvatar(data) {
     url: '/system/user/profile/avatar',
     method: 'post',
     data: data
+  })
+}
+
+// 下载用户导入模板
+export function importTemplate() {
+  return request({
+    url: '/system/user/importTemplate',
+    method: 'get'
   })
 }
