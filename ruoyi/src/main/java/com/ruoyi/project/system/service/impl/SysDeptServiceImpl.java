@@ -49,14 +49,19 @@ public class SysDeptServiceImpl implements ISysDeptService
     public List<SysDept> buildDeptTree(List<SysDept> depts)
     {
         List<SysDept> returnList = new ArrayList<SysDept>();
+        List<Long> tempList = new ArrayList<Long>();
+        for (SysDept dept : depts)
+        {
+            tempList.add(dept.getDeptId());
+        }
         for (Iterator<SysDept> iterator = depts.iterator(); iterator.hasNext();)
         {
-            SysDept t = (SysDept) iterator.next();
-            // 根据传入的某个父节点ID,遍历该父节点的所有子节点
-            if (t.getParentId() == 0)
+            SysDept dept = (SysDept) iterator.next();
+            // 如果是顶级节点, 遍历该父节点的所有子节点
+            if (!tempList.contains(dept.getParentId()))
             {
-                recursionFn(depts, t);
-                returnList.add(t);
+                recursionFn(depts, dept);
+                returnList.add(dept);
             }
         }
         if (returnList.isEmpty())
@@ -271,7 +276,7 @@ public class SysDeptServiceImpl implements ISysDeptService
         while (it.hasNext())
         {
             SysDept n = (SysDept) it.next();
-            if (n.getParentId().longValue() == t.getDeptId().longValue())
+            if (StringUtils.isNotNull(n.getParentId()) && n.getParentId().longValue() == t.getDeptId().longValue())
             {
                 tlist.add(n);
             }

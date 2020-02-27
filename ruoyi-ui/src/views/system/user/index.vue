@@ -135,9 +135,9 @@
         <el-table v-loading="loading" :data="userList" @selection-change="handleSelectionChange">
           <el-table-column type="selection" width="40" align="center" />
           <el-table-column label="用户编号" align="center" prop="userId" />
-          <el-table-column label="用户名称" align="center" prop="userName" />
-          <el-table-column label="用户昵称" align="center" prop="nickName" />
-          <el-table-column label="部门" align="center" prop="dept.deptName" />
+          <el-table-column label="用户名称" align="center" prop="userName" :show-overflow-tooltip="true" />
+          <el-table-column label="用户昵称" align="center" prop="nickName" :show-overflow-tooltip="true" />
+          <el-table-column label="部门" align="center" prop="dept.deptName" :show-overflow-tooltip="true" />
           <el-table-column label="手机号码" align="center" prop="phonenumber" width="120" />
           <el-table-column label="状态" align="center">
             <template slot-scope="scope">
@@ -416,6 +416,7 @@ export default {
           { required: true, message: "用户密码不能为空", trigger: "blur" }
         ],
         email: [
+          { required: true, message: "邮箱地址不能为空", trigger: "blur" },
           {
             type: "email",
             message: "'请输入正确的邮箱地址",
@@ -423,6 +424,7 @@ export default {
           }
         ],
         phonenumber: [
+          { required: true, message: "手机号码不能为空", trigger: "blur" },
           {
             pattern: /^1[3|4|5|6|7|8|9][0-9]\d{8}$/,
             message: "请输入正确的手机号码",
@@ -448,7 +450,7 @@ export default {
       this.sexOptions = response.data;
     });
     this.getConfigKey("sys.user.initPassword").then(response => {
-      this.initPassword = response.data;
+      this.initPassword = response.msg;
     });
   },
   methods: {
@@ -502,7 +504,7 @@ export default {
     reset() {
       this.form = {
         userId: undefined,
-        deptId: 100,
+        deptId: undefined,
         userName: undefined,
         nickName: undefined,
         password: undefined,

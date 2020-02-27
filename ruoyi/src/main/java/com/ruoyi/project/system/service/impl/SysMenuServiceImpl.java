@@ -15,6 +15,7 @@ import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.framework.web.domain.TreeSelect;
 import com.ruoyi.project.system.domain.SysMenu;
+import com.ruoyi.project.system.domain.SysUser;
 import com.ruoyi.project.system.domain.vo.MetaVo;
 import com.ruoyi.project.system.domain.vo.RouterVo;
 import com.ruoyi.project.system.mapper.SysMenuMapper;
@@ -38,15 +39,37 @@ public class SysMenuServiceImpl implements ISysMenuService
     private SysRoleMenuMapper roleMenuMapper;
 
     /**
+     * 根据用户查询系统菜单列表
+     * 
+     * @param userId 用户ID
+     * @return 菜单列表
+     */
+    @Override
+    public List<SysMenu> selectMenuList(Long userId)
+    {
+        return selectMenuList(new SysMenu(), userId);
+    }
+
+    /**
      * 查询系统菜单列表
      * 
      * @param menu 菜单信息
      * @return 菜单列表
      */
     @Override
-    public List<SysMenu> selectMenuList(SysMenu menu)
+    public List<SysMenu> selectMenuList(SysMenu menu, Long userId)
     {
-        List<SysMenu> menuList = menuMapper.selectMenuList(menu);
+        List<SysMenu> menuList = null;
+        // 管理员显示所有菜单信息
+        if (SysUser.isAdmin(userId))
+        {
+            menuList = menuMapper.selectMenuList(menu);
+        }
+        else
+        {
+            menu.getParams().put("userId", userId);
+            menuList = menuMapper.selectMenuListByUserId(menu);
+        }
         return menuList;
     }
 
@@ -72,9 +95,9 @@ public class SysMenuServiceImpl implements ISysMenuService
     }
 
     /**
-     * 根据用户名称查询菜单
+     * 根据用户ID查询菜单
      * 
-     * @param username 用户名称
+     * @param userId 用户名称
      * @return 菜单列表
      */
     @Override

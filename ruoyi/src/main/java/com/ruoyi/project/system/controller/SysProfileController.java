@@ -59,7 +59,18 @@ public class SysProfileController extends BaseController
     @PutMapping
     public AjaxResult updateProfile(@RequestBody SysUser user)
     {
-        return toAjax(userService.updateUserProfile(user));
+        if (userService.updateUserProfile(user) > 0)
+        {
+            LoginUser loginUser = tokenService.getLoginUser(ServletUtils.getRequest());
+            // 更新缓存用户信息
+            loginUser.getUser().setNickName(user.getNickName());
+            loginUser.getUser().setPhonenumber(user.getPhonenumber());
+            loginUser.getUser().setEmail(user.getEmail());
+            loginUser.getUser().setSex(user.getSex());
+            tokenService.setLoginUser(loginUser);
+            return AjaxResult.success();
+        }
+        return AjaxResult.error("修改个人信息异常，请联系管理员");
     }
 
     /**
@@ -80,7 +91,14 @@ public class SysProfileController extends BaseController
         {
             return AjaxResult.error("新密码不能与旧密码相同");
         }
-        return toAjax(userService.resetUserPwd(userName, SecurityUtils.encryptPassword(newPassword)));
+        if (userService.resetUserPwd(userName, SecurityUtils.encryptPassword(newPassword)) > 0)
+        {
+            // 更新缓存用户密码
+            loginUser.getUser().setPassword(SecurityUtils.encryptPassword(newPassword));
+            tokenService.setLoginUser(loginUser);
+            return AjaxResult.success();
+        }
+        return AjaxResult.error("修改密码异常，请联系管理员");
     }
 
     /**
@@ -98,6 +116,7 @@ public class SysProfileController extends BaseController
             {
                 AjaxResult ajax = AjaxResult.success();
                 ajax.put("imgUrl", avatar);
+                // 更新缓存用户头像
                 loginUser.getUser().setAvatar(avatar);
                 tokenService.setLoginUser(loginUser);
                 return ajax;
