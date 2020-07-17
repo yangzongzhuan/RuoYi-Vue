@@ -198,7 +198,7 @@ public class GenUtils
     /**
      * 关键字替换
      * 
-     * @param name 需要被替换的名字
+     * @param text 需要被替换的关键字
      * @return 替换后的名字
      */
     public static String replaceText(String text)
