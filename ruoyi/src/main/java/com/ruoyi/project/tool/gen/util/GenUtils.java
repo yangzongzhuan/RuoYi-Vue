@@ -35,6 +35,8 @@ public class GenUtils
     public static void initColumnField(GenTableColumn column, GenTable table)
     {
         String dataType = getDbType(column.getColumnType());
+        //mysql 8.0 使用unsigned修饰 需要去除
+        dataType = dataType.replace("unsigned","").trim();
         String columnName = column.getColumnName();
         column.setTableId(table.getTableId());
         column.setCreateBy(table.getCreateBy());
@@ -64,8 +66,9 @@ public class GenUtils
             {
                 column.setJavaType(GenConstants.TYPE_BIGDECIMAL);
             }
-            // 如果是整形
-            else if (str != null && str.length == 1 && Integer.parseInt(str[0]) <= 10)
+            // 如果是整形 
+            //mysql8.0.17版本后TINYINT, SMALLINT, MEDIUMINT, INT, and BIGINT类型的显示宽度失效，因此通过字段宽度生成int/Long类型将不准确
+            else if((str != null && str.length == 1 && Integer.parseInt(str[0]) <= 10)|| (str == null &&dataType.equals("int")))
             {
                 column.setJavaType(GenConstants.TYPE_INTEGER);
             }
