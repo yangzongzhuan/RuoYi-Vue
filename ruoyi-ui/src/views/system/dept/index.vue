@@ -21,7 +21,7 @@
         </el-select>
       </el-form-item>
       <el-form-item>
-        <el-button type="cyan" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
+        <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
         <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
       </el-form-item>
     </el-form>
@@ -30,6 +30,7 @@
       <el-col :span="1.5">
         <el-button
           type="primary"
+          plain
           icon="el-icon-plus"
           size="mini"
           @click="handleAdd"
