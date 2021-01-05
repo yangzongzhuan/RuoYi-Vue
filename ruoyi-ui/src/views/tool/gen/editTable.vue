@@ -90,7 +90,8 @@
                 <el-option label="单选框" value="radio" />
                 <el-option label="复选框" value="checkbox" />
                 <el-option label="日期控件" value="datetime" />
-                <el-option label="单图上传" value="imageUpload" />
+                <el-option label="图片上传" value="imageUpload" />
+                <el-option label="文件上传" value="fileUpload" />
                 <el-option label="富文本控件" value="editor" />
               </el-select>
             </template>

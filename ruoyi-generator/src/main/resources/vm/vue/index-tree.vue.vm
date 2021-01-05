@@ -157,6 +157,10 @@
         <el-form-item label="${comment}">
           <imageUpload v-model="form.${field}"/>
         </el-form-item>
+#elseif($column.htmlType == "fileUpload")
+        <el-form-item label="${comment}">
+          <imageUpload v-model="form.${field}"/>
+        </el-form-item>
 #elseif($column.htmlType == "editor")
         <el-form-item label="${comment}">
           <editor v-model="form.${field}" :min-height="192"/>
@@ -249,6 +253,11 @@ import ImageUpload from '@/components/ImageUpload';
 #break
 #end
 #end
+#if($column.insert && !$column.superColumn && !$column.pk && $column.htmlType == "fileUpload")
+import FileUpload from '@/components/FileUpload';
+#break
+#end
+#end
 #foreach($column in $columns)
 #if($column.insert && !$column.superColumn && !$column.pk && $column.htmlType == "editor")
 import Editor from '@/components/Editor';
@@ -262,6 +271,12 @@ export default {
 #foreach($column in $columns)
 #if($column.insert && !$column.superColumn && !$column.pk && $column.htmlType == "imageUpload")
     ImageUpload,
+#break
+#end
+#end
+#foreach($column in $columns)
+#if($column.insert && !$column.superColumn && !$column.pk && $column.htmlType == "fileUpload")
+    FileUpload,
 #break
 #end
 #end
