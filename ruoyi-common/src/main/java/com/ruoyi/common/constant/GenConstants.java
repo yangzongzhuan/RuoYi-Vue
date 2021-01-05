@@ -76,8 +76,8 @@ public class GenConstants
     /** 日期控件 */
     public static final String HTML_DATETIME = "datetime";
 
-    /** 上传控件 */
-    public static final String HTML_UPLOAD_IMAGE = "uploadImage";
+    /** 单图上传 */
+    public static final String HTML_IMAGE_UPLOAD = "imageUpload";
 
     /** 富文本控件 */
     public static final String HTML_EDITOR = "editor";
