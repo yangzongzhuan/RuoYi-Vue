@@ -185,9 +185,9 @@
         <el-form-item label="${comment}" prop="${field}">
           <el-input v-model="form.${field}" placeholder="请输入${comment}" />
         </el-form-item>
-#elseif($column.htmlType == "uploadImage")
+#elseif($column.htmlType == "imageUpload")
         <el-form-item label="${comment}">
-          <uploadImage v-model="form.${field}"/>
+          <imageUpload v-model="form.${field}"/>
         </el-form-item>
 #elseif($column.htmlType == "editor")
         <el-form-item label="${comment}">
@@ -274,8 +274,8 @@
 <script>
 import { list${BusinessName}, get${BusinessName}, del${BusinessName}, add${BusinessName}, update${BusinessName}, export${BusinessName} } from "@/api/${moduleName}/${businessName}";
 #foreach($column in $columns)
-#if($column.insert && !$column.superColumn && !$column.pk && $column.htmlType == "uploadImage")
-import UploadImage from '@/components/UploadImage';
+#if($column.insert && !$column.superColumn && !$column.pk && $column.htmlType == "imageUpload")
+import ImageUpload from '@/components/ImageUpload';
 #break
 #end
 #end
@@ -290,8 +290,8 @@ export default {
   name: "${BusinessName}",
   components: {
 #foreach($column in $columns)
-#if($column.insert && !$column.superColumn && !$column.pk && $column.htmlType == "uploadImage")
-    UploadImage,
+#if($column.insert && !$column.superColumn && !$column.pk && $column.htmlType == "imageUpload")
+    ImageUpload,
 #break
 #end
 #end

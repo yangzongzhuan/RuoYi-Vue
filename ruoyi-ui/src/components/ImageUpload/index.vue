@@ -11,8 +11,21 @@
       :headers="headers"
       style="display: inline-block; vertical-align: top"
     >
-      <img v-if="value" :src="value" class="avatar" />
-      <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+      <el-image v-if="!value" :src="value">
+        <div slot="error" class="image-slot">
+          <i class="el-icon-plus" />
+        </div>
+      </el-image>
+      <div v-else class="image">
+        <el-image :src="value" />
+        <div class="mask">
+          <div class="actions">
+            <span title="移除" @click.stop="removeImage">
+              <i class="el-icon-delete" />
+            </span>
+          </div>
+        </div>
+      </div>
     </el-upload>
   </div>
 </template>
@@ -37,6 +50,9 @@ export default {
     },
   },
   methods: {
+    removeImage() {
+      this.$emit("input", "");
+    },
     handleUploadSuccess(res) {
       this.$emit("input", res.url);
       this.loading.close();
@@ -64,5 +80,19 @@ export default {
 .avatar {
   width: 100%;
   height: 100%;
+}
+.image {
+  position: relative;
+  .mask {
+    opacity: 0;
+    position: absolute;
+    top: 0;
+    width: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    transition: all 0.3s;
+  }
+  &:hover .mask {
+    opacity: 1;
+  }
 }
 </style>
