@@ -90,6 +90,7 @@ export default {
           return item;
         });
       } else {
+        this.fileList = [];
         return [];
       }
     },
