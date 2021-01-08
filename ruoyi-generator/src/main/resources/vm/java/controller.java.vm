@@ -18,7 +18,7 @@ import com.ruoyi.common.enums.BusinessType;
 import ${packageName}.domain.${ClassName};
 import ${packageName}.service.I${ClassName}Service;
 import com.ruoyi.common.utils.poi.ExcelUtil;
-#if($table.crud)
+#if($table.crud || $table.sub)
 import com.ruoyi.common.core.page.TableDataInfo;
 #elseif($table.tree)
 #end
@@ -41,7 +41,7 @@ public class ${ClassName}Controller extends BaseController
      */
     @PreAuthorize("@ss.hasPermi('${permissionPrefix}:list')")
     @GetMapping("/list")
-#if($table.crud)
+#if($table.crud || $table.sub)
     public TableDataInfo list(${ClassName} ${className})
     {
         startPage();

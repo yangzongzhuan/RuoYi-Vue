@@ -63,10 +63,12 @@ public class GenController extends BaseController
     public AjaxResult getInfo(@PathVariable Long talbleId)
     {
         GenTable table = genTableService.selectGenTableById(talbleId);
+        List<GenTable> tables = genTableService.selectGenTableAll();
         List<GenTableColumn> list = genTableColumnService.selectGenTableColumnListByTableId(talbleId);
         Map<String, Object> map = new HashMap<String, Object>();
         map.put("info", table);
         map.put("rows", list);
+        map.put("tables", tables);
         return AjaxResult.success(map);
     }
 

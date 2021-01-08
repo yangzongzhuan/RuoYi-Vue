@@ -73,7 +73,7 @@
       <el-col :span="1.5">
         <el-button
           type="primary"
-		  plain
+          plain
           icon="el-icon-plus"
           size="mini"
           @click="handleAdd"
@@ -83,7 +83,7 @@
       <el-col :span="1.5">
         <el-button
           type="success"
-		  plain
+          plain
           icon="el-icon-edit"
           size="mini"
           :disabled="single"
@@ -94,7 +94,7 @@
       <el-col :span="1.5">
         <el-button
           type="danger"
-		  plain
+          plain
           icon="el-icon-delete"
           size="mini"
           :disabled="multiple"
@@ -105,7 +105,7 @@
       <el-col :span="1.5">
         <el-button
           type="warning"
-		  plain
+          plain
           icon="el-icon-download"
           size="mini"
           @click="handleExport"
@@ -266,6 +266,38 @@
 #end
 #end
 #end
+#if($table.sub)
+        <el-divider content-position="center">${subTable.functionName}信息</el-divider>
+        <el-row :gutter="10" class="mb8">
+          <el-col :span="1.5">
+            <el-button type="primary" icon="el-icon-plus" size="mini" @click="handleAdd${subClassName}">添加</el-button>
+          </el-col>
+          <el-col :span="1.5">
+            <el-button type="danger" icon="el-icon-delete" size="mini" @click="handleDelete${subClassName}">删除</el-button>
+          </el-col>
+        </el-row>
+        <el-table :data="${subclassName}List" :row-class-name="row${subClassName}Index" @selection-change="handle${subClassName}SelectionChange" ref="${subclassName}">
+          <el-table-column type="selection" width="50" align="center" />
+          <el-table-column label="序号" align="center" prop="index" width="50"/>
+#foreach($column in $subTable.columns)
+#set($javaField=$column.javaField)
+#set($parentheseIndex=$column.columnComment.indexOf("（"))
+#if($parentheseIndex != -1)
+#set($comment=$column.columnComment.substring(0, $parentheseIndex))
+#else
+#set($comment=$column.columnComment)
+#end
+#if($column.pk || $javaField == ${subTableFkclassName})
+#elseif($column.list && "" != $javaField)
+          <el-table-column label="$comment" prop="${javaField}">
+            <template slot-scope="scope">
+              <el-input v-model="scope.row.$javaField" placeholder="请输入$comment" />
+            </template>
+          </el-table-column>
+#end
+#end
+        </el-table>
+#end
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button type="primary" @click="submitForm">确 定</el-button>
@@ -324,6 +356,10 @@ export default {
       loading: true,
       // 选中数组
       ids: [],
+#if($table.sub)
+      // 子表选中数据
+      checked${subClassName}: [],
+#end
       // 非单个禁用
       single: true,
       // 非多个禁用
@@ -334,6 +370,10 @@ export default {
       total: 0,
       // ${functionName}表格数据
       ${businessName}List: [],
+#if($table.sub)
+      // ${subTable.functionName}表格数据
+      ${subclassName}List: [],
+#end
       // 弹出层标题
       title: "",
       // 是否显示弹出层
@@ -456,6 +496,9 @@ export default {
 #end
 #end
       };
+#if($table.sub)
+      this.${subclassName}List = [];
+#end
       this.resetForm("form");
     },
     /** 搜索按钮操作 */
@@ -497,6 +540,9 @@ export default {
         this.form.$column.javaField = this.form.${column.javaField}.split(",");
 #end
 #end
+#if($table.sub)
+        this.${subclassName}List = response.data.${subclassName}List;
+#end
         this.open = true;
         this.title = "修改${functionName}";
       });
@@ -509,6 +555,9 @@ export default {
 #if($column.htmlType == "checkbox")
           this.form.$column.javaField = this.form.${column.javaField}.join(",");
 #end
+#end
+#if($table.sub)
+          this.form.${subclassName}List = this.${subclassName}List;
 #end
           if (this.form.${pkColumn.javaField} != null) {
             update${BusinessName}(this.form).then(response => {
@@ -540,6 +589,40 @@ export default {
           this.msgSuccess("删除成功");
         })
     },
+#if($table.sub)
+	/** ${subTable.functionName}序号 */
+    row${subClassName}Index({ row, rowIndex }) {
+      row.index = rowIndex + 1;
+    },
+    /** ${subTable.functionName}添加按钮操作 */
+    handleAdd${subClassName}() {
+      let obj = {};
+#foreach($column in $subTable.columns)
+#if($column.pk || $column.javaField == ${subTableFkclassName})
+#elseif($column.list && "" != $javaField)
+      obj.$column.javaField = "";
+#end
+#end
+      this.${subclassName}List.push(obj);
+    },
+    /** ${subTable.functionName}删除按钮操作 */
+    handleDelete${subClassName}() {
+      if (this.checked${subClassName}.length == 0) {
+        this.$alert("请先选择要删除的${subTable.functionName}数据", "提示", { confirmButtonText: "确定", });
+      } else {
+        this.${subclassName}List.splice(this.checked${subClassName}[0].index - 1, 1);
+      }
+    },
+    /** 单选框选中数据 */
+    handle${subClassName}SelectionChange(selection) {
+      if (selection.length > 1) {
+        this.$refs.${subclassName}.clearSelection();
+        this.$refs.${subclassName}.toggleRowSelection(selection.pop());
+      } else {
+        this.checked${subClassName} = selection;
+      }
+    },
+#end
     /** 导出按钮操作 */
     handleExport() {
       const queryParams = this.queryParams;
