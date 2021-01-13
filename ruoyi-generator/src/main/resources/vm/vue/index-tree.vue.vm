@@ -253,6 +253,7 @@ import ImageUpload from '@/components/ImageUpload';
 #break
 #end
 #end
+#foreach($column in $columns)
 #if($column.insert && !$column.superColumn && !$column.pk && $column.htmlType == "fileUpload")
 import FileUpload from '@/components/FileUpload';
 #break
