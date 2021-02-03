@@ -513,7 +513,12 @@ export default {
         this.open = true;
         this.$nextTick(() => {
           roleMenu.then(res => {
-            this.$refs.menu.setCheckedKeys(res.checkedKeys);
+            let checkedKeys = res.checkedKeys
+            checkedKeys.forEach((v) => {
+                this.$nextTick(()=>{
+                    this.$refs.menu.setChecked(v, true ,false);
+                })
+            })
           });
         });
         this.title = "修改角色";
