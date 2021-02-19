@@ -213,7 +213,7 @@
           <el-input v-model="form.roleKey" :disabled="true" />
         </el-form-item>
         <el-form-item label="权限范围">
-          <el-select v-model="form.dataScope">
+          <el-select v-model="form.dataScope" @change="dataScopeSelectChange">
             <el-option
               v-for="item in dataScopeOptions"
               :key="item.value"
@@ -523,6 +523,12 @@ export default {
         });
         this.title = "修改角色";
       });
+    },
+    /** 选择角色权限范围触发 */
+    dataScopeSelectChange(value) {
+      if(value !== '2') {
+        this.$refs.dept.setCheckedKeys([]);
+      }
     },
     /** 分配数据权限操作 */
     handleDataScope(row) {
