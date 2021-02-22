@@ -6,14 +6,14 @@
 	
     <groupId>com.ruoyi</groupId>
     <artifactId>ruoyi</artifactId>
-    <version>3.3.0</version>
+    <version>3.4.0</version>
 
     <name>ruoyi</name>
     <url>http://www.ruoyi.vip</url>
     <description>若依管理系统</description>
     
     <properties>
-        <ruoyi.version>3.3.0</ruoyi.version>
+        <ruoyi.version>3.4.0</ruoyi.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <java.version>1.8</java.version>
@@ -41,7 +41,7 @@
             <dependency>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-dependencies</artifactId>
-                <version>2.2.12.RELEASE</version>
+                <version>2.2.13.RELEASE</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
