@@ -146,6 +146,38 @@
             <span>更新日志</span>
           </div>
           <el-collapse accordion>
+            <el-collapse-item title="v3.4.0 - 2021-02-22">
+              <ol>
+                <li>代码生成模板支持主子表</li>
+                <li>表格右侧工具栏组件支持显隐列</li>
+                <li>图片组件添加预览&移除功能</li>
+                <li>Excel注解支持Image图片导出</li>
+                <li>操作按钮组调整为朴素按钮样式</li>
+                <li>代码生成支持文件上传组件</li>
+                <li>代码生成日期控件区分范围</li>
+                <li>代码生成数据库文本类型生成表单文本域</li>
+                <li>用户手机邮箱&菜单组件修改允许空字符串</li>
+                <li>升级SpringBoot到最新版本2.2.13 提升启动速度</li>
+                <li>升级druid到最新版本v1.2.4</li>
+                <li>升级fastjson到最新版1.2.75</li>
+                <li>升级element-ui到最新版本2.15.0</li>
+                <li>修复IE11浏览器报错问题</li>
+                <li>优化多级菜单之间切换无法缓存的问题</li>
+                <li>修复四级菜单无法显示问题</li>
+                <li>修正侧边栏静态路由丢失问题</li>
+                <li>修复角色管理-编辑角色-功能权限显示异常</li>
+                <li>配置文件新增redis数据库索引属性</li>
+                <li>权限工具类增加admin判断</li>
+                <li>角色非自定义权限范围清空选择值</li>
+                <li>修复导入数据为负浮点数时丢失精度问题</li>
+                <li>移除path-to-regexp正则匹配插件</li>
+                <li>修复生成树表代码异常</li>
+                <li>修改ip字段长度防止ipv6地址长度不够</li>
+                <li>防止get请求参数值为false或0等特殊值会导致无法正确的传参</li>
+                <li>登录后push添加catch防止出现检查错误</li>
+                <li>其他细节优化</li>
+              </ol>
+            </el-collapse-item>
             <el-collapse-item title="v3.3.0 - 2020-12-14">
               <ol>
                 <li>新增缓存监控功能</li>
@@ -493,7 +525,7 @@ export default {
   data() {
     return {
       // 版本号
-      version: "3.3.0",
+      version: "3.4.0",
     };
   },
   methods: {
