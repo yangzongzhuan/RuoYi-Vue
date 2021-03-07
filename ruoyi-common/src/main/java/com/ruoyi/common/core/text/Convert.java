@@ -785,19 +785,28 @@ public class Convert
      * @param charset 字符集
      * @return 字符串
      */
-    public static String str(Object obj, Charset charset) {
-        if (null == obj) {
+    public static String str(Object obj, Charset charset)
+    {
+        if (null == obj)
+        {
             return null;
         }
 
-        if (obj instanceof String) {
+        if (obj instanceof String)
+        {
             return (String) obj;
-        } else if (obj instanceof byte[]) {
+        }
+        else if (obj instanceof byte[])
+        {
             return str((byte[]) obj, charset);
-        } else if (obj instanceof Byte[]) {
+        }
+        else if (obj instanceof Byte[])
+        {
             byte[] bytes = ArrayUtils.toPrimitive((Byte[]) obj);
             return str(bytes, charset);
-        } else if (obj instanceof ByteBuffer) {
+        }
+        else if (obj instanceof ByteBuffer)
+        {
             return str((ByteBuffer) obj, charset);
         }
         return obj.toString();
