@@ -26,6 +26,11 @@ export default {
       type: Number,
       default: null,
     },
+    /* 只读 */
+    readOnly: {
+      type: Boolean,
+      default: false,
+    }
   },
   data() {
     return {
@@ -51,7 +56,7 @@ export default {
           ],
         },
         placeholder: "请输入内容",
-        readOnly: false,
+        readOnly: this.readOnly,
       },
     };
   },
