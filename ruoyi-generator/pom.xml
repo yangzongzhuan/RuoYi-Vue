@@ -22,7 +22,11 @@
             <groupId>org.apache.velocity</groupId>
             <artifactId>velocity</artifactId>
         </dependency>
-
+        <!--commons-collections-->
+        <dependency>
+            <groupId>commons-collections</groupId>
+            <artifactId>commons-collections</artifactId>
+        </dependency>
         <!-- 通用工具-->
         <dependency>
             <groupId>com.ruoyi</groupId>
