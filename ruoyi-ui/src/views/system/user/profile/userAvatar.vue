@@ -82,6 +82,14 @@ export default {
       previews: {}
     };
   },
+    created() {
+    // 显隐列组件默认隐藏列
+    for (let item in this.columns) {
+      if (this.columns[item].visible === false) {
+        this.value.push(parseInt(item))
+      }
+    }
+  },
   methods: {
     // 编辑头像
     editCropper() {
