@@ -82,14 +82,6 @@ export default {
       previews: {}
     };
   },
-    created() {
-    // 显隐列组件默认隐藏列
-    for (let item in this.columns) {
-      if (this.columns[item].visible === false) {
-        this.value.push(parseInt(item))
-      }
-    }
-  },
   methods: {
     // 编辑头像
     editCropper() {
@@ -145,9 +137,10 @@ export default {
     realTime(data) {
       this.previews = data;
     },
-    //取消截图，关闭对话框
+    // 关闭窗口
     closeDialog() {
       this.options.img = store.getters.avatar
+	  this.visible = false;
     }
   }
 };
