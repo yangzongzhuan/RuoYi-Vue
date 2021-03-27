@@ -23,6 +23,12 @@
             <artifactId>velocity</artifactId>
         </dependency>
 
+        <!-- collections工具类 -->
+        <dependency>
+            <groupId>commons-collections</groupId>
+            <artifactId>commons-collections</artifactId>
+        </dependency>
+
         <!-- 通用工具-->
         <dependency>
             <groupId>com.ruoyi</groupId>
