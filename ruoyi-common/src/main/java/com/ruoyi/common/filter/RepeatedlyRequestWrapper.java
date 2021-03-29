@@ -67,6 +67,11 @@ public class RepeatedlyRequestWrapper extends HttpServletRequestWrapper
             {
 
             }
+
+            @Override
+            public int available() throws IOException {
+                return body.length;
+            }
         };
     }
 }
