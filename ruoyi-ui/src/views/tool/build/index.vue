@@ -193,7 +193,12 @@ export default {
       activeData: drawingDefalut[0]
     }
   },
-  computed: {
+  created() {
+    // 防止 firefox 下 拖拽 会新打卡一个选项卡
+    document.body.ondrop = event => {
+      event.preventDefault()
+      event.stopPropagation()
+    }
   },
   watch: {
     // eslint-disable-next-line func-names
