@@ -135,10 +135,6 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
  		where role_id = #{roleId}
 	</update>
 	
-	<update id="updateRoleStatus" parameterType="SysRole">
- 		update sys_user set status = #{status} where user_id = #{userId}
-	</update>
-	
 	<delete id="deleteRoleById" parameterType="Long">
 		update sys_role set del_flag = '2' where role_id = #{roleId}
  	</delete>
