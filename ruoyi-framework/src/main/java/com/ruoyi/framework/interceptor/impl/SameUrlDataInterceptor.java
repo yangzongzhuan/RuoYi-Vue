@@ -78,9 +78,9 @@ public class SameUrlDataInterceptor extends RepeatSubmitInterceptor
         }
 
         // 唯一标识（指定key + 消息头）
-        String cache_repeat_key = Constants.REPEAT_SUBMIT_KEY + submitKey;
+        String cacheRepeatKey = Constants.REPEAT_SUBMIT_KEY + submitKey;
 
-        Object sessionObj = redisCache.getCacheObject(cache_repeat_key);
+        Object sessionObj = redisCache.getCacheObject(cacheRepeatKey);
         if (sessionObj != null)
         {
             Map<String, Object> sessionMap = (Map<String, Object>) sessionObj;
@@ -95,7 +95,7 @@ public class SameUrlDataInterceptor extends RepeatSubmitInterceptor
         }
         Map<String, Object> cacheMap = new HashMap<String, Object>();
         cacheMap.put(url, nowDataMap);
-        redisCache.setCacheObject(cache_repeat_key, cacheMap, intervalTime, TimeUnit.SECONDS);
+        redisCache.setCacheObject(cacheRepeatKey, cacheMap, intervalTime, TimeUnit.SECONDS);
         return false;
     }
 
