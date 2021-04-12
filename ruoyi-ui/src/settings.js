@@ -12,6 +12,11 @@ module.exports = {
   showSettings: false,
 
   /**
+   * 是否显示顶部导航
+   */
+  topNav: true,
+
+  /**
    * 是否显示 tagsView
    */
   tagsView: true,
