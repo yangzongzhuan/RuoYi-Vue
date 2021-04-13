@@ -47,7 +47,7 @@ export default {
     topMenus() {
       let topMenus = [];
       this.routers.map((menu) => {
-        if (menu.hidden === false) {
+        if (menu.hidden !== true) {
           topMenus.push(menu);
         }
       });
