@@ -108,7 +108,11 @@
 #elseif($column.list && "" != $column.dictType)
       <el-table-column label="${comment}" align="center" prop="${javaField}" :formatter="${javaField}Format" />
 #elseif($column.list && "" != $javaField)
+#if(${foreach.index} == 1)
+      <el-table-column label="${comment}" prop="${javaField}" />
+#else
       <el-table-column label="${comment}" align="center" prop="${javaField}" />
+#end
 #end
 #end
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
@@ -120,6 +124,13 @@
             @click="handleUpdate(scope.row)"
             v-hasPermi="['${moduleName}:${businessName}:edit']"
           >修改</el-button>
+          <el-button
+            size="mini"
+            type="text"
+            icon="el-icon-plus"
+            @click="handleAdd(scope.row)"
+            v-hasPermi="['${moduleName}:${businessName}:add']"
+          >新增</el-button>
           <el-button
             size="mini"
             type="text"
@@ -394,7 +405,7 @@ export default {
         children: node.children
       };
     },
-	/** 查询部门下拉树结构 */
+	/** 查询${functionName}下拉树结构 */
     getTreeselect() {
       list${BusinessName}().then(response => {
         this.${businessName}Options = [];
@@ -456,16 +467,21 @@ export default {
       this.handleQuery();
     },
     /** 新增按钮操作 */
-    handleAdd() {
+    handleAdd(row) {
       this.reset();
-	  this.getTreeselect();
+      this.getTreeselect();
+      if (row != null && row.dkAreaCode) {
+        this.form.${treeParentCode} = row.${treeCode};
+      } else {
+        this.form.${treeParentCode} = 0;
+      }
       this.open = true;
       this.title = "添加${functionName}";
     },
     /** 修改按钮操作 */
     handleUpdate(row) {
       this.reset();
-	  this.getTreeselect();
+      this.getTreeselect();
       if (row != null) {
         this.form.${treeParentCode} = row.${treeCode};
       }
