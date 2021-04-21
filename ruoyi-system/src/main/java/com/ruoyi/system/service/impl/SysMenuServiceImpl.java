@@ -160,6 +160,7 @@ public class SysMenuServiceImpl implements ISysMenuService
             }
             else if (isMenuFrame(menu))
             {
+                router.setMeta(null);
                 List<RouterVo> childrenList = new ArrayList<RouterVo>();
                 RouterVo children = new RouterVo();
                 children.setPath(menu.getPath());
