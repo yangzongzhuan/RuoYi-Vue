@@ -130,8 +130,11 @@ public class FileUploadUtils
     private static final File getAbsoluteFile(String uploadDir, String fileName) throws IOException
     {
         File desc = new File(uploadDir + File.separator + fileName);
-        if (!desc.exists()) {
-            if (!desc.getParentFile().exists()) {
+
+        if (!desc.exists())
+        {
+            if (!desc.getParentFile().exists())
+            {
                 desc.getParentFile().mkdirs();
             }
         }
@@ -180,6 +183,11 @@ public class FileUploadUtils
             else if (allowedExtension == MimeTypeUtils.MEDIA_EXTENSION)
             {
                 throw new InvalidExtensionException.InvalidMediaExtensionException(allowedExtension, extension,
+                        fileName);
+            }
+            else if (allowedExtension == MimeTypeUtils.VIDEO_EXTENSION)
+            {
+                throw new InvalidExtensionException.InvalidVideoExtensionException(allowedExtension, extension,
                         fileName);
             }
             else
