@@ -89,6 +89,7 @@
           plain
           icon="el-icon-download"
           size="mini"
+          :loading="exportLoading"
           @click="handleExport"
           v-hasPermi="['monitor:job:export']"
         >导出</el-button>
@@ -175,6 +176,8 @@ export default {
     return {
       // 遮罩层
       loading: true,
+      // 导出遮罩层
+      exportLoading: false,
       // 选中数组
       ids: [],
       // 非多个禁用
@@ -288,10 +291,12 @@ export default {
           confirmButtonText: "确定",
           cancelButtonText: "取消",
           type: "warning"
-        }).then(function() {
+        }).then(() => {
+          this.exportLoading = true;
           return exportJobLog(queryParams);
         }).then(response => {
           this.download(response.msg);
+          this.exportLoading = false;
         })
     }
   }
