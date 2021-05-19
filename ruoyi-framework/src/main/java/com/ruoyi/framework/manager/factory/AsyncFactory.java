@@ -1,6 +1,10 @@
 package com.ruoyi.framework.manager.factory;
 
+import java.util.Date;
 import java.util.TimerTask;
+
+import com.ruoyi.common.core.domain.entity.SysUser;
+import com.ruoyi.system.service.ISysUserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.ruoyi.common.constant.Constants;
@@ -17,7 +21,7 @@ import eu.bitwalker.useragentutils.UserAgent;
 
 /**
  * 异步工厂（产生任务用）
- * 
+ *
  * @author ruoyi
  */
 public class AsyncFactory
@@ -26,7 +30,7 @@ public class AsyncFactory
 
     /**
      * 记录登录信息
-     * 
+     *
      * @param username 用户名
      * @param status 状态
      * @param message 消息
@@ -73,6 +77,11 @@ public class AsyncFactory
                 {
                     logininfor.setStatus(Constants.FAIL);
                 }
+                //记录上次登录时间和地点
+                SysUser sysUser = SpringUtils.getBean(ISysUserService.class).selectUserByUserName(username);
+                sysUser.setLoginDate(new Date());
+                sysUser.setLoginIp(ip);
+                SpringUtils.getBean(ISysUserService.class).updateUserProfile(sysUser);
                 // 插入数据
                 SpringUtils.getBean(ISysLogininforService.class).insertLogininfor(logininfor);
             }
@@ -81,7 +90,7 @@ public class AsyncFactory
 
     /**
      * 操作日志记录
-     * 
+     *
      * @param operLog 操作日志信息
      * @return 任务task
      */
