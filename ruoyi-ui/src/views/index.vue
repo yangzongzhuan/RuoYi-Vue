@@ -147,6 +147,46 @@
             <span>更新日志</span>
           </div>
           <el-collapse accordion>
+            <el-collapse-item title="v3.5.0 - 2021-05-25">
+              <ol>
+                <li>新增菜单导航显示风格TopNav（false为左侧导航菜单，true为顶部导航菜单）</li>
+                <li>布局设置支持保存&重置配置</li>
+                <li>修复树表数据显示不全&加载慢问题</li>
+                <li>新增IE浏览器版本过低提示页面</li>
+                <li>用户登录后记录最后登录IP&时间</li>
+                <li>页面导出按钮点击之后添加遮罩</li>
+                <li>富文本编辑器支持自定义上传地址</li>
+                <li>富文本编辑组件新增readOnly属性</li>
+                <li>页签TagsView新增关闭右侧功能</li>
+                <li>显隐列组件加载初始默认隐藏列</li>
+                <li>关闭头像上传窗口还原默认图片</li>
+                <li>个人信息添加手机&邮箱重复验证</li>
+                <li>代码生成模板导出按钮点击后添加遮罩</li>
+                <li>代码生成模板树表操作列添加新增按钮</li>
+                <li>代码生成模板修复主子表字段重名问题</li>
+                <li>升级fastjson到最新版1.2.76</li>
+                <li>升级druid到最新版本v1.2.6</li>
+                <li>升级mybatis到最新版3.5.6 阻止远程代码执行漏洞</li>
+                <li>升级oshi到最新版本v5.6.0</li>
+                <li>velocity剔除commons-collections版本，防止3.2.1版本的反序列化漏洞</li>
+                <li>数据监控页默认账户密码防止越权访问</li>
+                <li>修复firefox下表单构建拖拽会新打卡一个选项卡</li>
+                <li>修正后端导入表权限标识</li>
+                <li>修正前端操作日志&登录日志权限标识</li>
+                <li>设置Redis配置HashKey序列化</li>
+                <li>删除操作日志记录信息</li>
+                <li>上传媒体类型添加视频格式</li>
+                <li>修复请求形参未传值记录日志异常问题</li>
+                <li>优化xss校验json请求条件</li>
+                <li>树级结构更新子节点使用replaceFirst</li>
+                <li>优化ExcelUtil空值处理</li>
+                <li>日志记录过滤BindingResult对象，防止异常</li>
+                <li>修改主题后mini类型按钮无效问题</li>
+                <li>优化通用下载完成后删除节点</li>
+                <li>通用Controller添加响应返回消息</li>
+                <li>其他细节优化</li>
+              </ol>
+            </el-collapse-item>
             <el-collapse-item title="v3.4.0 - 2021-02-22">
               <ol>
                 <li>代码生成模板支持主子表</li>
@@ -526,7 +566,7 @@ export default {
   data() {
     return {
       // 版本号
-      version: "3.4.0",
+      version: "3.5.0",
     };
   },
   methods: {
