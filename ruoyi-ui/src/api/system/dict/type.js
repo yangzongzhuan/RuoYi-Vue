@@ -43,10 +43,10 @@ export function delType(dictId) {
   })
 }
 
-// 清理参数缓存
-export function clearCache() {
+// 刷新字典缓存
+export function refreshCache() {
   return request({
-    url: '/system/dict/type/clearCache',
+    url: '/system/dict/type/refreshCache',
     method: 'delete'
   })
 }

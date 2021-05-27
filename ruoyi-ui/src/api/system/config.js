@@ -51,10 +51,10 @@ export function delConfig(configId) {
   })
 }
 
-// 清理参数缓存
-export function clearCache() {
+// 刷新参数缓存
+export function refreshCache() {
   return request({
-    url: '/system/config/clearCache',
+    url: '/system/config/refreshCache',
     method: 'delete'
   })
 }

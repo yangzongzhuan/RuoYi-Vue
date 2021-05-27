@@ -56,12 +56,22 @@ public interface ISysConfigService
      * @param configIds 需要删除的参数ID
      * @return 结果
      */
-    public int deleteConfigByIds(Long[] configIds);
+    public void deleteConfigByIds(Long[] configIds);
 
     /**
-     * 清空缓存数据
+     * 加载参数缓存数据
      */
-    public void clearCache();
+    public void loadingConfigCache();
+
+    /**
+     * 清空参数缓存数据
+     */
+    public void clearConfigCache();
+
+    /**
+     * 重置参数缓存数据
+     */
+    public void resetConfigCache();
 
     /**
      * 校验参数键名是否唯一

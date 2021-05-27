@@ -37,11 +37,7 @@ public class SysConfigServiceImpl implements ISysConfigService
     @PostConstruct
     public void init()
     {
-        List<SysConfig> configsList = configMapper.selectConfigList(new SysConfig());
-        for (SysConfig config : configsList)
-        {
-            redisCache.setCacheObject(getCacheKey(config.getConfigKey()), config.getConfigValue());
-        }
+        loadingConfigCache();
     }
 
     /**
@@ -137,7 +133,7 @@ public class SysConfigServiceImpl implements ISysConfigService
      * @return 结果
      */
     @Override
-    public int deleteConfigByIds(Long[] configIds)
+    public void deleteConfigByIds(Long[] configIds)
     {
         for (Long configId : configIds)
         {
@@ -146,24 +142,42 @@ public class SysConfigServiceImpl implements ISysConfigService
             {
                 throw new CustomException(String.format("内置参数【%1$s】不能删除 ", config.getConfigKey()));
             }
+            configMapper.deleteConfigById(configId);
+            redisCache.deleteObject(getCacheKey(config.getConfigKey()));
         }
-        int count = configMapper.deleteConfigByIds(configIds);
-        if (count > 0)
-        {
-            Collection<String> keys = redisCache.keys(Constants.SYS_CONFIG_KEY + "*");
-            redisCache.deleteObject(keys);
-        }
-        return count;
     }
 
     /**
-     * 清空缓存数据
+     * 加载参数缓存数据
      */
     @Override
-    public void clearCache()
+    public void loadingConfigCache()
+    {
+        List<SysConfig> configsList = configMapper.selectConfigList(new SysConfig());
+        for (SysConfig config : configsList)
+        {
+            redisCache.setCacheObject(getCacheKey(config.getConfigKey()), config.getConfigValue());
+        }
+    }
+
+    /**
+     * 清空参数缓存数据
+     */
+    @Override
+    public void clearConfigCache()
     {
         Collection<String> keys = redisCache.keys(Constants.SYS_CONFIG_KEY + "*");
         redisCache.deleteObject(keys);
+    }
+
+    /**
+     * 重置参数缓存数据
+     */
+    @Override
+    public void resetConfigCache()
+    {
+        clearConfigCache();
+        loadingConfigCache();
     }
 
     /**

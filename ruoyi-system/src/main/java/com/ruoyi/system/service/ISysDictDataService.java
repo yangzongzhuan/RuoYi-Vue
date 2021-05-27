@@ -41,7 +41,7 @@ public interface ISysDictDataService
      * @param dictCodes 需要删除的字典数据ID
      * @return 结果
      */
-    public int deleteDictDataByIds(Long[] dictCodes);
+    public void deleteDictDataByIds(Long[] dictCodes);
 
     /**
      * 新增保存字典数据信息
