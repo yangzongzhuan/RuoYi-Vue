@@ -163,7 +163,7 @@
           </el-col>
           <el-col :span="12">
             <el-form-item v-if="form.menuType != 'M'" label="权限标识">
-              <el-input v-model="form.perms" placeholder="请权限标识" maxlength="50" />
+              <el-input v-model="form.perms" placeholder="请权限标识" maxlength="100" />
             </el-form-item>
           </el-col>
           <el-col :span="12">
