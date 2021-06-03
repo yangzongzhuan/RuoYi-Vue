@@ -75,7 +75,7 @@ export default {
             [{ color: [] }, { background: [] }],             // 字体颜色、字体背景颜色
             [{ align: [] }],                                 // 对齐方式
             ["clean"],                                       // 清除文本格式
-            ["link", "image"]                                // 链接、图片
+            ["link", "image", "video"]                       // 链接、图片、视频
           ],
         },
         placeholder: "请输入内容",
@@ -158,6 +158,7 @@ export default {
       });
     },
     handleUploadSuccess(res, file) {
+      console.info(file);
       // 获取富文本组件实例
       let quill = this.Quill;
       // 如果上传成功
