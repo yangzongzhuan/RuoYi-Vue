@@ -283,7 +283,7 @@ export default {
           return synchDb(tableName);
       }).then(() => {
           this.msgSuccess("同步成功");
-      })
+      }).catch(() => {});
     },
     /** 打开导入表弹窗 */
     openImportTable() {
@@ -333,7 +333,7 @@ export default {
       }).then(() => {
           this.getList();
           this.msgSuccess("删除成功");
-      })
+      }).catch(() => {});
     }
   }
 };

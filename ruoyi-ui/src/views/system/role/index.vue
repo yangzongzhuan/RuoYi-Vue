@@ -593,7 +593,7 @@ export default {
         }).then(() => {
           this.getList();
           this.msgSuccess("删除成功");
-        })
+        }).catch(() => {});
     },
     /** 导出按钮操作 */
     handleExport() {
@@ -608,7 +608,7 @@ export default {
         }).then(response => {
           this.download(response.msg);
           this.exportLoading = false;
-        })
+        }).catch(() => {});
     }
   }
 };

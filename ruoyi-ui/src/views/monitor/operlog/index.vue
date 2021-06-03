@@ -290,7 +290,7 @@ export default {
         }).then(() => {
           this.getList();
           this.msgSuccess("删除成功");
-        })
+        }).catch(() => {});
     },
     /** 清空按钮操作 */
     handleClean() {
@@ -303,7 +303,7 @@ export default {
         }).then(() => {
           this.getList();
           this.msgSuccess("清空成功");
-        })
+        }).catch(() => {});
     },
     /** 导出按钮操作 */
     handleExport() {
@@ -318,7 +318,7 @@ export default {
         }).then(response => {
           this.download(response.msg);
           this.exportLoading = false;
-        })
+        }).catch(() => {});
     }
   }
 };
