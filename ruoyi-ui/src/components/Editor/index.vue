@@ -158,7 +158,6 @@ export default {
       });
     },
     handleUploadSuccess(res, file) {
-      console.info(file);
       // 获取富文本组件实例
       let quill = this.Quill;
       // 如果上传成功
