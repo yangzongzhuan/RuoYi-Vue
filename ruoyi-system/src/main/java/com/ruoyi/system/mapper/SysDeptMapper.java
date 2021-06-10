@@ -94,11 +94,11 @@ public interface SysDeptMapper
     public int updateDept(SysDept dept);
 
     /**
-     * 修改所在部门的父级部门状态
+     * 修改所在部门正常状态
      * 
-     * @param dept 部门
+     * @param deptIds 部门ID组
      */
-    public void updateDeptStatus(SysDept dept);
+    public void updateDeptStatusNormal(Long[] deptIds);
 
     /**
      * 修改子元素关系
