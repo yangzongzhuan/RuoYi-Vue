@@ -20,6 +20,8 @@ import { parseTime, resetForm, addDateRange, selectDictLabel, selectDictLabels, 
 import Pagination from "@/components/Pagination";
 // 自定义表格工具扩展
 import RightToolbar from "@/components/RightToolbar"
+// 头部标签插件
+import VueMeta from 'vue-meta'
 
 // 全局方法挂载
 Vue.prototype.getDicts = getDicts
@@ -49,6 +51,7 @@ Vue.component('Pagination', Pagination)
 Vue.component('RightToolbar', RightToolbar)
 
 Vue.use(permission)
+Vue.use(VueMeta)
 
 /**
  * If you don't want to use mock-server
