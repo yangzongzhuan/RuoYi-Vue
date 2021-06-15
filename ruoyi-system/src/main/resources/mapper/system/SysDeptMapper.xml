@@ -140,7 +140,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	    </foreach>
 	</update>
 	 
-	 <update id="updateDeptStatusNormal" parameterType="Long">
+	<update id="updateDeptStatusNormal" parameterType="Long">
  	    update sys_dept set status = '0' where dept_id in 
  	    <foreach collection="array" item="deptId" open="(" separator="," close=")">
         	#{deptId}
