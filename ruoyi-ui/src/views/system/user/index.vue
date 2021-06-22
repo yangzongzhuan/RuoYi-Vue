@@ -210,7 +210,7 @@
         <el-row>
           <el-col :span="12">
             <el-form-item label="用户昵称" prop="nickName">
-              <el-input v-model="form.nickName" placeholder="请输入用户昵称" />
+              <el-input v-model="form.nickName" placeholder="请输入用户昵称" maxlength="30" />
             </el-form-item>
           </el-col>
           <el-col :span="12">
@@ -234,12 +234,12 @@
         <el-row>
           <el-col :span="12">
             <el-form-item v-if="form.userId == undefined" label="用户名称" prop="userName">
-              <el-input v-model="form.userName" placeholder="请输入用户名称" />
+              <el-input v-model="form.userName" placeholder="请输入用户名称" maxlength="30" />
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item v-if="form.userId == undefined" label="用户密码" prop="password">
-              <el-input v-model="form.password" placeholder="请输入用户密码" type="password" />
+              <el-input v-model="form.password" placeholder="请输入用户密码" type="password" maxlength="20" />
             </el-form-item>
           </el-col>
         </el-row>
@@ -440,7 +440,8 @@ export default {
           { required: true, message: "用户昵称不能为空", trigger: "blur" }
         ],
         password: [
-          { required: true, message: "用户密码不能为空", trigger: "blur" }
+          { required: true, message: "用户密码不能为空", trigger: "blur" },
+          { min: 5, max: 20, message: '用户密码长度必须介于 5 和 20 之间', trigger: 'blur' }
         ],
         email: [
           {
@@ -592,7 +593,10 @@ export default {
     handleResetPwd(row) {
       this.$prompt('请输入"' + row.userName + '"的新密码', "提示", {
         confirmButtonText: "确定",
-        cancelButtonText: "取消"
+        cancelButtonText: "取消",
+        closeOnClickModal: false,
+        inputPattern: /^.{5,20}$/,
+        inputErrorMessage: "用户密码长度必须介于 5 和 20 之间",
       }).then(({ value }) => {
           resetUserPwd(row.userId, value).then(response => {
             this.msgSuccess("修改成功，新密码是：" + value);
