@@ -315,6 +315,8 @@ export default {
         dictCode: undefined,
         dictLabel: undefined,
         dictValue: undefined,
+        cssClass: undefined,
+        listClass: 'default',
         dictSort: 0,
         status: "0",
         remark: undefined
