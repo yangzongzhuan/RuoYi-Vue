@@ -185,14 +185,9 @@
 <script>
 import { listData, getData, delData, addData, updateData, exportData } from "@/api/system/dict/data";
 import { listType, getType } from "@/api/system/dict/type";
-// 字典标签组件（使用频繁可在全局挂载）
-import DictTag from '@/components/DictTag'
 
 export default {
   name: "Data",
-  components: {
-    DictTag
-  },
   data() {
     return {
       // 遮罩层
