@@ -243,6 +243,18 @@ public class SysUserServiceImpl implements ISysUserService
     }
 
     /**
+     * 用户授权角色
+     * 
+     * @param userId 用户ID
+     * @param roleIds 角色组
+     */
+    public void insertUserAuth(Long userId, Long[] roleIds)
+    {
+        userRoleMapper.deleteUserRoleByUserId(userId);
+        insertUserRole(userId, roleIds);
+    }
+
+    /**
      * 修改用户状态
      * 
      * @param user 用户信息
@@ -352,6 +364,32 @@ public class SysUserServiceImpl implements ISysUserService
             if (list.size() > 0)
             {
                 userPostMapper.batchUserPost(list);
+            }
+        }
+    }
+
+    /**
+     * 新增用户角色信息
+     * 
+     * @param userId 用户ID
+     * @param roleIds 角色组
+     */
+    public void insertUserRole(Long userId, Long[] roleIds)
+    {
+        if (StringUtils.isNotNull(roleIds))
+        {
+            // 新增用户与角色管理
+            List<SysUserRole> list = new ArrayList<SysUserRole>();
+            for (Long roleId : roleIds)
+            {
+                SysUserRole ur = new SysUserRole();
+                ur.setUserId(userId);
+                ur.setRoleId(roleId);
+                list.add(ur);
+            }
+            if (list.size() > 0)
+            {
+                userRoleMapper.batchUserRole(list);
             }
         }
     }
