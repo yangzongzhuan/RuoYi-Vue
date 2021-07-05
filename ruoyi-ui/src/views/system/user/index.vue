@@ -167,7 +167,7 @@
             width="160"
             class-name="small-padding fixed-width"
           >
-            <template slot-scope="scope">
+            <template slot-scope="scope" v-if="scope.row.userId !== 1">
               <el-button
                 size="mini"
                 type="text"
@@ -175,13 +175,18 @@
                 @click="handleUpdate(scope.row)"
                 v-hasPermi="['system:user:edit']"
               >修改</el-button>
+              <el-button
+                size="mini"
+                type="text"
+                icon="el-icon-delete"
+                @click="handleDelete(scope.row)"
+                v-hasPermi="['system:user:remove']"
+              >删除</el-button>
               <el-dropdown size="mini" @command="(command) => handleCommand(command, scope.row)">
                 <span class="el-dropdown-link">
-                  <i class="el-icon-d-arrow-right el-icon--right"></i>更多操作
+                  <i class="el-icon-d-arrow-right el-icon--right"></i>更多
                 </span>
                 <el-dropdown-menu slot="dropdown">
-                  <el-dropdown-item command="handleDelete" v-if="scope.row.userId !== 1" icon="el-icon-delete"
-                    v-hasPermi="['system:user:remove']">删除用户</el-dropdown-item>
                   <el-dropdown-item command="handleResetPwd" icon="el-icon-key"
                     v-hasPermi="['system:user:resetPwd']">重置密码</el-dropdown-item>
                   <el-dropdown-item command="handleAuthRole" icon="el-icon-circle-check"
@@ -562,9 +567,6 @@ export default {
     // 更多操作触发
     handleCommand(command, row) {
       switch (command) {
-        case "handleDelete":
-          this.handleDelete(row);
-          break;
         case "handleResetPwd":
           this.handleResetPwd(row);
           break;
