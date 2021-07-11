@@ -3,7 +3,7 @@ import defaultSettings from '@/settings'
 
 const { sideTheme, showSettings, topNav, tagsView, fixedHeader, sidebarLogo, dynamicTitle } = defaultSettings
 
-const storageSetting = JSON.parse(localStorage.getItem('layout-setting')) || ''
+const storageSetting = JSON.parse(localStorage.getItem('layout-setting') || '{}') || {}
 const state = {
   title: '',
   theme: storageSetting.theme || variables.theme,
