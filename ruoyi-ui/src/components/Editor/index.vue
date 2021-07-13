@@ -130,14 +130,14 @@ export default {
             this.quill.format("image", false);
           }
         });
-        toolbar.addHandler("video", (value) => {
-          this.uploadType = "video";
-          if (value) {
-            this.$refs.upload.$children[0].$refs.input.click();
-          } else {
-            this.quill.format("video", false);
-          }
-        });
+        // toolbar.addHandler("video", (value) => {
+        //   this.uploadType = "video";
+        //   if (value) {
+        //     this.$refs.upload.$children[0].$refs.input.click();
+        //   } else {
+        //     this.quill.format("video", false);
+        //   }
+        // });
       }
       this.Quill.pasteHTML(this.currentValue);
       this.Quill.on("text-change", (delta, oldDelta, source) => {
