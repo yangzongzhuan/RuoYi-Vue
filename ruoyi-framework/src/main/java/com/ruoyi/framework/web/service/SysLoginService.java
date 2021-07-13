@@ -21,6 +21,7 @@ import com.ruoyi.common.utils.ServletUtils;
 import com.ruoyi.common.utils.ip.IpUtils;
 import com.ruoyi.framework.manager.AsyncManager;
 import com.ruoyi.framework.manager.factory.AsyncFactory;
+import com.ruoyi.system.service.ISysConfigService;
 import com.ruoyi.system.service.ISysUserService;
 
 /**
@@ -43,6 +44,9 @@ public class SysLoginService
     @Autowired
     private ISysUserService userService;
 
+    @Autowired
+    private ISysConfigService configService;
+
     /**
      * 登录验证
      * 
@@ -54,18 +58,11 @@ public class SysLoginService
      */
     public String login(String username, String password, String code, String uuid)
     {
-        String verifyKey = Constants.CAPTCHA_CODE_KEY + uuid;
-        String captcha = redisCache.getCacheObject(verifyKey);
-        redisCache.deleteObject(verifyKey);
-        if (captcha == null)
+        boolean captchaOnOff = configService.selectCaptchaOnOff();
+        // 验证码开关
+        if (captchaOnOff)
         {
-            AsyncManager.me().execute(AsyncFactory.recordLogininfor(username, Constants.LOGIN_FAIL, MessageUtils.message("user.jcaptcha.expire")));
-            throw new CaptchaExpireException();
-        }
-        if (!code.equalsIgnoreCase(captcha))
-        {
-            AsyncManager.me().execute(AsyncFactory.recordLogininfor(username, Constants.LOGIN_FAIL, MessageUtils.message("user.jcaptcha.error")));
-            throw new CaptchaException();
+            validateCapcha(username, code, uuid);
         }
         // 用户验证
         Authentication authentication = null;
@@ -93,6 +90,31 @@ public class SysLoginService
         recordLoginInfo(loginUser.getUser());
         // 生成token
         return tokenService.createToken(loginUser);
+    }
+
+    /**
+     * 校验验证码
+     * 
+     * @param username 用户名
+     * @param code 验证码
+     * @param uuid 唯一标识
+     * @return 结果
+     */
+    public void validateCapcha(String username, String code, String uuid)
+    {
+        String verifyKey = Constants.CAPTCHA_CODE_KEY + uuid;
+        String captcha = redisCache.getCacheObject(verifyKey);
+        redisCache.deleteObject(verifyKey);
+        if (captcha == null)
+        {
+            AsyncManager.me().execute(AsyncFactory.recordLogininfor(username, Constants.LOGIN_FAIL, MessageUtils.message("user.jcaptcha.expire")));
+            throw new CaptchaExpireException();
+        }
+        if (!code.equalsIgnoreCase(captcha))
+        {
+            AsyncManager.me().execute(AsyncFactory.recordLogininfor(username, Constants.LOGIN_FAIL, MessageUtils.message("user.jcaptcha.error")));
+            throw new CaptchaException();
+        }
     }
 
     /**
