@@ -115,17 +115,30 @@
           <el-button
             size="mini"
             type="text"
-            icon="el-icon-caret-right"
-            @click="handleRun(scope.row)"
-            v-hasPermi="['monitor:job:changeStatus']"
-          >执行一次</el-button>
+            icon="el-icon-edit"
+            @click="handleUpdate(scope.row)"
+            v-hasPermi="['monitor:job:edit']"
+          >修改</el-button>
           <el-button
             size="mini"
             type="text"
-            icon="el-icon-view"
-            @click="handleView(scope.row)"
-            v-hasPermi="['monitor:job:query']"
-          >详细</el-button>
+            icon="el-icon-delete"
+            @click="handleDelete(scope.row)"
+            v-hasPermi="['monitor:job:remove']"
+          >删除</el-button>
+          <el-dropdown size="mini" @command="(command) => handleCommand(command, scope.row)">
+            <span class="el-dropdown-link">
+              <i class="el-icon-d-arrow-right el-icon--right"></i>更多
+            </span>
+            <el-dropdown-menu slot="dropdown">
+              <el-dropdown-item command="handleRun" icon="el-icon-caret-right"
+                v-hasPermi="['monitor:job:changeStatus']">执行一次</el-dropdown-item>
+              <el-dropdown-item command="handleView" icon="el-icon-view"
+                v-hasPermi="['monitor:job:query']">任务详细</el-dropdown-item>
+              <el-dropdown-item command="handleJobLog" icon="el-icon-s-operation"
+                v-hasPermi="['monitor:job:query']">调度日志</el-dropdown-item>
+            </el-dropdown-menu>
+          </el-dropdown>
         </template>
       </el-table-column>
     </el-table>
@@ -385,6 +398,22 @@ export default {
       this.single = selection.length != 1;
       this.multiple = !selection.length;
     },
+    // 更多操作触发
+    handleCommand(command, row) {
+      switch (command) {
+        case "handleRun":
+          this.handleRun(row);
+          break;
+        case "handleView":
+          this.handleView(row);
+          break;
+        case "handleJobLog":
+          this.handleJobLog(row);
+          break;
+        default:
+          break;
+      }
+    },
     // 任务状态修改
     handleStatusChange(row) {
       let text = row.status === "0" ? "启用" : "停用";
@@ -420,8 +449,9 @@ export default {
       });
     },
     /** 任务日志列表查询 */
-    handleJobLog() {
-      this.$router.push("/job/log");
+    handleJobLog(row) {
+      const jobId = row.jobId || 0;
+      this.$router.push({ path: '/job/log', query: { jobId: jobId } })
     },
     /** 新增按钮操作 */
     handleAdd() {
