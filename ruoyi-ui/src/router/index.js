@@ -5,8 +5,6 @@ Vue.use(Router)
 
 /* Layout */
 import Layout from '@/layout'
-import ParentView from '@/components/ParentView';
-import InnerLink from '@/layout/components/InnerLink'
 
 /**
  * Note: 路由配置项
