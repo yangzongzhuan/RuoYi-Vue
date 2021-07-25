@@ -173,7 +173,7 @@ public class SysMenuServiceImpl implements ISysMenuService
             }
             else if (menu.getParentId().intValue() == 0 && isInnerLink(menu))
             {
-                router.setMeta(null);
+                router.setMeta(new MetaVo(menu.getMenuName(), menu.getIcon()));
                 router.setPath("/inner");
                 List<RouterVo> childrenList = new ArrayList<RouterVo>();
                 RouterVo children = new RouterVo();
