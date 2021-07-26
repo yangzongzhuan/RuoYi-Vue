@@ -229,7 +229,7 @@ export default {
     } else {
       this.getList();
     }
-    this.getDicts("sys_job_status").then(response => {
+    this.getDicts("sys_common_status").then(response => {
       this.statusOptions = response.data;
     });
     this.getDicts("sys_job_group").then(response => {
