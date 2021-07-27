@@ -319,7 +319,7 @@ export default {
     /** 修改按钮操作 */
     handleEditTable(row) {
       const tableId = row.tableId || this.ids[0];
-      this.$router.push("/gen/edit/" + tableId);
+      this.$router.push("/tool/gen-edit/index/" + tableId);
     },
     /** 删除按钮操作 */
     handleDelete(row) {
