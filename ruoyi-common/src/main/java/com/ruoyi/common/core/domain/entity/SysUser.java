@@ -201,7 +201,7 @@ public class SysUser extends BaseEntity
         this.avatar = avatar;
     }
 
-	@JsonIgnore
+    @JsonIgnore
     @JsonProperty
     public String getPassword()
     {
