@@ -18,6 +18,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import javax.servlet.http.HttpServletResponse;
+import org.apache.poi.ooxml.POIXMLDocumentPart;
 import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
@@ -32,15 +34,23 @@ import org.apache.poi.ss.usermodel.FillPatternType;
 import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.ss.usermodel.HorizontalAlignment;
 import org.apache.poi.ss.usermodel.IndexedColors;
+import org.apache.poi.ss.usermodel.PictureData;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.VerticalAlignment;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.apache.poi.ss.util.CellRangeAddressList;
+import org.apache.poi.util.IOUtils;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.apache.poi.xssf.usermodel.XSSFClientAnchor;
 import org.apache.poi.xssf.usermodel.XSSFDataValidation;
+import org.apache.poi.xssf.usermodel.XSSFDrawing;
+import org.apache.poi.xssf.usermodel.XSSFPicture;
+import org.apache.poi.xssf.usermodel.XSSFShape;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.openxmlformats.schemas.drawingml.x2006.spreadsheetDrawing.CTMarker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.ruoyi.common.annotation.Excel;
@@ -55,6 +65,7 @@ import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.common.utils.DictUtils;
 import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.common.utils.file.FileTypeUtils;
+import com.ruoyi.common.utils.file.FileUtils;
 import com.ruoyi.common.utils.file.ImageUtils;
 import com.ruoyi.common.utils.reflect.ReflectUtils;
 
@@ -116,12 +127,12 @@ public class ExcelUtil<T>
      * 统计列表
      */
     private Map<Integer, Double> statistics = new HashMap<Integer, Double>();
-    
+
     /**
      * 数字格式
      */
     private static final DecimalFormat DOUBLE_FORMAT = new DecimalFormat("######0.00");
-    
+
     /**
      * 实体对象
      */
@@ -168,24 +179,15 @@ public class ExcelUtil<T>
         this.type = Type.IMPORT;
         this.wb = WorkbookFactory.create(is);
         List<T> list = new ArrayList<T>();
-        Sheet sheet = null;
-        if (StringUtils.isNotEmpty(sheetName))
-        {
-            // 如果指定sheet名,则取指定sheet中的内容.
-            sheet = wb.getSheet(sheetName);
-        }
-        else
-        {
-            // 如果传入的sheet名不存在则默认指向第1个sheet.
-            sheet = wb.getSheetAt(0);
-        }
-
+        // 如果指定sheet名,则取指定sheet中的内容 否则默认指向第1个sheet
+        Sheet sheet = StringUtils.isNotEmpty(sheetName) ? wb.getSheet(sheetName) : wb.getSheetAt(0);
         if (sheet == null)
         {
             throw new IOException("文件sheet不存在");
         }
-
-        int rows = sheet.getPhysicalNumberOfRows();
+        Map<String, PictureData> pictures = getSheetPictrues((XSSFSheet) sheet, (XSSFWorkbook) wb);
+        // 获取最后一个非空行的行下标，比如总行数为n，则返回的为n-1
+        int rows = sheet.getLastRowNum();
 
         if (rows > 0)
         {
@@ -225,11 +227,12 @@ public class ExcelUtil<T>
                     }
                 }
             }
-            for (int i = 1; i < rows; i++)
+            for (int i = 1; i <= rows; i++)
             {
                 // 从第2行开始取数据,默认第一行是表头.
                 Row row = sheet.getRow(i);
-                if(row == null)
+                // 判断当前行是否是空行
+                if (isRowEmpty(row))
                 {
                     continue;
                 }
@@ -315,6 +318,20 @@ public class ExcelUtil<T>
                         {
                             val = reverseDictByExp(Convert.toStr(val), attr.dictType(), attr.separator());
                         }
+                        else if (ColumnType.IMAGE == attr.cellType())
+                        {
+                            if (StringUtils.isNull(pictures))
+                            {
+                                val = "";
+                            }
+                            PictureData image = pictures.get(row.getRowNum() + "_" + entry.getKey());
+                            if (image == null)
+                            {
+                                val = "";
+                            }
+                            byte[] data = image.getData();
+                            val = FileUtils.writeImportBytes(data);
+                        }
                         ReflectUtils.invokeSetter(entity, propertyName, val);
                     }
                 }
@@ -340,6 +357,23 @@ public class ExcelUtil<T>
     /**
      * 对list数据源将其里面的数据导入到excel表单
      * 
+     * @param response 返回数据
+     * @param list 导出数据集合
+     * @param sheetName 工作表的名称
+     * @return 结果
+     * @throws IOException
+     */
+    public void exportExcel(HttpServletResponse response, List<T> list, String sheetName) throws IOException
+    {
+        response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+        response.setCharacterEncoding("utf-8");
+        this.init(list, sheetName, Type.EXPORT);
+        exportExcel(response.getOutputStream());
+    }
+
+    /**
+     * 对list数据源将其里面的数据导入到excel表单
+     * 
      * @param sheetName 工作表的名称
      * @return 结果
      */
@@ -352,6 +386,43 @@ public class ExcelUtil<T>
     /**
      * 对list数据源将其里面的数据导入到excel表单
      * 
+     * @param sheetName 工作表的名称
+     * @return 结果
+     */
+    public void importTemplateExcel(HttpServletResponse response, String sheetName) throws IOException
+    {
+        response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+        response.setCharacterEncoding("utf-8");
+        this.init(null, sheetName, Type.IMPORT);
+        exportExcel(response.getOutputStream());
+    }
+
+    /**
+     * 对list数据源将其里面的数据导入到excel表单
+     * 
+     * @return 结果
+     */
+    public void exportExcel(OutputStream out)
+    {
+        try
+        {
+            writeSheet();
+            wb.write(out);
+        }
+        catch (Exception e)
+        {
+            log.error("导出Excel异常{}", e.getMessage());
+        }
+        finally
+        {
+            IOUtils.closeQuietly(wb);
+            IOUtils.closeQuietly(out);
+        }
+    }
+
+    /**
+     * 对list数据源将其里面的数据导入到excel表单
+     * 
      * @return 结果
      */
     public AjaxResult exportExcel()
@@ -359,27 +430,7 @@ public class ExcelUtil<T>
         OutputStream out = null;
         try
         {
-            // 取出一共有多少个sheet.
-            double sheetNo = Math.ceil(list.size() / sheetSize);
-            for (int index = 0; index <= sheetNo; index++)
-            {
-                createSheet(sheetNo, index);
-
-                // 产生一行
-                Row row = sheet.createRow(0);
-                int column = 0;
-                // 写入各个字段的列头名称
-                for (Object[] os : fields)
-                {
-                    Excel excel = (Excel) os[1];
-                    this.createCell(excel, row, column++);
-                }
-                if (Type.EXPORT.equals(type))
-                {
-                    fillExcelData(index, row);
-                    addStatisticsRow();
-                }
-            }
+            writeSheet();
             String filename = encodingFilename(sheetName);
             out = new FileOutputStream(getAbsoluteFile(filename));
             wb.write(out);
@@ -392,27 +443,35 @@ public class ExcelUtil<T>
         }
         finally
         {
-            if (wb != null)
+            IOUtils.closeQuietly(wb);
+            IOUtils.closeQuietly(out);
+        }
+    }
+
+    /**
+     * 创建写入数据到Sheet
+     */
+    public void writeSheet()
+    {
+        // 取出一共有多少个sheet.
+        double sheetNo = Math.ceil(list.size() / sheetSize);
+        for (int index = 0; index <= sheetNo; index++)
+        {
+            createSheet(sheetNo, index);
+
+            // 产生一行
+            Row row = sheet.createRow(0);
+            int column = 0;
+            // 写入各个字段的列头名称
+            for (Object[] os : fields)
             {
-                try
-                {
-                    wb.close();
-                }
-                catch (IOException e1)
-                {
-                    e1.printStackTrace();
-                }
+                Excel excel = (Excel) os[1];
+                this.createCell(excel, row, column++);
             }
-            if (out != null)
+            if (Type.EXPORT.equals(type))
             {
-                try
-                {
-                    out.close();
-                }
-                catch (IOException e1)
-                {
-                    e1.printStackTrace();
-                }
+                fillExcelData(index, row);
+                addStatisticsRow();
             }
         }
     }
@@ -484,7 +543,7 @@ public class ExcelUtil<T>
         headerFont.setColor(IndexedColors.WHITE.getIndex());
         style.setFont(headerFont);
         styles.put("header", style);
-        
+
         style = wb.createCellStyle();
         style.setAlignment(HorizontalAlignment.CENTER);
         style.setVerticalAlignment(VerticalAlignment.CENTER);
@@ -548,8 +607,7 @@ public class ExcelUtil<T>
         }
         else if (ColumnType.IMAGE == attr.cellType())
         {
-            ClientAnchor anchor = new XSSFClientAnchor(0, 0, 0, 0, (short) cell.getColumnIndex(), cell.getRow().getRowNum(), (short) (cell.getColumnIndex() + 1),
-                    cell.getRow().getRowNum() + 1);
+            ClientAnchor anchor = new XSSFClientAnchor(0, 0, 0, 0, (short) cell.getColumnIndex(), cell.getRow().getRowNum(), (short) (cell.getColumnIndex() + 1), cell.getRow().getRowNum() + 1);
             String imagePath = Convert.toStr(value);
             if (StringUtils.isNotEmpty(imagePath))
             {
@@ -559,7 +617,7 @@ public class ExcelUtil<T>
             }
         }
     }
-    
+
     /**
      * 获取画布
      */
@@ -802,7 +860,7 @@ public class ExcelUtil<T>
         }
         return StringUtils.stripEnd(propertyString.toString(), separator);
     }
-    
+
     /**
      * 解析字典值
      * 
@@ -828,7 +886,7 @@ public class ExcelUtil<T>
     {
         return DictUtils.getDictValue(dictType, dictLabel, separator);
     }
-    
+
     /**
      * 合计统计信息
      */
@@ -859,13 +917,12 @@ public class ExcelUtil<T>
     {
         if (statistics.size() > 0)
         {
-            Cell cell = null;
             Row row = sheet.createRow(sheet.getLastRowNum() + 1);
             Set<Integer> keys = statistics.keySet();
-            cell = row.createCell(0);
+            Cell cell = row.createCell(0);
             cell.setCellStyle(styles.get("total"));
             cell.setCellValue("合计");
-            
+
             for (Integer key : keys)
             {
                 cell = row.createCell(key);
@@ -983,7 +1040,7 @@ public class ExcelUtil<T>
         this.fields = this.fields.stream().sorted(Comparator.comparing(objects -> ((Excel) objects[1]).sort())).collect(Collectors.toList());
         this.maxHeight = getRowHeight();
     }
-    
+
     /**
      * 根据注解获取最大行高
      */
@@ -1096,5 +1153,60 @@ public class ExcelUtil<T>
             return val;
         }
         return val;
+    }
+
+    /**
+     * 判断是否是空行
+     * 
+     * @param row 判断的行
+     * @return
+     */
+    private boolean isRowEmpty(Row row)
+    {
+        if (row == null)
+        {
+            return true;
+        }
+        for (int i = row.getFirstCellNum(); i < row.getLastCellNum(); i++)
+        {
+            Cell cell = row.getCell(i);
+            if (cell != null && cell.getCellType() != CellType.BLANK)
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * 获取Excel图片
+     *
+     * @param sheet 当前sheet对象
+     * @param workbook 工作簿对象
+     * @return Map key:图片单元格索引（1_1）String，value:图片流PictureData
+     */
+    public static Map<String, PictureData> getSheetPictrues(XSSFSheet sheet, XSSFWorkbook workbook)
+    {
+        Map<String, PictureData> sheetIndexPicMap = new HashMap<String, PictureData>();
+        for (POIXMLDocumentPart dr : sheet.getRelations())
+        {
+            if (dr instanceof XSSFDrawing)
+            {
+                XSSFDrawing drawing = (XSSFDrawing) dr;
+                List<XSSFShape> shapes = drawing.getShapes();
+                for (XSSFShape shape : shapes)
+                {
+                    if (shape instanceof XSSFPicture)
+                    {
+                        XSSFPicture pic = (XSSFPicture) shape;
+                        XSSFClientAnchor anchor = pic.getPreferredSize();
+                        CTMarker ctMarker = anchor.getFrom();
+                        String picIndex = ctMarker.getRow() + "_" + ctMarker.getCol();
+                        sheetIndexPicMap.put(picIndex, pic.getPictureData());
+                    }
+                }
+            }
+        }
+        return sheetIndexPicMap;
     }
 }
