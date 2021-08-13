@@ -108,7 +108,7 @@
           plain
           icon="el-icon-download"
           size="mini"
-		  :loading="exportLoading"
+          :loading="exportLoading"
           @click="handleExport"
           v-hasPermi="['${moduleName}:${businessName}:export']"
         >导出</el-button>
@@ -573,19 +573,18 @@ export default {
     /** ${subTable.functionName}删除按钮操作 */
     handleDelete${subClassName}() {
       if (this.checked${subClassName}.length == 0) {
-        this.$alert("请先选择要删除的${subTable.functionName}数据", "提示", { confirmButtonText: "确定", });
+        this.msgError("请先选择要删除的${subTable.functionName}数据");
       } else {
-        this.${subclassName}List.splice(this.checked${subClassName}[0].index - 1, 1);
+        const ${subclassName}List = this.${subclassName}List;
+        const checked${subClassName} = this.checked${subClassName};
+        this.${subclassName}List = ${subclassName}List.filter(function(item) {
+          return checked${subClassName}.indexOf(item.index) == -1
+        });
       }
     },
-    /** 单选框选中数据 */
+    /** 复选框选中数据 */
     handle${subClassName}SelectionChange(selection) {
-      if (selection.length > 1) {
-        this.$refs.${subclassName}.clearSelection();
-        this.$refs.${subclassName}.toggleRowSelection(selection.pop());
-      } else {
-        this.checked${subClassName} = selection;
-      }
+      this.checked${subClassName} = selection.map(item => item.index)
     },
 #end
     /** 导出按钮操作 */
