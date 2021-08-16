@@ -11,7 +11,7 @@ import com.ruoyi.common.annotation.DataScope;
 import com.ruoyi.common.constant.UserConstants;
 import com.ruoyi.common.core.domain.entity.SysRole;
 import com.ruoyi.common.core.domain.entity.SysUser;
-import com.ruoyi.common.exception.CustomException;
+import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.system.domain.SysPost;
@@ -223,7 +223,7 @@ public class SysUserServiceImpl implements ISysUserService
     {
         if (StringUtils.isNotNull(user.getUserId()) && user.isAdmin())
         {
-            throw new CustomException("不允许操作超级管理员用户");
+            throw new ServiceException("不允许操作超级管理员用户");
         }
     }
 
@@ -485,7 +485,7 @@ public class SysUserServiceImpl implements ISysUserService
     {
         if (StringUtils.isNull(userList) || userList.size() == 0)
         {
-            throw new CustomException("导入用户数据不能为空！");
+            throw new ServiceException("导入用户数据不能为空！");
         }
         int successNum = 0;
         int failureNum = 0;
@@ -530,7 +530,7 @@ public class SysUserServiceImpl implements ISysUserService
         if (failureNum > 0)
         {
             failureMsg.insert(0, "很抱歉，导入失败！共 " + failureNum + " 条数据格式不正确，错误如下：");
-            throw new CustomException(failureMsg.toString());
+            throw new ServiceException(failureMsg.toString());
         }
         else
         {

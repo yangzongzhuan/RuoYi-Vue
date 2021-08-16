@@ -1,4 +1,4 @@
-package com.ruoyi.common.exception;
+package com.ruoyi.common.exception.base;
 
 import com.ruoyi.common.utils.MessageUtils;
 import com.ruoyi.common.utils.StringUtils;
