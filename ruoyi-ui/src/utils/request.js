@@ -29,9 +29,9 @@ service.interceptors.request.use(config => {
         if (typeof value === 'object') {
           for (const key of Object.keys(value)) {
             if (value[key] !== null && typeof (value[key]) !== 'undefined') {
-              let params = propName + '[' + key + ']'
-              let subPart = encodeURIComponent(params) + '='
-              url += subPart + encodeURIComponent(value[key]) + '&'
+              let params = propName + '[' + key + ']';
+              let subPart = encodeURIComponent(params) + '=';
+              url += subPart + encodeURIComponent(value[key]) + '&';
             }
           }
         } else {
