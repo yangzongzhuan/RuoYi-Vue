@@ -8,7 +8,7 @@
         <tags-view v-if="needTagsView" />
       </div>
       <app-main />
-      <right-panel v-if="showSettings">
+      <right-panel>
         <settings />
       </right-panel>
     </div>
@@ -39,7 +39,6 @@ export default {
       sideTheme: state => state.settings.sideTheme,
       sidebar: state => state.app.sidebar,
       device: state => state.app.device,
-      showSettings: state => state.settings.showSettings,
       needTagsView: state => state.settings.tagsView,
       fixedHeader: state => state.settings.fixedHeader
     }),
