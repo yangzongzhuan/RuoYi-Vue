@@ -31,12 +31,12 @@ export default {
       type: Array,
       default: null,
     },
-    value: [String, Array],
+    value: [Number, String, Array],
   },
   computed: {
     values() {
-      if (this.value) {
-        return Array.isArray(this.value) ? this.value : [this.value];
+      if (this.value !== null && typeof this.value !== 'undefined') {
+        return Array.isArray(this.value) ? this.value : [String(this.value)];
       } else {
         return [];
       }
