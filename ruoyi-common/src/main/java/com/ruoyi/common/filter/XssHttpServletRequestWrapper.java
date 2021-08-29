@@ -80,7 +80,8 @@ public class XssHttpServletRequestWrapper extends HttpServletRequestWrapper
             }
 
             @Override
-            public int available() throws IOException {
+            public int available() throws IOException
+            {
                 return jsonBytes.length;
             }
 
