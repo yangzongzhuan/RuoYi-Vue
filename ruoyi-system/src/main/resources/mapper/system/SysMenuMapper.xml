@@ -61,13 +61,13 @@
 		left join sys_role ro on ur.role_id = ro.role_id
 		where ur.user_id = #{params.userId}
 		<if test="menuName != null and menuName != ''">
-            AND menu_name like concat('%', #{menuName}, '%')
+            AND m.menu_name like concat('%', #{menuName}, '%')
 		</if>
 		<if test="visible != null and visible != ''">
-            AND visible = #{visible}
+            AND m.visible = #{visible}
 		</if>
 		<if test="status != null and status != ''">
-            AND status = #{status}
+            AND m.status = #{status}
 		</if>
 		order by m.parent_id, m.order_num
 	</select>
