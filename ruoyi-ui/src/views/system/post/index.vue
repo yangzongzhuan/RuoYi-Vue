@@ -88,7 +88,11 @@
       <el-table-column label="岗位编码" align="center" prop="postCode" />
       <el-table-column label="岗位名称" align="center" prop="postName" />
       <el-table-column label="岗位排序" align="center" prop="postSort" />
-      <el-table-column label="状态" align="center" prop="status" :formatter="statusFormat" />
+      <el-table-column label="状态" align="center" prop="status">
+        <template slot-scope="scope">
+          <dict-tag :options="statusOptions" :value="scope.row.status"/>
+        </template>
+      </el-table-column>
       <el-table-column label="创建时间" align="center" prop="createTime" width="180">
         <template slot-scope="scope">
           <span>{{ parseTime(scope.row.createTime) }}</span>
@@ -113,7 +117,7 @@
         </template>
       </el-table-column>
     </el-table>
-    
+
     <pagination
       v-show="total>0"
       :total="total"
@@ -223,10 +227,6 @@ export default {
         this.total = response.total;
         this.loading = false;
       });
-    },
-    // 岗位状态字典翻译
-    statusFormat(row, column) {
-      return this.selectDictLabel(this.statusOptions, row.status);
     },
     // 取消按钮
     cancel() {

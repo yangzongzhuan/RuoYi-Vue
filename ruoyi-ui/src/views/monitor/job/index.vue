@@ -97,7 +97,11 @@
       <el-table-column type="selection" width="55" align="center" />
       <el-table-column label="任务编号" align="center" prop="jobId" />
       <el-table-column label="任务名称" align="center" prop="jobName" :show-overflow-tooltip="true" />
-      <el-table-column label="任务组名" align="center" prop="jobGroup" :formatter="jobGroupFormat" />
+      <el-table-column label="任务组名" align="center" prop="jobGroup">
+        <template slot-scope="scope">
+          <dict-tag :options="jobGroupOptions" :value="scope.row.jobGroup"/>
+        </template>
+      </el-table-column>
       <el-table-column label="调用目标字符串" align="center" prop="invokeTarget" :show-overflow-tooltip="true" />
       <el-table-column label="cron执行表达式" align="center" prop="cronExpression" :show-overflow-tooltip="true" />
       <el-table-column label="状态" align="center">
@@ -358,10 +362,6 @@ export default {
     // 任务组名字典翻译
     jobGroupFormat(row, column) {
       return this.selectDictLabel(this.jobGroupOptions, row.jobGroup);
-    },
-    // 状态字典翻译
-    statusFormat(row, column) {
-      return this.selectDictLabel(this.statusOptions, row.status);
     },
     // 取消按钮
     cancel() {
