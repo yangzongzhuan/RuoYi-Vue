@@ -106,7 +106,11 @@
         </template>
       </el-table-column>
 #elseif($column.list && "" != $column.dictType)
-      <el-table-column label="${comment}" align="center" prop="${javaField}" :formatter="${javaField}Format" />
+      <el-table-column label="${comment}" align="center" prop="${javaField}">
+        <template slot-scope="scope">
+          <dict-tag :options="${javaField}Options" :value="scope.row.${javaField}"/>
+        </template>
+      </el-table-column>
 #elseif($column.list && "" != $javaField)
 #if(${foreach.index} == 1)
       <el-table-column label="${comment}" prop="${javaField}" />
@@ -378,20 +382,6 @@ export default {
         this.${businessName}Options.push(data);
       });
     },
-#foreach ($column in $columns)
-#if(${column.dictType} != '')
-#set($parentheseIndex=$column.columnComment.indexOf("（"))
-#if($parentheseIndex != -1)
-#set($comment=$column.columnComment.substring(0, $parentheseIndex))
-#else
-#set($comment=$column.columnComment)
-#end
-    // $comment字典翻译
-    ${column.javaField}Format(row, column) {
-      return this.selectDictLabel#if($column.htmlType == "checkbox")s#end(this.${column.javaField}Options, row.${column.javaField});
-    },
-#end
-#end
     // 取消按钮
     cancel() {
       this.open = false;
