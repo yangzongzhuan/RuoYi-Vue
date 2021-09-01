@@ -112,7 +112,11 @@
       <el-table-column label="参数名称" align="center" prop="configName" :show-overflow-tooltip="true" />
       <el-table-column label="参数键名" align="center" prop="configKey" :show-overflow-tooltip="true" />
       <el-table-column label="参数键值" align="center" prop="configValue" />
-      <el-table-column label="系统内置" align="center" prop="configType" :formatter="typeFormat" />
+      <el-table-column label="系统内置" align="center" prop="configType">
+        <template slot-scope="scope">
+          <dict-tag :options="typeOptions" :value="scope.row.configType"/>
+        </template>
+      </el-table-column>
       <el-table-column label="备注" align="center" prop="remark" :show-overflow-tooltip="true" />
       <el-table-column label="创建时间" align="center" prop="createTime" width="180">
         <template slot-scope="scope">
@@ -251,10 +255,6 @@ export default {
           this.loading = false;
         }
       );
-    },
-    // 参数系统内置字典翻译
-    typeFormat(row, column) {
-      return this.selectDictLabel(this.typeOptions, row.configType);
     },
     // 取消按钮
     cancel() {
