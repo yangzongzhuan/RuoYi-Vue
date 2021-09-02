@@ -57,7 +57,8 @@ public class BaseController
         if (StringUtils.isNotNull(pageNum) && StringUtils.isNotNull(pageSize))
         {
             String orderBy = SqlUtil.escapeOrderBySql(pageDomain.getOrderBy());
-            PageHelper.startPage(pageNum, pageSize, orderBy);
+            Boolean reasonable = pageDomain.getReasonable();
+            PageHelper.startPage(pageNum, pageSize, orderBy).setReasonable(reasonable);
         }
     }
 

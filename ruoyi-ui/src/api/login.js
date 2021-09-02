@@ -48,6 +48,6 @@ export function getCodeImg() {
   return request({
     url: '/captchaImage',
     method: 'get',
-	timeout: 20000
+    timeout: 20000
   })
 }
