@@ -219,7 +219,6 @@ export default {
       queryParams: {
         pageNum: 1,
         pageSize: 10,
-        reasonable: true,
         configName: undefined,
         configKey: undefined,
         configType: undefined

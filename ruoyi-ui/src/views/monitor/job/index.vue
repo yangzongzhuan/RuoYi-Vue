@@ -320,7 +320,6 @@ export default {
       queryParams: {
         pageNum: 1,
         pageSize: 10,
-        reasonable: true,
         jobName: undefined,
         jobGroup: undefined,
         status: undefined

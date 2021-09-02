@@ -22,7 +22,7 @@ public class PageDomain
     private String isAsc = "asc";
 
     /** 分页参数合理化 */
-    private Boolean reasonable = false;
+    private Boolean reasonable = true;
 
     public String getOrderBy()
     {
@@ -87,6 +87,10 @@ public class PageDomain
 
     public Boolean getReasonable()
     {
+        if (StringUtils.isNull(reasonable))
+        {
+            return Boolean.TRUE;
+        }
         return reasonable;
     }
 

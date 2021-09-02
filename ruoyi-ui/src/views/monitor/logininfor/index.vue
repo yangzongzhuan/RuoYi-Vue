@@ -153,7 +153,6 @@ export default {
       queryParams: {
         pageNum: 1,
         pageSize: 10,
-        reasonable: true,
         ipaddr: undefined,
         userName: undefined,
         status: undefined

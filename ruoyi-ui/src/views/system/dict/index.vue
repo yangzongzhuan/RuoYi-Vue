@@ -227,7 +227,6 @@ export default {
       queryParams: {
         pageNum: 1,
         pageSize: 10,
-        reasonable: true,
         dictName: undefined,
         dictType: undefined,
         status: undefined
