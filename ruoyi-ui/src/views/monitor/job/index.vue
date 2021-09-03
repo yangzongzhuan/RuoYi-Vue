@@ -156,7 +156,7 @@
     />
 
     <!-- 添加或修改定时任务对话框 -->
-    <el-dialog :title="title" :visible.sync="open" width="700px" append-to-body>
+    <el-dialog :title="title" :visible.sync="open" width="800px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="120px">
         <el-row>
           <el-col :span="12">
@@ -192,17 +192,16 @@
               <el-input v-model="form.invokeTarget" placeholder="请输入调用目标字符串" />
             </el-form-item>
           </el-col>
-          <el-col :span="12">
+          <el-col :span="24">
             <el-form-item label="cron表达式" prop="cronExpression">
-              <el-input v-model="form.cronExpression" placeholder="请输入cron执行表达式" />
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="是否并发" prop="concurrent">
-              <el-radio-group v-model="form.concurrent" size="small">
-                <el-radio-button label="0">允许</el-radio-button>
-                <el-radio-button label="1">禁止</el-radio-button>
-              </el-radio-group>
+              <el-input v-model="form.cronExpression" placeholder="请输入cron执行表达式">
+                <template slot="append">
+                  <el-button type="primary" @click="handleShowCron">
+                    生成表达式
+                    <i class="el-icon-time el-icon--right"></i>
+                  </el-button>
+                </template>
+              </el-input>
             </el-form-item>
           </el-col>
           <el-col :span="24">
@@ -214,7 +213,15 @@
               </el-radio-group>
             </el-form-item>
           </el-col>
-          <el-col :span="24">
+          <el-col :span="12">
+            <el-form-item label="是否并发" prop="concurrent">
+              <el-radio-group v-model="form.concurrent" size="small">
+                <el-radio-button label="0">允许</el-radio-button>
+                <el-radio-button label="1">禁止</el-radio-button>
+              </el-radio-group>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
             <el-form-item label="状态">
               <el-radio-group v-model="form.status">
                 <el-radio
@@ -231,6 +238,10 @@
         <el-button type="primary" @click="submitForm">确 定</el-button>
         <el-button @click="cancel">取 消</el-button>
       </div>
+    </el-dialog>
+
+    <el-dialog title="Cron表达式生成器" :visible.sync="openCron">
+      <crontab @hide="openCron=false" @fill="crontabFill" :expression="expression"></crontab>
     </el-dialog>
 
     <!-- 任务日志详细 -->
@@ -285,8 +296,10 @@
 
 <script>
 import { listJob, getJob, delJob, addJob, updateJob, exportJob, runJob, changeJobStatus } from "@/api/monitor/job";
+import Crontab from '@/components/Crontab'
 
 export default {
+  components: { Crontab },
   name: "Job",
   data() {
     return {
@@ -312,6 +325,10 @@ export default {
       open: false,
       // 是否显示详细弹出层
       openView: false,
+      // 是否显示Cron表达式弹出层
+      openCron: false,
+      // 传入的表达式
+      expression: "",
       // 任务组名字典
       jobGroupOptions: [],
       // 状态字典
@@ -447,6 +464,15 @@ export default {
         this.form = response.data;
         this.openView = true;
       });
+    },
+    /** cron表达式按钮操作 */
+    handleShowCron() {
+      this.expression = this.form.cronExpression;
+      this.openCron = true;
+    },
+    /** 确定后回传值 */
+    crontabFill(value) {
+      this.form.cronExpression = value;
     },
     /** 任务日志列表查询 */
     handleJobLog(row) {
