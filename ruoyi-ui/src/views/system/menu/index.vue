@@ -37,13 +37,24 @@
           v-hasPermi="['system:menu:add']"
         >新增</el-button>
       </el-col>
+      <el-col :span="1.5">
+        <el-button
+          type="info"
+          plain
+          icon="el-icon-sort"
+          size="mini"
+          @click="toggleExpandAll"
+        >展开/折叠</el-button>
+      </el-col>
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
 
     <el-table
+      v-if="refreshTable"
       v-loading="loading"
       :data="menuList"
       row-key="menuId"
+      :default-expand-all="isExpandAll"
       :tree-props="{children: 'children', hasChildren: 'hasChildren'}"
     >
       <el-table-column prop="menuName" label="菜单名称" :show-overflow-tooltip="true" width="160"></el-table-column>
@@ -275,6 +286,10 @@ export default {
       title: "",
       // 是否显示弹出层
       open: false,
+      // 是否展开，默认全部折叠
+      isExpandAll: false,
+      // 重新渲染表格状态
+      refreshTable: true,
       // 显示状态数据字典
       visibleOptions: [],
       // 菜单状态数据字典
@@ -383,6 +398,14 @@ export default {
       }
       this.open = true;
       this.title = "添加菜单";
+    },
+    /** 展开/折叠操作 */
+    toggleExpandAll() {
+      this.refreshTable = false;
+      this.isExpandAll = !this.isExpandAll;
+      this.$nextTick(() => {
+        this.refreshTable = true;
+      });
     },
     /** 修改按钮操作 */
     handleUpdate(row) {
