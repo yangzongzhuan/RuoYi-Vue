@@ -55,12 +55,12 @@ export default {
 		}
 	},
 	name: 'crontab-year',
-	props: ['check', 'mouth', 'cron'],
+	props: ['check', 'month', 'cron'],
 	methods: {
 		// 单选按钮值变化时
 		radioChange() {
-			if (this.cron.mouth === '*') {
-				this.$emit('update', 'mouth', '0', 'year');
+			if (this.cron.month === '*') {
+				this.$emit('update', 'month', '0', 'year');
 			}
 			if (this.cron.day === '*') {
 				this.$emit('update', 'day', '0', 'year');

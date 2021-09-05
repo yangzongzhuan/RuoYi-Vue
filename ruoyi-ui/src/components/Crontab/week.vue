@@ -71,8 +71,8 @@ export default {
 				this.$emit('update', 'week', '*');
 				this.$emit('update', 'year', '*');
 			} else {
-				if (this.cron.mouth === '*') {
-					this.$emit('update', 'mouth', '0', 'week');
+				if (this.cron.month === '*') {
+					this.$emit('update', 'month', '0', 'week');
 				}
 				if (this.cron.day === '*') {
 					this.$emit('update', 'day', '0', 'week');

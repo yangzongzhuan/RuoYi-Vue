@@ -86,7 +86,7 @@ export default {
 			}
 		},
 		othChange() {
-			//反解析 
+			// 反解析
 			let ins = this.cron.second
 			('反解析 second', ins);
 			if (ins === '*') {
