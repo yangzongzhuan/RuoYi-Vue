@@ -238,7 +238,10 @@ export default {
     const time = this.$route.query.t;
     if (time != null && time != this.uniqueId) {
       this.uniqueId = time;
-      this.resetQuery();
+      this.queryParams.pageNum = Number(this.$route.query.pageNum);
+      this.dateRange = [];
+      this.resetForm("queryForm");
+      this.getList();
     }
   },
   methods: {
@@ -319,7 +322,7 @@ export default {
     /** 修改按钮操作 */
     handleEditTable(row) {
       const tableId = row.tableId || this.ids[0];
-      this.$router.push("/tool/gen-edit/index/" + tableId);
+      this.$router.push({ path: '/tool/gen-edit/index', query: { tableId: tableId, pageNum: this.queryParams.pageNum } });
     },
     /** 删除按钮操作 */
     handleDelete(row) {
