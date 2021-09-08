@@ -206,6 +206,31 @@
             </el-form-item>
           </el-col>
           <el-col :span="12">
+            <el-form-item v-if="form.menuType == 'C'">
+              <el-input v-model="form.query" placeholder="请输入路由参数" maxlength="255" />
+              <span slot="label">
+                <el-tooltip content='访问路由的默认传递参数，如：`{"id": 1, "name": "ry"}`' placement="top">
+                <i class="el-icon-question"></i>
+                </el-tooltip>
+                路由参数
+              </span>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item v-if="form.menuType == 'C'">
+              <span slot="label">
+                <el-tooltip content="选择是则会被`keep-alive`缓存，需要匹配组件的`name`和地址保持一致" placement="top">
+                <i class="el-icon-question"></i>
+                </el-tooltip>
+                是否缓存
+              </span>
+              <el-radio-group v-model="form.isCache">
+                <el-radio label="0">缓存</el-radio>
+                <el-radio label="1">不缓存</el-radio>
+              </el-radio-group>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
             <el-form-item v-if="form.menuType != 'F'">
               <span slot="label">
                 <el-tooltip content="选择隐藏则路由将不会出现在侧边栏，但仍然可以访问" placement="top">
@@ -236,20 +261,6 @@
                   :key="dict.dictValue"
                   :label="dict.dictValue"
                 >{{dict.dictLabel}}</el-radio>
-              </el-radio-group>
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item v-if="form.menuType == 'C'">
-              <span slot="label">
-                <el-tooltip content="选择是则会被`keep-alive`缓存，需要匹配组件的`name`和地址保持一致" placement="top">
-                <i class="el-icon-question"></i>
-                </el-tooltip>
-                是否缓存
-              </span>
-              <el-radio-group v-model="form.isCache">
-                <el-radio label="0">缓存</el-radio>
-                <el-radio label="1">不缓存</el-radio>
               </el-radio-group>
             </el-form-item>
           </el-col>
