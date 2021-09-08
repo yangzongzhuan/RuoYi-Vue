@@ -157,7 +157,7 @@ export default {
     };
   },
   created() {
-    const tableId = this.$route.params && this.$route.params.tableId;
+    const tableId = this.$route.query && this.$route.query.tableId;
     if (tableId) {
       // 获取表详细信息
       getGenTable(tableId).then(res => {
@@ -212,7 +212,7 @@ export default {
     /** 关闭按钮 */
     close() {
       this.$store.dispatch("tagsView/delView", this.$route);
-      this.$router.push({ path: "/tool/gen", query: { t: Date.now()}})
+      this.$router.push({ path: "/tool/gen", query: { t: Date.now(), pageNum: this.$route.query.pageNum } })
     }
   },
   mounted() {
