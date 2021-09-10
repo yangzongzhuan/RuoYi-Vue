@@ -117,8 +117,10 @@ export default {
     // 删除图片
     handleRemove(file, fileList) {
       const findex = this.fileList.map(f => f.name).indexOf(file.name);
-      this.fileList.splice(findex, 1);
-      this.$emit("input", this.listToString(this.fileList));
+      if(findex > -1) {
+        this.fileList.splice(findex, 1);
+        this.$emit("input", this.listToString(this.fileList));
+      }
     },
     // 上传成功回调
     handleUploadSuccess(res) {
