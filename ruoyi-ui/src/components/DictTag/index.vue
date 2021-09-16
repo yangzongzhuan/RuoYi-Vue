@@ -11,6 +11,7 @@
         >
         <el-tag
           v-else
+          :disable-transitions="true"
           :key="item.dictValue"
           :index="index"
           :type="item.listClass == 'primary' ? '' : item.listClass"
