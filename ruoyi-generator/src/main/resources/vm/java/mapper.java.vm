@@ -69,7 +69,7 @@ public interface ${ClassName}Mapper
      * @param ${pkColumn.javaField}s 需要删除的数据主键集合
      * @return 结果
      */
-    public int delete${subClassName}By${pkColumn.capJavaField}s(${pkColumn.javaType}[] ${pkColumn.javaField}s);
+    public int delete${subClassName}By${subTableFkClassName}s(${pkColumn.javaType}[] ${pkColumn.javaField}s);
     
     /**
      * 批量新增${subTable.functionName}
