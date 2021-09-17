@@ -22,10 +22,10 @@
       <el-form-item label="类型" prop="noticeType">
         <el-select v-model="queryParams.noticeType" placeholder="公告类型" clearable size="small">
           <el-option
-            v-for="dict in typeOptions"
-            :key="dict.dictValue"
-            :label="dict.dictLabel"
-            :value="dict.dictValue"
+            v-for="dict in dict.type.sys_notice_type"
+            :key="dict.value"
+            :label="dict.label"
+            :value="dict.value"
           />
         </el-select>
       </el-form-item>
@@ -82,12 +82,12 @@
       />
       <el-table-column label="公告类型" align="center" prop="noticeType" width="100">
         <template slot-scope="scope">
-          <dict-tag :options="typeOptions" :value="scope.row.noticeType"/>
+          <dict-tag :options="dict.type.sys_notice_type" :value="scope.row.noticeType"/>
         </template>
       </el-table-column>
       <el-table-column label="状态" align="center" prop="status" width="100">
         <template slot-scope="scope">
-          <dict-tag :options="statusOptions" :value="scope.row.status"/>
+          <dict-tag :options="dict.type.sys_notice_status" :value="scope.row.status"/>
         </template>
       </el-table-column>
       <el-table-column label="创建者" align="center" prop="createBy" width="100" />
@@ -137,10 +137,10 @@
             <el-form-item label="公告类型" prop="noticeType">
               <el-select v-model="form.noticeType" placeholder="请选择">
                 <el-option
-                  v-for="dict in typeOptions"
-                  :key="dict.dictValue"
-                  :label="dict.dictLabel"
-                  :value="dict.dictValue"
+                  v-for="dict in dict.type.sys_notice_type"
+                  :key="dict.value"
+                  :label="dict.label"
+                  :value="dict.value"
                 ></el-option>
               </el-select>
             </el-form-item>
@@ -149,10 +149,10 @@
             <el-form-item label="状态">
               <el-radio-group v-model="form.status">
                 <el-radio
-                  v-for="dict in statusOptions"
-                  :key="dict.dictValue"
-                  :label="dict.dictValue"
-                >{{dict.dictLabel}}</el-radio>
+                  v-for="dict in dict.type.sys_notice_status"
+                  :key="dict.value"
+                  :label="dict.value"
+                >{{dict.label}}</el-radio>
               </el-radio-group>
             </el-form-item>
           </el-col>
@@ -176,6 +176,7 @@ import { listNotice, getNotice, delNotice, addNotice, updateNotice } from "@/api
 
 export default {
   name: "Notice",
+  dicts: ['sys_notice_status', 'sys_notice_type'],
   data() {
     return {
       // 遮罩层
@@ -196,10 +197,6 @@ export default {
       title: "",
       // 是否显示弹出层
       open: false,
-      // 类型数据字典
-      statusOptions: [],
-      // 状态数据字典
-      typeOptions: [],
       // 查询参数
       queryParams: {
         pageNum: 1,
@@ -223,12 +220,6 @@ export default {
   },
   created() {
     this.getList();
-    this.getDicts("sys_notice_status").then(response => {
-      this.statusOptions = response.data;
-    });
-    this.getDicts("sys_notice_type").then(response => {
-      this.typeOptions = response.data;
-    });
   },
   methods: {
     /** 查询公告列表 */

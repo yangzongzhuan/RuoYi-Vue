@@ -69,7 +69,7 @@
       <el-table-column label="手机" prop="phonenumber" :show-overflow-tooltip="true" />
       <el-table-column label="状态" align="center" prop="status">
         <template slot-scope="scope">
-          <dict-tag :options="statusOptions" :value="scope.row.status"/>
+          <dict-tag :options="dict.type.sys_normal_disable" :value="scope.row.status"/>
         </template>
       </el-table-column>
       <el-table-column label="创建时间" align="center" prop="createTime" width="180">
@@ -107,6 +107,7 @@ import selectUser from "./selectUser";
 
 export default {
   name: "AuthUser",
+  dicts: ['sys_normal_disable'],
   components: { selectUser },
   data() {
     return {
@@ -122,8 +123,6 @@ export default {
       total: 0,
       // 用户表格数据
       userList: [],
-      // 状态数据字典
-      statusOptions: [],
       // 查询参数
       queryParams: {
         pageNum: 1,
@@ -139,9 +138,6 @@ export default {
     if (roleId) {
       this.queryParams.roleId = roleId;
       this.getList();
-      this.getDicts("sys_normal_disable").then(response => {
-        this.statusOptions = response.data;
-      });
     }
   },
   methods: {

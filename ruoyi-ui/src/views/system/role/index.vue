@@ -30,10 +30,10 @@
           style="width: 240px"
         >
           <el-option
-            v-for="dict in statusOptions"
-            :key="dict.dictValue"
-            :label="dict.dictLabel"
-            :value="dict.dictValue"
+            v-for="dict in dict.type.sys_normal_disable"
+            :key="dict.value"
+            :label="dict.label"
+            :value="dict.value"
           />
         </el-select>
       </el-form-item>
@@ -183,10 +183,10 @@
         <el-form-item label="状态">
           <el-radio-group v-model="form.status">
             <el-radio
-              v-for="dict in statusOptions"
-              :key="dict.dictValue"
-              :label="dict.dictValue"
-            >{{dict.dictLabel}}</el-radio>
+              v-for="dict in dict.type.sys_normal_disable"
+              :key="dict.value"
+              :label="dict.value"
+            >{{dict.label}}</el-radio>
           </el-radio-group>
         </el-form-item>
         <el-form-item label="菜单权限">
@@ -265,6 +265,7 @@ import { treeselect as deptTreeselect, roleDeptTreeselect } from "@/api/system/d
 
 export default {
   name: "Role",
+  dicts: ['sys_normal_disable'],
   data() {
     return {
       // 遮罩层
@@ -295,8 +296,6 @@ export default {
       deptNodeAll: false,
       // 日期范围
       dateRange: [],
-      // 状态数据字典
-      statusOptions: [],
       // 数据范围选项
       dataScopeOptions: [
         {
@@ -354,9 +353,6 @@ export default {
   },
   created() {
     this.getList();
-    this.getDicts("sys_normal_disable").then(response => {
-      this.statusOptions = response.data;
-    });
   },
   methods: {
     /** 查询角色列表 */

@@ -13,10 +13,10 @@
       <el-form-item label="状态" prop="status">
         <el-select v-model="queryParams.status" placeholder="菜单状态" clearable size="small">
           <el-option
-            v-for="dict in statusOptions"
-            :key="dict.dictValue"
-            :label="dict.dictLabel"
-            :value="dict.dictValue"
+            v-for="dict in dict.type.sys_normal_disable"
+            :key="dict.value"
+            :label="dict.label"
+            :value="dict.value"
           />
         </el-select>
       </el-form-item>
@@ -68,7 +68,7 @@
       <el-table-column prop="component" label="组件路径" :show-overflow-tooltip="true"></el-table-column>
       <el-table-column prop="status" label="状态" width="80">
         <template slot-scope="scope">
-          <dict-tag :options="statusOptions" :value="scope.row.status"/>
+          <dict-tag :options="dict.type.sys_normal_disable" :value="scope.row.status"/>
         </template>
       </el-table-column>
       <el-table-column label="创建时间" align="center" prop="createTime">
@@ -240,10 +240,10 @@
               </span>
               <el-radio-group v-model="form.visible">
                 <el-radio
-                  v-for="dict in visibleOptions"
-                  :key="dict.dictValue"
-                  :label="dict.dictValue"
-                >{{dict.dictLabel}}</el-radio>
+                  v-for="dict in dict.type.sys_show_hide"
+                  :key="dict.value"
+                  :label="dict.value"
+                >{{dict.label}}</el-radio>
               </el-radio-group>
             </el-form-item>
           </el-col>
@@ -257,10 +257,10 @@
               </span>
               <el-radio-group v-model="form.status">
                 <el-radio
-                  v-for="dict in statusOptions"
-                  :key="dict.dictValue"
-                  :label="dict.dictValue"
-                >{{dict.dictLabel}}</el-radio>
+                  v-for="dict in dict.type.sys_normal_disable"
+                  :key="dict.value"
+                  :label="dict.value"
+                >{{dict.label}}</el-radio>
               </el-radio-group>
             </el-form-item>
           </el-col>
@@ -282,6 +282,7 @@ import IconSelect from "@/components/IconSelect";
 
 export default {
   name: "Menu",
+  dicts: ['sys_show_hide', 'sys_normal_disable'],
   components: { Treeselect, IconSelect },
   data() {
     return {
@@ -301,10 +302,6 @@ export default {
       isExpandAll: false,
       // 重新渲染表格状态
       refreshTable: true,
-      // 显示状态数据字典
-      visibleOptions: [],
-      // 菜单状态数据字典
-      statusOptions: [],
       // 查询参数
       queryParams: {
         menuName: undefined,
@@ -328,12 +325,6 @@ export default {
   },
   created() {
     this.getList();
-    this.getDicts("sys_show_hide").then(response => {
-      this.visibleOptions = response.data;
-    });
-    this.getDicts("sys_normal_disable").then(response => {
-      this.statusOptions = response.data;
-    });
   },
   methods: {
     // 选择图标

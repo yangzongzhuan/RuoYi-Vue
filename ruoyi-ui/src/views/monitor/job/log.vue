@@ -20,10 +20,10 @@
           style="width: 240px"
         >
           <el-option
-            v-for="dict in jobGroupOptions"
-            :key="dict.dictValue"
-            :label="dict.dictLabel"
-            :value="dict.dictValue"
+            v-for="dict in dict.type.sys_job_group"
+            :key="dict.value"
+            :label="dict.label"
+            :value="dict.value"
           />
         </el-select>
       </el-form-item>
@@ -36,10 +36,10 @@
           style="width: 240px"
         >
           <el-option
-            v-for="dict in statusOptions"
-            :key="dict.dictValue"
-            :label="dict.dictLabel"
-            :value="dict.dictValue"
+            v-for="dict in dict.type.sys_common_status"
+            :key="dict.value"
+            :label="dict.label"
+            :value="dict.value"
           />
         </el-select>
       </el-form-item>
@@ -112,14 +112,14 @@
       <el-table-column label="任务名称" align="center" prop="jobName" :show-overflow-tooltip="true" />
       <el-table-column label="任务组名" align="center" prop="jobGroup" :show-overflow-tooltip="true">
         <template slot-scope="scope">
-          <dict-tag :options="jobGroupOptions" :value="scope.row.jobGroup"/>
+          <dict-tag :options="dict.type.sys_job_group" :value="scope.row.jobGroup"/>
         </template>
       </el-table-column>
       <el-table-column label="调用目标字符串" align="center" prop="invokeTarget" :show-overflow-tooltip="true" />
       <el-table-column label="日志信息" align="center" prop="jobMessage" :show-overflow-tooltip="true" />
       <el-table-column label="执行状态" align="center" prop="status">
         <template slot-scope="scope">
-          <dict-tag :options="statusOptions" :value="scope.row.status"/>
+          <dict-tag :options="dict.type.sys_common_status" :value="scope.row.status"/>
         </template>
       </el-table-column>
       <el-table-column label="执行时间" align="center" prop="createTime" width="180">
@@ -190,6 +190,7 @@ import { listJobLog, delJobLog, exportJobLog, cleanJobLog } from "@/api/monitor/
 
 export default {
   name: "JobLog",
+  dicts: ['sys_common_status', 'sys_job_group'],
   data() {
     return {
       // 遮罩层
@@ -212,10 +213,6 @@ export default {
       dateRange: [],
       // 表单参数
       form: {},
-      // 执行状态字典
-      statusOptions: [],
-      // 任务组名字典
-      jobGroupOptions: [],
       // 查询参数
       queryParams: {
         pageNum: 1,
@@ -237,12 +234,6 @@ export default {
     } else {
       this.getList();
     }
-    this.getDicts("sys_common_status").then(response => {
-      this.statusOptions = response.data;
-    });
-    this.getDicts("sys_job_group").then(response => {
-      this.jobGroupOptions = response.data;
-    });
   },
   methods: {
     /** 查询调度日志列表 */

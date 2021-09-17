@@ -58,6 +58,7 @@ public class VelocityUtils
         velocityContext.put("permissionPrefix", getPermissionPrefix(moduleName, businessName));
         velocityContext.put("columns", genTable.getColumns());
         velocityContext.put("table", genTable);
+        velocityContext.put("dicts", getDicts(genTable));
         setMenuVelocityContext(velocityContext, genTable);
         if (GenConstants.TPL_TREE.equals(tplCategory))
         {
@@ -258,6 +259,27 @@ public class VelocityUtils
             }
         }
         return importList;
+    }
+
+    /**
+     * 根据列类型获取字典组
+     * 
+     * @param genTable 业务表对象
+     * @return 返回字典组
+     */
+    public static String getDicts(GenTable genTable)
+    {
+        List<GenTableColumn> columns = genTable.getColumns();
+        List<String> dicts = new ArrayList<String>();
+        for (GenTableColumn column : columns)
+        {
+            if (!column.isSuperColumn() && StringUtils.isNotEmpty(column.getDictType()) && StringUtils.equalsAny(
+                    column.getHtmlType(), new String[] { GenConstants.HTML_SELECT, GenConstants.HTML_RADIO }))
+            {
+                dicts.add("'" + column.getDictType() + "'");
+            }
+        }
+        return StringUtils.join(dicts, ", ");
     }
 
     /**

@@ -72,8 +72,8 @@ export function addDateRange(params, dateRange, propName) {
 export function selectDictLabel(datas, value) {
 	var actions = [];
 	Object.keys(datas).some((key) => {
-		if (datas[key].dictValue == ('' + value)) {
-			actions.push(datas[key].dictLabel);
+		if (datas[key].value == ('' + value)) {
+			actions.push(datas[key].label);
 			return true;
 		}
 	})
@@ -121,6 +121,22 @@ export function praseStrEmpty(str) {
 	}
 	return str;
 }
+
+// 数据合并
+export function mergeRecursive(source, target) {
+    for (var p in target) {
+        try {
+            if (target[p].constructor == Object) {
+                source[p] = mergeRecursive(source[p], target[p]);
+            } else {
+                source[p] = target[p];
+            }
+        } catch(e) {
+            source[p] = target[p];
+        }
+    }
+    return source;
+};
 
 /**
  * 构造树型结构数据
