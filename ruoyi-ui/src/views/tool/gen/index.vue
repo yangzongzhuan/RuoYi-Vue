@@ -301,6 +301,7 @@ export default {
       previewTable(row.tableId).then(response => {
         this.preview.data = response.data;
         this.preview.open = true;
+        this.preview.activeName = "domain.java";
       });
     },
     /** 高亮显示 */
