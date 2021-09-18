@@ -49,16 +49,9 @@ public class RateLimiterAspect
         this.limitScript = limitScript;
     }
 
-    // 配置织入点
-    @Pointcut("@annotation(com.ruoyi.common.annotation.RateLimiter)")
-    public void rateLimiterPointCut()
+    @Before("@annotation(rateLimiter)")
+    public void doBefore(JoinPoint point, RateLimiter rateLimiter) throws Throwable
     {
-    }
-
-    @Before("rateLimiterPointCut()")
-    public void doBefore(JoinPoint point) throws Throwable
-    {
-        RateLimiter rateLimiter = getAnnotationRateLimiter(point);
         String key = rateLimiter.key();
         int time = rateLimiter.time();
         int count = rateLimiter.count();
@@ -82,22 +75,6 @@ public class RateLimiterAspect
         {
             throw new RuntimeException("服务器限流异常，请稍后再试");
         }
-    }
-
-    /**
-     * 是否存在注解，如果存在就获取
-     */
-    private RateLimiter getAnnotationRateLimiter(JoinPoint joinPoint)
-    {
-        Signature signature = joinPoint.getSignature();
-        MethodSignature methodSignature = (MethodSignature) signature;
-        Method method = methodSignature.getMethod();
-
-        if (method != null)
-        {
-            return method.getAnnotation(RateLimiter.class);
-        }
-        return null;
     }
 
     public String getCombineKey(RateLimiter rateLimiter, JoinPoint point)
