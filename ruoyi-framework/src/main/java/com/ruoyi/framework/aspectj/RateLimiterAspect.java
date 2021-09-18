@@ -105,12 +105,12 @@ public class RateLimiterAspect
         StringBuffer stringBuffer = new StringBuffer(rateLimiter.key());
         if (rateLimiter.limitType() == LimitType.IP)
         {
-            stringBuffer.append(IpUtils.getIpAddr(ServletUtils.getRequest()));
+            stringBuffer.append(IpUtils.getIpAddr(ServletUtils.getRequest())).append("-");
         }
         MethodSignature signature = (MethodSignature) point.getSignature();
         Method method = signature.getMethod();
         Class<?> targetClass = method.getDeclaringClass();
-        stringBuffer.append("-").append(targetClass.getName()).append("- ").append(method.getName());
+        stringBuffer.append(targetClass.getName()).append("-").append(method.getName());
         return stringBuffer.toString();
     }
 }
