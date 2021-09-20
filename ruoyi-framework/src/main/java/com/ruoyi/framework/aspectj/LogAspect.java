@@ -167,8 +167,14 @@ public class LogAspect
             {
                 if (StringUtils.isNotNull(o) && !isFilterObject(o))
                 {
-                    Object jsonObj = JSON.toJSON(o);
-                    params += jsonObj.toString() + " ";
+                    try
+                    {
+                        Object jsonObj = JSON.toJSON(o);
+                        params += jsonObj.toString() + " ";
+                    }
+                    catch (Exception e)
+                    {
+                    }
                 }
             }
         }
