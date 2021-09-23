@@ -448,13 +448,13 @@ export default {
 #end
           if (this.form.${pkColumn.javaField} != null) {
             update${BusinessName}(this.form).then(response => {
-              this.$modal.msgSuccess("修改成功");
+              this.#[[$modal]]#.msgSuccess("修改成功");
               this.open = false;
               this.getList();
             });
           } else {
             add${BusinessName}(this.form).then(response => {
-              this.$modal.msgSuccess("新增成功");
+              this.#[[$modal]]#.msgSuccess("新增成功");
               this.open = false;
               this.getList();
             });
@@ -464,11 +464,11 @@ export default {
     },
     /** 删除按钮操作 */
     handleDelete(row) {
-      this.$modal.confirm('是否确认删除${functionName}编号为"' + row.${pkColumn.javaField} + '"的数据项？').then(function() {
+      this.#[[$modal]]#.confirm('是否确认删除${functionName}编号为"' + row.${pkColumn.javaField} + '"的数据项？').then(function() {
         return del${BusinessName}(row.${pkColumn.javaField});
       }).then(() => {
         this.getList();
-        this.$modal.msgSuccess("删除成功");
+        this.#[[$modal]]#.msgSuccess("删除成功");
       }).catch(() => {});
     }
   }
