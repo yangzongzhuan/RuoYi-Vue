@@ -153,7 +153,7 @@
                 </tr>
               </thead>
               <tbody v-if="server.sysFiles">
-                <tr v-for="(sysFile, index) in sysFiles" :key="index">
+                <tr v-for="(sysFile, index) in server.sysFiles" :key="index">
                   <td><div class="cell">{{ sysFile.dirName }}</div></td>
                   <td><div class="cell">{{ sysFile.sysTypeName }}</div></td>
                   <td><div class="cell">{{ sysFile.typeName }}</div></td>
