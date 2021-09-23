@@ -68,12 +68,12 @@ public class RedisConfig extends CachingConfigurerSupport
                 "local time = tonumber(ARGV[2])\n" +
                 "local current = redis.call('get', key);\n" +
                 "if current and tonumber(current) > count then\n" +
-                "    return current;\n" +
+                "    return tonumber(current);\n" +
                 "end\n" +
                 "current = redis.call('incr', key)\n" +
                 "if tonumber(current) == 1 then\n" +
                 "    redis.call('expire', key, time)\n" +
                 "end\n" +
-                "return current;";
+                "return tonumber(current);";
     }
 }
