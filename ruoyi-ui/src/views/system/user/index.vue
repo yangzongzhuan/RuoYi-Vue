@@ -503,17 +503,13 @@ export default {
     // 用户状态修改
     handleStatusChange(row) {
       let text = row.status === "0" ? "启用" : "停用";
-      this.$confirm('确认要"' + text + '""' + row.userName + '"用户吗?', "警告", {
-          confirmButtonText: "确定",
-          cancelButtonText: "取消",
-          type: "warning"
-        }).then(function() {
-          return changeUserStatus(row.userId, row.status);
-        }).then(() => {
-          this.msgSuccess(text + "成功");
-        }).catch(function() {
-          row.status = row.status === "0" ? "1" : "0";
-        });
+      this.$modal.confirm('确认要"' + text + '""' + row.userName + '"用户吗？').then(function() {
+        return changeUserStatus(row.userId, row.status);
+      }).then(() => {
+        this.$modal.msgSuccess(text + "成功");
+      }).catch(function() {
+        row.status = row.status === "0" ? "1" : "0";
+      });
     },
     // 取消按钮
     cancel() {
@@ -606,7 +602,7 @@ export default {
         inputErrorMessage: "用户密码长度必须介于 5 和 20 之间",
       }).then(({ value }) => {
           resetUserPwd(row.userId, value).then(response => {
-            this.msgSuccess("修改成功，新密码是：" + value);
+            this.$modal.msgSuccess("修改成功，新密码是：" + value);
           });
         }).catch(() => {});
     },
@@ -621,13 +617,13 @@ export default {
         if (valid) {
           if (this.form.userId != undefined) {
             updateUser(this.form).then(response => {
-              this.msgSuccess("修改成功");
+              this.$modal.msgSuccess("修改成功");
               this.open = false;
               this.getList();
             });
           } else {
             addUser(this.form).then(response => {
-              this.msgSuccess("新增成功");
+              this.$modal.msgSuccess("新增成功");
               this.open = false;
               this.getList();
             });
@@ -638,31 +634,23 @@ export default {
     /** 删除按钮操作 */
     handleDelete(row) {
       const userIds = row.userId || this.ids;
-      this.$confirm('是否确认删除用户编号为"' + userIds + '"的数据项?', "警告", {
-          confirmButtonText: "确定",
-          cancelButtonText: "取消",
-          type: "warning"
-        }).then(function() {
-          return delUser(userIds);
-        }).then(() => {
-          this.getList();
-          this.msgSuccess("删除成功");
-        }).catch(() => {});
+      this.$modal.confirm('是否确认删除用户编号为"' + userIds + '"的数据项？').then(function() {
+        return delUser(userIds);
+      }).then(() => {
+        this.getList();
+        this.$modal.msgSuccess("删除成功");
+      }).catch(() => {});
     },
     /** 导出按钮操作 */
     handleExport() {
       const queryParams = this.queryParams;
-      this.$confirm('是否确认导出所有用户数据项?', "警告", {
-          confirmButtonText: "确定",
-          cancelButtonText: "取消",
-          type: "warning"
-        }).then(() => {
-          this.exportLoading = true;
-          return exportUser(queryParams);
-        }).then(response => {
-          this.download(response.msg);
-          this.exportLoading = false;
-        }).catch(() => {});
+      this.$modal.confirm('是否确认导出所有用户数据项？').then(() => {
+        this.exportLoading = true;
+        return exportUser(queryParams);
+      }).then(response => {
+        this.download(response.msg);
+        this.exportLoading = false;
+      }).catch(() => {});
     },
     /** 导入按钮操作 */
     handleImport() {

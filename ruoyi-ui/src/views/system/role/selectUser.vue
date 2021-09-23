@@ -124,7 +124,7 @@ export default {
       const roleId = this.queryParams.roleId;
       const userIds = this.userIds.join(",");
       authUserSelectAll({ roleId: roleId, userIds: userIds }).then(res => {
-        this.msgSuccess(res.msg);
+        this.$modal.msgSuccess(res.msg);
         if (res.code === 200) {
           this.visible = false;
           this.$emit("ok");

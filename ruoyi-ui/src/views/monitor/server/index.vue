@@ -153,7 +153,7 @@
                 </tr>
               </thead>
               <tbody v-if="server.sysFiles">
-                <tr v-for="sysFile in server.sysFiles">
+                <tr v-for="(sysFile, index) in sysFiles" :key="index">
                   <td><div class="cell">{{ sysFile.dirName }}</div></td>
                   <td><div class="cell">{{ sysFile.sysTypeName }}</div></td>
                   <td><div class="cell">{{ sysFile.typeName }}</div></td>
@@ -178,8 +178,6 @@ export default {
   name: "Server",
   data() {
     return {
-      // 加载层信息
-      loading: [],
       // 服务器信息
       server: []
     };
@@ -193,17 +191,12 @@ export default {
     getList() {
       getServer().then(response => {
         this.server = response.data;
-        this.loading.close();
+        this.$modal.closeLoading();
       });
     },
     // 打开加载层
     openLoading() {
-      this.loading = this.$loading({
-        lock: true,
-        text: "拼命读取中",
-        spinner: "el-icon-loading",
-        background: "rgba(0, 0, 0, 0.7)"
-      });
+      this.$modal.loading("正在加载服务监控数据，请稍后！");
     }
   }
 };

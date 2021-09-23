@@ -503,13 +503,13 @@ export default {
 #end
           if (this.form.${pkColumn.javaField} != null) {
             update${BusinessName}(this.form).then(response => {
-              this.msgSuccess("修改成功");
+              this.$modal.msgSuccess("修改成功");
               this.open = false;
               this.getList();
             });
           } else {
             add${BusinessName}(this.form).then(response => {
-              this.msgSuccess("新增成功");
+              this.$modal.msgSuccess("新增成功");
               this.open = false;
               this.getList();
             });
@@ -520,16 +520,12 @@ export default {
     /** 删除按钮操作 */
     handleDelete(row) {
       const ${pkColumn.javaField}s = row.${pkColumn.javaField} || this.ids;
-      this.$confirm('是否确认删除${functionName}编号为"' + ${pkColumn.javaField}s + '"的数据项?', "警告", {
-          confirmButtonText: "确定",
-          cancelButtonText: "取消",
-          type: "warning"
-        }).then(function() {
-          return del${BusinessName}(${pkColumn.javaField}s);
-        }).then(() => {
-          this.getList();
-          this.msgSuccess("删除成功");
-        }).catch(() => {});
+      this.$modal.confirm('是否确认删除${functionName}编号为"' + ${pkColumn.javaField}s + '"的数据项？').then(function() {
+        return del${BusinessName}(${pkColumn.javaField}s);
+      }).then(() => {
+        this.getList();
+        this.$modal.msgSuccess("删除成功");
+      }).catch(() => {});
     },
 #if($table.sub)
 	/** ${subTable.functionName}序号 */
@@ -567,17 +563,13 @@ export default {
     /** 导出按钮操作 */
     handleExport() {
       const queryParams = this.queryParams;
-      this.$confirm('是否确认导出所有${functionName}数据项?', "警告", {
-          confirmButtonText: "确定",
-          cancelButtonText: "取消",
-          type: "warning"
-        }).then(() => {
-          this.exportLoading = true;
-          return export${BusinessName}(queryParams);
-        }).then(response => {
-          this.download(response.msg);
-          this.exportLoading = false;
-        }).catch(() => {});
+      this.$modal.confirm('是否确认导出所有${functionName}数据项？').then(() => {
+        this.exportLoading = true;
+        return export${BusinessName}(queryParams);
+      }).then(response => {
+        this.download(response.msg);
+        this.exportLoading = false;
+      }).catch(() => {});
     }
   }
 };

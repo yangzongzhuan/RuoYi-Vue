@@ -104,8 +104,13 @@ export default {
     },
     /** 导入按钮操作 */
     handleImportTable() {
-      importTable({ tables: this.tables.join(",") }).then(res => {
-        this.msgSuccess(res.msg);
+      const tableNames = this.tables.join(",");
+      if (tableNames == "") {
+        this.$modal.msgError("请选择要导入的表");
+        return;
+      }
+      importTable({ tables: tableNames }).then(res => {
+        this.$modal.msgSuccess(res.msg);
         if (res.code === 200) {
           this.visible = false;
           this.$emit("ok");

@@ -413,17 +413,13 @@ export default {
     // 角色状态修改
     handleStatusChange(row) {
       let text = row.status === "0" ? "启用" : "停用";
-      this.$confirm('确认要"' + text + '""' + row.roleName + '"角色吗?', "警告", {
-          confirmButtonText: "确定",
-          cancelButtonText: "取消",
-          type: "warning"
-        }).then(function() {
-          return changeRoleStatus(row.roleId, row.status);
-        }).then(() => {
-          this.msgSuccess(text + "成功");
-        }).catch(function() {
-          row.status = row.status === "0" ? "1" : "0";
-        });
+      this.$modal.confirm('确认要"' + text + '""' + row.roleName + '"角色吗？').then(function() {
+        return changeRoleStatus(row.roleId, row.status);
+      }).then(() => {
+        this.$modal.msgSuccess(text + "成功");
+      }).catch(function() {
+        row.status = row.status === "0" ? "1" : "0";
+      });
     },
     // 取消按钮
     cancel() {
@@ -579,14 +575,14 @@ export default {
           if (this.form.roleId != undefined) {
             this.form.menuIds = this.getMenuAllCheckedKeys();
             updateRole(this.form).then(response => {
-              this.msgSuccess("修改成功");
+              this.$modal.msgSuccess("修改成功");
               this.open = false;
               this.getList();
             });
           } else {
             this.form.menuIds = this.getMenuAllCheckedKeys();
             addRole(this.form).then(response => {
-              this.msgSuccess("新增成功");
+              this.$modal.msgSuccess("新增成功");
               this.open = false;
               this.getList();
             });
@@ -599,7 +595,7 @@ export default {
       if (this.form.roleId != undefined) {
         this.form.deptIds = this.getDeptAllCheckedKeys();
         dataScope(this.form).then(response => {
-          this.msgSuccess("修改成功");
+          this.$modal.msgSuccess("修改成功");
           this.openDataScope = false;
           this.getList();
         });
@@ -608,31 +604,23 @@ export default {
     /** 删除按钮操作 */
     handleDelete(row) {
       const roleIds = row.roleId || this.ids;
-      this.$confirm('是否确认删除角色编号为"' + roleIds + '"的数据项?', "警告", {
-          confirmButtonText: "确定",
-          cancelButtonText: "取消",
-          type: "warning"
-        }).then(function() {
-          return delRole(roleIds);
-        }).then(() => {
-          this.getList();
-          this.msgSuccess("删除成功");
-        }).catch(() => {});
+      this.$modal.confirm('是否确认删除角色编号为"' + roleIds + '"的数据项？').then(function() {
+        return delRole(roleIds);
+      }).then(() => {
+        this.getList();
+        this.$modal.msgSuccess("删除成功");
+      }).catch(() => {});
     },
     /** 导出按钮操作 */
     handleExport() {
       const queryParams = this.queryParams;
-      this.$confirm('是否确认导出所有角色数据项?', "警告", {
-          confirmButtonText: "确定",
-          cancelButtonText: "取消",
-          type: "warning"
-        }).then(() => {
-          this.exportLoading = true;
-          return exportRole(queryParams);
-        }).then(response => {
-          this.download(response.msg);
-          this.exportLoading = false;
-        }).catch(() => {});
+      this.$modal.confirm('是否确认导出所有用户数据项？').then(() => {
+        this.exportLoading = true;
+        return exportRole(queryParams);
+      }).then(response => {
+        this.download(response.msg);
+        this.exportLoading = false;
+      }).catch(() => {});
     }
   }
 };

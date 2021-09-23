@@ -111,16 +111,12 @@ export default {
     },
     /** 强退按钮操作 */
     handleForceLogout(row) {
-      this.$confirm('是否确认强退名称为"' + row.userName + '"的数据项?', "警告", {
-          confirmButtonText: "确定",
-          cancelButtonText: "取消",
-          type: "warning"
-        }).then(function() {
-          return forceLogout(row.tokenId);
-        }).then(() => {
-          this.getList();
-          this.msgSuccess("强退成功");
-        }).catch(() => {});
+      this.$modal.confirm('是否确认强退名称为"' + row.userName + '"的数据项？').then(function() {
+        return forceLogout(row.tokenId);
+      }).then(() => {
+        this.getList();
+        this.$modal.msgSuccess("强退成功");
+      }).catch(() => {});
     }
   }
 };

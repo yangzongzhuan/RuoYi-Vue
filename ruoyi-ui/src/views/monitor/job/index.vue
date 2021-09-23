@@ -240,7 +240,7 @@
       </div>
     </el-dialog>
 
-    <el-dialog title="Cron表达式生成器" :visible.sync="openCron" append-to-body class="scrollbar"  destroy-on-close >
+    <el-dialog title="Cron表达式生成器" :visible.sync="openCron" append-to-body destroy-on-close class="scrollbar">
       <crontab @hide="openCron=false" @fill="crontabFill" :expression="expression"></crontab>
     </el-dialog>
 
@@ -425,29 +425,21 @@ export default {
     // 任务状态修改
     handleStatusChange(row) {
       let text = row.status === "0" ? "启用" : "停用";
-      this.$confirm('确认要"' + text + '""' + row.jobName + '"任务吗?', "警告", {
-          confirmButtonText: "确定",
-          cancelButtonText: "取消",
-          type: "warning"
-        }).then(function() {
-          return changeJobStatus(row.jobId, row.status);
-        }).then(() => {
-          this.msgSuccess(text + "成功");
-        }).catch(function() {
-          row.status = row.status === "0" ? "1" : "0";
-        });
+      this.$modal.confirm('确认要"' + text + '""' + row.jobName + '"任务吗？').then(function() {
+        return changeJobStatus(row.jobId, row.status);
+      }).then(() => {
+        this.$modal.msgSuccess(text + "成功");
+      }).catch(function() {
+        row.status = row.status === "0" ? "1" : "0";
+      });
     },
     /* 立即执行一次 */
     handleRun(row) {
-      this.$confirm('确认要立即执行一次"' + row.jobName + '"任务吗?', "警告", {
-          confirmButtonText: "确定",
-          cancelButtonText: "取消",
-          type: "warning"
-        }).then(function() {
-          return runJob(row.jobId, row.jobGroup);
-        }).then(() => {
-          this.msgSuccess("执行成功");
-        }).catch(() => {});
+      this.$modal.confirm('确认要立即执行一次"' + row.jobName + '"任务吗？').then(function() {
+        return runJob(row.jobId, row.jobGroup);
+      }).then(() => {
+        this.$modal.msgSuccess("执行成功");
+      }).catch(() => {});
     },
     /** 任务详细信息 */
     handleView(row) {
@@ -492,13 +484,13 @@ export default {
         if (valid) {
           if (this.form.jobId != undefined) {
             updateJob(this.form).then(response => {
-              this.msgSuccess("修改成功");
+              this.$modal.msgSuccess("修改成功");
               this.open = false;
               this.getList();
             });
           } else {
             addJob(this.form).then(response => {
-              this.msgSuccess("新增成功");
+              this.$modal.msgSuccess("新增成功");
               this.open = false;
               this.getList();
             });
@@ -509,31 +501,23 @@ export default {
     /** 删除按钮操作 */
     handleDelete(row) {
       const jobIds = row.jobId || this.ids;
-      this.$confirm('是否确认删除定时任务编号为"' + jobIds + '"的数据项?', "警告", {
-          confirmButtonText: "确定",
-          cancelButtonText: "取消",
-          type: "warning"
-        }).then(function() {
-          return delJob(jobIds);
-        }).then(() => {
-          this.getList();
-          this.msgSuccess("删除成功");
-        }).catch(() => {});
+      this.$modal.confirm('是否确认删除定时任务编号为"' + jobIds + '"的数据项？').then(function() {
+        return delJob(jobIds);
+      }).then(() => {
+        this.getList();
+        this.$modal.msgSuccess("删除成功");
+      }).catch(() => {});
     },
     /** 导出按钮操作 */
     handleExport() {
       const queryParams = this.queryParams;
-      this.$confirm("是否确认导出所有定时任务数据项?", "警告", {
-          confirmButtonText: "确定",
-          cancelButtonText: "取消",
-          type: "warning"
-        }).then(() => {
-          this.exportLoading = true;
-          return exportJob(queryParams);
-        }).then(response => {
-          this.download(response.msg);
-          this.exportLoading = false;
-        }).catch(() => {});
+      this.$modal.confirm('是否确认导出所有定时任务数据项？').then(() => {
+        this.exportLoading = true;
+        return exportJob(queryParams);
+      }).then(response => {
+        this.download(response.msg);
+        this.exportLoading = false;
+      }).catch(() => {});
     }
   }
 };

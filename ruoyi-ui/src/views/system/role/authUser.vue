@@ -178,30 +178,22 @@ export default {
     /** 取消授权按钮操作 */
     cancelAuthUser(row) {
       const roleId = this.queryParams.roleId;
-      this.$confirm('确认要取消该用户"' + row.userName + '"角色吗？', "警告", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "warning"
-      }).then(function() {
+      this.$modal.confirm('确认要取消该用户"' + row.userName + '"角色吗？').then(function() {
         return authUserCancel({ userId: row.userId, roleId: roleId });
       }).then(() => {
         this.getList();
-        this.msgSuccess("取消授权成功");
+        this.$modal.msgSuccess("取消授权成功");
       }).catch(() => {});
     },
     /** 批量取消授权按钮操作 */
     cancelAuthUserAll(row) {
       const roleId = this.queryParams.roleId;
       const userIds = this.userIds.join(",");
-      this.$confirm('是否取消选中用户授权数据项?', "警告", {
-          confirmButtonText: "确定",
-          cancelButtonText: "取消",
-          type: "warning"
-      }).then(() => {
-          return authUserCancelAll({ roleId: roleId, userIds: userIds });
+      this.$modal.confirm('是否取消选中用户授权数据项？').then(function() {
+        return authUserCancelAll({ roleId: roleId, userIds: userIds });
       }).then(() => {
         this.getList();
-        this.msgSuccess("取消授权成功");
+        this.$modal.msgSuccess("取消授权成功");
       }).catch(() => {});
     }
   }
