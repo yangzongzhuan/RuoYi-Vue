@@ -546,7 +546,7 @@ export default {
     /** ${subTable.functionName}删除按钮操作 */
     handleDelete${subClassName}() {
       if (this.checked${subClassName}.length == 0) {
-        this.msgError("请先选择要删除的${subTable.functionName}数据");
+        this.#[[$modal]]#.msgError("请先选择要删除的${subTable.functionName}数据");
       } else {
         const ${subclassName}List = this.${subclassName}List;
         const checked${subClassName} = this.checked${subClassName};
