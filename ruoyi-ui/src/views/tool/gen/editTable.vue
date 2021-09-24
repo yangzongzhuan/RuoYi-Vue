@@ -4,8 +4,8 @@
       <el-tab-pane label="基本信息" name="basic">
         <basic-info-form ref="basicInfo" :info="info" />
       </el-tab-pane>
-      <el-tab-pane label="字段信息" name="cloum">
-        <el-table ref="dragTable" :data="cloumns" row-key="columnId" :max-height="tableHeight">
+      <el-tab-pane label="字段信息" name="columnInfo">
+        <el-table ref="dragTable" :data="columns" row-key="columnId" :max-height="tableHeight">
           <el-table-column label="序号" type="index" min-width="5%" class-name="allowDrag" />
           <el-table-column
             label="字段列名"
@@ -141,13 +141,13 @@ export default {
   data() {
     return {
       // 选中选项卡的 name
-      activeName: "cloum",
+      activeName: "columnInfo",
       // 表格的高度
       tableHeight: document.documentElement.scrollHeight - 245 + "px",
       // 表信息
       tables: [],
       // 表列信息
-      cloumns: [],
+      columns: [],
       // 字典信息
       dictOptions: [],
       // 菜单信息
@@ -161,7 +161,7 @@ export default {
     if (tableId) {
       // 获取表详细信息
       getGenTable(tableId).then(res => {
-        this.cloumns = res.data.rows;
+        this.columns = res.data.rows;
         this.info = res.data.info;
         this.tables = res.data.tables;
       });
@@ -184,7 +184,7 @@ export default {
         const validateResult = res.every(item => !!item);
         if (validateResult) {
           const genTable = Object.assign({}, basicForm.model, genForm.model);
-          genTable.columns = this.cloumns;
+          genTable.columns = this.columns;
           genTable.params = {
             treeCode: genTable.treeCode,
             treeName: genTable.treeName,
@@ -220,10 +220,10 @@ export default {
     const sortable = Sortable.create(el, {
       handle: ".allowDrag",
       onEnd: evt => {
-        const targetRow = this.cloumns.splice(evt.oldIndex, 1)[0];
-        this.cloumns.splice(evt.newIndex, 0, targetRow);
-        for (let index in this.cloumns) {
-          this.cloumns[index].sort = parseInt(index) + 1;
+        const targetRow = this.columns.splice(evt.oldIndex, 1)[0];
+        this.columns.splice(evt.newIndex, 0, targetRow);
+        for (let index in this.columns) {
+          this.columns[index].sort = parseInt(index) + 1;
         }
       }
     });
