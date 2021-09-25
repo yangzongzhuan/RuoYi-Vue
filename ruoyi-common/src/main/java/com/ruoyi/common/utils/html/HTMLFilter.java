@@ -387,7 +387,7 @@ public final class HTMLFilter
                         {
                             paramValue = processParamProtocol(paramValue);
                         }
-                        params.append(' ').append(paramName).append("=\"").append(paramValue).append("\"");
+                        params.append(' ').append(paramName).append("=\\\"").append(paramValue).append("\"");
                     }
                 }
 
