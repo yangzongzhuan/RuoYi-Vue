@@ -42,7 +42,7 @@
     "core-js": "3.8.1",
     "echarts": "4.9.0",
     "element-ui": "2.15.5",
-    "file-saver": "2.0.4",
+    "file-saver": "2.0.5",
     "fuse.js": "6.4.3",
     "highlight.js": "9.18.5",
     "js-beautify": "1.13.0",
