@@ -385,7 +385,7 @@ export default {
         this.exportLoading = true;
         return exportData(queryParams);
       }).then(response => {
-        this.download(response.msg);
+        this.$download.name(response.msg);
         this.exportLoading = false;
       }).catch(() => {});
     }

@@ -137,23 +137,13 @@
 
 <script>
 import draggable from 'vuedraggable'
-import { saveAs } from 'file-saver'
 import beautifier from 'js-beautify'
 import ClipboardJS from 'clipboard'
 import render from '@/utils/generator/render'
 import RightPanel from './RightPanel'
-import {
-  inputComponents,
-  selectComponents,
-  layoutComponents,
-  formConf
-} from '@/utils/generator/config'
-import {
-  exportDefault, beautifierConf, isNumberStr, titleCase
-} from '@/utils/index'
-import {
-  makeUpHtml, vueTemplate, vueScript, cssStyle
-} from '@/utils/generator/html'
+import { inputComponents, selectComponents, layoutComponents, formConf } from '@/utils/generator/config'
+import { beautifierConf, titleCase } from '@/utils/index'
+import { makeUpHtml, vueTemplate, vueScript, cssStyle } from '@/utils/generator/html'
 import { makeUpJs } from '@/utils/generator/js'
 import { makeUpCss } from '@/utils/generator/css'
 import drawingDefalut from '@/utils/generator/drawingDefalut'
@@ -161,7 +151,6 @@ import logo from '@/assets/logo/logo.png'
 import CodeTypeDialog from './CodeTypeDialog'
 import DraggableItem from './DraggableItem'
 
-const emptyActiveData = { style: {}, autosize: {} }
 let oldActiveId
 let tempActiveData
 
@@ -287,7 +276,7 @@ export default {
     execDownload(data) {
       const codeStr = this.generateCode()
       const blob = new Blob([codeStr], { type: 'text/plain;charset=utf-8' })
-      saveAs(blob, data.fileName)
+      this.$download.saveAs(blob, data.fileName)
     },
     execCopy(data) {
       document.getElementById('copyNode').click()

@@ -618,7 +618,7 @@ export default {
         this.exportLoading = true;
         return exportRole(queryParams);
       }).then(response => {
-        this.download(response.msg);
+        this.$download.name(response.msg);
         this.exportLoading = false;
       }).catch(() => {});
     }

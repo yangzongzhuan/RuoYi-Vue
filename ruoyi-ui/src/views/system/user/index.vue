@@ -648,7 +648,7 @@ export default {
         this.exportLoading = true;
         return exportUser(queryParams);
       }).then(response => {
-        this.download(response.msg);
+        this.$download.name(response.msg);
         this.exportLoading = false;
       }).catch(() => {});
     },
@@ -660,7 +660,7 @@ export default {
     /** 下载模板操作 */
     importTemplate() {
       importTemplate().then(response => {
-        this.download(response.msg);
+        this.$download.name(response.msg);
       });
     },
     // 文件上传中处理
