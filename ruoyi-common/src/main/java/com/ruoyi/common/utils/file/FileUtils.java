@@ -210,6 +210,8 @@ public class FileUtils
                 .append("utf-8''")
                 .append(percentEncodedFileName);
 
+        response.addHeader("Access-Control-Allow-Origin", "*");
+        response.addHeader("Access-Control-Expose-Headers", "Content-Disposition,download-filename");
         response.setHeader("Content-disposition", contentDispositionValue.toString());
         response.setHeader("download-filename", percentEncodedFileName);
     }
