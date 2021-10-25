@@ -27,5 +27,5 @@ public @interface RepeatSubmit
     /**
      * 提示消息
      */
-    public String message() default "不允许重复提交，请稍后再试";
+    public String message() default "不允许重复提交，请稍候再试";
 }

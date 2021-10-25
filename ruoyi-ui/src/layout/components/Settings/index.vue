@@ -162,7 +162,7 @@ export default {
       this.sideTheme = val;
     },
     saveSetting() {
-      this.$modal.loading("正在保存到本地，请稍后...");
+      this.$modal.loading("正在保存到本地，请稍候...");
       this.$cache.local.set(
         "layout-setting",
         `{
@@ -178,7 +178,7 @@ export default {
       setTimeout(this.$modal.closeLoading(), 1000)
     },
     resetSetting() {
-      this.$modal.loading("正在清除设置缓存并刷新，请稍后...");
+      this.$modal.loading("正在清除设置缓存并刷新，请稍候...");
       this.$cache.local.remove("layout-setting")
       setTimeout("window.location.reload()", 1000)
     }
