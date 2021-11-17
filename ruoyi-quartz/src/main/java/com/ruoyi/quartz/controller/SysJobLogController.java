@@ -1,11 +1,13 @@
 package com.ruoyi.quartz.controller;
 
 import java.util.List;
+import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import com.ruoyi.common.annotation.Log;
@@ -46,12 +48,12 @@ public class SysJobLogController extends BaseController
      */
     @PreAuthorize("@ss.hasPermi('monitor:job:export')")
     @Log(title = "任务调度日志", businessType = BusinessType.EXPORT)
-    @GetMapping("/export")
-    public AjaxResult export(SysJobLog sysJobLog)
+    @PostMapping("/export")
+    public void export(HttpServletResponse response, SysJobLog sysJobLog)
     {
         List<SysJobLog> list = jobLogService.selectJobLogList(sysJobLog);
         ExcelUtil<SysJobLog> util = new ExcelUtil<SysJobLog>(SysJobLog.class);
-        return util.exportExcel(list, "调度日志");
+        util.exportExcel(response, list, "调度日志");
     }
     
     /**

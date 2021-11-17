@@ -1,6 +1,7 @@
 package com.ruoyi.web.controller.system;
 
 import java.util.List;
+import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
@@ -45,12 +46,12 @@ public class SysDictTypeController extends BaseController
 
     @Log(title = "字典类型", businessType = BusinessType.EXPORT)
     @PreAuthorize("@ss.hasPermi('system:dict:export')")
-    @GetMapping("/export")
-    public AjaxResult export(SysDictType dictType)
+    @PostMapping("/export")
+    public void export(HttpServletResponse response, SysDictType dictType)
     {
         List<SysDictType> list = dictTypeService.selectDictTypeList(dictType);
         ExcelUtil<SysDictType> util = new ExcelUtil<SysDictType>(SysDictType.class);
-        return util.exportExcel(list, "字典类型");
+        util.exportExcel(response, list, "字典类型");
     }
 
     /**

@@ -2,6 +2,7 @@ package com.ruoyi.web.controller.system;
 
 import java.util.List;
 import java.util.stream.Collectors;
+import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -62,12 +63,12 @@ public class SysUserController extends BaseController
 
     @Log(title = "用户管理", businessType = BusinessType.EXPORT)
     @PreAuthorize("@ss.hasPermi('system:user:export')")
-    @GetMapping("/export")
-    public AjaxResult export(SysUser user)
+    @PostMapping("/export")
+    public void export(HttpServletResponse response, SysUser user)
     {
         List<SysUser> list = userService.selectUserList(user);
         ExcelUtil<SysUser> util = new ExcelUtil<SysUser>(SysUser.class);
-        return util.exportExcel(list, "用户数据");
+        util.exportExcel(response, list, "用户数据");
     }
 
     @Log(title = "用户管理", businessType = BusinessType.IMPORT)
@@ -82,11 +83,11 @@ public class SysUserController extends BaseController
         return AjaxResult.success(message);
     }
 
-    @GetMapping("/importTemplate")
-    public AjaxResult importTemplate()
+    @PostMapping("/importTemplate")
+    public void importTemplate(HttpServletResponse response)
     {
         ExcelUtil<SysUser> util = new ExcelUtil<SysUser>(SysUser.class);
-        return util.importTemplateExcel("用户数据");
+        util.importTemplateExcel(response, "用户数据");
     }
 
     /**

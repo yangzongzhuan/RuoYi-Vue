@@ -1,6 +1,7 @@
 package com.ruoyi.quartz.controller;
 
 import java.util.List;
+import javax.servlet.http.HttpServletResponse;
 import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -54,12 +55,12 @@ public class SysJobController extends BaseController
      */
     @PreAuthorize("@ss.hasPermi('monitor:job:export')")
     @Log(title = "定时任务", businessType = BusinessType.EXPORT)
-    @GetMapping("/export")
-    public AjaxResult export(SysJob sysJob)
+    @PostMapping("/export")
+    public void export(HttpServletResponse response, SysJob sysJob)
     {
         List<SysJob> list = jobService.selectJobList(sysJob);
         ExcelUtil<SysJob> util = new ExcelUtil<SysJob>(SysJob.class);
-        return util.exportExcel(list, "定时任务");
+        util.exportExcel(response, list, "定时任务");
     }
 
     /**

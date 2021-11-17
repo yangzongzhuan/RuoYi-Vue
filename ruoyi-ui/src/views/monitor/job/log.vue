@@ -89,7 +89,6 @@
           plain
           icon="el-icon-download"
           size="mini"
-          :loading="exportLoading"
           @click="handleExport"
           v-hasPermi="['monitor:job:export']"
         >导出</el-button>
@@ -186,7 +185,7 @@
 
 <script>
 import { getJob} from "@/api/monitor/job";
-import { listJobLog, delJobLog, exportJobLog, cleanJobLog } from "@/api/monitor/jobLog";
+import { listJobLog, delJobLog, cleanJobLog } from "@/api/monitor/jobLog";
 
 export default {
   name: "JobLog",
@@ -195,8 +194,6 @@ export default {
     return {
       // 遮罩层
       loading: true,
-      // 导出遮罩层
-      exportLoading: false,
       // 选中数组
       ids: [],
       // 非多个禁用
@@ -293,14 +290,9 @@ export default {
     },
     /** 导出按钮操作 */
     handleExport() {
-      const queryParams = this.queryParams;
-      this.$modal.confirm('是否确认导出所有调度日志数据项？').then(() => {
-        this.exportLoading = true;
-        return exportJobLog(queryParams);
-      }).then(response => {
-        this.$download.name(response.msg);
-        this.exportLoading = false;
-      }).catch(() => {});
+      this.download('/monitor/jobLog/export', {
+        ...this.queryParams
+      }, `log_${new Date().getTime()}.xlsx`)
     }
   }
 };

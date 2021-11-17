@@ -83,7 +83,6 @@
           plain
           icon="el-icon-download"
           size="mini"
-          :loading="exportLoading"
           @click="handleExport"
           v-hasPermi="['monitor:logininfor:export']"
         >导出</el-button>
@@ -123,7 +122,7 @@
 </template>
 
 <script>
-import { list, delLogininfor, cleanLogininfor, exportLogininfor } from "@/api/monitor/logininfor";
+import { list, delLogininfor, cleanLogininfor } from "@/api/monitor/logininfor";
 
 export default {
   name: "Logininfor",
@@ -132,8 +131,6 @@ export default {
     return {
       // 遮罩层
       loading: true,
-      // 导出遮罩层
-      exportLoading: false,
       // 选中数组
       ids: [],
       // 非多个禁用
@@ -216,14 +213,9 @@ export default {
     },
     /** 导出按钮操作 */
     handleExport() {
-      const queryParams = this.queryParams;
-      this.$modal.confirm('是否确认导出所有操作日志数据项？').then(() => {
-        this.exportLoading = true;
-        return exportLogininfor(queryParams);
-      }).then(response => {
-        this.$download.name(response.msg);
-        this.exportLoading = false;
-      }).catch(() => {});
+      this.download('monitor/logininfor/export', {
+        ...this.queryParams
+      }, `logininfor_${new Date().getTime()}.xlsx`)
     }
   }
 };

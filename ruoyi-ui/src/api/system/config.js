@@ -58,12 +58,3 @@ export function refreshCache() {
     method: 'delete'
   })
 }
-
-// 导出参数
-export function exportConfig(query) {
-  return request({
-    url: '/system/config/export',
-    method: 'get',
-    params: query
-  })
-}

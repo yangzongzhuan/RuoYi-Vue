@@ -108,7 +108,6 @@
           plain
           icon="el-icon-download"
           size="mini"
-          :loading="exportLoading"
           @click="handleExport"
           v-hasPermi="['${moduleName}:${businessName}:export']"
         >导出</el-button>
@@ -313,7 +312,7 @@
 </template>
 
 <script>
-import { list${BusinessName}, get${BusinessName}, del${BusinessName}, add${BusinessName}, update${BusinessName}, export${BusinessName} } from "@/api/${moduleName}/${businessName}";
+import { list${BusinessName}, get${BusinessName}, del${BusinessName}, add${BusinessName}, update${BusinessName} } from "@/api/${moduleName}/${businessName}";
 
 export default {
   name: "${BusinessName}",
@@ -324,8 +323,6 @@ export default {
     return {
       // 遮罩层
       loading: true,
-      // 导出遮罩层
-      exportLoading: false,
       // 选中数组
       ids: [],
 #if($table.sub)
@@ -562,14 +559,9 @@ export default {
 #end
     /** 导出按钮操作 */
     handleExport() {
-      const queryParams = this.queryParams;
-      this.#[[$modal]]#.confirm('是否确认导出所有${functionName}数据项？').then(() => {
-        this.exportLoading = true;
-        return export${BusinessName}(queryParams);
-      }).then(response => {
-        this.#[[$download]]#.name(response.msg);
-        this.exportLoading = false;
-      }).catch(() => {});
+      this.download('${moduleName}/${businessName}/export', {
+        ...this.queryParams
+      }, `${businessName}_#[[${new Date().getTime()}]]#.xlsx`)
     }
   }
 };

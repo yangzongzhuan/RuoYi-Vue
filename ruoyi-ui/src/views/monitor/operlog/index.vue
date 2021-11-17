@@ -99,7 +99,6 @@
           plain
           icon="el-icon-download"
           size="mini"
-          :loading="exportLoading"
           @click="handleExport"
           v-hasPermi="['monitor:operlog:export']"
         >导出</el-button>
@@ -196,7 +195,7 @@
 </template>
 
 <script>
-import { list, delOperlog, cleanOperlog, exportOperlog } from "@/api/monitor/operlog";
+import { list, delOperlog, cleanOperlog } from "@/api/monitor/operlog";
 
 export default {
   name: "Operlog",
@@ -205,8 +204,6 @@ export default {
     return {
       // 遮罩层
       loading: true,
-      // 导出遮罩层
-      exportLoading: false,
       // 选中数组
       ids: [],
       // 非多个禁用
@@ -303,14 +300,9 @@ export default {
     },
     /** 导出按钮操作 */
     handleExport() {
-      const queryParams = this.queryParams;
-      this.$modal.confirm('是否确认导出所有操作日志数据项？').then(() => {
-        this.exportLoading = true;
-        return exportOperlog(queryParams);
-      }).then(response => {
-        this.$download.name(response.msg);
-        this.exportLoading = false;
-      }).catch(() => {});
+      this.download('monitor/operlog/export', {
+        ...this.queryParams
+      }, `operlog_${new Date().getTime()}.xlsx`)
     }
   }
 };

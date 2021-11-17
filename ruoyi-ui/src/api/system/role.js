@@ -65,15 +65,6 @@ export function delRole(roleId) {
   })
 }
 
-// 导出角色
-export function exportRole(query) {
-  return request({
-    url: '/system/role/export',
-    method: 'get',
-    params: query
-  })
-}
-
 // 查询角色已授权用户列表
 export function allocatedUserList(query) {
   return request({

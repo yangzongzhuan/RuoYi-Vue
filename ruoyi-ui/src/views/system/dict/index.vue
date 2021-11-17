@@ -94,7 +94,6 @@
           plain
           icon="el-icon-download"
           size="mini"
-          :loading="exportLoading"
           @click="handleExport"
           v-hasPermi="['system:dict:export']"
         >导出</el-button>
@@ -193,7 +192,7 @@
 </template>
 
 <script>
-import { listType, getType, delType, addType, updateType, exportType, refreshCache } from "@/api/system/dict/type";
+import { listType, getType, delType, addType, updateType, refreshCache } from "@/api/system/dict/type";
 
 export default {
   name: "Dict",
@@ -202,8 +201,6 @@ export default {
     return {
       // 遮罩层
       loading: true,
-      // 导出遮罩层
-      exportLoading: false,
       // 选中数组
       ids: [],
       // 非单个禁用
@@ -338,14 +335,9 @@ export default {
     },
     /** 导出按钮操作 */
     handleExport() {
-      const queryParams = this.queryParams;
-      this.$modal.confirm('是否确认导出所有类型数据项？').then(() => {
-        this.exportLoading = true;
-        return exportType(queryParams);
-      }).then(response => {
-        this.$download.name(response.msg);
-        this.exportLoading = false;
-      }).catch(() => {});
+      this.download('system/dict/type/export', {
+        ...this.queryParams
+      }, `type_${new Date().getTime()}.xlsx`)
     },
     /** 刷新缓存按钮操作 */
     handleRefreshCache() {

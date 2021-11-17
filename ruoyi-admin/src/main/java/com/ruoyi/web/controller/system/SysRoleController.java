@@ -1,6 +1,7 @@
 package com.ruoyi.web.controller.system;
 
 import java.util.List;
+import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
@@ -61,12 +62,12 @@ public class SysRoleController extends BaseController
 
     @Log(title = "角色管理", businessType = BusinessType.EXPORT)
     @PreAuthorize("@ss.hasPermi('system:role:export')")
-    @GetMapping("/export")
-    public AjaxResult export(SysRole role)
+    @PostMapping("/export")
+    public void export(HttpServletResponse response, SysRole role)
     {
         List<SysRole> list = roleService.selectRoleList(role);
         ExcelUtil<SysRole> util = new ExcelUtil<SysRole>(SysRole.class);
-        return util.exportExcel(list, "角色数据");
+        util.exportExcel(response, list, "角色数据");
     }
 
     /**

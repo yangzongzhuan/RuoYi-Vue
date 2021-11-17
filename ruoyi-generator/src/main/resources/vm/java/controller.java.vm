@@ -1,6 +1,7 @@
 package ${packageName}.controller;
 
 import java.util.List;
+import javax.servlet.http.HttpServletResponse;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -61,12 +62,12 @@ public class ${ClassName}Controller extends BaseController
      */
     @PreAuthorize("@ss.hasPermi('${permissionPrefix}:export')")
     @Log(title = "${functionName}", businessType = BusinessType.EXPORT)
-    @GetMapping("/export")
-    public AjaxResult export(${ClassName} ${className})
+    @PostMapping("/export")
+    public void export(HttpServletResponse response, ${ClassName} ${className})
     {
         List<${ClassName}> list = ${className}Service.select${ClassName}List(${className});
         ExcelUtil<${ClassName}> util = new ExcelUtil<${ClassName}>(${ClassName}.class);
-        return util.exportExcel(list, "${functionName}数据");
+        util.exportExcel(response, list, "${functionName}数据");
     }
 
     /**

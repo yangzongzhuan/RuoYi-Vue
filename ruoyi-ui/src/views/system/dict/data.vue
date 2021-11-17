@@ -75,7 +75,6 @@
           plain
           icon="el-icon-download"
           size="mini"
-          :loading="exportLoading"
           @click="handleExport"
           v-hasPermi="['system:dict:export']"
         >导出</el-button>
@@ -183,7 +182,7 @@
 </template>
 
 <script>
-import { listData, getData, delData, addData, updateData, exportData } from "@/api/system/dict/data";
+import { listData, getData, delData, addData, updateData } from "@/api/system/dict/data";
 import { listType, getType } from "@/api/system/dict/type";
 
 export default {
@@ -193,8 +192,6 @@ export default {
     return {
       // 遮罩层
       loading: true,
-      // 导出遮罩层
-      exportLoading: false,
       // 选中数组
       ids: [],
       // 非单个禁用
@@ -380,14 +377,9 @@ export default {
     },
     /** 导出按钮操作 */
     handleExport() {
-      const queryParams = this.queryParams;
-      this.$modal.confirm('是否确认导出所有数据项？').then(() => {
-        this.exportLoading = true;
-        return exportData(queryParams);
-      }).then(response => {
-        this.$download.name(response.msg);
-        this.exportLoading = false;
-      }).catch(() => {});
+      this.download('system/dict/data/export', {
+        ...this.queryParams
+      }, `data_${new Date().getTime()}.xlsx`)
     }
   }
 };

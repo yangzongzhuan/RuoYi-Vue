@@ -44,15 +44,6 @@ export function delUser(userId) {
   })
 }
 
-// 导出用户
-export function exportUser(query) {
-  return request({
-    url: '/system/user/export',
-    method: 'get',
-    params: query
-  })
-}
-
 // 用户密码重置
 export function resetUserPwd(userId, password) {
   const data = {
@@ -115,14 +106,6 @@ export function uploadAvatar(data) {
     url: '/system/user/profile/avatar',
     method: 'post',
     data: data
-  })
-}
-
-// 下载用户导入模板
-export function importTemplate() {
-  return request({
-    url: '/system/user/importTemplate',
-    method: 'get'
   })
 }
 

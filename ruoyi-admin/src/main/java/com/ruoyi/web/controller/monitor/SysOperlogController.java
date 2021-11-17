@@ -1,11 +1,13 @@
 package com.ruoyi.web.controller.monitor;
 
 import java.util.List;
+import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import com.ruoyi.common.annotation.Log;
@@ -40,12 +42,12 @@ public class SysOperlogController extends BaseController
 
     @Log(title = "操作日志", businessType = BusinessType.EXPORT)
     @PreAuthorize("@ss.hasPermi('monitor:operlog:export')")
-    @GetMapping("/export")
-    public AjaxResult export(SysOperLog operLog)
+    @PostMapping("/export")
+    public void export(HttpServletResponse response, SysOperLog operLog)
     {
         List<SysOperLog> list = operLogService.selectOperLogList(operLog);
         ExcelUtil<SysOperLog> util = new ExcelUtil<SysOperLog>(SysOperLog.class);
-        return util.exportExcel(list, "操作日志");
+        util.exportExcel(response, list, "操作日志");
     }
 
     @Log(title = "操作日志", businessType = BusinessType.DELETE)
