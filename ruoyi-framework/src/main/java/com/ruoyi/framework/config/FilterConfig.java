@@ -18,7 +18,6 @@ import com.ruoyi.common.utils.StringUtils;
  * @author ruoyi
  */
 @Configuration
-@ConditionalOnProperty(value = "xss.enabled", havingValue = "true")
 public class FilterConfig
 {
     @Value("${xss.excludes}")
@@ -29,6 +28,7 @@ public class FilterConfig
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
     @Bean
+    @ConditionalOnProperty(value = "xss.enabled", havingValue = "true")
     public FilterRegistrationBean xssFilterRegistration()
     {
         FilterRegistrationBean registration = new FilterRegistrationBean();
