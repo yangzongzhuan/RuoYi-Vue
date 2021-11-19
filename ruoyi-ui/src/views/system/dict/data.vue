@@ -79,6 +79,15 @@
           v-hasPermi="['system:dict:export']"
         >导出</el-button>
       </el-col>
+      <el-col :span="1.5">
+        <el-button
+          type="warning"
+          plain
+          icon="el-icon-close"
+          size="mini"
+          @click="handleClose"
+        >关闭</el-button>
+      </el-col>
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
 
@@ -315,6 +324,11 @@ export default {
     handleQuery() {
       this.queryParams.pageNum = 1;
       this.getList();
+    },
+    // 返回按钮
+    handleClose() {
+      const obj = { path: "/system/dict" };
+      this.$tab.closeOpenPage(obj);
     },
     /** 重置按钮操作 */
     resetQuery() {

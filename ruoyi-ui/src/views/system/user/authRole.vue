@@ -109,8 +109,8 @@ export default {
     },
     /** 关闭按钮 */
     close() {
-      this.$store.dispatch("tagsView/delView", this.$route);
-      this.$router.push({ path: "/system/user" });
+      const obj = { path: "/system/user" };
+      this.$tab.closeOpenPage(obj);
     },
   },
 };

@@ -153,8 +153,8 @@ export default {
     },
     // 返回按钮
     handleClose() {
-      this.$store.dispatch("tagsView/delView", this.$route);
-      this.$router.push({ path: "/system/role" });
+      const obj = { path: "/system/role" };
+      this.$tab.closeOpenPage(obj);
     },
     /** 搜索按钮操作 */
     handleQuery() {

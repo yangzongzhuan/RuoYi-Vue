@@ -245,8 +245,8 @@ export default {
     },
     // 返回按钮
     handleClose() {
-      this.$store.dispatch("tagsView/delView", this.$route);
-      this.$router.push({ path: "/monitor/job" });
+      const obj = { path: "/monitor/job" };
+      this.$tab.closeOpenPage(obj);
     },
     /** 搜索按钮操作 */
     handleQuery() {
