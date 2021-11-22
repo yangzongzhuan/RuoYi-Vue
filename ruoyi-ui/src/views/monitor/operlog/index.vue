@@ -6,8 +6,8 @@
           v-model="queryParams.title"
           placeholder="请输入系统模块"
           clearable
-          style="width: 240px;"
           size="small"
+          style="width: 240px;"
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
@@ -16,8 +16,8 @@
           v-model="queryParams.operName"
           placeholder="请输入操作人员"
           clearable
-          style="width: 240px;"
           size="small"
+          style="width: 240px;"
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>

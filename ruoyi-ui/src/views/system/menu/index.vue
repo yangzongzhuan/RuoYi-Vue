@@ -78,7 +78,8 @@
       </el-table-column>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
-          <el-button size="mini"
+          <el-button 
+            size="mini"
             type="text"
             icon="el-icon-edit"
             @click="handleUpdate(scope.row)"
@@ -126,8 +127,8 @@
               </el-radio-group>
             </el-form-item>
           </el-col>
-          <el-col :span="24">
-            <el-form-item v-if="form.menuType != 'F'" label="菜单图标">
+          <el-col :span="24" v-if="form.menuType != 'F'">
+            <el-form-item label="菜单图标">
               <el-popover
                 placement="bottom-start"
                 width="460"
@@ -158,8 +159,8 @@
               <el-input-number v-model="form.orderNum" controls-position="right" :min="0" />
             </el-form-item>
           </el-col>
-          <el-col :span="12">
-            <el-form-item v-if="form.menuType != 'F'">
+          <el-col :span="12" v-if="form.menuType != 'F'">
+            <el-form-item>
               <span slot="label">
                 <el-tooltip content="选择是外链则路由地址需要以`http(s)://`开头" placement="top">
                 <i class="el-icon-question"></i>
@@ -172,8 +173,8 @@
               </el-radio-group>
             </el-form-item>
           </el-col>
-          <el-col :span="12">
-            <el-form-item v-if="form.menuType != 'F'" prop="path">
+          <el-col :span="12" v-if="form.menuType != 'F'">
+            <el-form-item prop="path">
               <span slot="label">
                 <el-tooltip content="访问的路由地址，如：`user`，如外网地址需内链访问则以`http(s)://`开头" placement="top">
                 <i class="el-icon-question"></i>
@@ -194,8 +195,8 @@
               <el-input v-model="form.component" placeholder="请输入组件路径" />
             </el-form-item>
           </el-col>
-          <el-col :span="12">
-            <el-form-item v-if="form.menuType != 'M'">
+          <el-col :span="12" v-if="form.menuType != 'M'">
+            <el-form-item>
               <el-input v-model="form.perms" placeholder="请输入权限标识" maxlength="100" />
               <span slot="label">
                 <el-tooltip content="控制器中定义的权限字符，如：@PreAuthorize(`@ss.hasPermi('system:user:list')`)" placement="top">
@@ -205,8 +206,8 @@
               </span>
             </el-form-item>
           </el-col>
-          <el-col :span="12">
-            <el-form-item v-if="form.menuType == 'C'">
+          <el-col :span="12" v-if="form.menuType == 'C'">
+            <el-form-item>
               <el-input v-model="form.query" placeholder="请输入路由参数" maxlength="255" />
               <span slot="label">
                 <el-tooltip content='访问路由的默认传递参数，如：`{"id": 1, "name": "ry"}`' placement="top">
@@ -216,8 +217,8 @@
               </span>
             </el-form-item>
           </el-col>
-          <el-col :span="12">
-            <el-form-item v-if="form.menuType == 'C'">
+          <el-col :span="12" v-if="form.menuType == 'C'">
+            <el-form-item>
               <span slot="label">
                 <el-tooltip content="选择是则会被`keep-alive`缓存，需要匹配组件的`name`和地址保持一致" placement="top">
                 <i class="el-icon-question"></i>
@@ -230,8 +231,8 @@
               </el-radio-group>
             </el-form-item>
           </el-col>
-          <el-col :span="12">
-            <el-form-item v-if="form.menuType != 'F'">
+          <el-col :span="12" v-if="form.menuType != 'F'">
+            <el-form-item>
               <span slot="label">
                 <el-tooltip content="选择隐藏则路由将不会出现在侧边栏，但仍然可以访问" placement="top">
                 <i class="el-icon-question"></i>
@@ -247,8 +248,8 @@
               </el-radio-group>
             </el-form-item>
           </el-col>
-          <el-col :span="12">
-            <el-form-item v-if="form.menuType != 'F'">
+          <el-col :span="12" v-if="form.menuType != 'F'">
+            <el-form-item>
               <span slot="label">
                 <el-tooltip content="选择停用则路由将不会出现在侧边栏，也不能被访问" placement="top">
                 <i class="el-icon-question"></i>

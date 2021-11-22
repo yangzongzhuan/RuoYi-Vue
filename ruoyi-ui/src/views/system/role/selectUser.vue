@@ -123,6 +123,10 @@ export default {
     handleSelectUser() {
       const roleId = this.queryParams.roleId;
       const userIds = this.userIds.join(",");
+      if (userIds == "") {
+        this.$modal.msgError("请选择要分配的用户");
+        return;
+      }
       authUserSelectAll({ roleId: roleId, userIds: userIds }).then(res => {
         this.$modal.msgSuccess(res.msg);
         if (res.code === 200) {

@@ -179,8 +179,6 @@ export default {
       isExpandAll: true,
       // 重新渲染表格状态
       refreshTable: true,
-      // 是否展开
-      expand: false,
       // 查询参数
       queryParams: {
         deptName: undefined,
@@ -276,7 +274,7 @@ export default {
       this.open = true;
       this.title = "添加部门";
       listDept().then(response => {
-	        this.deptOptions = this.handleTree(response.data, "deptId");
+        this.deptOptions = this.handleTree(response.data, "deptId");
       });
     },
     /** 展开/折叠操作 */
@@ -296,7 +294,7 @@ export default {
         this.title = "修改部门";
       });
       listDeptExcludeChild(row.deptId).then(response => {
-	        this.deptOptions = this.handleTree(response.data, "deptId");
+        this.deptOptions = this.handleTree(response.data, "deptId");
       });
     },
     /** 提交按钮 */

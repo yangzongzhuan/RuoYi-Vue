@@ -20,8 +20,6 @@ export default {
         path: '/redirect' + path
       })
     })
-
-
   },
   // 关闭当前tab页签，打开新页签
   closeOpenPage(obj) {
@@ -56,7 +54,7 @@ export default {
     return store.dispatch('tagsView/delOthersViews', obj || router.currentRoute);
   },
   // 添加tab页签
-  addPage(title, url) {
+  openPage(title, url) {
     var obj = { path: url, meta: { title: title } }
     store.dispatch('tagsView/addView', obj);
     return router.push(url);

@@ -6,8 +6,8 @@
           v-model="queryParams.ipaddr"
           placeholder="请输入登录地址"
           clearable
+		  size="small"
           style="width: 240px;"
-          size="small"
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
@@ -16,8 +16,8 @@
           v-model="queryParams.userName"
           placeholder="请输入用户名称"
           clearable
+		  size="small"
           style="width: 240px;"
-          size="small"
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
