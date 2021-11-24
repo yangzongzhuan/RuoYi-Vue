@@ -15,7 +15,7 @@ export default {
       responseType: 'blob',
       headers: { 'Authorization': 'Bearer ' + getToken() }
     }).then(async (res) => {
-      const isLogin = await this.blobValidate(res.data);
+      const isLogin = await blobValidate(res.data);
       if (isLogin) {
         const blob = new Blob([res.data])
         this.saveAs(blob, decodeURI(res.headers['download-filename']))
@@ -32,7 +32,7 @@ export default {
       responseType: 'blob',
       headers: { 'Authorization': 'Bearer ' + getToken() }
     }).then(async (res) => {
-      const isLogin = await this.blobValidate(res.data);
+      const isLogin = await blobValidate(res.data);
       if (isLogin) {
         const blob = new Blob([res.data])
         this.saveAs(blob, decodeURI(res.headers['download-filename']))

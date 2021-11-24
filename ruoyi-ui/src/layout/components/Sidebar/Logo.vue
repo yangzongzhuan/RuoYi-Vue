@@ -29,7 +29,7 @@ export default {
     variables() {
       return variables;
     },
-	sideTheme() {
+    sideTheme() {
       return this.$store.state.settings.sideTheme
     }
   },

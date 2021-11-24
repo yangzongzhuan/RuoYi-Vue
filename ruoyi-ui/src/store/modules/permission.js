@@ -1,7 +1,7 @@
 import { constantRoutes } from '@/router'
 import { getRouters } from '@/api/menu'
 import Layout from '@/layout/index'
-import ParentView from '@/components/ParentView';
+import ParentView from '@/components/ParentView'
 import InnerLink from '@/layout/components/InnerLink'
 
 const permission = {
@@ -24,7 +24,7 @@ const permission = {
       // 顶部导航菜单默认添加统计报表栏指向首页
       const index = [{
         path: 'index',
-        meta: { title: '统计报表', icon: 'dashboard'}
+        meta: { title: '统计报表', icon: 'dashboard' }
       }]
       state.topbarRouters = routes.concat(index);
     },
