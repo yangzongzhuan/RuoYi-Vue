@@ -5,7 +5,7 @@ export default function(Vue, options) {
   mergeOptions(options)
   Vue.mixin({
     data() {
-      if (this.$options.dicts === undefined || this.$options.dicts === null) {
+      if (this.$options === undefined || this.$options.dicts === undefined || this.$options.dicts === null) {
         return {}
       }
       const dict = new Dict()
