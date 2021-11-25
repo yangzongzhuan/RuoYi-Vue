@@ -364,8 +364,7 @@ export default {
         pageSize: 10,
 #foreach ($column in $columns)
 #if($column.query)
-        $column.javaField: null#if($velocityCount != $columns.size()),#end
-
+        $column.javaField: null#if($foreach.count != $columns.size()),#end
 #end
 #end
       },
@@ -383,8 +382,7 @@ export default {
 #end
         $column.javaField: [
           { required: true, message: "$comment不能为空", trigger: #if($column.htmlType == "select")"change"#else"blur"#end }
-        ]#if($velocityCount != $columns.size()),#end
-
+        ]#if($foreach.count != $columns.size()),#end
 #end
 #end
       }
@@ -428,14 +426,11 @@ export default {
       this.form = {
 #foreach ($column in $columns)
 #if($column.htmlType == "radio")
-        $column.javaField: #if($column.javaType == "Integer" || $column.javaType == "Long")0#else"0"#end#if($velocityCount != $columns.size()),#end
-
+        $column.javaField: #if($column.javaType == "Integer" || $column.javaType == "Long")0#else"0"#end#if($foreach.count != $columns.size()),#end
 #elseif($column.htmlType == "checkbox")
-        $column.javaField: []#if($velocityCount != $columns.size()),#end
-
+        $column.javaField: []#if($foreach.count != $columns.size()),#end
 #else
-        $column.javaField: null#if($velocityCount != $columns.size()),#end
-
+        $column.javaField: null#if($foreach.count != $columns.size()),#end
 #end
 #end
       };
