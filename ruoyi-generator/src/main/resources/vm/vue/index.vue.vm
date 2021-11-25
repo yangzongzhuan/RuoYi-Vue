@@ -136,7 +136,11 @@
 #elseif($column.list && "" != $column.dictType)
       <el-table-column label="${comment}" align="center" prop="${javaField}">
         <template slot-scope="scope">
+#if($column.htmlType == "checkbox")
+          <dict-tag :options="dict.type.${column.dictType}" :value="scope.row.${javaField} ? scope.row.${javaField}.split(',') : []"/>
+#else
           <dict-tag :options="dict.type.${column.dictType}" :value="scope.row.${javaField}"/>
+#end
         </template>
       </el-table-column>
 #elseif($column.list && "" != $javaField)
