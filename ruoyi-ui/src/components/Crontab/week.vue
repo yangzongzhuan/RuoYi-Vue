@@ -2,7 +2,7 @@
 	<el-form size='small'>
 		<el-form-item>
 			<el-radio v-model='radioValue' :label="1">
-				周，允许的通配符[, - * / L #]
+				周，允许的通配符[, - * ? / L #]
 			</el-radio>
 		</el-form-item>
 
@@ -128,13 +128,13 @@ export default {
 					this.$emit('update', 'week', '?');
 					break;
 				case 3:
-					this.$emit('update', 'week', this.cycle01 + '-' + this.cycle02);
+					this.$emit('update', 'week', this.cycleTotal);
 					break;
 				case 4:
-					this.$emit('update', 'week', this.average02 + '#' + this.average01);
+					this.$emit('update', 'week', this.averageTotal);
 					break;
 				case 5:
-					this.$emit('update', 'week', this.weekday + 'L');
+					this.$emit('update', 'week', this.weekdayCheck + 'L');
 					break;
 				case 6:
 					this.$emit('update', 'week', this.checkboxString);
@@ -168,7 +168,7 @@ export default {
 		},
 	},
 	watch: {
-		"radioValue": "radioChange",
+		'radioValue': 'radioChange',
 		'cycleTotal': 'cycleChange',
 		'averageTotal': 'averageChange',
 		'weekdayCheck': 'weekdayChange',

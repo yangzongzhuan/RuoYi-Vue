@@ -9,16 +9,16 @@
 		<el-form-item>
 			<el-radio v-model='radioValue' :label="2">
 				周期从
-				<el-input-number v-model='cycle01' :min="1" :max="12" /> -
-				<el-input-number v-model='cycle02' :min="1" :max="12" /> 月
+				<el-input-number v-model='cycle01' :min="1" :max="11" /> -
+				<el-input-number v-model='cycle02' :min="cycle01 ? cycle01 + 1 : 2" :max="12" /> 月
 			</el-radio>
 		</el-form-item>
 
 		<el-form-item>
 			<el-radio v-model='radioValue' :label="3">
 				从
-				<el-input-number v-model='average01' :min="1" :max="12" /> 月开始，每
-				<el-input-number v-model='average02' :min="1" :max="12" /> 月月执行一次
+				<el-input-number v-model='average01' :min="1" :max="11" /> 月开始，每
+				<el-input-number v-model='average02' :min="1" :max="12 - average01 || 0" /> 月月执行一次
 			</el-radio>
 		</el-form-item>
 
@@ -56,10 +56,10 @@ export default {
 					this.$emit('update', 'month', '*');
 					break;
 				case 2:
-					this.$emit('update', 'month', this.cycle01 + '-' + this.cycle02);
+					this.$emit('update', 'month', this.cycleTotal);
 					break;
 				case 3:
-					this.$emit('update', 'month', this.average01 + '/' + this.average02);
+					this.$emit('update', 'month', this.averageTotal);
 					break;
 				case 4:
 					this.$emit('update', 'month', this.checkboxString);
@@ -86,7 +86,7 @@ export default {
 		}
 	},
 	watch: {
-		"radioValue": "radioChange",
+		'radioValue': 'radioChange',
 		'cycleTotal': 'cycleChange',
 		'averageTotal': 'averageChange',
 		'checkboxString': 'checkboxChange'
@@ -94,15 +94,15 @@ export default {
 	computed: {
 		// 计算两个周期值
 		cycleTotal: function () {
-			this.cycle01 = this.checkNum(this.cycle01, 1, 12)
-			this.cycle02 = this.checkNum(this.cycle02, 1, 12)
-			return this.cycle01 + '-' + this.cycle02;
+			const cycle01 = this.checkNum(this.cycle01, 1, 11)
+			const cycle02 = this.checkNum(this.cycle02, cycle01 ? cycle01 + 1 : 2, 12)
+			return cycle01 + '-' + cycle02;
 		},
 		// 计算平均用到的值
 		averageTotal: function () {
-			this.average01 = this.checkNum(this.average01, 1, 12)
-			this.average02 = this.checkNum(this.average02, 1, 12)
-			return this.average01 + '/' + this.average02;
+			const average01 = this.checkNum(this.average01, 1, 11)
+			const average02 = this.checkNum(this.average02, 1, 12 - average01 || 0)
+			return average01 + '/' + average02;
 		},
 		// 计算勾选的checkbox值合集
 		checkboxString: function () {
