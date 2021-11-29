@@ -67,27 +67,13 @@ export default {
 	methods: {
 		// 单选按钮值变化时
 		radioChange() {
-			if (this.radioValue === 1) {
-				this.$emit('update', 'week', '*');
-				this.$emit('update', 'year', '*');
-			} else {
-				if (this.cron.month === '*') {
-					this.$emit('update', 'month', '0', 'week');
-				}
-				if (this.cron.day === '*') {
-					this.$emit('update', 'day', '0', 'week');
-				}
-				if (this.cron.hour === '*') {
-					this.$emit('update', 'hour', '0', 'week');
-				}
-				if (this.cron.min === '*') {
-					this.$emit('update', 'min', '0', 'week');
-				}
-				if (this.cron.second === '*') {
-					this.$emit('update', 'second', '0', 'week');
-				}
+			if (this.radioValue !== 2 && this.cron.day !== '?') {
+				this.$emit('update', 'day', '?', 'week');
 			}
 			switch (this.radioValue) {
+				case 1:
+					this.$emit('update', 'week', '*');
+					break;
 				case 2:
 					this.$emit('update', 'week', '?');
 					break;
@@ -105,7 +91,6 @@ export default {
 					break;
 			}
 		},
-		// 根据互斥事件，更改radio的值
 
 		// 周期两个值变化时
 		cycleChange() {

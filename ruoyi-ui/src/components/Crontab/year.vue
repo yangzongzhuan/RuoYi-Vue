@@ -59,21 +59,6 @@ export default {
 	methods: {
 		// 单选按钮值变化时
 		radioChange() {
-			if (this.cron.month === '*') {
-				this.$emit('update', 'month', '0', 'year');
-			}
-			if (this.cron.day === '*') {
-				this.$emit('update', 'day', '0', 'year');
-			}
-			if (this.cron.hour === '*') {
-				this.$emit('update', 'hour', '0', 'year');
-			}
-			if (this.cron.min === '*') {
-				this.$emit('update', 'min', '0', 'year');
-			}
-			if (this.cron.second === '*') {
-				this.$emit('update', 'second', '0', 'year');
-			}
 			switch (this.radioValue) {
 				case 1:
 					this.$emit('update', 'year', '');
