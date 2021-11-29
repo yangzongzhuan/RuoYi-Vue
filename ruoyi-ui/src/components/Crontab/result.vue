@@ -179,7 +179,7 @@ export default {
 							// 获取达到条件的日期是星期X
 							let thisWeek = this.formatDate(new Date(YY + '-' + MM + '-' + thisDD + ' 00:00:00'), 'week');
 							// 当星期日时
-							if (thisWeek == 0) {
+							if (thisWeek == 1) {
 								// 先找下一个日，并判断是否为月底
 								DD++;
 								thisDD = DD < 10 ? '0' + DD : DD;
@@ -187,7 +187,7 @@ export default {
 								if (this.checkDate(YY + '-' + MM + '-' + thisDD + ' 00:00:00') !== true) {
 									DD -= 3;
 								}
-							} else if (thisWeek == 6) {
+							} else if (thisWeek == 7) {
 								// 当星期6时只需判断不是1号就可进行操作
 								if (this.dayRuleSup !== 1) {
 									DD--;
@@ -200,7 +200,7 @@ export default {
 							// 获取当前日期是属于星期几
 							let thisWeek = this.formatDate(new Date(YY + '-' + MM + '-' + DD + ' 00:00:00'), 'week');
 							// 校验当前星期是否在星期池（dayRuleSup）中
-							if (Array.indexOf(this.dayRuleSup, thisWeek) < 0) {
+							if (this.dayRuleSup.indexOf(thisWeek) < 0) {
 								// 如果到达最大值时
 								if (Di == DDate.length - 1) {
 									resetDay();
@@ -385,7 +385,7 @@ export default {
 				} else if (rule.indexOf('#') >= 0) {
 					this.dayRule = 'assWeek';
 					let matchRule = rule.match(/[0-9]{1}/g);
-					this.dayRuleSup = [Number(matchRule[0]), Number(matchRule[1])];
+					this.dayRuleSup = [Number(matchRule[1]), Number(matchRule[0])];
 					this.dateArr[3] = [1];
 					if (this.dayRuleSup[1] == 7) {
 						this.dayRuleSup[1] = 0;
@@ -400,14 +400,6 @@ export default {
 				} else if (rule !== '*' && rule !== '?') {
 					this.dayRule = 'weekDay';
 					this.dayRuleSup = this.getAssignArr(rule)
-				}
-				// 如果weekDay时将7调整为0【week值0即是星期日】
-				if (this.dayRule == 'weekDay') {
-					for (let i = 0; i < this.dayRuleSup.length; i++) {
-						if (this.dayRuleSup[i] == 7) {
-							this.dayRuleSup[i] = 0;
-						}
-					}
 				}
 			}
 		},
@@ -543,14 +535,15 @@ export default {
 			if (type == undefined) {
 				return Y + '-' + (M < 10 ? '0' + M : M) + '-' + (D < 10 ? '0' + D : D) + ' ' + (h < 10 ? '0' + h : h) + ':' + (m < 10 ? '0' + m : m) + ':' + (s < 10 ? '0' + s : s);
 			} else if (type == 'week') {
-				return week;
+				// 在quartz中 1为星期日
+				return week + 1;
 			}
 		},
 		// 检查日期是否存在
 		checkDate(value) {
 			let time = new Date(value);
 			let format = this.formatDate(time)
-			return value == format ? true : false;
+			return value === format;
 		}
 	},
 	watch: {
