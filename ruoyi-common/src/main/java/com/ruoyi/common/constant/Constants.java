@@ -1,5 +1,7 @@
 package com.ruoyi.common.constant;
 
+import io.jsonwebtoken.Claims;
+
 /**
  * 通用常量信息
  * 
@@ -48,6 +50,11 @@ public class Constants
     public static final String LOGOUT = "Logout";
 
     /**
+     * 注册
+     */
+    public static final String REGISTER = "Register";
+
+    /**
      * 登录失败
      */
     public static final String LOGIN_FAIL = "Error";
@@ -61,11 +68,16 @@ public class Constants
      * 登录用户 redis key
      */
     public static final String LOGIN_TOKEN_KEY = "login_tokens:";
-    
+
     /**
      * 防重提交 redis key
      */
     public static final String REPEAT_SUBMIT_KEY = "repeat_submit:";
+
+    /**
+     * 限流 redis key
+     */
+    public static final String RATE_LIMIT_KEY = "rate_limit:";
 
     /**
      * 验证码有效期（分钟）
@@ -95,7 +107,7 @@ public class Constants
     /**
      * 用户名称
      */
-    public static final String JWT_USERNAME = "sub";
+    public static final String JWT_USERNAME = Claims.SUBJECT;
 
     /**
      * 用户头像
@@ -126,4 +138,20 @@ public class Constants
      * 资源映射路径 前缀
      */
     public static final String RESOURCE_PREFIX = "/profile";
+
+    /**
+     * RMI 远程方法调用
+     */
+    public static final String LOOKUP_RMI = "rmi://";
+
+    /**
+     * LDAP 远程方法调用
+     */
+    public static final String LOOKUP_LDAP = "ldap://";
+
+    /**
+     * 定时任务违规的字符
+     */
+    public static final String[] JOB_ERROR_STR = { "java.net.URL", "javax.naming.InitialContext", "org.yaml.snakeyaml",
+            "org.springframework.jndi" };
 }

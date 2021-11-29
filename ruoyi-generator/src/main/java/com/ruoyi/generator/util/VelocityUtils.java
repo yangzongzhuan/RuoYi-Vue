@@ -58,6 +58,7 @@ public class VelocityUtils
         velocityContext.put("permissionPrefix", getPermissionPrefix(moduleName, businessName));
         velocityContext.put("columns", genTable.getColumns());
         velocityContext.put("table", genTable);
+        velocityContext.put("dicts", getDicts(genTable));
         setMenuVelocityContext(velocityContext, genTable);
         if (GenConstants.TPL_TREE.equals(tplCategory))
         {
@@ -261,6 +262,28 @@ public class VelocityUtils
     }
 
     /**
+     * 根据列类型获取字典组
+     * 
+     * @param genTable 业务表对象
+     * @return 返回字典组
+     */
+    public static String getDicts(GenTable genTable)
+    {
+        List<GenTableColumn> columns = genTable.getColumns();
+        List<String> dicts = new ArrayList<String>();
+        for (GenTableColumn column : columns)
+        {
+            if (!column.isSuperColumn() && StringUtils.isNotEmpty(column.getDictType()) && StringUtils.equalsAny(
+                    column.getHtmlType(),
+                    new String[] { GenConstants.HTML_SELECT, GenConstants.HTML_RADIO, GenConstants.HTML_CHECKBOX }))
+            {
+                dicts.add("'" + column.getDictType() + "'");
+            }
+        }
+        return StringUtils.join(dicts, ", ");
+    }
+
+    /**
      * 获取权限前缀
      *
      * @param moduleName 模块名称
@@ -280,7 +303,8 @@ public class VelocityUtils
      */
     public static String getParentMenuId(JSONObject paramsObj)
     {
-        if (StringUtils.isNotEmpty(paramsObj) && paramsObj.containsKey(GenConstants.PARENT_MENU_ID))
+        if (StringUtils.isNotEmpty(paramsObj) && paramsObj.containsKey(GenConstants.PARENT_MENU_ID)
+                && StringUtils.isNotEmpty(paramsObj.getString(GenConstants.PARENT_MENU_ID)))
         {
             return paramsObj.getString(GenConstants.PARENT_MENU_ID);
         }

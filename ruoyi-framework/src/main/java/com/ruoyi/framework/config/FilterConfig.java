@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 import javax.servlet.DispatcherType;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -19,9 +20,6 @@ import com.ruoyi.common.utils.StringUtils;
 @Configuration
 public class FilterConfig
 {
-    @Value("${xss.enabled}")
-    private String enabled;
-
     @Value("${xss.excludes}")
     private String excludes;
 
@@ -30,6 +28,7 @@ public class FilterConfig
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
     @Bean
+    @ConditionalOnProperty(value = "xss.enabled", havingValue = "true")
     public FilterRegistrationBean xssFilterRegistration()
     {
         FilterRegistrationBean registration = new FilterRegistrationBean();
@@ -40,7 +39,6 @@ public class FilterConfig
         registration.setOrder(FilterRegistrationBean.HIGHEST_PRECEDENCE);
         Map<String, String> initParameters = new HashMap<String, String>();
         initParameters.put("excludes", excludes);
-        initParameters.put("enabled", enabled);
         registration.setInitParameters(initParameters);
         return registration;
     }

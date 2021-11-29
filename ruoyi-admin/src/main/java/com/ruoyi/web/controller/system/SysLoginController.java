@@ -12,11 +12,9 @@ import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.core.domain.entity.SysMenu;
 import com.ruoyi.common.core.domain.entity.SysUser;
 import com.ruoyi.common.core.domain.model.LoginBody;
-import com.ruoyi.common.core.domain.model.LoginUser;
-import com.ruoyi.common.utils.ServletUtils;
+import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.framework.web.service.SysLoginService;
 import com.ruoyi.framework.web.service.SysPermissionService;
-import com.ruoyi.framework.web.service.TokenService;
 import com.ruoyi.system.service.ISysMenuService;
 
 /**
@@ -35,9 +33,6 @@ public class SysLoginController
 
     @Autowired
     private SysPermissionService permissionService;
-
-    @Autowired
-    private TokenService tokenService;
 
     /**
      * 登录方法
@@ -64,8 +59,7 @@ public class SysLoginController
     @GetMapping("getInfo")
     public AjaxResult getInfo()
     {
-        LoginUser loginUser = tokenService.getLoginUser(ServletUtils.getRequest());
-        SysUser user = loginUser.getUser();
+        SysUser user = SecurityUtils.getLoginUser().getUser();
         // 角色集合
         Set<String> roles = permissionService.getRolePermission(user);
         // 权限集合
@@ -85,10 +79,8 @@ public class SysLoginController
     @GetMapping("getRouters")
     public AjaxResult getRouters()
     {
-        LoginUser loginUser = tokenService.getLoginUser(ServletUtils.getRequest());
-        // 用户信息
-        SysUser user = loginUser.getUser();
-        List<SysMenu> menus = menuService.selectMenuTreeByUserId(user.getUserId());
+        Long userId = SecurityUtils.getUserId();
+        List<SysMenu> menus = menuService.selectMenuTreeByUserId(userId);
         return AjaxResult.success(menuService.buildMenus(menus));
     }
 }

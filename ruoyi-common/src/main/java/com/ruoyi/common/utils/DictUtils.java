@@ -152,6 +152,16 @@ public class DictUtils
     }
 
     /**
+     * 删除指定字典缓存
+     * 
+     * @param key 字典键
+     */
+    public static void removeDictCache(String key)
+    {
+        SpringUtils.getBean(RedisCache.class).deleteObject(getCacheKey(key));
+    }
+
+    /**
      * 清空字典缓存
      */
     public static void clearDictCache()

@@ -24,12 +24,3 @@ export function cleanJobLog() {
     method: 'delete'
   })
 }
-
-// 导出调度日志
-export function exportJobLog(query) {
-  return request({
-    url: '/monitor/jobLog/export',
-    method: 'get',
-    params: query
-  })
-}

@@ -11,11 +11,14 @@ import org.springframework.transaction.annotation.Transactional;
 import com.ruoyi.common.annotation.DataScope;
 import com.ruoyi.common.constant.UserConstants;
 import com.ruoyi.common.core.domain.entity.SysRole;
-import com.ruoyi.common.exception.CustomException;
+import com.ruoyi.common.core.domain.entity.SysUser;
+import com.ruoyi.common.exception.ServiceException;
+import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.common.utils.spring.SpringUtils;
 import com.ruoyi.system.domain.SysRoleDept;
 import com.ruoyi.system.domain.SysRoleMenu;
+import com.ruoyi.system.domain.SysUserRole;
 import com.ruoyi.system.mapper.SysRoleDeptMapper;
 import com.ruoyi.system.mapper.SysRoleMapper;
 import com.ruoyi.system.mapper.SysRoleMenuMapper;
@@ -53,6 +56,31 @@ public class SysRoleServiceImpl implements ISysRoleService
     public List<SysRole> selectRoleList(SysRole role)
     {
         return roleMapper.selectRoleList(role);
+    }
+
+    /**
+     * 根据用户ID查询角色
+     * 
+     * @param userId 用户ID
+     * @return 角色列表
+     */
+    @Override
+    public List<SysRole> selectRolesByUserId(Long userId)
+    {
+        List<SysRole> userRoles = roleMapper.selectRolePermissionByUserId(userId);
+        List<SysRole> roles = selectRoleAll();
+        for (SysRole role : roles)
+        {
+            for (SysRole userRole : userRoles)
+            {
+                if (role.getRoleId().longValue() == userRole.getRoleId().longValue())
+                {
+                    role.setFlag(true);
+                    break;
+                }
+            }
+        }
+        return roles;
     }
 
     /**
@@ -94,7 +122,7 @@ public class SysRoleServiceImpl implements ISysRoleService
      * @return 选中角色ID列表
      */
     @Override
-    public List<Integer> selectRoleListByUserId(Long userId)
+    public List<Long> selectRoleListByUserId(Long userId)
     {
         return roleMapper.selectRoleListByUserId(userId);
     }
@@ -157,7 +185,27 @@ public class SysRoleServiceImpl implements ISysRoleService
     {
         if (StringUtils.isNotNull(role.getRoleId()) && role.isAdmin())
         {
-            throw new CustomException("不允许操作超级管理员角色");
+            throw new ServiceException("不允许操作超级管理员角色");
+        }
+    }
+
+    /**
+     * 校验角色是否有数据权限
+     * 
+     * @param roleId 角色id
+     */
+    @Override
+    public void checkRoleDataScope(Long roleId)
+    {
+        if (!SysUser.isAdmin(SecurityUtils.getUserId()))
+        {
+            SysRole role = new SysRole();
+            role.setRoleId(roleId);
+            List<SysRole> roles = SpringUtils.getAopProxy(this).selectRoleList(role);
+            if (StringUtils.isEmpty(roles))
+            {
+                throw new ServiceException("没有权限访问角色数据！");
+            }
         }
     }
 
@@ -316,7 +364,7 @@ public class SysRoleServiceImpl implements ISysRoleService
             SysRole role = selectRoleById(roleId);
             if (countUserRoleByRoleId(roleId) > 0)
             {
-                throw new CustomException(String.format("%1$s已分配,不能删除", role.getRoleName()));
+                throw new ServiceException(String.format("%1$s已分配,不能删除", role.getRoleName()));
             }
         }
         // 删除角色与菜单关联
@@ -324,5 +372,52 @@ public class SysRoleServiceImpl implements ISysRoleService
         // 删除角色与部门关联
         roleDeptMapper.deleteRoleDept(roleIds);
         return roleMapper.deleteRoleByIds(roleIds);
+    }
+
+    /**
+     * 取消授权用户角色
+     * 
+     * @param userRole 用户和角色关联信息
+     * @return 结果
+     */
+    @Override
+    public int deleteAuthUser(SysUserRole userRole)
+    {
+        return userRoleMapper.deleteUserRoleInfo(userRole);
+    }
+
+    /**
+     * 批量取消授权用户角色
+     * 
+     * @param roleId 角色ID
+     * @param userIds 需要取消授权的用户数据ID
+     * @return 结果
+     */
+    @Override
+    public int deleteAuthUsers(Long roleId, Long[] userIds)
+    {
+        return userRoleMapper.deleteUserRoleInfos(roleId, userIds);
+    }
+
+    /**
+     * 批量选择授权用户角色
+     * 
+     * @param roleId 角色ID
+     * @param userIds 需要删除的用户数据ID
+     * @return 结果
+     */
+    @Override
+    public int insertAuthUsers(Long roleId, Long[] userIds)
+    {
+        // 新增用户与角色管理
+        List<SysUserRole> list = new ArrayList<SysUserRole>();
+        for (Long userId : userIds)
+        {
+            SysUserRole ur = new SysUserRole();
+            ur.setUserId(userId);
+            ur.setRoleId(roleId);
+            list.add(ur);
+        }
+        return userRoleMapper.batchUserRole(list);
     }
 }

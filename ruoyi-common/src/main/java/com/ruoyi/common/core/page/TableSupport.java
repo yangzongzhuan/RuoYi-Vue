@@ -30,6 +30,11 @@ public class TableSupport
     public static final String IS_ASC = "isAsc";
 
     /**
+     * 分页参数合理化
+     */
+    public static final String REASONABLE = "reasonable";
+
+    /**
      * 封装分页对象
      */
     public static PageDomain getPageDomain()
@@ -39,6 +44,7 @@ public class TableSupport
         pageDomain.setPageSize(ServletUtils.getParameterToInt(PAGE_SIZE));
         pageDomain.setOrderByColumn(ServletUtils.getParameter(ORDER_BY_COLUMN));
         pageDomain.setIsAsc(ServletUtils.getParameter(IS_ASC));
+        pageDomain.setReasonable(ServletUtils.getParameterToBool(REASONABLE));
         return pageDomain;
     }
 

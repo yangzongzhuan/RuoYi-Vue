@@ -5,7 +5,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import com.ruoyi.common.constant.HttpStatus;
 import com.ruoyi.common.core.domain.model.LoginUser;
-import com.ruoyi.common.exception.CustomException;
+import com.ruoyi.common.exception.ServiceException;
 
 /**
  * 安全服务工具类
@@ -14,6 +14,36 @@ import com.ruoyi.common.exception.CustomException;
  */
 public class SecurityUtils
 {
+    /**
+     * 用户ID
+     **/
+    public static Long getUserId()
+    {
+        try
+        {
+            return getLoginUser().getUserId();
+        }
+        catch (Exception e)
+        {
+            throw new ServiceException("获取用户ID异常", HttpStatus.UNAUTHORIZED);
+        }
+    }
+
+    /**
+     * 获取部门ID
+     **/
+    public static Long getDeptId()
+    {
+        try
+        {
+            return getLoginUser().getDeptId();
+        }
+        catch (Exception e)
+        {
+            throw new ServiceException("获取部门ID异常", HttpStatus.UNAUTHORIZED);
+        }
+    }
+    
     /**
      * 获取用户账户
      **/
@@ -25,7 +55,7 @@ public class SecurityUtils
         }
         catch (Exception e)
         {
-            throw new CustomException("获取用户账户异常", HttpStatus.UNAUTHORIZED);
+            throw new ServiceException("获取用户账户异常", HttpStatus.UNAUTHORIZED);
         }
     }
 
@@ -40,7 +70,7 @@ public class SecurityUtils
         }
         catch (Exception e)
         {
-            throw new CustomException("获取用户信息异常", HttpStatus.UNAUTHORIZED);
+            throw new ServiceException("获取用户信息异常", HttpStatus.UNAUTHORIZED);
         }
     }
 

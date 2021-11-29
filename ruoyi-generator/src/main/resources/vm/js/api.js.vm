@@ -42,12 +42,3 @@ export function del${BusinessName}(${pkColumn.javaField}) {
     method: 'delete'
   })
 }
-
-// 导出${functionName}
-export function export${BusinessName}(query) {
-  return request({
-    url: '/${moduleName}/${businessName}/export',
-    method: 'get',
-    params: query
-  })
-}

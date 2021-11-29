@@ -34,13 +34,13 @@ public class ${ClassName}ServiceImpl implements I${ClassName}Service
     /**
      * 查询${functionName}
      * 
-     * @param ${pkColumn.javaField} ${functionName}ID
+     * @param ${pkColumn.javaField} ${functionName}主键
      * @return ${functionName}
      */
     @Override
-    public ${ClassName} select${ClassName}ById(${pkColumn.javaType} ${pkColumn.javaField})
+    public ${ClassName} select${ClassName}By${pkColumn.capJavaField}(${pkColumn.javaType} ${pkColumn.javaField})
     {
-        return ${className}Mapper.select${ClassName}ById(${pkColumn.javaField});
+        return ${className}Mapper.select${ClassName}By${pkColumn.capJavaField}(${pkColumn.javaField});
     }
 
     /**
@@ -108,34 +108,37 @@ public class ${ClassName}ServiceImpl implements I${ClassName}Service
     /**
      * 批量删除${functionName}
      * 
-     * @param ${pkColumn.javaField}s 需要删除的${functionName}ID
+     * @param ${pkColumn.javaField}s 需要删除的${functionName}主键
      * @return 结果
      */
 #if($table.sub)
     @Transactional
 #end
     @Override
-    public int delete${ClassName}ByIds(${pkColumn.javaType}[] ${pkColumn.javaField}s)
+    public int delete${ClassName}By${pkColumn.capJavaField}s(${pkColumn.javaType}[] ${pkColumn.javaField}s)
     {
 #if($table.sub)
         ${className}Mapper.delete${subClassName}By${subTableFkClassName}s(${pkColumn.javaField}s);
 #end
-        return ${className}Mapper.delete${ClassName}ByIds(${pkColumn.javaField}s);
+        return ${className}Mapper.delete${ClassName}By${pkColumn.capJavaField}s(${pkColumn.javaField}s);
     }
 
     /**
      * 删除${functionName}信息
      * 
-     * @param ${pkColumn.javaField} ${functionName}ID
+     * @param ${pkColumn.javaField} ${functionName}主键
      * @return 结果
      */
+#if($table.sub)
+    @Transactional
+#end
     @Override
-    public int delete${ClassName}ById(${pkColumn.javaType} ${pkColumn.javaField})
+    public int delete${ClassName}By${pkColumn.capJavaField}(${pkColumn.javaType} ${pkColumn.javaField})
     {
 #if($table.sub)
         ${className}Mapper.delete${subClassName}By${subTableFkClassName}(${pkColumn.javaField});
 #end
-        return ${className}Mapper.delete${ClassName}ById(${pkColumn.javaField});
+        return ${className}Mapper.delete${ClassName}By${pkColumn.capJavaField}(${pkColumn.javaField});
     }
 #if($table.sub)
 
@@ -147,7 +150,7 @@ public class ${ClassName}ServiceImpl implements I${ClassName}Service
     public void insert${subClassName}(${ClassName} ${className})
     {
         List<${subClassName}> ${subclassName}List = ${className}.get${subClassName}List();
-        Long ${pkColumn.javaField} = ${className}.get${pkColumn.capJavaField}();
+        ${pkColumn.javaType} ${pkColumn.javaField} = ${className}.get${pkColumn.capJavaField}();
         if (StringUtils.isNotNull(${subclassName}List))
         {
             List<${subClassName}> list = new ArrayList<${subClassName}>();
