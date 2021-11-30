@@ -15,16 +15,16 @@
 		<el-form-item>
 			<el-radio :label="3" v-model='radioValue'>
 				周期从
-				<el-input-number v-model='cycle01' :min='fullYear' /> -
-				<el-input-number v-model='cycle02' :min='fullYear' />
+				<el-input-number v-model='cycle01' :min='fullYear' :max="2098" /> -
+				<el-input-number v-model='cycle02' :min="cycle01 ? cycle01 + 1 : fullYear + 1" :max="2099" />
 			</el-radio>
 		</el-form-item>
 
 		<el-form-item>
 			<el-radio :label="4" v-model='radioValue'>
 				从
-				<el-input-number v-model='average01' :min='fullYear' /> 年开始，每
-				<el-input-number v-model='average02' :min='fullYear' /> 年执行一次
+				<el-input-number v-model='average01' :min='fullYear' :max="2098"/> 年开始，每
+				<el-input-number v-model='average02' :min="1" :max="2099 - average01 || fullYear" /> 年执行一次
 			</el-radio>
 
 		</el-form-item>
@@ -59,21 +59,6 @@ export default {
 	methods: {
 		// 单选按钮值变化时
 		radioChange() {
-			if (this.cron.month === '*') {
-				this.$emit('update', 'month', '0', 'year');
-			}
-			if (this.cron.day === '*') {
-				this.$emit('update', 'day', '0', 'year');
-			}
-			if (this.cron.hour === '*') {
-				this.$emit('update', 'hour', '0', 'year');
-			}
-			if (this.cron.min === '*') {
-				this.$emit('update', 'min', '0', 'year');
-			}
-			if (this.cron.second === '*') {
-				this.$emit('update', 'second', '0', 'year');
-			}
 			switch (this.radioValue) {
 				case 1:
 					this.$emit('update', 'year', '');
@@ -82,10 +67,10 @@ export default {
 					this.$emit('update', 'year', '*');
 					break;
 				case 3:
-					this.$emit('update', 'year', this.cycle01 + '-' + this.cycle02);
+					this.$emit('update', 'year', this.cycleTotal);
 					break;
 				case 4:
-					this.$emit('update', 'year', this.average01 + '/' + this.average02);
+					this.$emit('update', 'year', this.averageTotal);
 					break;
 				case 5:
 					this.$emit('update', 'year', this.checkboxString);
@@ -112,7 +97,7 @@ export default {
 		}
 	},
 	watch: {
-		"radioValue": "radioChange",
+		'radioValue': 'radioChange',
 		'cycleTotal': 'cycleChange',
 		'averageTotal': 'averageChange',
 		'checkboxString': 'checkboxChange'
@@ -120,15 +105,15 @@ export default {
 	computed: {
 		// 计算两个周期值
 		cycleTotal: function () {
-			this.cycle01 = this.checkNum(this.cycle01, this.fullYear, this.fullYear + 100)
-			this.cycle02 = this.checkNum(this.cycle02, this.fullYear + 1, this.fullYear + 101)
-			return this.cycle01 + '-' + this.cycle02;
+			const cycle01 = this.checkNum(this.cycle01, this.fullYear, 2098)
+			const cycle02 = this.checkNum(this.cycle02, cycle01 ? cycle01 + 1 : this.fullYear + 1, 2099)
+			return cycle01 + '-' + cycle02;
 		},
 		// 计算平均用到的值
 		averageTotal: function () {
-			this.average01 = this.checkNum(this.average01, this.fullYear, this.fullYear + 100)
-			this.average02 = this.checkNum(this.average02, 1, 10)
-			return this.average01 + '/' + this.average02;
+			const average01 = this.checkNum(this.average01, this.fullYear, 2098)
+			const average02 = this.checkNum(this.average02, 1, 2099 - average01 || this.fullYear)
+			return average01 + '/' + average02;
 		},
 		// 计算勾选的checkbox值合集
 		checkboxString: function () {
@@ -139,6 +124,8 @@ export default {
 	mounted: function () {
 		// 仅获取当前年份
 		this.fullYear = Number(new Date().getFullYear());
+		this.cycle01 = this.fullYear
+		this.average01 = this.fullYear
 	}
 }
 </script>

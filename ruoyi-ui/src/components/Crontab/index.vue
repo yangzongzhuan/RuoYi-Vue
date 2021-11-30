@@ -2,7 +2,12 @@
   <div>
     <el-tabs type="border-card">
       <el-tab-pane label="秒" v-if="shouldHide('second')">
-        <CrontabSecond @update="updateCrontabValue" :check="checkNumber" ref="cronsecond" />
+        <CrontabSecond
+          @update="updateCrontabValue"
+          :check="checkNumber"
+          :cron="crontabValueObj"
+          ref="cronsecond"
+        />
       </el-tab-pane>
 
       <el-tab-pane label="分钟" v-if="shouldHide('min')">
