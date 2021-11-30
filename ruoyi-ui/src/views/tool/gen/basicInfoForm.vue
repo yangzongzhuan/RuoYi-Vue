@@ -11,7 +11,6 @@
           <el-input placeholder="请输入" v-model="info.tableComment" />
         </el-form-item>
       </el-col>
-
       <el-col :span="12">
         <el-form-item label="实体类名称" prop="className">
           <el-input placeholder="请输入" v-model="info.className" />
@@ -30,9 +29,9 @@
     </el-row>
   </el-form>
 </template>
+
 <script>
 export default {
-  name: "BasicInfoForm",
   props: {
     info: {
       type: Object,

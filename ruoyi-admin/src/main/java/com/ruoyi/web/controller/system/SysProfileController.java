@@ -72,7 +72,7 @@ public class SysProfileController extends BaseController
                 && UserConstants.NOT_UNIQUE.equals(userService.checkEmailUnique(user)))
         {
             return AjaxResult.error("修改用户'" + user.getUserName() + "'失败，邮箱账号已存在");
-        }       
+        }
         user.setUserId(sysUser.getUserId());
         user.setPassword(null);
         if (userService.updateUserProfile(user) > 0)

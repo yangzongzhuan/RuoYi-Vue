@@ -124,6 +124,7 @@
     </el-form>
   </el-card>
 </template>
+
 <script>
 import { getGenTable, updateGenTable } from "@/api/tool/gen";
 import { optionselect as getDictOptionselect } from "@/api/system/dict/type";

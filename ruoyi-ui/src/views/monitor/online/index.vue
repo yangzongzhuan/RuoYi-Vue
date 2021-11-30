@@ -111,7 +111,7 @@ export default {
     },
     /** 强退按钮操作 */
     handleForceLogout(row) {
-      this.$modal.confirm('是否确认强退名称为"' + row.userName + '"的数据项？').then(function() {
+      this.$modal.confirm('是否确认强退名称为"' + row.userName + '"的用户？').then(function() {
         return forceLogout(row.tokenId);
       }).then(() => {
         this.getList();

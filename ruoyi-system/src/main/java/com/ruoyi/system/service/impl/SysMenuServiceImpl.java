@@ -179,7 +179,7 @@ public class SysMenuServiceImpl implements ISysMenuService
                 router.setPath("/inner");
                 List<RouterVo> childrenList = new ArrayList<RouterVo>();
                 RouterVo children = new RouterVo();
-                String routerPath = StringUtils.replaceEach(menu.getPath(), new String[] { Constants.HTTP, Constants.HTTPS }, new String[] { "", "" });
+                String routerPath = innerLinkReplaceEach(menu.getPath());
                 children.setPath(routerPath);
                 children.setComponent(UserConstants.INNER_LINK);
                 children.setName(StringUtils.capitalize(routerPath));
@@ -358,7 +358,7 @@ public class SysMenuServiceImpl implements ISysMenuService
         // 内链打开外网方式
         if (menu.getParentId().intValue() != 0 && isInnerLink(menu))
         {
-            routerPath = StringUtils.replaceEach(routerPath, new String[] { Constants.HTTP, Constants.HTTPS }, new String[] { "", "" });
+            routerPath = innerLinkReplaceEach(routerPath);
         }
         // 非外链并且是一级目录（类型为目录）
         if (0 == menu.getParentId().intValue() && UserConstants.TYPE_DIR.equals(menu.getMenuType())
@@ -499,5 +499,16 @@ public class SysMenuServiceImpl implements ISysMenuService
     private boolean hasChild(List<SysMenu> list, SysMenu t)
     {
         return getChildList(list, t).size() > 0 ? true : false;
+    }
+
+    /**
+     * 内链域名特殊字符替换
+     * 
+     * @return
+     */
+    public String innerLinkReplaceEach(String path)
+    {
+        return StringUtils.replaceEach(path, new String[] { Constants.HTTP, Constants.HTTPS },
+                new String[] { "", "" });
     }
 }
