@@ -47,7 +47,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		order by d.parent_id, d.order_num
     </select>
     
-    <select id="selectDeptListByRoleId" resultType="Integer">
+    <select id="selectDeptListByRoleId" resultType="Long">
 		select d.dept_id
 		from sys_dept d
             left join sys_role_dept rd on d.dept_id = rd.dept_id
