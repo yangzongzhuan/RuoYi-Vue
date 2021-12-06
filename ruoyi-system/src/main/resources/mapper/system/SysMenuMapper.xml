@@ -84,7 +84,7 @@
 		order by m.parent_id, m.order_num
 	</select>
 	
-	<select id="selectMenuListByRoleId" resultType="Integer">
+	<select id="selectMenuListByRoleId" resultType="Long">
 		select m.menu_id
 		from sys_menu m
             left join sys_role_menu rm on m.menu_id = rm.menu_id

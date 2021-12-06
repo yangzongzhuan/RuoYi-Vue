@@ -100,7 +100,7 @@ public class SysDeptServiceImpl implements ISysDeptService
      * @return 选中部门列表
      */
     @Override
-    public List<Integer> selectDeptListByRoleId(Long roleId)
+    public List<Long> selectDeptListByRoleId(Long roleId)
     {
         SysRole role = roleMapper.selectRoleById(roleId);
         return deptMapper.selectDeptListByRoleId(roleId, role.isDeptCheckStrictly());
