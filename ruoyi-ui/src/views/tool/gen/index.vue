@@ -169,7 +169,8 @@
           :name="key.substring(key.lastIndexOf('/')+1,key.indexOf('.vm'))"
           :key="key"
         >
-        <pre><code class="hljs" v-html="highlightedCode(value, key)"></code></pre>
+          <el-link :underline="false" icon="el-icon-document-copy" v-clipboard:copy="value" v-clipboard:success="clipboardSuccess" style="float:right">复制</el-link>
+          <pre><code class="hljs" v-html="highlightedCode(value, key)"></code></pre>
         </el-tab-pane>
       </el-tabs>
     </el-dialog>
@@ -305,6 +306,10 @@ export default {
       var language = vmName.substring(vmName.indexOf(".") + 1, vmName.length);
       const result = hljs.highlight(language, code || "", true);
       return result.value || '&nbsp;';
+    },
+    /** 复制代码成功 */
+    clipboardSuccess(){
+      this.$modal.msgSuccess("复制成功");
     },
     // 多选框选中数据
     handleSelectionChange(selection) {
