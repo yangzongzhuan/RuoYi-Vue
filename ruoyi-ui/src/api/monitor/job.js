@@ -43,15 +43,6 @@ export function delJob(jobId) {
   })
 }
 
-// 导出定时任务调度
-export function exportJob(query) {
-  return request({
-    url: '/monitor/job/export',
-    method: 'get',
-    params: query
-  })
-}
-
 // 任务状态修改
 export function changeJobStatus(jobId, status) {
   const data = {

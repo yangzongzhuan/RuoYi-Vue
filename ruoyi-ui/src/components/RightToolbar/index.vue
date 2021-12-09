@@ -43,7 +43,14 @@ export default {
       type: Array,
     },
   },
-
+  created() {
+    // 显隐列初始默认隐藏列
+    for (let item in this.columns) {
+      if (this.columns[item].visible === false) {
+        this.value.push(parseInt(item));
+      }
+    }
+  },
   methods: {
     // 搜索
     toggleSearch() {
@@ -55,7 +62,7 @@ export default {
     },
     // 右侧列表元素变化
     dataChange(data) {
-      for (var item in this.columns) {
+      for (let item in this.columns) {
         const key = this.columns[item].key;
         this.columns[item].visible = !data.includes(key);
       }

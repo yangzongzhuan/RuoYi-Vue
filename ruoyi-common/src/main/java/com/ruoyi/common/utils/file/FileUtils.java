@@ -3,6 +3,7 @@ package com.ruoyi.common.utils.file;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
@@ -10,15 +11,19 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.ArrayUtils;
+import com.ruoyi.common.config.RuoYiConfig;
+import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.common.utils.StringUtils;
+import com.ruoyi.common.utils.uuid.IdUtils;
 
 /**
  * 文件处理工具类
  * 
  * @author ruoyi
  */
-public class FileUtils extends org.apache.commons.io.FileUtils
+public class FileUtils
 {
     public static String FILENAME_PATTERN = "[a-zA-Z0-9_\\-\\|\\.\\u4e00-\\u9fa5]+";
 
@@ -53,29 +58,48 @@ public class FileUtils extends org.apache.commons.io.FileUtils
         }
         finally
         {
-            if (os != null)
-            {
-                try
-                {
-                    os.close();
-                }
-                catch (IOException e1)
-                {
-                    e1.printStackTrace();
-                }
-            }
-            if (fis != null)
-            {
-                try
-                {
-                    fis.close();
-                }
-                catch (IOException e1)
-                {
-                    e1.printStackTrace();
-                }
-            }
+            IOUtils.close(os);
+            IOUtils.close(fis);
         }
+    }
+
+    /**
+     * 写数据到文件中
+     *
+     * @param data 数据
+     * @return 目标文件
+     * @throws IOException IO异常
+     */
+    public static String writeImportBytes(byte[] data) throws IOException
+    {
+        return writeBytes(data, RuoYiConfig.getImportPath());
+    }
+
+    /**
+     * 写数据到文件中
+     *
+     * @param data 数据
+     * @param uploadDir 目标文件
+     * @return 目标文件
+     * @throws IOException IO异常
+     */
+    public static String writeBytes(byte[] data, String uploadDir) throws IOException
+    {
+        FileOutputStream fos = null;
+        String pathName = "";
+        try
+        {
+            String extension = getFileExtendName(data);
+            pathName = DateUtils.datePath() + "/" + IdUtils.fastUUID() + "." + extension;
+            File file = FileUploadUtils.getAbsoluteFile(uploadDir, pathName);
+            fos = new FileOutputStream(file);
+            fos.write(data);
+        }
+        finally
+        {
+            IOUtils.close(fos);
+        }
+        return FileUploadUtils.getPathFileName(uploadDir, pathName);
     }
 
     /**
@@ -186,7 +210,10 @@ public class FileUtils extends org.apache.commons.io.FileUtils
                 .append("utf-8''")
                 .append(percentEncodedFileName);
 
+        response.addHeader("Access-Control-Allow-Origin", "*");
+        response.addHeader("Access-Control-Expose-Headers", "Content-Disposition,download-filename");
         response.setHeader("Content-disposition", contentDispositionValue.toString());
+        response.setHeader("download-filename", percentEncodedFileName);
     }
 
     /**
@@ -199,5 +226,34 @@ public class FileUtils extends org.apache.commons.io.FileUtils
     {
         String encode = URLEncoder.encode(s, StandardCharsets.UTF_8.toString());
         return encode.replaceAll("\\+", "%20");
+    }
+
+    /**
+     * 获取图像后缀
+     * 
+     * @param photoByte 图像数据
+     * @return 后缀名
+     */
+    public static String getFileExtendName(byte[] photoByte)
+    {
+        String strFileExtendName = "jpg";
+        if ((photoByte[0] == 71) && (photoByte[1] == 73) && (photoByte[2] == 70) && (photoByte[3] == 56)
+                && ((photoByte[4] == 55) || (photoByte[4] == 57)) && (photoByte[5] == 97))
+        {
+            strFileExtendName = "gif";
+        }
+        else if ((photoByte[6] == 74) && (photoByte[7] == 70) && (photoByte[8] == 73) && (photoByte[9] == 70))
+        {
+            strFileExtendName = "jpg";
+        }
+        else if ((photoByte[0] == 66) && (photoByte[1] == 77))
+        {
+            strFileExtendName = "bmp";
+        }
+        else if ((photoByte[1] == 80) && (photoByte[2] == 78) && (photoByte[3] == 71))
+        {
+            strFileExtendName = "png";
+        }
+        return strFileExtendName;
     }
 }

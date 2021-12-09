@@ -44,15 +44,6 @@ export function delUser(userId) {
   })
 }
 
-// 导出用户
-export function exportUser(query) {
-  return request({
-    url: '/system/user/export',
-    method: 'get',
-    params: query
-  })
-}
-
 // 用户密码重置
 export function resetUserPwd(userId, password) {
   const data = {
@@ -118,10 +109,19 @@ export function uploadAvatar(data) {
   })
 }
 
-// 下载用户导入模板
-export function importTemplate() {
+// 查询授权角色
+export function getAuthRole(userId) {
   return request({
-    url: '/system/user/importTemplate',
+    url: '/system/user/authRole/' + userId,
     method: 'get'
+  })
+}
+
+// 保存授权角色
+export function updateAuthRole(data) {
+  return request({
+    url: '/system/user/authRole',
+    method: 'put',
+    params: data
   })
 }

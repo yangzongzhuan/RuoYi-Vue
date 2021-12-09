@@ -210,6 +210,18 @@ public class RedisCache
     }
 
     /**
+     * 删除Hash中的数据
+     * 
+     * @param key
+     * @param mapkey
+     */
+    public void delCacheMapValue(final String key, final String hkey)
+    {
+        HashOperations hashOperations = redisTemplate.opsForHash();
+        hashOperations.delete(key, hkey);
+    }
+
+    /**
      * 获取多个Hash中的数据
      *
      * @param key Redis键

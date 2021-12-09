@@ -20,7 +20,6 @@ import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.core.domain.entity.SysDept;
 import com.ruoyi.common.enums.BusinessType;
-import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.system.service.ISysDeptService;
 
@@ -75,6 +74,7 @@ public class SysDeptController extends BaseController
     @GetMapping(value = "/{deptId}")
     public AjaxResult getInfo(@PathVariable Long deptId)
     {
+        deptService.checkDeptDataScope(deptId);
         return AjaxResult.success(deptService.selectDeptById(deptId));
     }
 
@@ -113,7 +113,7 @@ public class SysDeptController extends BaseController
         {
             return AjaxResult.error("新增部门'" + dept.getDeptName() + "'失败，部门名称已存在");
         }
-        dept.setCreateBy(SecurityUtils.getUsername());
+        dept.setCreateBy(getUsername());
         return toAjax(deptService.insertDept(dept));
     }
 
@@ -138,7 +138,7 @@ public class SysDeptController extends BaseController
         {
             return AjaxResult.error("该部门包含未停用的子部门！");
         }
-        dept.setUpdateBy(SecurityUtils.getUsername());
+        dept.setUpdateBy(getUsername());
         return toAjax(deptService.updateDept(dept));
     }
 

@@ -12,6 +12,7 @@
 		<result property="orderNum"       column="order_num"      />
 		<result property="path"           column="path"           />
 		<result property="component"      column="component"      />
+		<result property="query"          column="query"          />
 		<result property="isFrame"        column="is_frame"       />
 		<result property="isCache"        column="is_cache"       />
 		<result property="menuType"       column="menu_type"      />
@@ -27,7 +28,7 @@
 	</resultMap>
 
 	<sql id="selectMenuVo">
-        select menu_id, menu_name, parent_id, order_num, path, component, is_frame, is_cache, menu_type, visible, status, ifnull(perms,'') as perms, icon, create_time 
+        select menu_id, menu_name, parent_id, order_num, path, component, query, is_frame, is_cache, menu_type, visible, status, ifnull(perms,'') as perms, icon, create_time 
 		from sys_menu
     </sql>
     
@@ -48,32 +49,32 @@
 	</select>
 	
 	<select id="selectMenuTreeAll" resultMap="SysMenuResult">
-		select distinct m.menu_id, m.parent_id, m.menu_name, m.path, m.component, m.visible, m.status, ifnull(m.perms,'') as perms, m.is_frame, m.is_cache, m.menu_type, m.icon, m.order_num, m.create_time
+		select distinct m.menu_id, m.parent_id, m.menu_name, m.path, m.component, m.query, m.visible, m.status, ifnull(m.perms,'') as perms, m.is_frame, m.is_cache, m.menu_type, m.icon, m.order_num, m.create_time
 		from sys_menu m where m.menu_type in ('M', 'C') and m.status = 0
 		order by m.parent_id, m.order_num
 	</select>
 	
 	<select id="selectMenuListByUserId" parameterType="SysMenu" resultMap="SysMenuResult">
-		select distinct m.menu_id, m.parent_id, m.menu_name, m.path, m.component, m.visible, m.status, ifnull(m.perms,'') as perms, m.is_frame, m.is_cache, m.menu_type, m.icon, m.order_num, m.create_time
+		select distinct m.menu_id, m.parent_id, m.menu_name, m.path, m.component, m.query, m.visible, m.status, ifnull(m.perms,'') as perms, m.is_frame, m.is_cache, m.menu_type, m.icon, m.order_num, m.create_time
 		from sys_menu m
 		left join sys_role_menu rm on m.menu_id = rm.menu_id
 		left join sys_user_role ur on rm.role_id = ur.role_id
 		left join sys_role ro on ur.role_id = ro.role_id
 		where ur.user_id = #{params.userId}
 		<if test="menuName != null and menuName != ''">
-            AND menu_name like concat('%', #{menuName}, '%')
+            AND m.menu_name like concat('%', #{menuName}, '%')
 		</if>
 		<if test="visible != null and visible != ''">
-            AND visible = #{visible}
+            AND m.visible = #{visible}
 		</if>
 		<if test="status != null and status != ''">
-            AND status = #{status}
+            AND m.status = #{status}
 		</if>
 		order by m.parent_id, m.order_num
 	</select>
     
     <select id="selectMenuTreeByUserId" parameterType="Long" resultMap="SysMenuResult">
-		select distinct m.menu_id, m.parent_id, m.menu_name, m.path, m.component, m.visible, m.status, ifnull(m.perms,'') as perms, m.is_frame, m.is_cache, m.menu_type, m.icon, m.order_num, m.create_time
+		select distinct m.menu_id, m.parent_id, m.menu_name, m.path, m.component, m.query, m.visible, m.status, ifnull(m.perms,'') as perms, m.is_frame, m.is_cache, m.menu_type, m.icon, m.order_num, m.create_time
 		from sys_menu m
 			 left join sys_role_menu rm on m.menu_id = rm.menu_id
 			 left join sys_user_role ur on rm.role_id = ur.role_id
@@ -132,6 +133,7 @@
 			<if test="orderNum != null and orderNum != ''">order_num = #{orderNum},</if>
 			<if test="path != null and path != ''">path = #{path},</if>
 			<if test="component != null">component = #{component},</if>
+			<if test="query != null">query = #{query},</if>
 			<if test="isFrame != null and isFrame != ''">is_frame = #{isFrame},</if>
 			<if test="isCache != null and isCache != ''">is_cache = #{isCache},</if>
 			<if test="menuType != null and menuType != ''">menu_type = #{menuType},</if>
@@ -154,6 +156,7 @@
 		<if test="orderNum != null and orderNum != ''">order_num,</if>
 		<if test="path != null and path != ''">path,</if>
 		<if test="component != null and component != ''">component,</if>
+		<if test="query != null and query != ''">query,</if>
 		<if test="isFrame != null and isFrame != ''">is_frame,</if>
 		<if test="isCache != null and isCache != ''">is_cache,</if>
 		<if test="menuType != null and menuType != ''">menu_type,</if>
@@ -171,6 +174,7 @@
 		<if test="orderNum != null and orderNum != ''">#{orderNum},</if>
 		<if test="path != null and path != ''">#{path},</if>
 		<if test="component != null and component != ''">#{component},</if>
+		<if test="query != null and query != ''">#{query},</if>
 		<if test="isFrame != null and isFrame != ''">#{isFrame},</if>
 		<if test="isCache != null and isCache != ''">#{isCache},</if>
 		<if test="menuType != null and menuType != ''">#{menuType},</if>

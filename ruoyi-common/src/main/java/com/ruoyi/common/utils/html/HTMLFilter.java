@@ -332,7 +332,7 @@ public final class HTMLFilter
             final String name = m.group(1).toLowerCase();
             if (allowed(name))
             {
-                if (false == inArray(name, vSelfClosingTags))
+                if (!inArray(name, vSelfClosingTags))
                 {
                     if (vTagCounts.containsKey(name))
                     {
@@ -387,7 +387,7 @@ public final class HTMLFilter
                         {
                             paramValue = processParamProtocol(paramValue);
                         }
-                        params.append(' ').append(paramName).append("=\"").append(paramValue).append("\"");
+                        params.append(' ').append(paramName).append("=\\\"").append(paramValue).append("\"");
                     }
                 }
 

@@ -2,7 +2,8 @@
   <div class="navbar">
     <hamburger id="hamburger-container" :is-active="sidebar.opened" class="hamburger-container" @toggleClick="toggleSideBar" />
 
-    <breadcrumb id="breadcrumb-container" class="breadcrumb-container" />
+    <breadcrumb id="breadcrumb-container" class="breadcrumb-container" v-if="!topNav"/>
+    <top-nav id="topmenu-container" class="topmenu-container" v-if="topNav"/>
 
     <div class="right-menu">
       <template v-if="device!=='mobile'">
@@ -48,6 +49,7 @@
 <script>
 import { mapGetters } from 'vuex'
 import Breadcrumb from '@/components/Breadcrumb'
+import TopNav from '@/components/TopNav'
 import Hamburger from '@/components/Hamburger'
 import Screenfull from '@/components/Screenfull'
 import SizeSelect from '@/components/SizeSelect'
@@ -58,6 +60,7 @@ import RuoYiDoc from '@/components/RuoYi/Doc'
 export default {
   components: {
     Breadcrumb,
+    TopNav,
     Hamburger,
     Screenfull,
     SizeSelect,
@@ -81,6 +84,11 @@ export default {
           value: val
         })
       }
+    },
+    topNav: {
+      get() {
+        return this.$store.state.settings.topNav
+      }
     }
   },
   methods: {
@@ -96,7 +104,7 @@ export default {
         this.$store.dispatch('LogOut').then(() => {
           location.href = '/index';
         })
-      })
+      }).catch(() => {});
     }
   }
 }
@@ -125,6 +133,11 @@ export default {
 
   .breadcrumb-container {
     float: left;
+  }
+
+  .topmenu-container {
+    position: absolute;
+    left: 50px;
   }
 
   .errLog-container {

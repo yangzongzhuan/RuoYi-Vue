@@ -11,7 +11,6 @@
           </el-select>
         </el-form-item>
       </el-col>
-
       <el-col :span="12">
         <el-form-item prop="packageName">
           <span slot="label">
@@ -213,12 +212,12 @@
     </el-row>
   </el-form>
 </template>
+
 <script>
 import Treeselect from "@riophae/vue-treeselect";
 import "@riophae/vue-treeselect/dist/vue-treeselect.css";
 
 export default {
-  name: "BasicInfoForm",
   components: { Treeselect },
   props: {
     info: {

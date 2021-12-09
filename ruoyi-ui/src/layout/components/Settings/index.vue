@@ -41,6 +41,11 @@
       <el-divider/>
 
       <h3 class="drawer-title">系统布局配置</h3>
+      
+      <div class="drawer-item">
+        <span>开启 TopNav</span>
+        <el-switch v-model="topNav" class="drawer-switch" />
+      </div>
 
       <div class="drawer-item">
         <span>开启 Tags-Views</span>
@@ -57,6 +62,15 @@
         <el-switch v-model="sidebarLogo" class="drawer-switch" />
       </div>
 
+      <div class="drawer-item">
+        <span>动态标题</span>
+        <el-switch v-model="dynamicTitle" class="drawer-switch" />
+      </div>
+
+      <el-divider/>
+
+      <el-button size="small" type="primary" plain icon="el-icon-document-add" @click="saveSetting">保存配置</el-button>
+      <el-button size="small" plain icon="el-icon-refresh" @click="resetSetting">重置配置</el-button>
     </div>
   </div>
 </template>
@@ -67,15 +81,12 @@ import ThemePicker from '@/components/ThemePicker'
 export default {
   components: { ThemePicker },
   data() {
-    return {}
+    return {
+      theme: this.$store.state.settings.theme,
+      sideTheme: this.$store.state.settings.sideTheme
+    };
   },
   computed: {
-    theme() {
-      return this.$store.state.settings.theme
-    },
-    sideTheme() {
-      return this.$store.state.settings.sideTheme
-    },
     fixedHeader: {
       get() {
         return this.$store.state.settings.fixedHeader
@@ -85,6 +96,20 @@ export default {
           key: 'fixedHeader',
           value: val
         })
+      }
+    },
+    topNav: {
+      get() {
+        return this.$store.state.settings.topNav
+      },
+      set(val) {
+        this.$store.dispatch('settings/changeSetting', {
+          key: 'topNav',
+          value: val
+        })
+        if (!val) {
+          this.$store.commit("SET_SIDEBAR_ROUTERS", this.$store.state.permission.defaultRoutes);
+        }
       }
     },
     tagsView: {
@@ -109,6 +134,17 @@ export default {
         })
       }
     },
+    dynamicTitle: {
+      get() {
+        return this.$store.state.settings.dynamicTitle
+      },
+      set(val) {
+        this.$store.dispatch('settings/changeSetting', {
+          key: 'dynamicTitle',
+          value: val
+        })
+      }
+    },
   },
   methods: {
     themeChange(val) {
@@ -116,12 +152,35 @@ export default {
         key: 'theme',
         value: val
       })
+      this.theme = val;
     },
     handleTheme(val) {
       this.$store.dispatch('settings/changeSetting', {
         key: 'sideTheme',
         value: val
       })
+      this.sideTheme = val;
+    },
+    saveSetting() {
+      this.$modal.loading("正在保存到本地，请稍候...");
+      this.$cache.local.set(
+        "layout-setting",
+        `{
+            "topNav":${this.topNav},
+            "tagsView":${this.tagsView},
+            "fixedHeader":${this.fixedHeader},
+            "sidebarLogo":${this.sidebarLogo},
+            "dynamicTitle":${this.dynamicTitle},
+            "sideTheme":"${this.sideTheme}",
+            "theme":"${this.theme}"
+          }`
+      );
+      setTimeout(this.$modal.closeLoading(), 1000)
+    },
+    resetSetting() {
+      this.$modal.loading("正在清除设置缓存并刷新，请稍候...");
+      this.$cache.local.remove("layout-setting")
+      setTimeout("window.location.reload()", 1000)
     }
   }
 }

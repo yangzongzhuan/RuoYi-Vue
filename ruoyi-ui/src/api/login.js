@@ -10,6 +10,21 @@ export function login(username, password, code, uuid) {
   }
   return request({
     url: '/login',
+    headers: {
+      isToken: false
+    },
+    method: 'post',
+    data: data
+  })
+}
+
+// 注册方法
+export function register(data) {
+  return request({
+    url: '/register',
+    headers: {
+      isToken: false
+    },
     method: 'post',
     data: data
   })
@@ -35,6 +50,10 @@ export function logout() {
 export function getCodeImg() {
   return request({
     url: '/captchaImage',
-    method: 'get'
+    headers: {
+      isToken: false
+    },
+    method: 'get',
+    timeout: 20000
   })
 }

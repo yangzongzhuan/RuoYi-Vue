@@ -30,6 +30,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	<select id="selectDeptList" parameterType="SysDept" resultMap="SysDeptResult">
         <include refid="selectDeptVo"/>
         where d.del_flag = '0'
+		<if test="deptId != null and deptId != 0">
+			AND dept_id = #{deptId}
+		</if>
         <if test="parentId != null and parentId != 0">
 			AND parent_id = #{parentId}
 		</if>
@@ -140,14 +143,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	    </foreach>
 	</update>
 	 
-	 <update id="updateDeptStatus" parameterType="SysDept">
- 	    update sys_dept
- 	    <set>
- 	        <if test="status != null and status != ''">status = #{status},</if>
- 	        <if test="updateBy != null and updateBy != ''">update_by = #{updateBy},</if>
- 	        update_time = sysdate()
-        </set>
- 	    where dept_id in (${ancestors})
+	<update id="updateDeptStatusNormal" parameterType="Long">
+ 	    update sys_dept set status = '0' where dept_id in 
+ 	    <foreach collection="array" item="deptId" open="(" separator="," close=")">
+        	#{deptId}
+        </foreach>
 	</update>
 	
 	<delete id="deleteDeptById" parameterType="Long">

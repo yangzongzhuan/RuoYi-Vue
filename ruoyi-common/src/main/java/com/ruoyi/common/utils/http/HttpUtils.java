@@ -19,6 +19,7 @@ import javax.net.ssl.X509TrustManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.ruoyi.common.constant.Constants;
+import com.ruoyi.common.utils.StringUtils;
 
 /**
  * 通用http发送方法
@@ -28,6 +29,17 @@ import com.ruoyi.common.constant.Constants;
 public class HttpUtils
 {
     private static final Logger log = LoggerFactory.getLogger(HttpUtils.class);
+
+    /**
+     * 向指定 URL 发送GET方法的请求
+     *
+     * @param url 发送请求的 URL
+     * @return 所代表远程资源的响应结果
+     */
+    public static String sendGet(String url)
+    {
+        return sendGet(url, StringUtils.EMPTY);
+    }
 
     /**
      * 向指定 URL 发送GET方法的请求
@@ -55,7 +67,7 @@ public class HttpUtils
         BufferedReader in = null;
         try
         {
-            String urlNameString = url + "?" + param;
+            String urlNameString = StringUtils.isNotBlank(param) ? url + "?" + param : url;
             log.info("sendGet - {}", urlNameString);
             URL realUrl = new URL(urlNameString);
             URLConnection connection = realUrl.openConnection();
