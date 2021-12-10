@@ -108,7 +108,10 @@ export function download(url, params, filename) {
       const blob = new Blob([data])
       saveAs(blob, filename)
     } else {
-      Message.error('无效的会话，或者会话已过期，请重新登录。');
+      const resText = await data.text();
+      const rspObj = JSON.parse(resText);
+      const errMsg = errorCode[rspObj.code] || rspObj.msg || errorCode['default']
+      Message.error(errMsg);
     }
     downloadLoadingInstance.close();
   }).catch((r) => {
