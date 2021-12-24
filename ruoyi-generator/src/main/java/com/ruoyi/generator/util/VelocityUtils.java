@@ -3,6 +3,7 @@ package com.ruoyi.generator.util;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import org.apache.velocity.VelocityContext;
 import com.alibaba.fastjson.JSONObject;
 import com.ruoyi.common.constant.GenConstants;
@@ -270,7 +271,7 @@ public class VelocityUtils
     public static String getDicts(GenTable genTable)
     {
         List<GenTableColumn> columns = genTable.getColumns();
-        List<String> dicts = new ArrayList<String>();
+        Set<String> dicts = new HashSet<String>();
         for (GenTableColumn column : columns)
         {
             if (!column.isSuperColumn() && StringUtils.isNotEmpty(column.getDictType()) && StringUtils.equalsAny(
