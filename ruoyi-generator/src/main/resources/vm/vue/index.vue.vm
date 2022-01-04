@@ -133,6 +133,12 @@
           <span>{{ parseTime(scope.row.${javaField}, '{y}-{m}-{d}') }}</span>
         </template>
       </el-table-column>
+#elseif($column.list && $column.htmlType == "imageUpload")
+      <el-table-column label="${comment}" align="center" prop="${javaField}" width="100">
+        <template slot-scope="scope">
+          <image-preview :src="scope.row.${javaField}" :width="50" :height="50"/>
+        </template>
+      </el-table-column>
 #elseif($column.list && "" != $column.dictType)
       <el-table-column label="${comment}" align="center" prop="${javaField}">
         <template slot-scope="scope">
@@ -195,11 +201,11 @@
         </el-form-item>
 #elseif($column.htmlType == "imageUpload")
         <el-form-item label="${comment}">
-          <imageUpload v-model="form.${field}"/>
+          <image-upload v-model="form.${field}"/>
         </el-form-item>
 #elseif($column.htmlType == "fileUpload")
         <el-form-item label="${comment}">
-          <fileUpload v-model="form.${field}"/>
+          <file-upload v-model="form.${field}"/>
         </el-form-item>
 #elseif($column.htmlType == "editor")
         <el-form-item label="${comment}">
