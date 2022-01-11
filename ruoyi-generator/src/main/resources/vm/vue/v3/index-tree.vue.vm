@@ -17,13 +17,12 @@
           v-model="queryParams.${column.javaField}"
           placeholder="请输入${comment}"
           clearable
-          size="small"
           @keyup.enter="handleQuery"
         />
       </el-form-item>
 #elseif(($column.htmlType == "select" || $column.htmlType == "radio") && "" != $dictType)
       <el-form-item label="${comment}" prop="${column.javaField}">
-        <el-select v-model="queryParams.${column.javaField}" placeholder="请选择${comment}" clearable size="small">
+        <el-select v-model="queryParams.${column.javaField}" placeholder="请选择${comment}" clearable>
           <el-option
             v-for="dict in ${dictType}"
             :key="dict.value"
@@ -34,13 +33,13 @@
       </el-form-item>
 #elseif(($column.htmlType == "select" || $column.htmlType == "radio") && $dictType)
       <el-form-item label="${comment}" prop="${column.javaField}">
-        <el-select v-model="queryParams.${column.javaField}" placeholder="请选择${comment}" clearable size="small">
+        <el-select v-model="queryParams.${column.javaField}" placeholder="请选择${comment}" clearable>
           <el-option label="请选择字典生成" value="" />
         </el-select>
       </el-form-item>
 #elseif($column.htmlType == "datetime" && $column.queryType != "BETWEEN")
       <el-form-item label="${comment}" prop="${column.javaField}">
-        <el-date-picker clearable size="small"
+        <el-date-picker clearable
           v-model="queryParams.${column.javaField}"
           type="date"
           value-format="YYYY-MM-DD"
@@ -48,11 +47,9 @@
         </el-date-picker>
       </el-form-item>
 #elseif($column.htmlType == "datetime" && $column.queryType == "BETWEEN")
-      <el-form-item label="${comment}">
+      <el-form-item label="${comment}" style="width: 308px">
         <el-date-picker
           v-model="daterange${AttrName}"
-          size="small"
-          style="width: 240px"
           value-format="YYYY-MM-DD"
           type="daterange"
           range-separator="-"
@@ -64,8 +61,8 @@
 #end
 #end
       <el-form-item>
-        <el-button type="primary" icon="Search" size="mini" @click="handleQuery">搜索</el-button>
-        <el-button icon="Refresh" size="mini" @click="resetQuery">重置</el-button>
+        <el-button type="primary" icon="Search" @click="handleQuery">搜索</el-button>
+        <el-button icon="Refresh" @click="resetQuery">重置</el-button>
       </el-form-item>
     </el-form>
 
@@ -75,7 +72,6 @@
           type="primary"
           plain
           icon="Plus"
-          size="mini"
           @click="handleAdd"
           v-hasPermi="['${moduleName}:${businessName}:add']"
         >新增</el-button>
@@ -132,21 +128,18 @@
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template #default="scope">
           <el-button
-            size="mini"
             type="text"
             icon="Edit"
             @click="handleUpdate(scope.row)"
             v-hasPermi="['${moduleName}:${businessName}:edit']"
           >修改</el-button>
           <el-button
-            size="mini"
             type="text"
             icon="Plus"
             @click="handleAdd(scope.row)"
             v-hasPermi="['${moduleName}:${businessName}:add']"
           >新增</el-button>
           <el-button
-            size="mini"
             type="text"
             icon="Delete"
             @click="handleDelete(scope.row)"
@@ -249,7 +242,7 @@
         </el-form-item>
 #elseif($column.htmlType == "datetime")
         <el-form-item label="${comment}" prop="${field}">
-          <el-date-picker clearable size="small"
+          <el-date-picker clearable
             v-model="form.${field}"
             type="date"
             value-format="YYYY-MM-DD"
