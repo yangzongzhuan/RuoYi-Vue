@@ -68,12 +68,12 @@ export function addDateRange(params, dateRange, propName) {
   return search;
 }
 
-// 回显数据字典 
+// 回显数据字典
 export function selectDictLabel(datas, value) {
   var actions = [];
   Object.keys(datas).some((key) => {
-    if (datas[key].value == ('' + value)) {
-      actions.push(datas[key].label);
+    if (datas[key].dictValue == ('' + value)) {
+      actions.push(datas[key].dictLabel);
       return true;
     }
   })
@@ -82,16 +82,13 @@ export function selectDictLabel(datas, value) {
 
 // 回显数据字典（字符串数组）
 export function selectDictLabels(datas, value, separator) {
-  if(value === undefined) {
-    return "";
-  }
   var actions = [];
   var currentSeparator = undefined === separator ? "," : separator;
   var temp = value.split(currentSeparator);
   Object.keys(value.split(currentSeparator)).some((val) => {
     Object.keys(datas).some((key) => {
-      if (datas[key].value == ('' + temp[val])) {
-        actions.push(datas[key].label + currentSeparator);
+      if (datas[key].dictValue == ('' + temp[val])) {
+        actions.push(datas[key].dictLabel + currentSeparator);
       }
     })
   })
