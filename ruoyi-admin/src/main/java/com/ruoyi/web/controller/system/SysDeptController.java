@@ -125,16 +125,17 @@ public class SysDeptController extends BaseController
     @PutMapping
     public AjaxResult edit(@Validated @RequestBody SysDept dept)
     {
+        Long deptId = dept.getDeptId();
+        deptService.checkDeptDataScope(deptId);
         if (UserConstants.NOT_UNIQUE.equals(deptService.checkDeptNameUnique(dept)))
         {
             return AjaxResult.error("修改部门'" + dept.getDeptName() + "'失败，部门名称已存在");
         }
-        else if (dept.getParentId().equals(dept.getDeptId()))
+        else if (dept.getParentId().equals(deptId))
         {
             return AjaxResult.error("修改部门'" + dept.getDeptName() + "'失败，上级部门不能是自己");
         }
-        else if (StringUtils.equals(UserConstants.DEPT_DISABLE, dept.getStatus())
-                && deptService.selectNormalChildrenDeptById(dept.getDeptId()) > 0)
+        else if (StringUtils.equals(UserConstants.DEPT_DISABLE, dept.getStatus()) && deptService.selectNormalChildrenDeptById(deptId) > 0)
         {
             return AjaxResult.error("该部门包含未停用的子部门！");
         }
@@ -158,6 +159,7 @@ public class SysDeptController extends BaseController
         {
             return AjaxResult.error("部门存在用户,不允许删除");
         }
+        deptService.checkDeptDataScope(deptId);
         return toAjax(deptService.deleteDeptById(deptId));
     }
 }
