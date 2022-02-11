@@ -60,7 +60,6 @@ public class SysDictDataServiceImpl implements ISysDictDataService
      * 批量删除字典数据信息
      * 
      * @param dictCodes 需要删除的字典数据ID
-     * @return 结果
      */
     @Override
     public void deleteDictDataByIds(Long[] dictCodes)
