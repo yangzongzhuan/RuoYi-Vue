@@ -115,7 +115,6 @@ public class SysDictTypeServiceImpl implements ISysDictTypeService
      * 批量删除字典类型信息
      * 
      * @param dictIds 需要删除的字典ID
-     * @return 结果
      */
     @Override
     public void deleteDictTypeByIds(Long[] dictIds)

@@ -146,7 +146,6 @@ public class SysConfigServiceImpl implements ISysConfigService
      * 批量删除参数信息
      * 
      * @param configIds 需要删除的参数ID
-     * @return 结果
      */
     @Override
     public void deleteConfigByIds(Long[] configIds)

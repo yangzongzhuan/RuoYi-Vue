@@ -54,7 +54,6 @@ public interface ISysDictTypeService
      * 批量删除字典信息
      * 
      * @param dictIds 需要删除的字典ID
-     * @return 结果
      */
     public void deleteDictTypeByIds(Long[] dictIds);
 
