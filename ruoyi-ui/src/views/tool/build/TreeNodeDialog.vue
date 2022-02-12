@@ -59,7 +59,7 @@
       <div slot="footer">
         <el-button
           type="primary"
-          @click="handelConfirm"
+          @click="handleConfirm"
         >
           确定
         </el-button>
@@ -133,7 +133,7 @@ export default {
     close() {
       this.$emit('update:visible', false)
     },
-    handelConfirm() {
+    handleConfirm() {
       this.$refs.elForm.validate(valid => {
         if (!valid) return
         if (this.dataType === 'number') {

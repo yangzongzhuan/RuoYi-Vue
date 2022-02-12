@@ -98,7 +98,7 @@ function mixinMethod(type) {
         close: `close() {
         this.$emit('update:visible', false)
       },`,
-        handelConfirm: `handelConfirm() {
+        handleConfirm: `handleConfirm() {
         this.$refs['${confGlobal.formRef}'].validate(valid => {
           if(!valid) return
           this.close()
