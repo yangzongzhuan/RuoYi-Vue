@@ -159,7 +159,7 @@ export default {
     };
   },
   created() {
-    const tableId = this.$route.query && this.$route.query.tableId;
+    const tableId = this.$route.params && this.$route.params.tableId;
     if (tableId) {
       // 获取表详细信息
       getGenTable(tableId).then(res => {
