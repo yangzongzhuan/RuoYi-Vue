@@ -121,10 +121,7 @@ public class FileUploadUtils
      */
     public static final String extractFilename(MultipartFile file)
     {
-        String fileName = file.getOriginalFilename();
-        String extension = getExtension(file);
-        fileName = DateUtils.datePath() + "/" + IdUtils.fastUUID() + "." + extension;
-        return fileName;
+        return DateUtils.datePath() + "/" + IdUtils.fastUUID() + "." + getExtension(file);
     }
 
     public static final File getAbsoluteFile(String uploadDir, String fileName) throws IOException
