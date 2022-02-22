@@ -133,7 +133,7 @@
 			<if test="orderNum != null and orderNum != ''">order_num = #{orderNum},</if>
 			<if test="path != null and path != ''">path = #{path},</if>
 			<if test="component != null">component = #{component},</if>
-			<if test="query != null">query = #{query},</if>
+			<if test="query != null">`query` = #{query},</if>
 			<if test="isFrame != null and isFrame != ''">is_frame = #{isFrame},</if>
 			<if test="isCache != null and isCache != ''">is_cache = #{isCache},</if>
 			<if test="menuType != null and menuType != ''">menu_type = #{menuType},</if>
@@ -156,7 +156,7 @@
 		<if test="orderNum != null and orderNum != ''">order_num,</if>
 		<if test="path != null and path != ''">path,</if>
 		<if test="component != null and component != ''">component,</if>
-		<if test="query != null and query != ''">query,</if>
+		<if test="query != null and query != ''">`query`,</if>
 		<if test="isFrame != null and isFrame != ''">is_frame,</if>
 		<if test="isCache != null and isCache != ''">is_cache,</if>
 		<if test="menuType != null and menuType != ''">menu_type,</if>
