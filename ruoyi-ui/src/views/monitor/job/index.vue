@@ -165,7 +165,7 @@
           </el-col>
           <el-col :span="12">
             <el-form-item label="任务分组" prop="jobGroup">
-              <el-select v-model="form.jobGroup" placeholder="请选择">
+              <el-select v-model="form.jobGroup" placeholder="请选择任务分组">
                 <el-option
                   v-for="dict in dict.type.sys_job_group"
                   :key="dict.value"

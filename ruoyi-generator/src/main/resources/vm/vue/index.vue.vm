@@ -44,7 +44,7 @@
           v-model="queryParams.${column.javaField}"
           type="date"
           value-format="yyyy-MM-dd"
-          placeholder="选择${comment}">
+          placeholder="请选择${comment}">
         </el-date-picker>
       </el-form-item>
 #elseif($column.htmlType == "datetime" && $column.queryType == "BETWEEN")
@@ -269,7 +269,7 @@
             v-model="form.${field}"
             type="date"
             value-format="yyyy-MM-dd"
-            placeholder="选择${comment}">
+            placeholder="请选择${comment}">
           </el-date-picker>
         </el-form-item>
 #elseif($column.htmlType == "textarea")
@@ -302,10 +302,37 @@
 #set($comment=$column.columnComment)
 #end
 #if($column.pk || $javaField == ${subTableFkclassName})
-#elseif($column.list && "" != $javaField)
-          <el-table-column label="$comment" prop="${javaField}">
+#elseif($column.list && $column.htmlType == "input")
+          <el-table-column label="$comment" prop="${javaField}" width="150">
             <template slot-scope="scope">
               <el-input v-model="scope.row.$javaField" placeholder="请输入$comment" />
+            </template>
+          </el-table-column>
+#elseif($column.list && $column.htmlType == "datetime")
+          <el-table-column label="$comment" prop="${javaField}" width="240">
+            <template slot-scope="scope">
+              <el-date-picker clearable v-model="scope.row.$javaField" type="date" value-format="yyyy-MM-dd" placeholder="请选择$comment" />
+            </template>
+          </el-table-column>
+#elseif($column.list && ($column.htmlType == "select" || $column.htmlType == "radio") && "" != $column.dictType)
+          <el-table-column label="$comment" prop="${javaField}" width="150">
+            <template slot-scope="scope">
+              <el-select v-model="scope.row.$javaField" placeholder="请选择$comment">
+                <el-option
+                  v-for="dict in dict.type.$column.dictType"
+                  :key="dict.value"
+                  :label="dict.label"
+                  :value="dict.value"
+                ></el-option>
+              </el-select>
+            </template>
+          </el-table-column>
+#elseif($column.list && ($column.htmlType == "select" || $column.htmlType == "radio") && "" == $column.dictType)
+          <el-table-column label="$comment" prop="${javaField}" width="150">
+            <template slot-scope="scope">
+              <el-select v-model="scope.row.$javaField" placeholder="请选择$comment">
+                <el-option label="请选择字典生成" value="" />
+              </el-select>
             </template>
           </el-table-column>
 #end

@@ -248,7 +248,7 @@
         <el-row>
           <el-col :span="12">
             <el-form-item label="用户性别">
-              <el-select v-model="form.sex" placeholder="请选择">
+              <el-select v-model="form.sex" placeholder="请选择性别">
                 <el-option
                   v-for="dict in dict.type.sys_user_sex"
                   :key="dict.value"
@@ -273,7 +273,7 @@
         <el-row>
           <el-col :span="12">
             <el-form-item label="岗位">
-              <el-select v-model="form.postIds" multiple placeholder="请选择">
+              <el-select v-model="form.postIds" multiple placeholder="请选择岗位">
                 <el-option
                   v-for="item in postOptions"
                   :key="item.postId"
@@ -286,7 +286,7 @@
           </el-col>
           <el-col :span="12">
             <el-form-item label="角色">
-              <el-select v-model="form.roleIds" multiple placeholder="请选择">
+              <el-select v-model="form.roleIds" multiple placeholder="请选择角色">
                 <el-option
                   v-for="item in roleOptions"
                   :key="item.roleId"
