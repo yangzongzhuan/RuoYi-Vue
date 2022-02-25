@@ -130,7 +130,7 @@
                 </tr>
                 <tr>
                   <td colspan="1" class="el-table__cell is-leaf"><div class="cell">运行参数</div></td>
-                  <td colspan="3" class="el-table__cell is-leaf"><div class="cell" v-if="server.sys">{{ server.jvm.inputArgs }}</div></td>
+                  <td colspan="3" class="el-table__cell is-leaf"><div class="cell" v-if="server.jvm">{{ server.jvm.inputArgs }}</div></td>
                 </tr>
               </tbody>
             </table>
