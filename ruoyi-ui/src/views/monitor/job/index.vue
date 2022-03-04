@@ -1,17 +1,16 @@
 <template>
   <div class="app-container">
-    <el-form :model="queryParams" ref="queryForm" :inline="true" v-show="showSearch" label-width="68px">
+    <el-form :model="queryParams" ref="queryForm" size="small" inline="true" v-show="showSearch" label-width="68px">
       <el-form-item label="任务名称" prop="jobName">
         <el-input
           v-model="queryParams.jobName"
           placeholder="请输入任务名称"
           clearable
-          size="small"
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
       <el-form-item label="任务组名" prop="jobGroup">
-        <el-select v-model="queryParams.jobGroup" placeholder="请选择任务组名" clearable size="small">
+        <el-select v-model="queryParams.jobGroup" placeholder="请选择任务组名" clearable>
           <el-option
             v-for="dict in dict.type.sys_job_group"
             :key="dict.value"
@@ -21,7 +20,7 @@
         </el-select>
       </el-form-item>
       <el-form-item label="任务状态" prop="status">
-        <el-select v-model="queryParams.status" placeholder="请选择任务状态" clearable size="small">
+        <el-select v-model="queryParams.status" placeholder="请选择任务状态" clearable>
           <el-option
             v-for="dict in dict.type.sys_job_status"
             :key="dict.value"

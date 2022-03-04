@@ -1,12 +1,11 @@
 <template>
   <div class="app-container">
-    <el-form :model="queryParams" ref="queryForm" :inline="true" v-show="showSearch" label-width="68px">
+    <el-form :model="queryParams" ref="queryForm" size="small" inline="true" v-show="showSearch" label-width="68px">
       <el-form-item label="参数名称" prop="configName">
         <el-input
           v-model="queryParams.configName"
           placeholder="请输入参数名称"
           clearable
-          size="small"
           style="width: 240px"
           @keyup.enter.native="handleQuery"
         />
@@ -16,13 +15,12 @@
           v-model="queryParams.configKey"
           placeholder="请输入参数键名"
           clearable
-          size="small"
           style="width: 240px"
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
       <el-form-item label="系统内置" prop="configType">
-        <el-select v-model="queryParams.configType" placeholder="系统内置" clearable size="small">
+        <el-select v-model="queryParams.configType" placeholder="系统内置" clearable>
           <el-option
             v-for="dict in dict.type.sys_yes_no"
             :key="dict.value"
@@ -34,7 +32,6 @@
       <el-form-item label="创建时间">
         <el-date-picker
           v-model="dateRange"
-          size="small"
           style="width: 240px"
           value-format="yyyy-MM-dd"
           type="daterange"

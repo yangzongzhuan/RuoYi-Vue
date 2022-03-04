@@ -1,12 +1,11 @@
 <template>
   <div class="app-container">
-    <el-form :model="queryParams" ref="queryForm" v-show="showSearch" :inline="true">
+    <el-form :model="queryParams" ref="queryForm" size="small" inline="true" v-show="showSearch">
       <el-form-item label="角色名称" prop="roleName">
         <el-input
           v-model="queryParams.roleName"
           placeholder="请输入角色名称"
           clearable
-          size="small"
           style="width: 240px"
           @keyup.enter.native="handleQuery"
         />
@@ -16,7 +15,6 @@
           v-model="queryParams.roleKey"
           placeholder="请输入权限字符"
           clearable
-          size="small"
           style="width: 240px"
           @keyup.enter.native="handleQuery"
         />
@@ -26,7 +24,6 @@
           v-model="queryParams.status"
           placeholder="角色状态"
           clearable
-          size="small"
           style="width: 240px"
         >
           <el-option
@@ -40,7 +37,6 @@
       <el-form-item label="创建时间">
         <el-date-picker
           v-model="dateRange"
-          size="small"
           style="width: 240px"
           value-format="yyyy-MM-dd"
           type="daterange"

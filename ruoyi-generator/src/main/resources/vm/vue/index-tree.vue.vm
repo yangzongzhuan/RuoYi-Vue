@@ -1,6 +1,6 @@
 <template>
   <div class="app-container">
-    <el-form :model="queryParams" ref="queryForm" :inline="true" v-show="showSearch" label-width="68px">
+    <el-form :model="queryParams" ref="queryForm" size="small" inline="true" v-show="showSearch" label-width="68px">
 #foreach($column in $columns)
 #if($column.query)
 #set($dictType=$column.dictType)
@@ -17,13 +17,12 @@
           v-model="queryParams.${column.javaField}"
           placeholder="请输入${comment}"
           clearable
-          size="small"
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
 #elseif(($column.htmlType == "select" || $column.htmlType == "radio") && "" != $dictType)
       <el-form-item label="${comment}" prop="${column.javaField}">
-        <el-select v-model="queryParams.${column.javaField}" placeholder="请选择${comment}" clearable size="small">
+        <el-select v-model="queryParams.${column.javaField}" placeholder="请选择${comment}" clearable>
           <el-option
             v-for="dict in dict.type.${dictType}"
             :key="dict.value"
@@ -34,13 +33,13 @@
       </el-form-item>
 #elseif(($column.htmlType == "select" || $column.htmlType == "radio") && $dictType)
       <el-form-item label="${comment}" prop="${column.javaField}">
-        <el-select v-model="queryParams.${column.javaField}" placeholder="请选择${comment}" clearable size="small">
+        <el-select v-model="queryParams.${column.javaField}" placeholder="请选择${comment}" clearable>
           <el-option label="请选择字典生成" value="" />
         </el-select>
       </el-form-item>
 #elseif($column.htmlType == "datetime" && $column.queryType != "BETWEEN")
       <el-form-item label="${comment}" prop="${column.javaField}">
-        <el-date-picker clearable size="small"
+        <el-date-picker clearable
           v-model="queryParams.${column.javaField}"
           type="date"
           value-format="yyyy-MM-dd"
@@ -51,7 +50,6 @@
       <el-form-item label="${comment}">
         <el-date-picker
           v-model="daterange${AttrName}"
-          size="small"
           style="width: 240px"
           value-format="yyyy-MM-dd"
           type="daterange"
@@ -244,7 +242,7 @@
         </el-form-item>
 #elseif($column.htmlType == "datetime")
         <el-form-item label="${comment}" prop="${field}">
-          <el-date-picker clearable size="small"
+          <el-date-picker clearable
             v-model="form.${field}"
             type="date"
             value-format="yyyy-MM-dd"

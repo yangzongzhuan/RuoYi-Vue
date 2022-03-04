@@ -27,13 +27,12 @@
       </el-col>
       <!--用户数据-->
       <el-col :span="20" :xs="24">
-        <el-form :model="queryParams" ref="queryForm" :inline="true" v-show="showSearch" label-width="68px">
+        <el-form :model="queryParams" ref="queryForm" size="small" inline="true" v-show="showSearch" label-width="68px">
           <el-form-item label="用户名称" prop="userName">
             <el-input
               v-model="queryParams.userName"
               placeholder="请输入用户名称"
               clearable
-              size="small"
               style="width: 240px"
               @keyup.enter.native="handleQuery"
             />
@@ -43,7 +42,6 @@
               v-model="queryParams.phonenumber"
               placeholder="请输入手机号码"
               clearable
-              size="small"
               style="width: 240px"
               @keyup.enter.native="handleQuery"
             />
@@ -53,7 +51,6 @@
               v-model="queryParams.status"
               placeholder="用户状态"
               clearable
-              size="small"
               style="width: 240px"
             >
               <el-option
@@ -67,7 +64,6 @@
           <el-form-item label="创建时间">
             <el-date-picker
               v-model="dateRange"
-              size="small"
               style="width: 240px"
               value-format="yyyy-MM-dd"
               type="daterange"
