@@ -1,7 +1,7 @@
 <template>
   <!-- 导入表 -->
   <el-dialog title="导入表" :visible.sync="visible" width="800px" top="5vh" append-to-body>
-    <el-form :model="queryParams" ref="queryForm" size="small" inline="true">
+    <el-form :model="queryParams" ref="queryForm" size="small" :inline="true">
       <el-form-item label="表名称" prop="tableName">
         <el-input
           v-model="queryParams.tableName"

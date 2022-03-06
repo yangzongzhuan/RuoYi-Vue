@@ -108,6 +108,7 @@ export default {
           value: val
         })
         if (!val) {
+          this.$store.dispatch('app/toggleSideBarHide', false);
           this.$store.commit("SET_SIDEBAR_ROUTERS", this.$store.state.permission.defaultRoutes);
         }
       }
