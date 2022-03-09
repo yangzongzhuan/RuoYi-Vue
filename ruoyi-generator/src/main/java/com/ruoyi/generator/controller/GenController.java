@@ -88,7 +88,7 @@ public class GenController extends BaseController
      * 查询数据表字段列表
      */
     @PreAuthorize("@ss.hasPermi('tool:gen:list')")
-    @GetMapping(value = "/column/{talbleId}")
+    @GetMapping(value = "/column/{tableId}")
     public TableDataInfo columnList(Long tableId)
     {
         TableDataInfo dataInfo = new TableDataInfo();
