@@ -102,7 +102,7 @@ export default {
   }
 
   .sidebarHide .fixed-header {
-    width: calc(100%);
+    width: 100%;
   }
 
   .mobile .fixed-header {
