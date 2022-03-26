@@ -213,12 +213,12 @@ public class RedisCache
      * 删除Hash中的数据
      * 
      * @param key
-     * @param mapkey
+     * @param hKey
      */
-    public void delCacheMapValue(final String key, final String hkey)
+    public void delCacheMapValue(final String key, final String hKey)
     {
         HashOperations hashOperations = redisTemplate.opsForHash();
-        hashOperations.delete(key, hkey);
+        hashOperations.delete(key, hKey);
     }
 
     /**
