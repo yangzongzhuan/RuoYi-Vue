@@ -204,6 +204,7 @@ public class GenController extends BaseController
     private void genCode(HttpServletResponse response, byte[] data) throws IOException
     {
         response.reset();
+        response.addHeader("Access-Control-Allow-Origin", "*");
         response.addHeader("Access-Control-Expose-Headers", "Content-Disposition");
         response.setHeader("Content-Disposition", "attachment; filename=\"ruoyi.zip\"");
         response.addHeader("Content-Length", "" + data.length);
