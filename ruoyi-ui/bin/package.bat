@@ -7,6 +7,6 @@ echo.
 cd %~dp0
 
 cd ..
-npm install --registry=https://registry.npm.taobao.org
+npm install --registry=https://registry.npmmirror.com
 
 pause
