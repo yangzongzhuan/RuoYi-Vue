@@ -65,7 +65,6 @@ public class LogAspect
     {
         try
         {
-
             // 获取当前的用户
             LoginUser loginUser = SecurityUtils.getLoginUser();
 
