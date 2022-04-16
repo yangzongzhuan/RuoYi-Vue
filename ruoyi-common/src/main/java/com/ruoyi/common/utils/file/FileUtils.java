@@ -257,8 +257,8 @@ public class FileUtils
     }
 
     /**
-     * 获取名称
-     *  例如: /profile/upload/2022/04/16/ruoyi.png, 返回: ruoyi.png
+     * 获取文件名称 /profile/upload/2022/04/16/ruoyi.png -- ruoyi.png
+     * 
      * @param fileName 路径名称
      * @return 没有文件路径的名称
      */
@@ -275,13 +275,15 @@ public class FileUtils
     }
 
     /**
-     * 获取名称
-     * 例如: /profile/upload/2022/04/16/ruoyi.png, 返回: ruoyi
+     * 获取不带后缀文件名称 /profile/upload/2022/04/16/ruoyi.png -- ruoyi
+     * 
      * @param fileName 路径名称
-     * @return 没有文件路径的名称
+     * @return 没有文件路径和后缀的名称
      */
-    public static String getNameNotSuffix(String fileName) {
-        if (fileName == null) {
+    public static String getNameNotSuffix(String fileName)
+    {
+        if (fileName == null)
+        {
             return null;
         }
         String baseName = FilenameUtils.getBaseName(fileName);
