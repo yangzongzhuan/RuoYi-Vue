@@ -130,7 +130,7 @@
 		<set>
 			<if test="menuName != null and menuName != ''">menu_name = #{menuName},</if>
 			<if test="parentId != null">parent_id = #{parentId},</if>
-			<if test="orderNum != null and orderNum != ''">order_num = #{orderNum},</if>
+			<if test="orderNum != null">order_num = #{orderNum},</if>
 			<if test="path != null and path != ''">path = #{path},</if>
 			<if test="component != null">component = #{component},</if>
 			<if test="query != null">`query` = #{query},</if>
@@ -153,7 +153,7 @@
 		<if test="menuId != null and menuId != 0">menu_id,</if>
 		<if test="parentId != null and parentId != 0">parent_id,</if>
 		<if test="menuName != null and menuName != ''">menu_name,</if>
-		<if test="orderNum != null and orderNum != ''">order_num,</if>
+		<if test="orderNum != null">order_num,</if>
 		<if test="path != null and path != ''">path,</if>
 		<if test="component != null and component != ''">component,</if>
 		<if test="query != null and query != ''">`query`,</if>
@@ -171,7 +171,7 @@
 		<if test="menuId != null and menuId != 0">#{menuId},</if>
 		<if test="parentId != null and parentId != 0">#{parentId},</if>
 		<if test="menuName != null and menuName != ''">#{menuName},</if>
-		<if test="orderNum != null and orderNum != ''">#{orderNum},</if>
+		<if test="orderNum != null">#{orderNum},</if>
 		<if test="path != null and path != ''">#{path},</if>
 		<if test="component != null and component != ''">#{component},</if>
 		<if test="query != null and query != ''">#{query},</if>
