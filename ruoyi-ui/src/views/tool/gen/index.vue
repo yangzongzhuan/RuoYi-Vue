@@ -305,7 +305,7 @@ export default {
       return result.value || '&nbsp;';
     },
     /** 复制代码成功 */
-    clipboardSuccess(){
+    clipboardSuccess() {
       this.$modal.msgSuccess("复制成功");
     },
     // 多选框选中数据
