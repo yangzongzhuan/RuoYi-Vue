@@ -106,7 +106,7 @@
             <span>Java虚拟机信息</span>
           </div>
           <div class="el-table el-table--enable-row-hover el-table--medium">
-            <table cellspacing="0" style="width: 100%;">
+            <table cellspacing="0" style="width: 100%;table-layout:fixed;">
               <tbody>
                 <tr>
                   <td class="el-table__cell is-leaf"><div class="cell">Java名称</div></td>
