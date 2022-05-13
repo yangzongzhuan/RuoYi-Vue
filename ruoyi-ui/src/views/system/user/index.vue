@@ -21,6 +21,7 @@
             :filter-node-method="filterNode"
             ref="tree"
             default-expand-all
+            highlight-current
             @node-click="handleNodeClick"
           />
         </div>
