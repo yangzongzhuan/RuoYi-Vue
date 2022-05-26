@@ -1,15 +1,15 @@
 package com.ruoyi.framework.config;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.serializer.SerializerFeature;
+import java.nio.charset.Charset;
+import org.springframework.data.redis.serializer.RedisSerializer;
+import org.springframework.data.redis.serializer.SerializationException;
+import org.springframework.util.Assert;
+import com.alibaba.fastjson2.JSON;
+import com.alibaba.fastjson2.JSONReader;
+import com.alibaba.fastjson2.JSONWriter;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.TypeFactory;
-import org.springframework.data.redis.serializer.RedisSerializer;
-import org.springframework.data.redis.serializer.SerializationException;
-import com.alibaba.fastjson.parser.ParserConfig;
-import org.springframework.util.Assert;
-import java.nio.charset.Charset;
 
 /**
  * Redis使用FastJson序列化
@@ -25,11 +25,6 @@ public class FastJson2JsonRedisSerializer<T> implements RedisSerializer<T>
 
     private Class<T> clazz;
 
-    static
-    {
-        ParserConfig.getGlobalInstance().setAutoTypeSupport(true);
-    }
-
     public FastJson2JsonRedisSerializer(Class<T> clazz)
     {
         super();
@@ -43,7 +38,7 @@ public class FastJson2JsonRedisSerializer<T> implements RedisSerializer<T>
         {
             return new byte[0];
         }
-        return JSON.toJSONString(t, SerializerFeature.WriteClassName).getBytes(DEFAULT_CHARSET);
+        return JSON.toJSONString(t, JSONWriter.Feature.WriteClassName).getBytes(DEFAULT_CHARSET);
     }
 
     @Override
@@ -55,7 +50,7 @@ public class FastJson2JsonRedisSerializer<T> implements RedisSerializer<T>
         }
         String str = new String(bytes, DEFAULT_CHARSET);
 
-        return JSON.parseObject(str, clazz);
+        return JSON.parseObject(str, clazz, JSONReader.Feature.SupportAutoType);
     }
 
     public void setObjectMapper(ObjectMapper objectMapper)

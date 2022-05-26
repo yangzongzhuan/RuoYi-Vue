@@ -7,7 +7,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson2.JSON;
 import com.ruoyi.common.annotation.RepeatSubmit;
 import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.core.redis.RedisCache;
@@ -50,7 +50,7 @@ public class SameUrlDataInterceptor extends RepeatSubmitInterceptor
         // body参数为空，获取Parameter的数据
         if (StringUtils.isEmpty(nowParams))
         {
-            nowParams = JSONObject.toJSONString(request.getParameterMap());
+            nowParams = JSON.toJSONString(request.getParameterMap());
         }
         Map<String, Object> nowDataMap = new HashMap<String, Object>();
         nowDataMap.put(REPEAT_PARAMS, nowParams);
