@@ -381,7 +381,7 @@ public class SysUserServiceImpl implements ISysUserService
      */
     public void insertUserRole(SysUser user)
     {
-        this.insertUserRole(user.getUserId, user.getRoleIds());
+        this.insertUserRole(user.getUserId(), user.getRoleIds());
     }
 
     /**
