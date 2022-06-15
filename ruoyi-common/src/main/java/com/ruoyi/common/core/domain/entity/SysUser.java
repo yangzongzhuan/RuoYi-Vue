@@ -55,9 +55,6 @@ public class SysUser extends BaseEntity
     /** 密码 */
     private String password;
 
-    /** 盐加密 */
-    private String salt;
-
     /** 帐号状态（0正常 1停用） */
     @Excel(name = "帐号状态", readConverterExp = "0=正常,1=停用")
     private String status;
@@ -210,16 +207,6 @@ public class SysUser extends BaseEntity
         this.password = password;
     }
 
-    public String getSalt()
-    {
-        return salt;
-    }
-
-    public void setSalt(String salt)
-    {
-        this.salt = salt;
-    }
-
     public String getStatus()
     {
         return status;
@@ -322,7 +309,6 @@ public class SysUser extends BaseEntity
             .append("sex", getSex())
             .append("avatar", getAvatar())
             .append("password", getPassword())
-            .append("salt", getSalt())
             .append("status", getStatus())
             .append("delFlag", getDelFlag())
             .append("loginIp", getLoginIp())
