@@ -42,9 +42,9 @@ public class SysRegisterService
     {
         String msg = "", username = registerBody.getUsername(), password = registerBody.getPassword();
 
-        boolean captchaOnOff = configService.selectCaptchaOnOff();
+        boolean captchaEnabled = configService.selectCaptchaEnabled();
         // 验证码开关
-        if (captchaOnOff)
+        if (captchaEnabled)
         {
             validateCaptcha(username, registerBody.getCode(), registerBody.getUuid());
         }
