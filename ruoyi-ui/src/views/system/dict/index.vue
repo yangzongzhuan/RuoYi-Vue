@@ -339,6 +339,7 @@ export default {
     handleRefreshCache() {
       refreshCache().then(() => {
         this.$modal.msgSuccess("刷新成功");
+        this.$store.dispatch('dict/cleanDict');
       });
     }
   }

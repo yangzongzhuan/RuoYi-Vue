@@ -364,12 +364,14 @@ export default {
         if (valid) {
           if (this.form.dictCode != undefined) {
             updateData(this.form).then(response => {
+              this.$store.dispatch('dict/removeDict', this.queryParams.dictType);
               this.$modal.msgSuccess("修改成功");
               this.open = false;
               this.getList();
             });
           } else {
             addData(this.form).then(response => {
+              this.$store.dispatch('dict/removeDict', this.queryParams.dictType);
               this.$modal.msgSuccess("新增成功");
               this.open = false;
               this.getList();
@@ -386,6 +388,7 @@ export default {
       }).then(() => {
         this.getList();
         this.$modal.msgSuccess("删除成功");
+        this.$store.dispatch('dict/removeDict', this.queryParams.dictType);
       }).catch(() => {});
     },
     /** 导出按钮操作 */
