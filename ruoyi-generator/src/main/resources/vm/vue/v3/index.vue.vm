@@ -492,8 +492,8 @@ function handleAdd() {
 /** 修改按钮操作 */
 function handleUpdate(row) {
   reset();
-  const ${pkColumn.javaField} = row.${pkColumn.javaField} || ids.value
-  get${BusinessName}(${pkColumn.javaField}).then(response => {
+  const _${pkColumn.javaField} = row.${pkColumn.javaField} || ids.value
+  get${BusinessName}(_${pkColumn.javaField}).then(response => {
     form.value = response.data;
 #foreach ($column in $columns)
 #if($column.htmlType == "checkbox")
@@ -539,9 +539,9 @@ function submitForm() {
 
 /** 删除按钮操作 */
 function handleDelete(row) {
-  const ${pkColumn.javaField}s = row.${pkColumn.javaField} || ids.value;
-  proxy.#[[$modal]]#.confirm('是否确认删除${functionName}编号为"' + ${pkColumn.javaField}s + '"的数据项？').then(function() {
-    return del${BusinessName}(${pkColumn.javaField}s);
+  const _${pkColumn.javaField}s = row.${pkColumn.javaField} || ids.value;
+  proxy.#[[$modal]]#.confirm('是否确认删除${functionName}编号为"' + _${pkColumn.javaField}s + '"的数据项？').then(function() {
+    return del${BusinessName}(_${pkColumn.javaField}s);
   }).then(() => {
     getList();
     proxy.#[[$modal]]#.msgSuccess("删除成功");
