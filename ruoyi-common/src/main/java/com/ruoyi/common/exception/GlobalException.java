@@ -45,6 +45,7 @@ public class GlobalException extends RuntimeException
         return this;
     }
 
+    @Override
     public String getMessage()
     {
         return message;
