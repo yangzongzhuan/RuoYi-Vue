@@ -23,6 +23,7 @@ import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.common.utils.ip.IpUtils;
 import com.ruoyi.framework.manager.AsyncManager;
 import com.ruoyi.framework.manager.factory.AsyncFactory;
+import com.ruoyi.framework.security.context.AuthenticationContextHolder;
 import com.ruoyi.system.service.ISysConfigService;
 import com.ruoyi.system.service.ISysUserService;
 
@@ -70,9 +71,10 @@ public class SysLoginService
         Authentication authentication = null;
         try
         {
+            UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(username, password);
+            AuthenticationContextHolder.setContext(authenticationToken);
             // 该方法会去调用UserDetailsServiceImpl.loadUserByUsername
-            authentication = authenticationManager
-                    .authenticate(new UsernamePasswordAuthenticationToken(username, password));
+            authentication = authenticationManager.authenticate(authenticationToken);
         }
         catch (Exception e)
         {
