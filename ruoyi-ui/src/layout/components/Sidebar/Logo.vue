@@ -35,7 +35,7 @@ export default {
   },
   data() {
     return {
-      title: '若依管理系统',
+      title: '物联网管理后台',
       logo: logoImg
     }
   }
