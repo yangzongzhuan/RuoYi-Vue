@@ -295,7 +295,7 @@ export default {
     },
     /** 导出按钮操作 */
     handleExport() {
-      this.download('monitor/operlog/export', {
+      this.download('monitor/export/operlog', {
         ...this.queryParams
       }, `operlog_${new Date().getTime()}.xlsx`)
     }

@@ -300,7 +300,7 @@ export default {
     },
     /** 导出按钮操作 */
     handleExport() {
-      this.download('system/post/export', {
+      this.download('system/export/post', {
         ...this.queryParams
       }, `post_${new Date().getTime()}.xlsx`)
     }

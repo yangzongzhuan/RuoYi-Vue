@@ -506,7 +506,7 @@ export default {
     },
     /** 导出按钮操作 */
     handleExport() {
-      this.download('monitor/job/export', {
+      this.download('monitor/export/job', {
         ...this.queryParams
       }, `job_${new Date().getTime()}.xlsx`)
     }

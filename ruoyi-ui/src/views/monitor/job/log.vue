@@ -286,7 +286,7 @@ export default {
     },
     /** 导出按钮操作 */
     handleExport() {
-      this.download('/monitor/jobLog/export', {
+      this.download('/monitor/export/jobLog', {
         ...this.queryParams
       }, `log_${new Date().getTime()}.xlsx`)
     }

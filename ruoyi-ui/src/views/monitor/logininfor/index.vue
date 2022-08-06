@@ -209,7 +209,7 @@ export default {
     },
     /** 导出按钮操作 */
     handleExport() {
-      this.download('monitor/logininfor/export', {
+      this.download('monitor/export/logininfor', {
         ...this.queryParams
       }, `logininfor_${new Date().getTime()}.xlsx`)
     }

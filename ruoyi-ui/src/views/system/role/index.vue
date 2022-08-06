@@ -605,7 +605,7 @@ export default {
     },
     /** 导出按钮操作 */
     handleExport() {
-      this.download('system/role/export', {
+      this.download('system/export/role', {
         ...this.queryParams
       }, `role_${new Date().getTime()}.xlsx`)
     }

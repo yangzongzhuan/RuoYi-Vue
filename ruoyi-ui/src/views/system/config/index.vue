@@ -328,7 +328,7 @@ export default {
     },
     /** 导出按钮操作 */
     handleExport() {
-      this.download('system/config/export', {
+      this.download('system/export/config', {
         ...this.queryParams
       }, `config_${new Date().getTime()}.xlsx`)
     },

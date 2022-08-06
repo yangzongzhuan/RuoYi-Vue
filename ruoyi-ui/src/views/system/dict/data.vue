@@ -393,7 +393,7 @@ export default {
     },
     /** 导出按钮操作 */
     handleExport() {
-      this.download('system/dict/data/export', {
+      this.download('system/export/dict_data', {
         ...this.queryParams
       }, `data_${new Date().getTime()}.xlsx`)
     }

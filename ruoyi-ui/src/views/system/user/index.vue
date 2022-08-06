@@ -637,7 +637,7 @@ export default {
     },
     /** 导出按钮操作 */
     handleExport() {
-      this.download('system/user/export', {
+      this.download('system/export/user', {
         ...this.queryParams
       }, `user_${new Date().getTime()}.xlsx`)
     },
