@@ -75,6 +75,17 @@
       </el-col>
       <el-col :span="1.5">
         <el-button
+          type="primary"
+          plain
+          icon="el-icon-unlock"
+          size="mini"
+          :disabled="single"
+          @click="handleUnlock"
+          v-hasPermi="['monitor:logininfor:unlock']"
+        >解锁</el-button>
+      </el-col>
+      <el-col :span="1.5">
+        <el-button
           type="warning"
           plain
           icon="el-icon-download"
@@ -118,7 +129,7 @@
 </template>
 
 <script>
-import { list, delLogininfor, cleanLogininfor } from "@/api/monitor/logininfor";
+import { list, delLogininfor, cleanLogininfor, unlockLogininfor } from "@/api/monitor/logininfor";
 
 export default {
   name: "Logininfor",
@@ -129,8 +140,12 @@ export default {
       loading: true,
       // 选中数组
       ids: [],
+      // 非单个禁用
+      single: true,
       // 非多个禁用
       multiple: true,
+      // 选择用户名
+      selectName: "",
       // 显示搜索条件
       showSearch: true,
       // 总条数
@@ -180,7 +195,9 @@ export default {
     /** 多选框选中数据 */
     handleSelectionChange(selection) {
       this.ids = selection.map(item => item.infoId)
+      this.single = selection.length!=1
       this.multiple = !selection.length
+      this.selectName = selection.map(item => item.userName);
     },
     /** 排序触发事件 */
     handleSortChange(column, prop, order) {
@@ -205,6 +222,15 @@ export default {
       }).then(() => {
         this.getList();
         this.$modal.msgSuccess("清空成功");
+      }).catch(() => {});
+    },
+    /** 解锁按钮操作 */
+    handleUnlock() {
+      const username = this.selectName;
+      this.$modal.confirm('是否确认解锁用户"' + username + '"数据项?').then(function() {
+        return unlockLogininfor(username);
+      }).then(() => {
+        this.$modal.msgSuccess("用户" + username + "解锁成功");
       }).catch(() => {});
     },
     /** 导出按钮操作 */
