@@ -76,6 +76,7 @@ public class SysProfileController extends BaseController
         user.setUserId(sysUser.getUserId());
         user.setPassword(null);
         user.setAvatar(null);
+        user.setDeptId(null);
         if (userService.updateUserProfile(user) > 0)
         {
             // 更新缓存用户信息
