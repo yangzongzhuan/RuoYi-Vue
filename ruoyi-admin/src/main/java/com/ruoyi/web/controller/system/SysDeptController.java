@@ -79,29 +79,6 @@ public class SysDeptController extends BaseController
     }
 
     /**
-     * 获取部门下拉树列表
-     */
-    @GetMapping("/treeselect")
-    public AjaxResult treeselect(SysDept dept)
-    {
-        List<SysDept> depts = deptService.selectDeptList(dept);
-        return AjaxResult.success(deptService.buildDeptTreeSelect(depts));
-    }
-
-    /**
-     * 加载对应角色部门列表树
-     */
-    @GetMapping(value = "/roleDeptTreeselect/{roleId}")
-    public AjaxResult roleDeptTreeselect(@PathVariable("roleId") Long roleId)
-    {
-        List<SysDept> depts = deptService.selectDeptList(new SysDept());
-        AjaxResult ajax = AjaxResult.success();
-        ajax.put("checkedKeys", deptService.selectDeptListByRoleId(roleId));
-        ajax.put("depts", deptService.buildDeptTreeSelect(depts));
-        return ajax;
-    }
-
-    /**
      * 新增部门
      */
     @PreAuthorize("@ss.hasPermi('system:dept:add')")
