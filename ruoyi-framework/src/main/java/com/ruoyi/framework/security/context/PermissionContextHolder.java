@@ -1,5 +1,9 @@
 package com.ruoyi.framework.security.context;
 
+import org.springframework.web.context.request.RequestAttributes;
+import org.springframework.web.context.request.RequestContextHolder;
+import com.ruoyi.common.core.text.Convert;
+
 /**
  * 权限信息
  * 
@@ -7,15 +11,17 @@ package com.ruoyi.framework.security.context;
  */
 public class PermissionContextHolder
 {
-    private static final ThreadLocal<String> contextHolder = new ThreadLocal<>();
+    private static final String PERMISSION_CONTEXT_ATTRIBUTES = "PERMISSION_CONTEXT";
 
     public static void setContext(String permission)
     {
-        contextHolder.set(permission);
+        RequestContextHolder.currentRequestAttributes().setAttribute(PERMISSION_CONTEXT_ATTRIBUTES, permission,
+                RequestAttributes.SCOPE_REQUEST);
     }
 
     public static String getContext()
     {
-        return contextHolder.get();
+        return Convert.toStr(RequestContextHolder.currentRequestAttributes().getAttribute(PERMISSION_CONTEXT_ATTRIBUTES,
+                RequestAttributes.SCOPE_REQUEST));
     }
 }

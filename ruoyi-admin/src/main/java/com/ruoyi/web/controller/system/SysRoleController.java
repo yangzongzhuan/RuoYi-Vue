@@ -251,7 +251,7 @@ public class SysRoleController extends BaseController
     /**
      * 获取对应角色部门树列表
      */
-    @PreAuthorize("@ss.hasPermi('system:role:list')")
+    @PreAuthorize("@ss.hasPermi('system:role:query')")
     @GetMapping(value = "/deptTree/{roleId}")
     public AjaxResult deptTree(@PathVariable("roleId") Long roleId)
     {
@@ -260,5 +260,4 @@ public class SysRoleController extends BaseController
         ajax.put("depts", deptService.selectDeptTreeList(new SysDept()));
         return ajax;
     }
-
 }

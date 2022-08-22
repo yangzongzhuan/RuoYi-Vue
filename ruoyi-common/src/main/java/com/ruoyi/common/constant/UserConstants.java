@@ -12,11 +12,6 @@ public class UserConstants
      */
     public static final String SYS_USER = "SYS_USER";
 
-    /**
-     * ss标记的权限字符
-     */
-    public static final String SS_PERMISSION = "SS_PERMISSION";
-
     /** 正常状态 */
     public static final String NORMAL = "0";
 

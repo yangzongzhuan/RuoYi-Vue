@@ -89,6 +89,10 @@ public class SysLoginService
                 throw new ServiceException(e.getMessage());
             }
         }
+        finally
+        {
+            AuthenticationContextHolder.clearContext();
+        }
         AsyncManager.me().execute(AsyncFactory.recordLogininfor(username, Constants.LOGIN_SUCCESS, MessageUtils.message("user.login.success")));
         LoginUser loginUser = (LoginUser) authentication.getPrincipal();
         recordLoginInfo(loginUser.getUserId());

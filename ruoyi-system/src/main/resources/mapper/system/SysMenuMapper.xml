@@ -118,7 +118,6 @@
 		where m.status = '0' and rm.role_id = #{roleId}
 	</select>
 	
-	
 	<select id="selectMenuById" parameterType="Long" resultMap="SysMenuResult">
 		<include refid="selectMenuVo"/>
 		where menu_id = #{menuId}
