@@ -124,9 +124,9 @@ public class RedisCache
      * @param collection 多个对象
      * @return
      */
-    public long deleteObject(final Collection collection)
+    public boolean deleteObject(final Collection collection)
     {
-        return redisTemplate.delete(collection);
+        return redisTemplate.delete(collection) > 0;
     }
 
     /**
@@ -232,18 +232,6 @@ public class RedisCache
     }
 
     /**
-     * 删除Hash中的数据
-     * 
-     * @param key
-     * @param hKey
-     */
-    public void delCacheMapValue(final String key, final String hKey)
-    {
-        HashOperations hashOperations = redisTemplate.opsForHash();
-        hashOperations.delete(key, hKey);
-    }
-
-    /**
      * 获取多个Hash中的数据
      *
      * @param key Redis键
@@ -264,7 +252,7 @@ public class RedisCache
      */
     public boolean deleteCacheMapValue(final String key, final String hKey)
     {
-        return Boolean.TRUE.equals(redisTemplate.opsForHash().delete(key, hKey));
+        return redisTemplate.opsForHash().delete(key, hKey) > 0;
     }
 
     /**
