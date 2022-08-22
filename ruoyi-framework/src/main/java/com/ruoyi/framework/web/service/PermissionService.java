@@ -76,6 +76,7 @@ public class PermissionService
         {
             return false;
         }
+        PermissionContextHolder.setContext(permissions);
         Set<String> authorities = loginUser.getPermissions();
         for (String permission : permissions.split(PERMISSION_DELIMETER))
         {

@@ -27,7 +27,7 @@ public @interface DataScope
     public String userAlias() default "";
 
     /**
-     * 权限字符（如不填默认会自动根据注解获取）
+     * 权限字符（用于多个角色匹配符合要求的权限）默认根据权限注解@ss获取，多个权限用逗号分隔开来
      */
     public String permission() default "";
 }

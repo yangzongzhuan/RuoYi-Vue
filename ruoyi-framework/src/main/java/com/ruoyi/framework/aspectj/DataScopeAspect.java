@@ -11,6 +11,7 @@ import com.ruoyi.common.core.domain.BaseEntity;
 import com.ruoyi.common.core.domain.entity.SysRole;
 import com.ruoyi.common.core.domain.entity.SysUser;
 import com.ruoyi.common.core.domain.model.LoginUser;
+import com.ruoyi.common.core.text.Convert;
 import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.framework.security.context.PermissionContextHolder;
@@ -99,7 +100,8 @@ public class DataScopeAspect
             {
                 continue;
             }
-            if (StringUtils.isNotEmpty(permission) && StringUtils.isNotEmpty(role.getPermissions()) && !role.getPermissions().contains(permission))
+            if (StringUtils.isNotEmpty(permission) && StringUtils.isNotEmpty(role.getPermissions())
+                    && !StringUtils.containsAny(role.getPermissions(), Convert.toStrArray(permission)))
             {
                 continue;
             }
