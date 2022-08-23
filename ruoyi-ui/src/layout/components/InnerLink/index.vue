@@ -1,27 +1,47 @@
+<template>
+  <div :style="'height:' + height" v-loading="loading" element-loading-text="正在加载页面，请稍候！">
+    <iframe
+      :id="iframeId"
+      style="width: 100%; height: 100%"
+      :src="src"
+      frameborder="no"
+    ></iframe>
+  </div>
+</template>
+
 <script>
 export default {
-  data() {
-    return {};
-  },
-  render() {
-    const { $route: { meta: { link } }, } = this;
-    if ({ link }.link === "") {
-      return "404";
+  props: {
+    src: {
+      type: String,
+      default: "/"
+    },
+    iframeId: {
+      type: String
     }
-    let url = { link }.link;
-    const height = document.documentElement.clientHeight - 94.5 + "px";
-    const style = { height: height };
-
-    return (
-      <div style={style}>
-        <iframe
-          src={url}
-          frameborder="no"
-          style="width: 100%; height: 100%"
-          scrolling="auto"
-        ></iframe>
-      </div>
-    );
   },
+  data() {
+    return {
+      loading: false,
+      height: document.documentElement.clientHeight - 94.5 + "px;"
+    };
+  },
+  mounted() {
+    var _this = this;
+    const iframeId = ("#" + this.iframeId).replace(/\//g, "\\/");
+    const iframe = document.querySelector(iframeId);
+    // iframe页面loading控制
+    if (iframe.attachEvent) {
+      this.loading = true;
+      iframe.attachEvent("onload", function () {
+        _this.loading = false;
+      });
+    } else {
+      this.loading = true;
+      iframe.onload = function () {
+        _this.loading = false;
+      };
+    }
+  }
 };
 </script>
