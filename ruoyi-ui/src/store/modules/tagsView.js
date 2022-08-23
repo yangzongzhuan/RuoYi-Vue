@@ -6,11 +6,12 @@ const state = {
 
 const mutations = {
   ADD_IFRAME_VIEW: (state, view) => {
-    if (state.iframeViews.some(v => v.path === view.path)) {
-      return
-    } else {
-      state.iframeViews.push(view)
-    }
+    if (state.iframeViews.some(v => v.path === view.path)) return
+    state.iframeViews.push(
+      Object.assign({}, view, {
+        title: view.meta.title || 'no-name'
+      })
+    )
   },
   ADD_VISITED_VIEW: (state, view) => {
     if (state.visitedViews.some(v => v.path === view.path)) return
@@ -87,10 +88,12 @@ const mutations = {
       if (i > -1) {
         state.cachedViews.splice(i, 1)
       }
+      if(item.meta.link) {
+        const fi = state.iframeViews.findIndex(v => v.path === item.path)
+        state.iframeViews.splice(fi, 1)
+      }
       return false
     })
-    const iframeIndex = state.iframeViews.findIndex(v => v.path === view.path)
-    state.iframeViews = state.iframeViews.filter((item, idx) => idx <= iframeIndex)
   },
   DEL_LEFT_VIEWS: (state, view) => {
     const index = state.visitedViews.findIndex(v => v.path === view.path)
@@ -105,10 +108,12 @@ const mutations = {
       if (i > -1) {
         state.cachedViews.splice(i, 1)
       }
+      if(item.meta.link) {
+        const fi = state.iframeViews.findIndex(v => v.path === item.path)
+        state.iframeViews.splice(fi, 1)
+      }
       return false
     })
-    const iframeIndex = state.iframeViews.findIndex(v => v.path === view.path)
-    state.iframeViews = state.iframeViews.filter((item, idx) => idx >= iframeIndex)
   }
 }
 
