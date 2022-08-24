@@ -12,7 +12,7 @@
       :show-file-list="false"
       :headers="headers"
       class="upload-file-uploader"
-      ref="upload"
+      ref="fileUpload"
     >
       <!-- 上传按钮 -->
       <el-button size="mini" type="primary">选取文件</el-button>
@@ -151,20 +151,32 @@ export default {
       this.$modal.closeLoading()
     },
     // 上传成功回调
-    handleUploadSuccess(res) {
-      this.uploadList.push({ name: res.fileName, url: res.fileName });
-      if (this.uploadList.length === this.number) {
-        this.fileList = this.fileList.concat(this.uploadList);
-        this.uploadList = [];
-        this.number = 0;
-        this.$emit("input", this.listToString(this.fileList));
+    handleUploadSuccess(res, file) {
+      if (res.code === 200) {
+        this.uploadList.push({ name: res.fileName, url: res.fileName });
+        this.uploadedSuccessfully();
+      } else {
+        this.number--;
         this.$modal.closeLoading();
+        this.$modal.msgError(res.msg);
+        this.$refs.fileUpload.handleRemove(file);
+        this.uploadedSuccessfully();
       }
     },
     // 删除文件
     handleDelete(index) {
       this.fileList.splice(index, 1);
       this.$emit("input", this.listToString(this.fileList));
+    },
+    // 上传结束处理
+    uploadedSuccessfully() {
+      if (this.number > 0 && this.uploadList.length === this.number) {
+        this.fileList = this.fileList.concat(this.uploadList);
+        this.uploadList = [];
+        this.number = 0;
+        this.$emit("input", this.listToString(this.fileList));
+        this.$modal.closeLoading();
+      }
     },
     // 获取文件名称
     getFileName(name) {
