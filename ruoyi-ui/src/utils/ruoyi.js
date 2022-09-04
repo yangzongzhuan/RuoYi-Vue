@@ -54,7 +54,7 @@ export function resetForm(refName) {
 }
 
 // 添加日期范围
-export function addDateRange(params, dateRange, propName) {
+export function addDateRange(params, dateRange, propName, camelCase) {
   let search = params;
   search.params = typeof (search.params) === 'object' && search.params !== null && !Array.isArray(search.params) ? search.params : {};
   dateRange = Array.isArray(dateRange) ? dateRange : [];
@@ -62,6 +62,13 @@ export function addDateRange(params, dateRange, propName) {
     search.params['beginTime'] = dateRange[0];
     search.params['endTime'] = dateRange[1];
   } else {
+    // 默认为驼峰形式，可以自行是否需要处理为驼峰
+    if (typeof (camelCase) === 'undefined') {
+      camelCase = true;
+    }
+    if (camelCase) {
+      propName = propName.substring(0, 1).toUpperCase() + propName.substring(1);
+    }
     search.params['begin' + propName] = dateRange[0];
     search.params['end' + propName] = dateRange[1];
   }
