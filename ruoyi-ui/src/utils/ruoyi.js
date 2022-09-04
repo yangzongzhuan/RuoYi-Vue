@@ -62,7 +62,7 @@ export function addDateRange(params, dateRange, propName, camelCase) {
     search.params['beginTime'] = dateRange[0];
     search.params['endTime'] = dateRange[1];
   } else {
-    // 默认为驼峰形式，可以自行是否需要处理为驼峰
+    // 默认为转化为驼峰形式。不转化时请传：false
     if (typeof (camelCase) === 'undefined') {
       camelCase = true;
     }
