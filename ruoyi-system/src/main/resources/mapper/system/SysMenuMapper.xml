@@ -158,7 +158,7 @@
 	<insert id="insertMenu" parameterType="SysMenu">
 		insert into sys_menu(
 		<if test="menuId != null and menuId != 0">menu_id,</if>
-		<if test="parentId != null and parentId != 0">parent_id,</if>
+		<if test="parentId != null">parent_id,</if>
 		<if test="menuName != null and menuName != ''">menu_name,</if>
 		<if test="orderNum != null">order_num,</if>
 		<if test="path != null and path != ''">path,</if>
