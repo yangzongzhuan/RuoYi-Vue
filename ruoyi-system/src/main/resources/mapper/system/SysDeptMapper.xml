@@ -59,8 +59,10 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	</select>
     
     <select id="selectDeptById" parameterType="Long" resultMap="SysDeptResult">
-		<include refid="selectDeptVo"/>
-		where dept_id = #{deptId}
+		select d.dept_id, d.parent_id, d.ancestors, d.dept_name, d.order_num, d.leader, d.phone, d.email, d.status,
+			(select dept_name from sys_dept where dept_id = d.parent_id) parent_name
+		from sys_dept d
+		where d.dept_id = #{deptId}
 	</select>
     
     <select id="checkDeptExistUser" parameterType="Long" resultType="int">
