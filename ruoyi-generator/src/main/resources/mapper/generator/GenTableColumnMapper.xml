@@ -92,19 +92,19 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     <update id="updateGenTableColumn" parameterType="GenTableColumn">
         update gen_table_column
         <set>
-            column_comment = #{columnComment},
-            java_type = #{javaType},
-            java_field = #{javaField},
-            is_insert = #{isInsert},
-            is_edit = #{isEdit},
-            is_list = #{isList},
-            is_query = #{isQuery},
-            is_required = #{isRequired},
-            query_type = #{queryType},
-            html_type = #{htmlType},
-            dict_type = #{dictType},
-            sort = #{sort},
-            update_by = #{updateBy},
+            <if test="columnComment != null">column_comment = #{columnComment},</if>
+            <if test="javaType != null">java_type = #{javaType},</if>
+            <if test="javaField != null">java_field = #{javaField},</if>
+            <if test="isInsert != null">is_insert = #{isInsert},</if>
+            <if test="isEdit != null">is_edit = #{isEdit},</if>
+            <if test="isList != null">is_list = #{isList},</if>
+            <if test="isQuery != null">is_query = #{isQuery},</if>
+            <if test="isRequired != null">is_required = #{isRequired},</if>
+            <if test="queryType != null">query_type = #{queryType},</if>
+            <if test="htmlType != null">html_type = #{htmlType},</if>
+            <if test="dictType != null">dict_type = #{dictType},</if>
+            <if test="sort != null">sort = #{sort},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
             update_time = sysdate()
         </set>
         where column_id = #{columnId}
