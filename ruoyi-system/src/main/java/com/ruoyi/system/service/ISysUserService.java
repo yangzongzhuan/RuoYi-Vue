@@ -69,10 +69,10 @@ public interface ISysUserService
     /**
      * 校验用户名称是否唯一
      * 
-     * @param userName 用户名称
+     * @param user 用户信息
      * @return 结果
      */
-    public String checkUserNameUnique(String userName);
+    public String checkUserNameUnique(SysUser user);
 
     /**
      * 校验手机号码是否唯一
