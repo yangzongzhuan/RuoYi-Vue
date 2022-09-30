@@ -699,6 +699,11 @@ public class ExcelUtil<T>
                 subList = getListCellValue(vo);
                 subMergedLastRowNum = subMergedLastRowNum + subList.size();
             }
+            else
+            {
+                subMergedFirstRowNum++;
+                subMergedLastRowNum++;
+            }
 
             int column = 0;
             for (Object[] os : fields)
