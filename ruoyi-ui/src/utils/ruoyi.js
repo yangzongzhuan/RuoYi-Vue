@@ -131,6 +131,14 @@ export function parseStrEmpty(str) {
   return str;
 }
 
+// 转换userId，undefined,null等转化为"0"
+export function parseUserIdEmpty(userId) {
+  if (!userId || userId == "undefined" || userId == "null") {
+    return "0";
+  }
+  return userId;
+}
+
 // 数据合并
 export function mergeRecursive(source, target) {
   for (var p in target) {
