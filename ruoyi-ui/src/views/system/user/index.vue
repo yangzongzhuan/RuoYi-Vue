@@ -314,7 +314,7 @@
       <el-upload
         ref="upload"
         :limit="1"
-        accept=".xlsx, .xls"
+        accept=".csv"
         :headers="upload.headers"
         :action="upload.url + '?updateSupport=' + upload.updateSupport"
         :disabled="upload.isUploading"
@@ -639,7 +639,7 @@ export default {
     handleExport() {
       this.download('system/export/user', {
         ...this.queryParams
-      }, `user_${new Date().getTime()}.xlsx`)
+      }, `user_${new Date().getTime()}.csv`)
     },
     /** 导入按钮操作 */
     handleImport() {
@@ -649,7 +649,7 @@ export default {
     /** 下载模板操作 */
     importTemplate() {
       this.download('system/user/importTemplate', {
-      }, `user_template_${new Date().getTime()}.xlsx`)
+      }, `user_template_${new Date().getTime()}.csv`)
     },
     // 文件上传中处理
     handleFileUploadProgress(event, file, fileList) {

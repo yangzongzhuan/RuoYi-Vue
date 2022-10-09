@@ -330,7 +330,7 @@ export default {
     handleExport() {
       this.download('system/export/config', {
         ...this.queryParams
-      }, `config_${new Date().getTime()}.xlsx`)
+      }, `config_${new Date().getTime()}.csv`)
     },
     /** 刷新缓存按钮操作 */
     handleRefreshCache() {

@@ -302,7 +302,7 @@ export default {
     handleExport() {
       this.download('system/export/post', {
         ...this.queryParams
-      }, `post_${new Date().getTime()}.xlsx`)
+      }, `post_${new Date().getTime()}.csv`)
     }
   }
 };

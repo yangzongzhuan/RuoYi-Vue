@@ -395,7 +395,7 @@ export default {
     handleExport() {
       this.download('system/export/dict_data', {
         ...this.queryParams
-      }, `data_${new Date().getTime()}.xlsx`)
+      }, `data_${new Date().getTime()}.csv`)
     }
   }
 };

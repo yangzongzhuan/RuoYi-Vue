@@ -607,7 +607,7 @@ export default {
     handleExport() {
       this.download('system/export/role', {
         ...this.queryParams
-      }, `role_${new Date().getTime()}.xlsx`)
+      }, `role_${new Date().getTime()}.csv`)
     }
   }
 };
