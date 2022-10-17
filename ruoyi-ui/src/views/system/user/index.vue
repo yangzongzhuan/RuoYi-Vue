@@ -576,7 +576,17 @@ export default {
       this.getTreeselect();
       const userId = row.userId || this.ids;
       getUser(userId).then(response => {
-        this.form = response.data;
+        // this.form = response.data;
+        this.form.userId = response.data.userId;
+        this.form.deptId = response.data.deptId;
+        this.form.userName = response.data.userName;
+        this.form.nickName = response.data.nickName;
+        this.form.password = response.data.password;
+        this.form.phonenumber = response.data.phonenumber;
+        this.form.email = response.data.email;
+        this.form.sex = response.data.sex;
+        this.form.status = response.data.status;
+        this.form.remark = response.data.remark;
         this.postOptions = response.posts;
         this.roleOptions = response.roles;
         this.form.postIds = response.postIds;
