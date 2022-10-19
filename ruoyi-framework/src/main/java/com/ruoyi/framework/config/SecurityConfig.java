@@ -124,6 +124,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter
         // 添加CORS filter
         httpSecurity.addFilterBefore(corsFilter, JwtAuthenticationTokenFilter.class);
         httpSecurity.addFilterBefore(corsFilter, LogoutFilter.class);
+        // 禁用缓存
+        httpSecurity.headers().cacheControl().disable();
     }
 
     /**
