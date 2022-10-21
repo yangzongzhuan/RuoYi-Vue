@@ -24,7 +24,7 @@
       </el-row>
       <br />
       <el-row>
-        <el-col :lg="2" :sm="2" :xs="2">
+        <el-col :lg="2" :sm="3" :xs="3">
           <el-upload action="#" :http-request="requestUpload" :show-file-list="false" :before-upload="beforeUpload">
             <el-button size="small">
               选择
