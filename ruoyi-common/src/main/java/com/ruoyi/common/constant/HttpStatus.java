@@ -86,4 +86,9 @@ public class HttpStatus
      * 接口未实现
      */
     public static final int NOT_IMPLEMENTED = 501;
+
+    /**
+     * 系统警告消息
+     */
+    public static final int WARN = 601;
 }

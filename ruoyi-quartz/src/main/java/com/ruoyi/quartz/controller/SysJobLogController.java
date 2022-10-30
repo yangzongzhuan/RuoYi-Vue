@@ -63,7 +63,7 @@ public class SysJobLogController extends BaseController
     @GetMapping(value = "/{configId}")
     public AjaxResult getInfo(@PathVariable Long jobLogId)
     {
-        return AjaxResult.success(jobLogService.selectJobLogById(jobLogId));
+        return success(jobLogService.selectJobLogById(jobLogId));
     }
 
 
@@ -87,6 +87,6 @@ public class SysJobLogController extends BaseController
     public AjaxResult clean()
     {
         jobLogService.cleanJobLog();
-        return AjaxResult.success();
+        return success();
     }
 }
