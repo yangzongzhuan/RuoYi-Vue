@@ -217,7 +217,7 @@ export default {
     };
   },
   created() {
-    const jobId = this.$route.query.jobId;
+    const jobId = this.$route.params && this.$route.params.jobId;
     if (jobId !== undefined && jobId != 0) {
       getJob(jobId).then(response => {
         this.queryParams.jobName = response.data.jobName;
