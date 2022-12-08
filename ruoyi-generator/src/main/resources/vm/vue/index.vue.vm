@@ -198,11 +198,11 @@
           <el-input v-model="form.${field}" placeholder="请输入${comment}" />
         </el-form-item>
 #elseif($column.htmlType == "imageUpload")
-        <el-form-item label="${comment}">
+        <el-form-item label="${comment}" prop="${field}">
           <image-upload v-model="form.${field}"/>
         </el-form-item>
 #elseif($column.htmlType == "fileUpload")
-        <el-form-item label="${comment}">
+        <el-form-item label="${comment}" prop="${field}">
           <file-upload v-model="form.${field}"/>
         </el-form-item>
 #elseif($column.htmlType == "editor")
@@ -216,8 +216,11 @@
               v-for="dict in dict.type.${dictType}"
               :key="dict.value"
               :label="dict.label"
-              #if($column.javaType == "Integer" || $column.javaType == "Long"):value="parseInt(dict.value)"#else:value="dict.value"#end
-
+#if($column.javaType == "Integer" || $column.javaType == "Long")
+              :value="parseInt(dict.value)"
+#else
+              :value="dict.value"
+#end
             ></el-option>
           </el-select>
         </el-form-item>
@@ -228,7 +231,7 @@
           </el-select>
         </el-form-item>
 #elseif($column.htmlType == "checkbox" && "" != $dictType)
-        <el-form-item label="${comment}">
+        <el-form-item label="${comment}" prop="${field}">
           <el-checkbox-group v-model="form.${field}">
             <el-checkbox
               v-for="dict in dict.type.${dictType}"
@@ -239,24 +242,27 @@
           </el-checkbox-group>
         </el-form-item>
 #elseif($column.htmlType == "checkbox" && $dictType)
-        <el-form-item label="${comment}">
+        <el-form-item label="${comment}" prop="${field}">
           <el-checkbox-group v-model="form.${field}">
             <el-checkbox>请选择字典生成</el-checkbox>
           </el-checkbox-group>
         </el-form-item>
 #elseif($column.htmlType == "radio" && "" != $dictType)
-        <el-form-item label="${comment}">
+        <el-form-item label="${comment}" prop="${field}">
           <el-radio-group v-model="form.${field}">
             <el-radio
               v-for="dict in dict.type.${dictType}"
               :key="dict.value"
-              #if($column.javaType == "Integer" || $column.javaType == "Long"):label="parseInt(dict.value)"#else:label="dict.value"#end
-
+#if($column.javaType == "Integer" || $column.javaType == "Long")
+              :label="parseInt(dict.value)"
+#else
+              :label="dict.value"
+#end
             >{{dict.label}}</el-radio>
           </el-radio-group>
         </el-form-item>
 #elseif($column.htmlType == "radio" && $dictType)
-        <el-form-item label="${comment}">
+        <el-form-item label="${comment}" prop="${field}">
           <el-radio-group v-model="form.${field}">
             <el-radio label="1">请选择字典生成</el-radio>
           </el-radio-group>
@@ -412,7 +418,7 @@ export default {
 #set($comment=$column.columnComment)
 #end
         $column.javaField: [
-          { required: true, message: "$comment不能为空", trigger: #if($column.htmlType == "select")"change"#else"blur"#end }
+          { required: true, message: "$comment不能为空", trigger: #if($column.htmlType == "select" || $column.htmlType == "radio")"change"#else"blur"#end }
         ]#if($foreach.count != $columns.size()),#end
 #end
 #end
@@ -456,9 +462,7 @@ export default {
     reset() {
       this.form = {
 #foreach ($column in $columns)
-#if($column.htmlType == "radio")
-        $column.javaField: #if($column.javaType == "Integer" || $column.javaType == "Long")0#else"0"#end#if($foreach.count != $columns.size()),#end
-#elseif($column.htmlType == "checkbox")
+#if($column.htmlType == "checkbox")
         $column.javaField: []#if($foreach.count != $columns.size()),#end
 #else
         $column.javaField: null#if($foreach.count != $columns.size()),#end
