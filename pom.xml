@@ -25,7 +25,7 @@
         <mybatis-spring-boot.version>2.2.2</mybatis-spring-boot.version>
         <pagehelper.boot.version>1.4.5</pagehelper.boot.version>
         <fastjson.version>2.0.20</fastjson.version>
-        <oshi.version>6.3.2</oshi.version>
+        <oshi.version>6.4.0</oshi.version>
         <commons.io.version>2.11.0</commons.io.version>
         <commons.fileupload.version>1.4</commons.fileupload.version>
         <commons.collections.version>3.2.2</commons.collections.version>
