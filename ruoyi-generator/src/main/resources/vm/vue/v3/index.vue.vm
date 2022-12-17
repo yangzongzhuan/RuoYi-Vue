@@ -118,22 +118,27 @@
 #else
 #set($comment=$column.columnComment)
 #end
+#if($column.orderBy)
+#set($orderBy="sortable")
+#else
+#set($orderBy="")
+#end
 #if($column.pk)
-      <el-table-column label="${comment}" align="center" prop="${javaField}" />
+      <el-table-column label="${comment}" align="center" prop="${javaField}" $orderBy />
 #elseif($column.list && $column.htmlType == "datetime")
-      <el-table-column label="${comment}" align="center" prop="${javaField}" width="180">
+      <el-table-column label="${comment}" align="center" prop="${javaField}" width="180" $orderBy>
         <template #default="scope">
           <span>{{ parseTime(scope.row.${javaField}, '{y}-{m}-{d}') }}</span>
         </template>
       </el-table-column>
 #elseif($column.list && $column.htmlType == "imageUpload")
-      <el-table-column label="${comment}" align="center" prop="${javaField}" width="100">
+      <el-table-column label="${comment}" align="center" prop="${javaField}" width="100" $orderBy>
         <template #default="scope">
           <image-preview :src="scope.row.${javaField}" :width="50" :height="50"/>
         </template>
       </el-table-column>
 #elseif($column.list && "" != $column.dictType)
-      <el-table-column label="${comment}" align="center" prop="${javaField}">
+      <el-table-column label="${comment}" align="center" prop="${javaField}" $orderBy>
         <template #default="scope">
 #if($column.htmlType == "checkbox")
           <dict-tag :options="${column.dictType}" :value="scope.row.${javaField} ? scope.row.${javaField}.split(',') : []"/>
@@ -143,7 +148,7 @@
         </template>
       </el-table-column>
 #elseif($column.list && "" != $javaField)
-      <el-table-column label="${comment}" align="center" prop="${javaField}" />
+      <el-table-column label="${comment}" align="center" prop="${javaField}" $orderBy />
 #end
 #end
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">

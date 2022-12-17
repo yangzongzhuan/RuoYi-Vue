@@ -56,6 +56,9 @@ public class GenTableColumn extends BaseEntity
     /** 是否查询字段（1是） */
     private String isQuery;
 
+    /** 是否排序字段（1是） */
+    private String isOrderBy;
+
     /** 查询方式（EQ等于、NE不等于、GT大于、LT小于、LIKE模糊、BETWEEN范围） */
     private String queryType;
 
@@ -261,6 +264,24 @@ public class GenTableColumn extends BaseEntity
     public boolean isList(String isList)
     {
         return isList != null && StringUtils.equals("1", isList);
+    }
+
+    public String getIsOrderBy() {
+        return isOrderBy;
+    }
+
+    public void setIsOrderBy(final String isOrderBy) {
+        this.isOrderBy = isOrderBy;
+    }
+
+    public boolean isOrderBy()
+    {
+        return isOrderBy(this.isOrderBy);
+    }
+
+    public boolean isOrderBy(String isOrderBy)
+    {
+        return isOrderBy != null && StringUtils.equals("1", isOrderBy);
     }
 
     public void setIsQuery(String isQuery)
