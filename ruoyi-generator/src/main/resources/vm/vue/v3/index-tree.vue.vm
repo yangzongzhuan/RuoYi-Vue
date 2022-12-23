@@ -166,7 +166,6 @@
             value-key="${treeCode}"
             placeholder="请选择${comment}"
             check-strictly
-            :render-after-expand="false"
           />
         </el-form-item>
 #elseif($column.htmlType == "input")
