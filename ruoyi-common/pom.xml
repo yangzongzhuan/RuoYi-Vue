@@ -5,7 +5,7 @@
     <parent>
         <artifactId>ruoyi</artifactId>
         <groupId>com.ruoyi</groupId>
-        <version>3.8.4</version>
+        <version>3.8.5</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -58,6 +58,13 @@
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
         </dependency>
+        
+        <!-- 动态数据源 -->
+		<dependency>
+			<groupId>com.baomidou</groupId>
+			<artifactId>dynamic-datasource-spring-boot-starter</artifactId>
+			<version>3.5.2</version>
+		</dependency>
 
         <!-- 阿里JSON解析器 -->
         <dependency>
