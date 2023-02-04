@@ -7,9 +7,10 @@ import org.springframework.web.servlet.config.annotation.PathMatchConfigurer;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 /**
- * 通用配置
+ * mvc配置
  *
- * @author ruoyi
+ * @author nikyotensai
+ * @since 2023-02-04
  */
 @Configuration
 public class MvcConfig implements WebMvcConfigurer {

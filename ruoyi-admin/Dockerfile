@@ -3,4 +3,4 @@ RUN ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
 
 ADD target/ruoyi-admin.jar /ruoyi-admin.jar
 EXPOSE 8080
-ENTRYPOINT ["java","-XX:+UseContainerSupport","-XX:InitialRAMPercentage=50.0","-XX:MaxRAMPercentage=50.0","-Duser.timezone=Asia/Shanghai","-Dspring.profiles.active=dev","-jar","/ruoyi-admin.jar"]
+ENTRYPOINT ["java","-XX:+UseContainerSupport","-XX:InitialRAMPercentage=50.0","-XX:MaxRAMPercentage=50.0","-Duser.timezone=Asia/Shanghai","-jar","/ruoyi-admin.jar"]
