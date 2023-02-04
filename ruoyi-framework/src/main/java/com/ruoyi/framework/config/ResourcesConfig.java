@@ -1,6 +1,10 @@
 package com.ruoyi.framework.config;
 
-import java.util.concurrent.TimeUnit;
+import com.ruoyi.common.config.RuoYiConfig;
+import com.ruoyi.common.constant.Constants;
+import com.ruoyi.common.utils.StringUtils;
+import com.ruoyi.framework.interceptor.RepeatSubmitInterceptor;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -8,12 +12,14 @@ import org.springframework.http.CacheControl;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
+import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-import com.ruoyi.common.config.RuoYiConfig;
-import com.ruoyi.common.constant.Constants;
-import com.ruoyi.framework.interceptor.RepeatSubmitInterceptor;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.concurrent.TimeUnit;
 
 /**
  * 通用配置
@@ -46,6 +52,30 @@ public class ResourcesConfig implements WebMvcConfigurer
     public void addInterceptors(InterceptorRegistry registry)
     {
         registry.addInterceptor(repeatSubmitInterceptor).addPathPatterns("/**");
+        addUiInterceptor(registry);
+    }
+
+
+    private void addUiInterceptor(InterceptorRegistry registry) {
+        if (StringUtils.isEmpty(RuoYiConfig.getPathPrefix()) || CollectionUtils.isEmpty(RuoYiConfig.getFrontendPrefix())) {
+            return;
+        }
+        registry.addInterceptor(new HandlerInterceptor() {
+            @Override
+            public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+                String servletPath = request.getServletPath();
+                if (servletPath.equals("/")) {
+                    request.getRequestDispatcher("/index.html").forward(request, response);
+                }
+                for (String prefix : RuoYiConfig.getFrontendPrefix()) {
+                    if (request.getServletPath().startsWith(prefix) && !request.getServletPath().equals("/index.html")) {
+                        request.getRequestDispatcher("/index.html").forward(request, response);
+                        break;
+                    }
+                }
+                return true;
+            }
+        }).addPathPatterns("/**");
     }
 
     /**

@@ -1,7 +1,10 @@
 package com.ruoyi.common.config;
 
+import com.ruoyi.common.utils.StringUtils;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
 
 /**
  * 读取项目相关配置
@@ -32,9 +35,17 @@ public class RuoYiConfig
 
     /** 验证码类型 */
     private static String captchaType;
+    /**
+     * 后端接口前缀
+     */
+    private static String pathPrefix;
 
-    public String getName()
-    {
+    /**
+     * 前端前缀
+     */
+    private static List<String> frontendPrefix;
+
+    public String getName() {
         return name;
     }
 
@@ -101,11 +112,27 @@ public class RuoYiConfig
         RuoYiConfig.captchaType = captchaType;
     }
 
+
+    public static String getPathPrefix() {
+        return StringUtils.nvl(pathPrefix, "");
+    }
+
+    public void setPathPrefix(String pathPrefix) {
+        RuoYiConfig.pathPrefix = pathPrefix;
+    }
+
+    public static List<String> getFrontendPrefix() {
+        return frontendPrefix;
+    }
+
+    public void setFrontendPrefix(List<String> frontendPrefix) {
+        RuoYiConfig.frontendPrefix = frontendPrefix;
+    }
+
     /**
      * 获取导入上传路径
      */
-    public static String getImportPath()
-    {
+    public static String getImportPath() {
         return getProfile() + "/import";
     }
 
