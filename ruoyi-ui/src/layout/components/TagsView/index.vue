@@ -87,7 +87,7 @@ export default {
     },
     isFirstView() {
       try {
-        return this.selectedTag.fullPath === this.visitedViews[1].fullPath || this.selectedTag.fullPath === '/index'
+        return this.selectedTag.fullPath === '/index' || this.selectedTag.fullPath === this.visitedViews[1].fullPath
       } catch (err) {
         return false
       }
