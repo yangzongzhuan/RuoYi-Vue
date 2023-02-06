@@ -113,7 +113,7 @@
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
 
-    <el-table v-loading="loading" :data="${businessName}List" @selection-change="handleSelectionChange">
+    <el-table v-loading="loading" :data="${businessName}List" @selection-change="handleSelectionChange" @sort-change="sortChange">
       <el-table-column type="selection" width="55" align="center" />
 #foreach($column in $columns)
 #set($javaField=$column.javaField)
@@ -123,22 +123,27 @@
 #else
 #set($comment=$column.columnComment)
 #end
+#if($column.orderBy)
+#set($orderBy="sortable")
+#else
+#set($orderBy="")
+#end
 #if($column.pk)
-      <el-table-column label="${comment}" align="center" prop="${javaField}" />
+      <el-table-column label="${comment}" align="center" prop="${javaField}" $orderBy />
 #elseif($column.list && $column.htmlType == "datetime")
-      <el-table-column label="${comment}" align="center" prop="${javaField}" width="180">
+      <el-table-column label="${comment}" align="center" prop="${javaField}" width="180" $orderBy>
         <template slot-scope="scope">
           <span>{{ parseTime(scope.row.${javaField}, '{y}-{m}-{d}') }}</span>
         </template>
       </el-table-column>
 #elseif($column.list && $column.htmlType == "imageUpload")
-      <el-table-column label="${comment}" align="center" prop="${javaField}" width="100">
+      <el-table-column label="${comment}" align="center" prop="${javaField}" width="100" $orderBy>
         <template slot-scope="scope">
           <image-preview :src="scope.row.${javaField}" :width="50" :height="50"/>
         </template>
       </el-table-column>
 #elseif($column.list && "" != $column.dictType)
-      <el-table-column label="${comment}" align="center" prop="${javaField}">
+      <el-table-column label="${comment}" align="center" prop="${javaField}" $orderBy>
         <template slot-scope="scope">
 #if($column.htmlType == "checkbox")
           <dict-tag :options="dict.type.${column.dictType}" :value="scope.row.${javaField} ? scope.row.${javaField}.split(',') : []"/>
@@ -148,7 +153,7 @@
         </template>
       </el-table-column>
 #elseif($column.list && "" != $javaField)
-      <el-table-column label="${comment}" align="center" prop="${javaField}" />
+      <el-table-column label="${comment}" align="center" prop="${javaField}" $orderBy />
 #end
 #end
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
@@ -429,6 +434,17 @@ export default {
     this.getList();
   },
   methods: {
+    /** 排序 */
+    sortChange(column, prop, order) {
+      //打印看看参数有哪些？
+      console.log('排序', column.prop, prop, column.order);
+      //排序的字段是属性名
+      this.queryParams = this.queryParams || {}
+      this.queryParams["orderByColumn"] = column.prop;
+      this.queryParams["isAsc"] = (column.order == 'ascending' ? "asc" : "desc");;
+      //此方法为获取数据的方法
+      this.getList();
+    },
     /** 查询${functionName}列表 */
     getList() {
       this.loading = true;

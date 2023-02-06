@@ -58,6 +58,11 @@
               <el-checkbox true-label="1" false-label="0" v-model="scope.row.isList"></el-checkbox>
             </template>
           </el-table-column>
+          <el-table-column label="排序" min-width="5%">
+            <template slot-scope="scope">
+              <el-checkbox true-label="1" false-label="0" v-model="scope.row.isOrderBy"></el-checkbox>
+            </template>
+          </el-table-column>
           <el-table-column label="查询" min-width="5%">
             <template slot-scope="scope">
               <el-checkbox true-label="1" false-label="0" v-model="scope.row.isQuery"></el-checkbox>
