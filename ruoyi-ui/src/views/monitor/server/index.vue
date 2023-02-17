@@ -3,7 +3,7 @@
     <el-row>
       <el-col :span="12" class="card-box">
         <el-card>
-          <div slot="header"><span>CPU</span></div>
+          <div slot="header"><span><i class="el-icon-cpu"></i> CPU</span></div>
           <div class="el-table el-table--enable-row-hover el-table--medium">
             <table cellspacing="0" style="width: 100%;">
               <thead>
@@ -37,7 +37,7 @@
 
       <el-col :span="12" class="card-box">
         <el-card>
-          <div slot="header"><span>内存</span></div>
+          <div slot="header"><span><i class="el-icon-tickets"></i> 内存</span></div>
           <div class="el-table el-table--enable-row-hover el-table--medium">
             <table cellspacing="0" style="width: 100%;">
               <thead>
@@ -77,7 +77,7 @@
       <el-col :span="24" class="card-box">
         <el-card>
           <div slot="header">
-            <span>服务器信息</span>
+            <span><i class="el-icon-monitor"></i> 服务器信息</span>
           </div>
           <div class="el-table el-table--enable-row-hover el-table--medium">
             <table cellspacing="0" style="width: 100%;">
@@ -103,7 +103,7 @@
       <el-col :span="24" class="card-box">
         <el-card>
           <div slot="header">
-            <span>Java虚拟机信息</span>
+            <span><i class="el-icon-coffee-cup"></i> Java虚拟机信息</span>
           </div>
           <div class="el-table el-table--enable-row-hover el-table--medium">
             <table cellspacing="0" style="width: 100%;table-layout:fixed;">
@@ -141,7 +141,7 @@
       <el-col :span="24" class="card-box">
         <el-card>
           <div slot="header">
-            <span>磁盘状态</span>
+            <span><i class="el-icon-receiving"></i> 磁盘状态</span>
           </div>
           <div class="el-table el-table--enable-row-hover el-table--medium">
             <table cellspacing="0" style="width: 100%;">

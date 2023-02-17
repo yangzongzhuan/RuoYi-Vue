@@ -4,7 +4,7 @@
       <el-col :span="8">
         <el-card style="height: calc(100vh - 125px)">
           <div slot="header">
-            <span>缓存列表</span>
+            <span><i class="el-icon-collection"></i> 缓存列表</span>
             <el-button
               style="float: right; padding: 3px 0"
               type="text"
@@ -62,7 +62,7 @@
       <el-col :span="8">
         <el-card style="height: calc(100vh - 125px)">
           <div slot="header">
-            <span>键名列表</span>
+            <span><i class="el-icon-key"></i> 键名列表</span>
             <el-button
               style="float: right; padding: 3px 0"
               type="text"
@@ -112,7 +112,7 @@
       <el-col :span="8">
         <el-card :bordered="false" style="height: calc(100vh - 125px)">
           <div slot="header">
-            <span>缓存内容</span>
+            <span><i class="el-icon-document"></i> 缓存内容</span>
             <el-button
               style="float: right; padding: 3px 0"
               type="text"
