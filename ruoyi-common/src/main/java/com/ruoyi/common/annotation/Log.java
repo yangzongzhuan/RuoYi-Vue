@@ -20,7 +20,7 @@ import com.ruoyi.common.enums.OperatorType;
 public @interface Log
 {
     /**
-     * 模块 
+     * 模块
      */
     public String title() default "";
 
@@ -43,4 +43,9 @@ public @interface Log
      * 是否保存响应的参数
      */
     public boolean isSaveResponseData() default true;
+
+    /**
+     * 排除指定的请求参数
+     */
+    public String[] excludeParamNames() default {};
 }
