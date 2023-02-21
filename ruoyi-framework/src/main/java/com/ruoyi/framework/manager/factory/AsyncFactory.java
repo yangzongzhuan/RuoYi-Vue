@@ -38,7 +38,7 @@ public class AsyncFactory
             final Object... args)
     {
         final UserAgent userAgent = UserAgent.parseUserAgentString(ServletUtils.getRequest().getHeader("User-Agent"));
-        final String ip = IpUtils.getIpAddr(ServletUtils.getRequest());
+        final String ip = IpUtils.getIpAddr();
         return new TimerTask()
         {
             @Override
