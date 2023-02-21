@@ -76,7 +76,7 @@ public class SysDeptController extends BaseController
     @PostMapping
     public AjaxResult add(@Validated @RequestBody SysDept dept)
     {
-        if (UserConstants.NOT_UNIQUE.equals(deptService.checkDeptNameUnique(dept)))
+        if (!deptService.checkDeptNameUnique(dept))
         {
             return error("新增部门'" + dept.getDeptName() + "'失败，部门名称已存在");
         }
@@ -94,7 +94,7 @@ public class SysDeptController extends BaseController
     {
         Long deptId = dept.getDeptId();
         deptService.checkDeptDataScope(deptId);
-        if (UserConstants.NOT_UNIQUE.equals(deptService.checkDeptNameUnique(dept)))
+        if (!deptService.checkDeptNameUnique(dept))
         {
             return error("修改部门'" + dept.getDeptName() + "'失败，部门名称已存在");
         }

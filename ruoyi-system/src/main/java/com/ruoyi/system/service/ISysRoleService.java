@@ -65,7 +65,7 @@ public interface ISysRoleService
      * @param role 角色信息
      * @return 结果
      */
-    public String checkRoleNameUnique(SysRole role);
+    public boolean checkRoleNameUnique(SysRole role);
 
     /**
      * 校验角色权限是否唯一
@@ -73,7 +73,7 @@ public interface ISysRoleService
      * @param role 角色信息
      * @return 结果
      */
-    public String checkRoleKeyUnique(SysRole role);
+    public boolean checkRoleKeyUnique(SysRole role);
 
     /**
      * 校验角色是否允许操作
