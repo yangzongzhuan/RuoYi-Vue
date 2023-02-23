@@ -35,7 +35,7 @@ export default {
   },
   data() {
     return {
-      title: '物联网管理后台',
+      title: '有智云物联网',
       logo: logoImg
     }
   }
