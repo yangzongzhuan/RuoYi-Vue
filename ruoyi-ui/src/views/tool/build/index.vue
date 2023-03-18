@@ -371,20 +371,6 @@ export default {
 </script>
 
 <style lang='scss'>
-body, html{
-  margin: 0;
-  padding: 0;
-  background: #fff;
-  -moz-osx-font-smoothing: grayscale;
-  -webkit-font-smoothing: antialiased;
-  text-rendering: optimizeLegibility;
-  font-family: -apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif,Apple Color Emoji,Segoe UI Emoji;
-}
-
-input, textarea{
-  font-family: -apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif,Apple Color Emoji,Segoe UI Emoji;
-}
-
 .editor-tabs{
   background: #121315;
   .el-tabs__header{
@@ -779,5 +765,4 @@ $lighterBlue: #409EFF;
     }
   }
 }
-
 </style>
