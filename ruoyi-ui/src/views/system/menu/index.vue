@@ -77,7 +77,7 @@
       </el-table-column>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
-          <el-button 
+          <el-button
             size="mini"
             type="text"
             icon="el-icon-edit"
@@ -140,8 +140,7 @@
                     v-if="form.icon"
                     slot="prefix"
                     :icon-class="form.icon"
-                    class="el-input__icon"
-                    style="height: 32px;width: 16px;"
+                    style="width: 25px;"
                   />
                   <i v-else slot="prefix" class="el-icon-search el-input__icon" />
                 </el-input>
