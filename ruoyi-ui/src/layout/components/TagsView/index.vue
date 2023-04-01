@@ -182,7 +182,7 @@ export default {
       })
     },
     closeOthersTags() {
-      this.$router.push(this.selectedTag).catch(()=>{});
+      this.$router.push(this.selectedTag.fullPath).catch(()=>{});
       this.$tab.closeOtherPage(this.selectedTag).then(() => {
         this.moveToCurrentTag()
       })
