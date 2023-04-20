@@ -187,7 +187,7 @@ export default {
     /** 清理指定名称缓存 */
     handleClearCacheName(row) {
       clearCacheName(row.cacheName).then(response => {
-        this.$modal.msgSuccess("清理缓存名称[" + this.nowCacheName + "]成功");
+        this.$modal.msgSuccess("清理缓存名称[" + row.cacheName + "]成功");
         this.getCacheKeys();
       });
     },
