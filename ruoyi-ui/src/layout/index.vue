@@ -1,19 +1,17 @@
 <template>
   <div :class="classObj" class="app-wrapper" :style="{'--current-color': theme}">
-      <div v-if="device==='mobile'&&sidebar.opened" class="drawer-bg" @click="handleClickOutside"/>
-      <sidebar v-if="!sidebar.hide" class="sidebar-container"/>
-      <div :class="{hasTagsView:needTagsView,sidebarHide:sidebar.hide}" class="main-container">
-        <el-scrollbar>
-          <div :class="{'fixed-header':fixedHeader}">
-            <navbar/>
-            <tags-view v-if="needTagsView"/>
-          </div>
-          <app-main/>
-          <right-panel>
-            <settings/>
-          </right-panel>
-        </el-scrollbar>
+    <div v-if="device==='mobile'&&sidebar.opened" class="drawer-bg" @click="handleClickOutside"/>
+    <sidebar v-if="!sidebar.hide" class="sidebar-container"/>
+    <div :class="{hasTagsView:needTagsView,sidebarHide:sidebar.hide}" class="main-container">
+      <div :class="{'fixed-header':fixedHeader}">
+        <navbar/>
+        <tags-view v-if="needTagsView"/>
       </div>
+      <app-main/>
+      <right-panel>
+        <settings/>
+      </right-panel>
+    </div>
   </div>
 </template>
 
@@ -73,18 +71,6 @@ export default {
     position: relative;
     height: 100%;
     width: 100%;
-
-    .el-scrollbar{
-      height: 100%;
-    }
-
-    ::v-deep .el-scrollbar__bar.is-vertical {
-      z-index: 10;
-    }
-  
-    ::v-deep .el-scrollbar__wrap {
-      overflow-x: hidden;
-    }
 
     &.mobile.openSidebar {
       position: fixed;
