@@ -888,7 +888,7 @@
           </div>
           <div class="body">
             <img
-              src="https://oscimg.oschina.net/oscnet/up-d6695f82666e5018f715c41cb7ee60d3b73.png"
+              src="http://ruoyi.vip/images/pay.png"
               alt="donate"
               width="100%"
             />

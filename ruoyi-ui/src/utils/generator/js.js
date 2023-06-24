@@ -1,4 +1,3 @@
-import { isArray } from 'util'
 import { exportDefault, titleCase } from '@/utils/index'
 import { trigger } from './config'
 
@@ -133,12 +132,12 @@ function buildRules(conf, ruleList) {
   const rules = []
   if (trigger[conf.tag]) {
     if (conf.required) {
-      const type = isArray(conf.defaultValue) ? 'type: \'array\',' : ''
-      let message = isArray(conf.defaultValue) ? `请至少选择一个${conf.vModel}` : conf.placeholder
+      const type = Array.isArray(conf.defaultValue) ? 'type: \'array\',' : ''
+      let message = Array.isArray(conf.defaultValue) ? `请至少选择一个${conf.vModel}` : conf.placeholder
       if (message === undefined) message = `${conf.label}不能为空`
       rules.push(`{ required: true, ${type} message: '${message}', trigger: '${trigger[conf.tag]}' }`)
     }
-    if (conf.regList && isArray(conf.regList)) {
+    if (conf.regList && Array.isArray(conf.regList)) {
       conf.regList.forEach(item => {
         if (item.pattern) {
           rules.push(`{ pattern: ${eval(item.pattern)}, message: '${item.message}', trigger: '${trigger[conf.tag]}' }`)

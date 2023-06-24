@@ -7,7 +7,7 @@
           :key="item.value"
           :index="index"
           :class="item.raw.cssClass"
-          >{{ item.label + ' ' }}</span
+          >{{ item.label + " " }}</span
         >
         <el-tag
           v-else
@@ -17,7 +17,7 @@
           :type="item.raw.listClass == 'primary' ? '' : item.raw.listClass"
           :class="item.raw.cssClass"
         >
-          {{ item.label + ' ' }}
+          {{ item.label + " " }}
         </el-tag>
       </template>
     </template>
@@ -49,39 +49,39 @@ export default {
   },
   computed: {
     values() {
-      if (this.value !== null && typeof this.value !== 'undefined') {
+      if (this.value !== null && typeof this.value !== "undefined") {
         return Array.isArray(this.value) ? this.value : [String(this.value)];
       } else {
         return [];
       }
     },
-    unmatch(){
+    unmatch() {
       this.unmatchArray = [];
-      if (this.value !== null && typeof this.value !== 'undefined') {
+      if (this.value !== null && typeof this.value !== "undefined") {
         // 传入值为非数组
-        if(!Array.isArray(this.value)){
-          if(this.options.some(v=> v.value == this.value )) return false;
+        if (!Array.isArray(this.value)) {
+          if (this.options.some((v) => v.value == this.value)) return false;
           this.unmatchArray.push(this.value);
           return true;
         }
         // 传入值为Array
-        this.value.forEach(item => {
-          if (!this.options.some(v=> v.value == item )) this.unmatchArray.push(item)
+        this.value.forEach((item) => {
+          if (!this.options.some((v) => v.value == item))
+            this.unmatchArray.push(item);
         });
         return true;
       }
       // 没有value不显示
       return false;
     },
-
   },
   filters: {
     handleArray(array) {
-      if(array.length===0) return '';
+      if (array.length === 0) return "";
       return array.reduce((pre, cur) => {
-        return pre + ' ' + cur;
+        return pre + " " + cur;
       })
-    },
+    }
   }
 };
 </script>
