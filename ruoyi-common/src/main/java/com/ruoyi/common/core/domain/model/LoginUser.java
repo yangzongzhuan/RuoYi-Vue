@@ -1,11 +1,11 @@
 package com.ruoyi.common.core.domain.model;
 
-import java.util.Collection;
-import java.util.Set;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
 import com.alibaba.fastjson2.annotation.JSONField;
 import com.ruoyi.common.core.domain.entity.SysUser;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+import java.util.Collection;
+import java.util.Set;
 
 /**
  * 登录用户身份权限
@@ -71,6 +71,24 @@ public class LoginUser implements UserDetails
      */
     private SysUser user;
 
+    public LoginUser()
+    {
+    }
+
+    public LoginUser(SysUser user, Set<String> permissions)
+    {
+        this.user = user;
+        this.permissions = permissions;
+    }
+
+    public LoginUser(Long userId, Long deptId, SysUser user, Set<String> permissions)
+    {
+        this.userId = userId;
+        this.deptId = deptId;
+        this.user = user;
+        this.permissions = permissions;
+    }
+
     public Long getUserId()
     {
         return userId;
@@ -99,24 +117,6 @@ public class LoginUser implements UserDetails
     public void setToken(String token)
     {
         this.token = token;
-    }
-
-    public LoginUser()
-    {
-    }
-
-    public LoginUser(SysUser user, Set<String> permissions)
-    {
-        this.user = user;
-        this.permissions = permissions;
-    }
-
-    public LoginUser(Long userId, Long deptId, SysUser user, Set<String> permissions)
-    {
-        this.userId = userId;
-        this.deptId = deptId;
-        this.user = user;
-        this.permissions = permissions;
     }
 
     @JSONField(serialize = false)

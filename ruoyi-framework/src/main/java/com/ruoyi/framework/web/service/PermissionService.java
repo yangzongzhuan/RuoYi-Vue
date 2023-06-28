@@ -62,7 +62,7 @@ public class PermissionService
     /**
      * 验证用户是否具有以下任意一个权限
      *
-     * @param permissions 以 PERMISSION_NAMES_DELIMETER 为分隔符的权限列表
+     * @param permissions 以 PERMISSION_DELIMETER 为分隔符的权限列表
      * @return 用户是否具有以下任意一个权限
      */
     public boolean hasAnyPermi(String permissions)
