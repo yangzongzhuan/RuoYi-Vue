@@ -73,7 +73,7 @@ public class SysProfileController extends BaseController
         {
             return error("修改用户'" + user.getUserName() + "'失败，邮箱账号已存在");
         }
-        if (userService.updateUserProfile(user) > 0)
+        if (userService.updateUserProfile(currentUser) > 0)
         {
             // 更新缓存用户信息
             tokenService.setLoginUser(loginUser);
