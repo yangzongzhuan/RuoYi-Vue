@@ -25,13 +25,13 @@
         <pagehelper.boot.version>1.4.6</pagehelper.boot.version>
         <fastjson.version>2.0.34</fastjson.version>
         <oshi.version>6.4.4</oshi.version>
-        <commons.io.version>2.11.0</commons.io.version>
+        <commons.io.version>2.13.0</commons.io.version>
         <commons.collections.version>3.2.2</commons.collections.version>
         <poi.version>4.1.2</poi.version>
         <velocity.version>2.3</velocity.version>
         <jwt.version>0.9.1</jwt.version>
     </properties>
-	
+
     <!-- 依赖声明 -->
     <dependencyManagement>
         <dependencies>
