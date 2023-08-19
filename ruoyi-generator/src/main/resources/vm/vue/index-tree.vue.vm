@@ -453,7 +453,7 @@ export default {
       this.reset();
       this.getTreeselect();
       if (row != null) {
-        this.form.${treeParentCode} = row.${treeCode};
+        this.form.${treeParentCode} = row.${treeParentCode};
       }
       get${BusinessName}(row.${pkColumn.javaField}).then(response => {
         this.form = response.data;
