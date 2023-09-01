@@ -61,11 +61,6 @@ import { debounce } from '@/utils'
 
 export default {
   components: { VueCropper },
-  props: {
-    user: {
-      type: Object
-    }
-  },
   data() {
     return {
       // 是否显示弹出层
