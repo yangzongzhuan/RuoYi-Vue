@@ -3,7 +3,7 @@
     <template v-for="(item, index) in options">
       <template v-if="values.includes(item.value)">
         <span
-          v-if="item.raw.listClass == 'default' || item.raw.listClass == ''"
+          v-if="(item.raw.listClass == 'default' || item.raw.listClass == '') && (item.raw.cssClass == '' || item.raw.cssClass == null)"
           :key="item.value"
           :index="index"
           :class="item.raw.cssClass"
