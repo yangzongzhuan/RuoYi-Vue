@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.HisDeptMapper">
+    <resultMap type="HisDept" id="HisDeptResult">
+        <id     property="deptId"        column="dept_id"       />
+        <result property="deptCode"      column="dept_code"     />
+        <result property="deptName"      column="dept_name"     />
+        <result property="deptNum"      column="dept_num"     />
+        <result property="deptLeader"        column="dept_leader" />
+        <result property="deptPhone"        column="dept_phone" />
+        <result property="status"        column="status" />
+        <result property="createBy"      column="create_by"     />
+        <result property="createTime"    column="create_time"   />
+        <result property="updateBy"      column="update_by"     />
+        <result property="updateTime"    column="update_time"   />
+        <result property="remark"        column="remark"        />
+    </resultMap>
+
+    <sql id="selectDeptVo">
+        select dept_id, dept_code, dept_name, dept_num, dept_leader, dept_phone, status, create_by, create_time, remark
+        from his_dept
+    </sql>
+
+    <select id="selectPostList" parameterType="HisDept" resultMap="HisDeptResult">
+        <include refid="selectDeptVo"/>
+        <where>
+            <if test="deptName != null and deptName != ''">
+                AND dept_name like concat('%', #{deptName}, '%')
+            </if>
+            <if test="status != null and status != ''">
+                AND status = #{status}
+            </if>
+        </where>
+    </select>
+</mapper> 
