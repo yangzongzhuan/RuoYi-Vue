@@ -71,12 +71,17 @@ export default {
     },
     change(val) {
       const path = val.path;
+      const query = val.query;
       if(this.ishttp(val.path)) {
         // http(s):// 路径新窗口打开
         const pindex = path.indexOf("http");
         window.open(path.substr(pindex, path.length), "_blank");
       } else {
-        this.$router.push(val.path)
+        if (query) {
+          this.$router.push({ path: path, query: JSON.parse(query) });
+        } else {
+          this.$router.push(path)
+        }
       }
       this.search = ''
       this.options = []
@@ -102,7 +107,7 @@ export default {
     },
     // Filter out the routes that can be displayed in the sidebar
     // And generate the internationalized title
-    generateRoutes(routes, basePath = '/', prefixTitle = []) {
+    generateRoutes(routes, basePath = '/', prefixTitle = [], query = {}) {
       let res = []
 
       for (const router of routes) {
@@ -124,9 +129,13 @@ export default {
           }
         }
 
+        if (router.query) {
+          data.query = router.query
+        }
+
         // recursive child routes
         if (router.children) {
-          const tempRoutes = this.generateRoutes(router.children, data.path, data.title)
+          const tempRoutes = this.generateRoutes(router.children, data.path, data.title, data.query)
           if (tempRoutes.length >= 1) {
             res = [...res, ...tempRoutes]
           }
