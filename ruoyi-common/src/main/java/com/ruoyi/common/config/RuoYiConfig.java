@@ -3,6 +3,8 @@ package com.ruoyi.common.config;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 /**
  * 读取项目相关配置
  * 
@@ -32,6 +34,8 @@ public class RuoYiConfig
 
     /** 验证码类型 */
     private static String captchaType;
+
+    private List<String> permitAll;
 
     public String getName()
     {
@@ -131,5 +135,13 @@ public class RuoYiConfig
     public static String getUploadPath()
     {
         return getProfile() + "/upload";
+    }
+
+    public List<String> getPermitAll() {
+        return permitAll;
+    }
+
+    public void setPermitAll(List<String> permitAll) {
+        this.permitAll = permitAll;
     }
 }

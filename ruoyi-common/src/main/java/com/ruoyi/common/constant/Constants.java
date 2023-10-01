@@ -1,6 +1,6 @@
 package com.ruoyi.common.constant;
 
-import io.jsonwebtoken.Claims;
+import cn.hutool.jwt.JWT;
 
 /**
  * 通用常量信息
@@ -92,7 +92,7 @@ public class Constants
     /**
      * 用户名称
      */
-    public static final String JWT_USERNAME = Claims.SUBJECT;
+    public static final String JWT_USERNAME = JWT.SUBJECT;
 
     /**
      * 用户头像

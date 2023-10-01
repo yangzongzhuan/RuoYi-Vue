@@ -2,60 +2,68 @@
 spring:
     datasource:
         type: com.alibaba.druid.pool.DruidDataSource
-        driverClassName: com.mysql.cj.jdbc.Driver
+        driver-class-name: com.mysql.cj.jdbc.Driver
         druid:
-            # 主库数据源
-            master:
-                url: jdbc:mysql://localhost:3306/ry-vue?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
-                username: root
-                password: password
-            # 从库数据源
-            slave:
-                # 从数据源开关/默认关闭
-                enabled: false
-                url: 
-                username: 
-                password: 
-            # 初始连接数
-            initialSize: 5
-            # 最小连接池数量
-            minIdle: 10
-            # 最大连接池数量
-            maxActive: 20
-            # 配置获取连接等待超时的时间
-            maxWait: 60000
-            # 配置连接超时时间
-            connectTimeout: 30000
-            # 配置网络超时时间
-            socketTimeout: 60000
-            # 配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒
-            timeBetweenEvictionRunsMillis: 60000
-            # 配置一个连接在池中最小生存的时间，单位是毫秒
-            minEvictableIdleTimeMillis: 300000
-            # 配置一个连接在池中最大生存的时间，单位是毫秒
-            maxEvictableIdleTimeMillis: 900000
-            # 配置检测连接是否有效
-            validationQuery: SELECT 1 FROM DUAL
-            testWhileIdle: true
-            testOnBorrow: false
-            testOnReturn: false
-            webStatFilter: 
+            stat-view-servlet:
                 enabled: true
-            statViewServlet:
-                enabled: true
-                # 设置白名单，不填则允许所有访问
-                allow:
-                url-pattern: /druid/*
-                # 控制台管理用户名和密码
                 login-username: ruoyi
                 login-password: 123456
+                # 设置白名单，不填则允许所有访问
+                #        allow:
+                url-pattern: /druid/*
+            web-stat-filter:
+                enabled: true
+                exclusions: '*.js,*.gif,*.jpg,*.png,*.css,*.ico,/druid/*'
             filter:
                 stat:
-                    enabled: true
-                    # 慢SQL记录
                     log-slow-sql: true
                     slow-sql-millis: 1000
                     merge-sql: true
                 wall:
                     config:
                         multi-statement-allow: true
+        dynamic:
+            druid: #以下是支持的全局默认值
+                # 初始连接数
+                initial-size: 5
+                # 最小连接池数量
+                min-idle: 10
+                # 最大连接池数量
+                max-active: 20
+                # 配置获取连接等待超时的时间
+                max-wait: 60000
+                # 配置连接超时时间
+                connect-timeout: 30000
+                # 配置网络超时时间
+                socket-timeout: 60000
+                # 配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒
+                time-between-eviction-runs-millis: 60000
+                # 配置一个连接在池中最小生存的时间，单位是毫秒
+                min-evictable-idle-time-millis: 300000
+                # 配置一个连接在池中最大生存的时间，单位是毫秒
+                max-evictable-idle-time-millis: 900000
+                # 配置检测连接是否有效
+                validation-query: SELECT 1 FROM DUAL
+                test-while-idle: true
+                test-on-borrow: false
+                test-on-return: false
+                filters: stat  # 注意这个值和druid原生不一致，默认启动了stat。 如果确定什么filter都不需要 这里填 ""
+            datasource:
+                # 主库数据源
+                master:
+                    url: jdbc:mysql://127。0.0.1:3306/ruoyi?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
+                    username: username
+                    password: password
+                    druid:
+                        initial-size: 5
+                        validation-query: select 1 FROM DUAL
+                        public-key:
+                # 从库数据源
+            #        slave:
+            #          # 从数据源开关/默认关闭
+            #          enabled: false
+            #          url:
+            #          username:
+            #          password:
+            primary: master #设置默认的数据源或者数据源组,默认值即为master
+            strict: true #严格匹配数据源,默认false. true未匹配到指定数据源时抛异常,false使用默认数据源
