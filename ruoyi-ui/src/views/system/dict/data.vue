@@ -251,8 +251,8 @@ export default {
       queryParams: {
         pageNum: 1,
         pageSize: 10,
-        dictName: undefined,
         dictType: undefined,
+        dictLabel: undefined,
         status: undefined
       },
       // 表单参数
