@@ -3,6 +3,7 @@ package com.ruoyi.framework.web.service;
 import java.util.Set;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
+import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.core.domain.entity.SysRole;
 import com.ruoyi.common.core.domain.model.LoginUser;
 import com.ruoyi.common.utils.SecurityUtils;
@@ -17,16 +18,6 @@ import com.ruoyi.framework.security.context.PermissionContextHolder;
 @Service("ss")
 public class PermissionService
 {
-    /** 所有权限标识 */
-    private static final String ALL_PERMISSION = "*:*:*";
-
-    /** 管理员角色权限标识 */
-    private static final String SUPER_ADMIN = "admin";
-
-    private static final String ROLE_DELIMETER = ",";
-
-    private static final String PERMISSION_DELIMETER = ",";
-
     /**
      * 验证用户是否具备某权限
      * 
@@ -78,7 +69,7 @@ public class PermissionService
         }
         PermissionContextHolder.setContext(permissions);
         Set<String> authorities = loginUser.getPermissions();
-        for (String permission : permissions.split(PERMISSION_DELIMETER))
+        for (String permission : permissions.split(Constants.PERMISSION_DELIMETER))
         {
             if (permission != null && hasPermissions(authorities, permission))
             {
@@ -108,7 +99,7 @@ public class PermissionService
         for (SysRole sysRole : loginUser.getUser().getRoles())
         {
             String roleKey = sysRole.getRoleKey();
-            if (SUPER_ADMIN.equals(roleKey) || roleKey.equals(StringUtils.trim(role)))
+            if (Constants.SUPER_ADMIN.equals(roleKey) || roleKey.equals(StringUtils.trim(role)))
             {
                 return true;
             }
@@ -144,7 +135,7 @@ public class PermissionService
         {
             return false;
         }
-        for (String role : roles.split(ROLE_DELIMETER))
+        for (String role : roles.split(Constants.ROLE_DELIMETER))
         {
             if (hasRole(role))
             {
@@ -163,6 +154,6 @@ public class PermissionService
      */
     private boolean hasPermissions(Set<String> permissions, String permission)
     {
-        return permissions.contains(ALL_PERMISSION) || permissions.contains(StringUtils.trim(permission));
+        return permissions.contains(Constants.ALL_PERMISSION) || permissions.contains(StringUtils.trim(permission));
     }
 }

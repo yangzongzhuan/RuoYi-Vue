@@ -239,6 +239,30 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils
 
         return str.substring(start, end);
     }
+    
+    /**
+     * 判断是否为空，并且不是空白字符
+     * 
+     * @param str 要判断的value
+     * @return 结果
+     */
+    public static boolean hasText(String str)
+    {
+        return (str != null && !str.isEmpty() && containsText(str));
+    }
+
+    private static boolean containsText(CharSequence str)
+    {
+        int strLen = str.length();
+        for (int i = 0; i < strLen; i++)
+        {
+            if (!Character.isWhitespace(str.charAt(i)))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
 
     /**
      * 格式化文本, {} 表示占位符<br>
