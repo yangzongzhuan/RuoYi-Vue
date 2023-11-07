@@ -239,7 +239,7 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils
 
         return str.substring(start, end);
     }
-    
+
     /**
      * 判断是否为空，并且不是空白字符
      * 
