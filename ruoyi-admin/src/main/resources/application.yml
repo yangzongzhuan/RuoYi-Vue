@@ -9,7 +9,7 @@ ruoyi:
   # 实例演示开关
   demoEnabled: true
   # 文件路径 示例（ Windows配置D:/ruoyi/uploadPath，Linux配置 /home/ruoyi/uploadPath）
-  profile: D:/ruoyi/uploadPath
+  profile: /www/wwwroot
   # 获取ip地址开关
   addressEnabled: false
   # 验证码类型 math 数字计算 char 字符验证
@@ -18,7 +18,7 @@ ruoyi:
 # 开发环境配置
 server:
   # 服务器的HTTP端口，默认为8080
-  port: 8080
+  port: 13131
   servlet:
     # 应用的访问路径
     context-path: /
@@ -75,7 +75,7 @@ spring:
     port: 6379
     # 数据库索引
     database: 0
-    # 密码
+    # 密码ZS
     password:
     # 连接超时时间
     timeout: 10s
@@ -97,7 +97,7 @@ token:
   # 令牌密钥
   secret: abcdefghijklmnopqrstuvwxyz
   # 令牌有效期（默认30分钟）
-  expireTime: 30
+  expireTime: 330
 
 # MyBatis配置
 mybatis:
