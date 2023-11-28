@@ -18,6 +18,8 @@ router.beforeEach((to, from, next) => {
     if (to.path === '/login') {
       next({ path: '/' })
       NProgress.done()
+    } else if (whiteList.indexOf(to.path) !== -1) {
+      next()
     } else {
       if (store.getters.roles.length === 0) {
         isRelogin.show = true
