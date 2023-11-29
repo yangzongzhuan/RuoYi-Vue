@@ -19,7 +19,7 @@
     >
       <i class="el-icon-plus"></i>
     </el-upload>
-    
+
     <!-- 上传提示 -->
     <div class="el-upload__tip" slot="tip" v-if="showTip">
       请上传
@@ -219,8 +219,8 @@ export default {
 }
 
 ::v-deep .el-list-enter, .el-list-leave-active {
-    opacity: 0;
-    transform: translateY(0);
+  opacity: 0;
+  transform: translateY(0);
 }
 </style>
 

@@ -142,7 +142,7 @@ export default {
     // 上传失败
     handleUploadError(err) {
       this.$modal.msgError("上传文件失败，请重试");
-      this.$modal.closeLoading()
+      this.$modal.closeLoading();
     },
     // 上传成功回调
     handleUploadSuccess(res, file) {
@@ -174,10 +174,11 @@ export default {
     },
     // 获取文件名称
     getFileName(name) {
+      // 如果是url那么取最后的名字 如果不是直接返回
       if (name.lastIndexOf("/") > -1) {
         return name.slice(name.lastIndexOf("/") + 1);
       } else {
-        return "";
+        return name;
       }
     },
     // 对象转成指定字符串分隔

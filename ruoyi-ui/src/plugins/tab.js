@@ -35,7 +35,7 @@ export default {
       return store.dispatch('tagsView/delView', router.currentRoute).then(({ visitedViews }) => {
         const latestView = visitedViews.slice(-1)[0]
         if (latestView) {
-            return router.push(latestView.fullPath)
+          return router.push(latestView.fullPath)
         }
         return router.push('/');
       });
