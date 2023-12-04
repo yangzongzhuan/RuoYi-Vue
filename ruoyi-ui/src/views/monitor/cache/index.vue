@@ -133,6 +133,10 @@ export default {
             }
           ]
         });
+        window.addEventListener("resize", () => {
+          this.commandstats.resize();
+          this.usedmemory.resize();
+        });
       });
     },
     // 打开加载层

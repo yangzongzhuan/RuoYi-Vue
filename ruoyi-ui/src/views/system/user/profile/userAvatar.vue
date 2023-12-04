@@ -70,12 +70,13 @@ export default {
       // 弹出层标题
       title: "修改头像",
       options: {
-        img: store.getters.avatar, //裁剪图片的地址
-        autoCrop: true, // 是否默认生成截图框
-        autoCropWidth: 200, // 默认生成截图框宽度
-        autoCropHeight: 200, // 默认生成截图框高度
-        fixedBox: true, // 固定截图框大小 不允许改变
-        outputType:"png" // 默认生成截图为PNG格式
+        img: store.getters.avatar,  //裁剪图片的地址
+        autoCrop: true,             // 是否默认生成截图框
+        autoCropWidth: 200,         // 默认生成截图框宽度
+        autoCropHeight: 200,        // 默认生成截图框高度
+        fixedBox: true,             // 固定截图框大小 不允许改变
+        outputType:"png",           // 默认生成截图为PNG格式
+        filename: 'avatar'          // 文件名称
       },
       previews: {},
       resizeHandler: null
@@ -125,6 +126,7 @@ export default {
         reader.readAsDataURL(file);
         reader.onload = () => {
           this.options.img = reader.result;
+          this.options.filename = file.name;
         };
       }
     },
@@ -132,7 +134,7 @@ export default {
     uploadImg() {
       this.$refs.cropper.getCropBlob(data => {
         let formData = new FormData();
-        formData.append("avatarfile", data);
+        formData.append("avatarfile", data, this.options.filename);
         uploadAvatar(formData).then(response => {
           this.open = false;
           this.options.img = process.env.VUE_APP_BASE_API + response.imgUrl;
