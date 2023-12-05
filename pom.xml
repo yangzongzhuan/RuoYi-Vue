@@ -22,7 +22,7 @@
         <bitwalker.version>1.21</bitwalker.version>
         <swagger.version>3.0.0</swagger.version>
         <kaptcha.version>2.3.3</kaptcha.version>
-        <pagehelper.boot.version>1.4.6</pagehelper.boot.version>
+        <pagehelper.boot.version>1.4.7</pagehelper.boot.version>
         <fastjson.version>2.0.43</fastjson.version>
         <oshi.version>6.4.6</oshi.version>
         <commons.io.version>2.13.0</commons.io.version>
