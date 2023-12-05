@@ -1,22 +1,82 @@
 <template>
   <div id="app" style="margin: auto;background-color: #f9f9f9;padding-top: 15px;padding-bottom: 30px;padding-right: 15px;padding-left: 15px;min-height: 700px">
-    <div style="background-color: white;text-align: left;padding:15px;height: 150px">
-      <el-autocomplete
-        v-model="dataGrid.listQuery.keywords"
-        placeholder="请输入关键字检索"
-        clearable
-        style="width: 610px;"
-        class="filter-item"
-      ></el-autocomplete>
-      <el-button type="primary" style="margin-left: 10px">检索</el-button>
-      <div style="margin-top: 10px">
-        <div style="font-weight: bolder;color: black;float: left;height: 30px;line-height: 30px;">检索维度：</div>
-        <div style="float: left;width: 92%;">
-          <div class="c-div-search" v-for="item in searchScopeConditions" :key="item.value">
-            <span>{{item.label}}</span>
-          </div>
-        </div>
-      </div>
+    <div style="background-color: white;text-align: left;padding:15px;height: 400px">
+      <el-form ref="form" :model="form" label-width="140px" size="mini">
+        <el-form-item label="关键字：">
+          <el-autocomplete
+            v-model="dataGrid.listQuery.keywords"
+            placeholder="请输入关键字检索"
+            clearable
+            style="width: 610px;"
+            class="filter-item"
+          ></el-autocomplete>
+        </el-form-item>
+        <el-form-item label="所属行业：">
+          <el-cascader
+            v-model="indus_checked"
+            :props="{ multiple: true,expandTrigger: 'click' }"
+            :border="false"
+            size="mini"
+            style="width: 610px;"
+            :options="indusOptions"
+            collapse-tags
+            @change="selectIndus"
+          />
+        </el-form-item>
+        <el-form-item label="省份地区：">
+          <el-cascader
+            v-model="aera_checked"
+            :props="{ multiple: true,expandTrigger: 'click' }"
+            :border="false"
+            size="mini"
+            :options="areaOptions"
+            style="width: 610px;"
+            collapse-tags
+            @change="selectArea"
+          />
+        </el-form-item>
+        <el-form-item label="企业规模：">
+          <el-checkbox-group v-model="person_nums">
+            <el-checkbox label="01">大型</el-checkbox>
+            <el-checkbox label="02">中型</el-checkbox>
+            <el-checkbox label="03">小型</el-checkbox>
+            <el-checkbox label="04">微型</el-checkbox>
+          </el-checkbox-group>
+        </el-form-item>
+        <el-form-item label="成立年限：">
+          <el-checkbox-group v-model="esdate_checks">
+            <el-checkbox label="01">1年以内</el-checkbox>
+            <el-checkbox label="02">1-3年</el-checkbox>
+            <el-checkbox label="03">3-5年</el-checkbox>
+            <el-checkbox label="04">5-10年</el-checkbox>
+            <el-checkbox label="05">10年以上</el-checkbox>
+          </el-checkbox-group>
+        </el-form-item>
+        <el-form-item label="企业类型：">
+          <el-checkbox-group v-model="enttype_checks">
+            <el-checkbox label="01">国有企业</el-checkbox>
+            <el-checkbox label="02">外商投资企业</el-checkbox>
+            <el-checkbox label="03">合伙企业</el-checkbox>
+            <el-checkbox label="04">民营企业</el-checkbox>
+            <el-checkbox label="05">个体工商户</el-checkbox>
+            <el-checkbox label="06">农民专业合作</el-checkbox>
+            <el-checkbox label="07">分公司</el-checkbox>
+            <el-checkbox label="08">其他</el-checkbox>
+          </el-checkbox-group>
+        </el-form-item>
+        <el-form-item label="主体综合评价：">
+          <el-checkbox-group v-model="entscore_checks">
+            <el-checkbox label="01">650分以下</el-checkbox>
+            <el-checkbox label="02">650~750分</el-checkbox>
+            <el-checkbox label="03">750~900分</el-checkbox>
+            <el-checkbox label="04">900~1000分</el-checkbox>
+          </el-checkbox-group>
+        </el-form-item>
+        <el-form-item style="text-align: center">
+          <el-button type="primary" @click="getList" size="medium">搜索</el-button>
+        </el-form-item>
+      </el-form>
+
     </div>
     <div style="background-color: white;margin-top: 10px">
       <el-card class="box-card">
@@ -24,7 +84,7 @@
           <el-row>
             <el-col :span="23">
               <el-checkbox v-model="checkedAll" size="mini">
-                企业列表（共检索出22条结果）
+                企业列表（共检索出{{this.dataGrid.total}}条结果）
               </el-checkbox>
             </el-col>
             <el-col :span="1">
@@ -32,11 +92,11 @@
             </el-col>
           </el-row>
         </div>
-        <div v-for="item in 10" :key="item" style="padding-bottom: 10px">
+        <div v-for="item in this.dataGrid.list" :key="item.uniscid" style="padding-bottom: 10px">
           <el-row >
             <el-col :span="1">
               <div style="line-height: 230px">
-                <el-checkbox v-model="checkOne"></el-checkbox>
+                <el-checkbox :value="item.checked" @change="changeEntItem(item)"></el-checkbox>
               </div>
             </el-col>
             <el-col :span="3">
@@ -51,15 +111,15 @@
             <el-col :span="16">
               <div class="grid-content bg-purple-light" style="height: 200px">
                 <div style="font-size: 16px;font-weight: bolder;">
-                  阿里巴巴（中国）网络技术有限公司
+                  {{item.entname}}
                   <el-tag>高新技术企业</el-tag><el-tag style="margin-left: 10px">国家重点企业</el-tag>
                 </div>
                 <div>
                   <el-descriptions :column="4" size="mini">
-                    <el-descriptions-item label="法定代表人">张勇</el-descriptions-item>
-                    <el-descriptions-item label="注册资本">1000万人民币</el-descriptions-item>
-                    <el-descriptions-item label="成立日期">2007-10-09</el-descriptions-item>
-                    <el-descriptions-item label="所属地区">浙江省杭州市西湖区</el-descriptions-item>
+                    <el-descriptions-item label="法定代表人">{{item.lerepname}}</el-descriptions-item>
+                    <el-descriptions-item label="注册资本">{{item.regcap}}{{item.regcapcurCn}}</el-descriptions-item>
+                    <el-descriptions-item label="成立日期">{{item.esdate}}</el-descriptions-item>
+                    <el-descriptions-item label="所属地区">{{item.domdistrictCn}}</el-descriptions-item>
                   </el-descriptions>
                 </div>
                 <div class="c-suggestion-name" style="width: 700px">
@@ -182,6 +242,7 @@
 <script>
 import Pagination from '@/components/Pagination';
 import ScoreDetail from "@/views/supplier_source/compents/ScoreDetail.vue";
+import request from '@/utils/request'
 export default ({
   name: "SupplierSourceSearch",
   components: { Pagination, ScoreDetail },
@@ -192,6 +253,10 @@ export default ({
       dialogVisible: false,
       checkedAll: false,
       checkOne: false,
+      form: {
+        keywords: '',
+        indus_checked: []
+      },
       // 搜索范围
       searchScopeConditions: [
         {
@@ -244,6 +309,14 @@ export default ({
         resultName: null,
         resultVisible: false
       },
+      indus_checked: [],
+      aera_checked: [],
+      areaOptions: [],
+      indusOptions: [],
+      person_nums: [],
+      esdate_checks: [],
+      enttype_checks: [],
+      entscore_checks: [],
       dataGrid: {
         list: [],
         total: 0,
@@ -257,14 +330,49 @@ export default ({
           page: 1,
           limit: 10
         }
-      }
+      },
+      checked_uniscids: []
     }
+  },
+  mounted() {
+    this.getAreaData()
+    this.getList()
   },
   methods: {
     showPropertiesView(){
 
     },
+    changeEntItem(item) {
+      item.checked = !item.checked
+      if (item.checked) {
+        this.checked_uniscids.push(item.uniscid)
+      } else {
+        this.checked_uniscids.splice(this.checked_uniscids.indexOf(item.uniscid), 1)
+      }
+    },
+    selectArea(data) {
+
+    },
+    getAreaData() {
+      this.$axios.get('/js/aera_data.json').then(res => {
+        this.areaOptions = res.data
+      })
+      this.$axios.get('/js/indus_data.json').then(res => {
+        this.indusOptions = res.data
+      })
+    },
     getList() {
+      request({
+        url: '/entInfo/searchInfoByKeyword',
+        method: 'post',
+        params: {pageNum: this.dataGrid.listQuery.page, pageSize: this.dataGrid.listQuery.limit},
+        data: this.dataGrid.listQuery
+      }).then(res => {
+        this.dataGrid.list = res.item
+        this.dataGrid.total = res.total
+      })
+    },
+    selectIndus(data) {
 
     },
     saveList() {
@@ -273,11 +381,21 @@ export default ({
     },
     onSubmit() {
       // 提示保存成功
-      this.dialogVisible = false;
-      this.$message({
-        message: '保存成功',
-        type: 'success'
-      });
+      request({
+        url: '/entInfo/createDataSet',
+        method: 'post',
+        data: {
+          datasetName: this.formLabelAlign.resultName,
+          visibleDataset: this.formLabelAlign.resultVisible,
+          uniscidList: this.checked_uniscids
+        }
+      }).then(res => {
+        this.$message({
+          message: '保存成功',
+          type: 'success'
+        });
+        this.dialogVisible = false;
+      })
     },
     viewScoreDetail() {
       this.dialogVisible = true;

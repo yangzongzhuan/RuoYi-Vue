@@ -54,7 +54,7 @@
     "relation-graph": "^2.1.19",
     "screenfull": "5.0.2",
     "sortablejs": "1.10.2",
-    "vue": "2.6.12",
+    "vue": "2.6.13",
     "vue-count-to": "1.0.13",
     "vue-cropper": "0.5.5",
     "vue-meta": "2.4.0",
@@ -79,7 +79,7 @@
     "sass-loader": "10.1.1",
     "script-ext-html-webpack-plugin": "2.1.5",
     "svg-sprite-loader": "5.1.1",
-    "vue-template-compiler": "2.6.12"
+    "vue-template-compiler": "2.6.13"
   },
   "engines": {
     "node": ">=8.9",

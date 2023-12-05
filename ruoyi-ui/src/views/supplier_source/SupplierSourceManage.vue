@@ -4,28 +4,27 @@
       <div class="c-header">
         <el-row>
           <el-col :span="5">
-            <el-input placeholder="请输入关键字搜索" style="width: 200px" size="small"></el-input>
+            <el-input v-model="datasetName" placeholder="请输入关键字搜索" style="width: 200px" size="small"></el-input>
           </el-col>
           <el-col :span="2">
             <el-button type="primary" size="small">检索</el-button>
           </el-col>
           <el-col :span="17" style="text-align: right">
             <el-button type="primary" size="small">导出目标集</el-button>
-            <el-button type="primary" size="small">添加目标集</el-button>
           </el-col>
         </el-row>
       </div>
       <div style="padding: 15px">
         <el-table :data="tableData" border>
           <el-table-column type="selection" width="50"></el-table-column>
-          <el-table-column prop="index" label="序号"></el-table-column>
-          <el-table-column prop="name" label="目标集名称"></el-table-column>
-          <el-table-column prop="visibleStatus" label="可见状态"></el-table-column>
+          <el-table-column type="index" label="序号" width="50"></el-table-column>
+          <el-table-column prop="datasetName" label="目标集名称"></el-table-column>
+          <el-table-column prop="visibleDataset" label="可见状态"></el-table-column>
           <el-table-column prop="createTime" label="创建时间"></el-table-column>
           <el-table-column label="操作">
-            <template slot-scope="row">
-                <el-link type="primary" @click="dialogVisibleDetail = true">查看</el-link>
-                <el-link type="danger" style="margin-left: 5px" @click="detailResult">删除</el-link>
+            <template slot-scope="scope">
+                <el-link type="primary" @click="viewDetail(scope.row.id)">查看</el-link>
+                <el-link type="danger" style="margin-left: 5px" @click="deleteData(scope.row.id)">删除</el-link>
             </template>
           </el-table-column>
         </el-table>
@@ -34,7 +33,9 @@
           background
           layout="prev, pager, next"
           :page-size="10"
-          :total="10"
+          :total="total"
+          :current-page="currentPage"
+          @current-change="handleCurrentChange"
         >
         </el-pagination>
       </div>
@@ -47,13 +48,18 @@
       <el-table
         :data="detailData"
         border
+        size="mini"
       >
         <el-table-column label="企业名称" prop="entname" width="200"></el-table-column>
         <el-table-column label="实力评价" prop="entScore"></el-table-column>
         <el-table-column label="关键字段" prop="entKeyword"></el-table-column>
-        <el-table-column label="法人" prop="legalPerson"></el-table-column>
-        <el-table-column label="注册资本" prop="regCapital"></el-table-column>
-        <el-table-column label="注册时间" prop="regTime"></el-table-column>
+        <el-table-column label="法人" prop="lerepname"></el-table-column>
+        <el-table-column label="注册资本" prop="regCapital">
+          <template slot-scope="scope">
+            {{ scope.row.regcap }}{{ scope.row.regcapcurCn }}
+          </template>
+        </el-table-column>
+        <el-table-column label="注册时间" prop="esdate"></el-table-column>
       </el-table>
     </el-dialog>
   </div>
@@ -61,141 +67,70 @@
 </template>
 
 <script>
+import request from "@/utils/request";
 export default ({
   name: "SupplierSourceManage",
   data() {
     return {
-      tableData: [
-        {
-          index: 1,
-          name: '目标集1',
-          visibleStatus: '仅自己可见',
-          createTime: '2020-01-01 12:00:00'
-        },
-        {
-          index: 2,
-          name: '目标集1',
-          visibleStatus: '公开',
-          createTime: '2020-01-01 12:00:00'
-        },
-        {
-          index: 3,
-          name: '目标集1',
-          visibleStatus: '仅自己可见',
-          createTime: '2020-01-01 12:00:00'
-        },
-        {
-          index: 4,
-          name: '目标集1',
-          visibleStatus: '公开',
-          createTime: '2020-01-01 12:00:00'
-        },
-        {
-          index: 5,
-          name: '目标集1',
-          visibleStatus: '仅自己可见',
-          createTime: '2020-01-01 12:00:00'
-        },
-        {
-          index: 6,
-          name: '目标集1',
-          visibleStatus: '公开',
-          createTime: '2020-01-01 12:00:00'
-        },
-        {
-          index: 7,
-          name: '目标集1',
-          visibleStatus: '仅自己可见',
-          createTime: '2020-01-01 12:00:00'
-        },
-        {
-          index: 8,
-          name: '目标集1',
-          visibleStatus: '公开',
-          createTime: '2020-01-01 12:00:00'
-        },
-        {
-          index: 9,
-          name: '目标集1',
-          visibleStatus: '仅自己可见',
-          createTime: '2020-01-01 12:00:00'
-        },
-        {
-          index: 10,
-          name: '目标集1',
-          visibleStatus: '公开',
-          createTime: '2020-01-01 12:00:00'
-        }
-      ],
+      tableData: [],
+      detailData: [],
+      total: 0,
+      currentPage: 1,
       dialogVisibleDetail: false,
-      detailData: [
-        {
-          entname: '北京阿里巴巴科技有限公司',
-          entScore: 400,
-          entKeyword: '软件名称',
-          legalPerson: '马云',
-          regCapital: '199万人民币',
-          regTime: '1991-01-01'
-        },
-        {
-          entname: '北京阿里巴巴科技有限公司',
-          entScore: 400,
-          entKeyword: '软件名称',
-          legalPerson: '马云',
-          regCapital: '199万人民币',
-          regTime: '1991-01-01'
-        },
-        {
-          entname: '北京阿里巴巴科技有限公司',
-          entScore: 400,
-          entKeyword: '软件名称',
-          legalPerson: '马云',
-          regCapital: '199万人民币',
-          regTime: '1991-01-01'
-        },
-        {
-          entname: '北京阿里巴巴科技有限公司',
-          entScore: 400,
-          entKeyword: '软件名称',
-          legalPerson: '马云',
-          regCapital: '199万人民币',
-          regTime: '1991-01-01'
-        },
-        {
-          entname: '北京阿里巴巴科技有限公司',
-          entScore: 400,
-          entKeyword: '软件名称',
-          legalPerson: '马云',
-          regCapital: '199万人民币',
-          regTime: '1991-01-01'
-        },
-        {
-          entname: '北京阿里巴巴科技有限公司',
-          entScore: 400,
-          entKeyword: '软件名称',
-          legalPerson: '马云',
-          regCapital: '199万人民币',
-          regTime: '1991-01-01'
-        }
-      ]
+      datasetName: '',
     }
   },
+  mounted() {
+      this.getList();
+  },
   methods:{
-    viewDetail() {
-
+    handleCurrentChange(val) {
+      this.currentPage = val;
+      this.getList();
     },
-    detailResult() {
+    getList() {
+      request({
+        url: '/entInfo/getDataSetList',
+        method: 'post',
+        params: {
+          pageNum: this.currentPage,
+          pageSize: this.pageSize
+        },
+        data: {
+          datasetName: this.datasetName
+        }
+      }).then(res => {
+        this.tableData = res.data.item;
+        this.total = res.data.total;
+      })
+    },
+    viewDetail(id) {
+      request({
+        url: '/entInfo/getDataSetDetail/'+id,
+        method: 'get'
+      }).then(res => {
+        this.detailData = res.data;
+        this.dialogVisibleDetail = true;
+      })
+    },
+    deleteData(id) {
       // 删除数据，用户需要确认
       this.$confirm('此操作将删除该结果集, 是否继续?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
+        request({
+          url: '/entInfo/deleteDataSet/'+id,
+          method: 'delete'
+        }).then(res => {
+          this.getList();
+          this.$message({
+            type: 'success',
+            message: '删除成功!'
+          });
+        })
         // 删除数据
-        this.$message({
-          type: 'success',
-          message: '删除成功!'
-        });
       }).catch(() => {
         this.$message({
           type: 'info',

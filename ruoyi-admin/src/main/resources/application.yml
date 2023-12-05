@@ -9,9 +9,9 @@ ruoyi:
   # 实例演示开关
   demoEnabled: true
   # 文件路径 示例（ Windows配置D:/ruoyi/uploadPath，Linux配置 /home/ruoyi/uploadPath）
-  profile: /www/wwwroot
+  profile: /Users/zhangshuo/Desktop/mq-task/cisdigroup/logs
   # 获取ip地址开关
-  addressEnabled: false
+  addressEnabled: true
   # 验证码类型 math 数字计算 char 字符验证
   captchaType: math
 
@@ -100,7 +100,7 @@ token:
   expireTime: 330
 
 # MyBatis配置
-mybatis:
+mybatis-plus:
   # 搜索指定包别名
   typeAliasesPackage: com.ruoyi.**.domain
   # 配置mapper的扫描，找到所有的mapper.xml映射文件
@@ -119,7 +119,7 @@ swagger:
   # 是否开启swagger
   enabled: true
   # 请求前缀
-  pathMapping: /dev-api
+  pathMapping: /
 
 # 防止XSS攻击
 xss:

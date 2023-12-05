@@ -7,7 +7,7 @@
 </template>
 <script>
 import RelationGraph from 'relation-graph'
-
+import request from "@/utils/request";
 export default ({
   name: "SupplyGraphDetail",
   components: { RelationGraph },
@@ -18,33 +18,66 @@ export default ({
         allowSwitchJunctionPoint: true,
         nodeShape: 1,
         defaultJunctionPoint: 'border',
-        allowShowMiniToolBar: true
+        allowShowMiniToolBar: true,
+        layouts: [
+          {
+            label: '中心',
+            layoutName: 'tree',
+            from: 'left',
+            layoutClassName: 'seeks-layout-center'
+          }
+        ]
         // 这里可以参考"Graph 图谱"中的参数进行设置 https://seeksdream.github.io/#/docs/graph
-      }
+      },
+      uniscid: null
     }
   },
   mounted() {
+    this.uniscid = this.$route.query.uniscid
+    this.getGraphData()
     this.showGraph()
   },
   methods: {
-    showGraph() {
+    getGraphData() {
+      request({
+        url: '/entInfo/getSupplierRelation/'+this.uniscid,
+        method: 'get',
+      }).then(res => {
+        const nodes = []
+        nodes.push({
+          id: res.data.baseEnterpriseInfo.uniscid,
+          text: res.data.baseEnterpriseInfo.entname,
+          data: res.data.baseEnterpriseInfo,
+          nodeShape: 1,
+        })
+
+        const lines = []
+
+        res.data.supplierRelevanceList.forEach(thisItem => {
+          nodes.push({
+            id: thisItem.partyid,
+            text: thisItem.partyname,
+            data: thisItem,
+            nodeShape: 1
+          })
+
+          lines.push({
+            from: res.data.baseEnterpriseInfo.uniscid,
+            to: thisItem.partyid,
+            text: thisItem.relpartyp,
+            color: 'red'
+          })
+        })
+
+        this.showGraph(res.data.baseEnterpriseInfo.uniscid,nodes,lines)
+      })
+    },
+    showGraph(rootId,nodes,lines) {
+      // list [node1,node2,]
       const jsonData = {
-        rootId: 'a',
-        nodes: [
-          { id: 'a', text: '供应商1', nodeShape: 1,borderColor: 'yellow',width: 100,height: 40 },
-          { id: 'b', text: '供应商2', nodeShape: 1,width: 100,height: 40 },
-          { id: 'c', text: '供应商3', nodeShape: 1,width: 100,height: 40 },
-          { id: 'd', text: '供应商4', nodeShape: 1,width: 100,height: 40 },
-          { id: 'e', text: '供应商5', nodeShape: 1,width: 100,height: 40 },
-          { id: 'f', text: '北京阿里巴巴企业有限公司', nodeShape: 1,width: 100,height: 40 }
-        ],
-        lines: [
-          { from: 'a', to: 'b', text: '关系1' },
-          { from: 'a', to: 'c', text: '关系2' },
-          { from: 'a', to: 'd', text: '关系3' },
-          { from: 'a', to: 'e', text: '关系4' },
-          { from: 'a', to: 'f', text: '关系5' }
-        ]
+        rootId: rootId,
+        nodes: nodes,
+        lines: lines
       }
       // 以上数据中的node和link可以参考"Node节点"和"Link关系"中的参数进行配置
       this.$refs.graphRef.setJsonData(jsonData, (graphInstance) => {

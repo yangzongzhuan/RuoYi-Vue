@@ -35,23 +35,23 @@ specifiers:
   script-ext-html-webpack-plugin: 2.1.5
   sortablejs: 1.10.2
   svg-sprite-loader: 5.1.1
-  vue: 2.6.12
+  vue: 2.6.13
   vue-count-to: 1.0.13
   vue-cropper: 0.5.5
   vue-meta: 2.4.0
   vue-router: 3.4.9
-  vue-template-compiler: 2.6.12
+  vue-template-compiler: 2.6.13
   vuedraggable: 2.24.3
   vuex: 3.6.0
 
 dependencies:
   '@antv/g6': registry.npmmirror.com/@antv/g6/4.8.23
-  '@riophae/vue-treeselect': registry.npmmirror.com/@riophae/vue-treeselect/0.4.0_vue@2.6.12
+  '@riophae/vue-treeselect': registry.npmmirror.com/@riophae/vue-treeselect/0.4.0_vue@2.6.13
   axios: registry.npmmirror.com/axios/0.24.0
   clipboard: registry.npmmirror.com/clipboard/2.0.8
   core-js: registry.npmmirror.com/core-js/3.25.3
   echarts: registry.npmmirror.com/echarts/5.4.0
-  element-ui: registry.npmmirror.com/element-ui/2.15.13_vue@2.6.12
+  element-ui: registry.npmmirror.com/element-ui/2.15.13_vue@2.6.13
   file-saver: registry.npmmirror.com/file-saver/2.0.5
   fuse.js: registry.npmmirror.com/fuse.js/6.4.3
   highlight.js: registry.npmmirror.com/highlight.js/9.18.5
@@ -63,18 +63,18 @@ dependencies:
   relation-graph: registry.npmmirror.com/relation-graph/2.1.19
   screenfull: registry.npmmirror.com/screenfull/5.0.2
   sortablejs: registry.npmmirror.com/sortablejs/1.10.2
-  vue: registry.npmmirror.com/vue/2.6.12
+  vue: registry.npmmirror.com/vue/2.6.13
   vue-count-to: registry.npmmirror.com/vue-count-to/1.0.13
   vue-cropper: registry.npmmirror.com/vue-cropper/0.5.5
   vue-meta: registry.npmmirror.com/vue-meta/2.4.0
-  vue-router: registry.npmmirror.com/vue-router/3.4.9_vue@2.6.12
+  vue-router: registry.npmmirror.com/vue-router/3.4.9_vue@2.6.13
   vuedraggable: registry.npmmirror.com/vuedraggable/2.24.3
-  vuex: registry.npmmirror.com/vuex/3.6.0_vue@2.6.12
+  vuex: registry.npmmirror.com/vuex/3.6.0_vue@2.6.13
 
 devDependencies:
-  '@vue/cli-plugin-babel': registry.npmmirror.com/@vue/cli-plugin-babel/4.4.6_tcbamd3mhhj4jdjdoanchsz3se
+  '@vue/cli-plugin-babel': registry.npmmirror.com/@vue/cli-plugin-babel/4.4.6_lveungmhhbj4on74zvx232t6ti
   '@vue/cli-plugin-eslint': registry.npmmirror.com/@vue/cli-plugin-eslint/4.4.6_73hp4gtpcfv7k4slcaze2btd2e
-  '@vue/cli-service': registry.npmmirror.com/@vue/cli-service/4.4.6_r5xflehejk2vdl5tl6qlttl2xu
+  '@vue/cli-service': registry.npmmirror.com/@vue/cli-service/4.4.6_6zlxjesyplgtk3asqdsdoqa7o4
   babel-eslint: registry.npmmirror.com/babel-eslint/10.1.0_eslint@7.15.0
   babel-plugin-dynamic-import-node: registry.npmmirror.com/babel-plugin-dynamic-import-node/2.3.3
   chalk: registry.npmmirror.com/chalk/4.1.0
@@ -88,7 +88,7 @@ devDependencies:
   sass-loader: registry.npmmirror.com/sass-loader/10.1.1_sass@1.32.13
   script-ext-html-webpack-plugin: registry.npmmirror.com/script-ext-html-webpack-plugin/2.1.5
   svg-sprite-loader: registry.npmmirror.com/svg-sprite-loader/5.1.1
-  vue-template-compiler: registry.npmmirror.com/vue-template-compiler/2.6.12
+  vue-template-compiler: registry.npmmirror.com/vue-template-compiler/2.6.13
 
 packages:
 
@@ -2123,7 +2123,7 @@ packages:
       '@babel/runtime': registry.npmmirror.com/@babel/runtime/7.23.2
     dev: false
 
-  registry.npmmirror.com/@riophae/vue-treeselect/0.4.0_vue@2.6.12:
+  registry.npmmirror.com/@riophae/vue-treeselect/0.4.0_vue@2.6.13:
     resolution: {integrity: sha512-J4atYmBqXQmiPFK/0B5sXKjtnGc21mBJEiyKIDZwk0Q9XuynVFX6IJ4EpaLmUgL5Tve7HAS7wkiGGSti6Uaxcg==, registry: https://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/@riophae/vue-treeselect/-/vue-treeselect-0.4.0.tgz}
     id: registry.npmmirror.com/@riophae/vue-treeselect/0.4.0
     name: '@riophae/vue-treeselect'
@@ -2138,7 +2138,7 @@ packages:
       is-promise: registry.npmmirror.com/is-promise/2.2.2
       lodash: registry.npmmirror.com/lodash/4.17.21
       material-colors: registry.npmmirror.com/material-colors/1.2.6
-      vue: registry.npmmirror.com/vue/2.6.12
+      vue: registry.npmmirror.com/vue/2.6.13
       watch-size: registry.npmmirror.com/watch-size/2.0.0
     dev: false
 
@@ -2268,7 +2268,7 @@ packages:
       svg-tags: registry.npmmirror.com/svg-tags/1.0.0
     dev: true
 
-  registry.npmmirror.com/@vue/babel-preset-app/4.5.19_core-js@3.25.3+vue@2.6.12:
+  registry.npmmirror.com/@vue/babel-preset-app/4.5.19_core-js@3.25.3+vue@2.6.13:
     resolution: {integrity: sha512-VCNRiAt2P/bLo09rYt3DLe6xXUMlhJwrvU18Ddd/lYJgC7s8+wvhgYs+MTx4OiAXdu58drGwSBO9SPx7C6J82Q==, registry: https://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/@vue/babel-preset-app/-/babel-preset-app-4.5.19.tgz}
     id: registry.npmmirror.com/@vue/babel-preset-app/4.5.19
     name: '@vue/babel-preset-app'
@@ -2293,17 +2293,17 @@ packages:
       '@babel/preset-env': registry.npmmirror.com/@babel/preset-env/7.23.2_@babel+core@7.23.2
       '@babel/runtime': registry.npmmirror.com/@babel/runtime/7.23.2
       '@vue/babel-plugin-jsx': registry.npmmirror.com/@vue/babel-plugin-jsx/1.1.5_@babel+core@7.23.2
-      '@vue/babel-preset-jsx': registry.npmmirror.com/@vue/babel-preset-jsx/1.4.0_avpmza2y3yi5tdqzvegllufit4
+      '@vue/babel-preset-jsx': registry.npmmirror.com/@vue/babel-preset-jsx/1.4.0_p73ikmivud5iv6db42x7jd2zvm
       babel-plugin-dynamic-import-node: registry.npmmirror.com/babel-plugin-dynamic-import-node/2.3.3
       core-js: registry.npmmirror.com/core-js/3.25.3
       core-js-compat: registry.npmmirror.com/core-js-compat/3.33.2
       semver: registry.npmmirror.com/semver/6.3.1
-      vue: registry.npmmirror.com/vue/2.6.12
+      vue: registry.npmmirror.com/vue/2.6.13
     transitivePeerDependencies:
       - supports-color
     dev: true
 
-  registry.npmmirror.com/@vue/babel-preset-jsx/1.4.0_avpmza2y3yi5tdqzvegllufit4:
+  registry.npmmirror.com/@vue/babel-preset-jsx/1.4.0_p73ikmivud5iv6db42x7jd2zvm:
     resolution: {integrity: sha512-QmfRpssBOPZWL5xw7fOuHNifCQcNQC1PrOo/4fu6xlhlKJJKSA3HqX92Nvgyx8fqHZTUGMPHmFA+IDqwXlqkSA==, registry: https://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/@vue/babel-preset-jsx/-/babel-preset-jsx-1.4.0.tgz}
     id: registry.npmmirror.com/@vue/babel-preset-jsx/1.4.0
     name: '@vue/babel-preset-jsx'
@@ -2324,7 +2324,7 @@ packages:
       '@vue/babel-sugar-inject-h': registry.npmmirror.com/@vue/babel-sugar-inject-h/1.4.0_@babel+core@7.23.2
       '@vue/babel-sugar-v-model': registry.npmmirror.com/@vue/babel-sugar-v-model/1.4.0_@babel+core@7.23.2
       '@vue/babel-sugar-v-on': registry.npmmirror.com/@vue/babel-sugar-v-on/1.4.0_@babel+core@7.23.2
-      vue: registry.npmmirror.com/vue/2.6.12
+      vue: registry.npmmirror.com/vue/2.6.13
     dev: true
 
   registry.npmmirror.com/@vue/babel-sugar-composition-api-inject-h/1.4.0_@babel+core@7.23.2:
@@ -2412,7 +2412,7 @@ packages:
     version: 4.5.19
     dev: true
 
-  registry.npmmirror.com/@vue/cli-plugin-babel/4.4.6_tcbamd3mhhj4jdjdoanchsz3se:
+  registry.npmmirror.com/@vue/cli-plugin-babel/4.4.6_lveungmhhbj4on74zvx232t6ti:
     resolution: {integrity: sha512-9cX9mN+4DIbcqw3rV6UBOA0t5zikIkrBLQloUzsOBOu5Xb7/UoD7inInFj7bnyHUflr5LqbdWJ+etCQcWAIIXA==, registry: https://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/@vue/cli-plugin-babel/-/cli-plugin-babel-4.4.6.tgz}
     id: registry.npmmirror.com/@vue/cli-plugin-babel/4.4.6
     name: '@vue/cli-plugin-babel'
@@ -2421,8 +2421,8 @@ packages:
       '@vue/cli-service': ^3.0.0 || ^4.0.0-0
     dependencies:
       '@babel/core': registry.npmmirror.com/@babel/core/7.23.2
-      '@vue/babel-preset-app': registry.npmmirror.com/@vue/babel-preset-app/4.5.19_core-js@3.25.3+vue@2.6.12
-      '@vue/cli-service': registry.npmmirror.com/@vue/cli-service/4.4.6_r5xflehejk2vdl5tl6qlttl2xu
+      '@vue/babel-preset-app': registry.npmmirror.com/@vue/babel-preset-app/4.5.19_core-js@3.25.3+vue@2.6.13
+      '@vue/cli-service': registry.npmmirror.com/@vue/cli-service/4.4.6_6zlxjesyplgtk3asqdsdoqa7o4
       '@vue/cli-shared-utils': registry.npmmirror.com/@vue/cli-shared-utils/4.5.19
       babel-loader: registry.npmmirror.com/babel-loader/8.3.0_teyvrc6jn2lfhu6g5fbiuucbdu
       cache-loader: registry.npmmirror.com/cache-loader/4.1.0_webpack@4.47.0
@@ -2445,7 +2445,7 @@ packages:
       '@vue/cli-service': ^3.0.0 || ^4.0.0-0
       eslint: '>= 1.6.0'
     dependencies:
-      '@vue/cli-service': registry.npmmirror.com/@vue/cli-service/4.4.6_r5xflehejk2vdl5tl6qlttl2xu
+      '@vue/cli-service': registry.npmmirror.com/@vue/cli-service/4.4.6_6zlxjesyplgtk3asqdsdoqa7o4
       '@vue/cli-shared-utils': registry.npmmirror.com/@vue/cli-shared-utils/4.5.19
       eslint: registry.npmmirror.com/eslint/7.15.0
       eslint-loader: registry.npmmirror.com/eslint-loader/2.2.1_ze7z7veddult6g5uxdk74hm4sm
@@ -2467,7 +2467,7 @@ packages:
     peerDependencies:
       '@vue/cli-service': ^3.0.0 || ^4.0.0-0
     dependencies:
-      '@vue/cli-service': registry.npmmirror.com/@vue/cli-service/4.4.6_r5xflehejk2vdl5tl6qlttl2xu
+      '@vue/cli-service': registry.npmmirror.com/@vue/cli-service/4.4.6_6zlxjesyplgtk3asqdsdoqa7o4
       '@vue/cli-shared-utils': registry.npmmirror.com/@vue/cli-shared-utils/4.5.19
     dev: true
 
@@ -2479,10 +2479,10 @@ packages:
     peerDependencies:
       '@vue/cli-service': ^3.0.0 || ^4.0.0-0
     dependencies:
-      '@vue/cli-service': registry.npmmirror.com/@vue/cli-service/4.4.6_r5xflehejk2vdl5tl6qlttl2xu
+      '@vue/cli-service': registry.npmmirror.com/@vue/cli-service/4.4.6_6zlxjesyplgtk3asqdsdoqa7o4
     dev: true
 
-  registry.npmmirror.com/@vue/cli-service/4.4.6_r5xflehejk2vdl5tl6qlttl2xu:
+  registry.npmmirror.com/@vue/cli-service/4.4.6_6zlxjesyplgtk3asqdsdoqa7o4:
     resolution: {integrity: sha512-k5OFGh2NnvRymCyq9DfBiNJvECUuun3pl5KMm3557IZyA5E5csv+RHoSW3dX8HHe0zXq18g52VswP1llvR9POw==, registry: https://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/@vue/cli-service/-/cli-service-4.4.6.tgz}
     id: registry.npmmirror.com/@vue/cli-service/4.4.6
     name: '@vue/cli-service'
@@ -2556,9 +2556,9 @@ packages:
       terser-webpack-plugin: registry.npmmirror.com/terser-webpack-plugin/2.3.8_webpack@4.47.0
       thread-loader: registry.npmmirror.com/thread-loader/2.1.3_webpack@4.47.0
       url-loader: registry.npmmirror.com/url-loader/2.3.0_xnfab4wkhg6qoyn7pkd7if7xei
-      vue-loader: registry.npmmirror.com/vue-loader/15.11.1_kq6vcxhoovkpo5ecbydii27d4a
+      vue-loader: registry.npmmirror.com/vue-loader/15.11.1_i3ab2kpwkutymjqxim3t6dbkae
       vue-style-loader: registry.npmmirror.com/vue-style-loader/4.1.3
-      vue-template-compiler: registry.npmmirror.com/vue-template-compiler/2.6.12
+      vue-template-compiler: registry.npmmirror.com/vue-template-compiler/2.6.13
       webpack: registry.npmmirror.com/webpack/4.47.0
       webpack-bundle-analyzer: registry.npmmirror.com/webpack-bundle-analyzer/3.9.0
       webpack-chain: registry.npmmirror.com/webpack-chain/6.5.1
@@ -5866,7 +5866,7 @@ packages:
     version: 1.4.575
     dev: true
 
-  registry.npmmirror.com/element-ui/2.15.13_vue@2.6.12:
+  registry.npmmirror.com/element-ui/2.15.13_vue@2.6.13:
     resolution: {integrity: sha512-LJoatEYX6WV74FqXBss8Xfho9fh9rjDSzrDrTyREdGb1h1R3uRvmLh5jqp2JU137aj4/BgqA3K06RQpQBX33Bg==, registry: https://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/element-ui/-/element-ui-2.15.13.tgz}
     id: registry.npmmirror.com/element-ui/2.15.13
     name: element-ui
@@ -5880,7 +5880,7 @@ packages:
       normalize-wheel: registry.npmmirror.com/normalize-wheel/1.0.1
       resize-observer-polyfill: registry.npmmirror.com/resize-observer-polyfill/1.5.1
       throttle-debounce: registry.npmmirror.com/throttle-debounce/1.1.0
-      vue: registry.npmmirror.com/vue/2.6.12
+      vue: registry.npmmirror.com/vue/2.6.13
     dev: false
 
   registry.npmmirror.com/elliptic/6.5.4:
@@ -13576,7 +13576,7 @@ packages:
     version: 2.3.4
     dev: true
 
-  registry.npmmirror.com/vue-loader/15.11.1_kq6vcxhoovkpo5ecbydii27d4a:
+  registry.npmmirror.com/vue-loader/15.11.1_i3ab2kpwkutymjqxim3t6dbkae:
     resolution: {integrity: sha512-0iw4VchYLePqJfJu9s62ACWUXeSqM30SQqlIftbYWM3C+jpPcEHKSPUZBLjSF9au4HTHQ/naF6OGnO3Q/qGR3Q==, registry: https://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/vue-loader/-/vue-loader-15.11.1.tgz}
     id: registry.npmmirror.com/vue-loader/15.11.1
     name: vue-loader
@@ -13605,7 +13605,7 @@ packages:
       loader-utils: registry.npmmirror.com/loader-utils/1.4.2
       vue-hot-reload-api: registry.npmmirror.com/vue-hot-reload-api/2.3.4
       vue-style-loader: registry.npmmirror.com/vue-style-loader/4.1.3
-      vue-template-compiler: registry.npmmirror.com/vue-template-compiler/2.6.12
+      vue-template-compiler: registry.npmmirror.com/vue-template-compiler/2.6.13
       webpack: registry.npmmirror.com/webpack/4.47.0
     transitivePeerDependencies:
       - arc-templates
@@ -13671,7 +13671,7 @@ packages:
       deepmerge: registry.npmmirror.com/deepmerge/4.3.1
     dev: false
 
-  registry.npmmirror.com/vue-router/3.4.9_vue@2.6.12:
+  registry.npmmirror.com/vue-router/3.4.9_vue@2.6.13:
     resolution: {integrity: sha512-CGAKWN44RqXW06oC+u4mPgHLQQi2t6vLD/JbGRDAXm0YpMv0bgpKuU5bBd7AvMgfTz9kXVRIWKHqRwGEb8xFkA==, registry: https://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/vue-router/-/vue-router-3.4.9.tgz}
     id: registry.npmmirror.com/vue-router/3.4.9
     name: vue-router
@@ -13679,7 +13679,7 @@ packages:
     peerDependencies:
       vue: ^2
     dependencies:
-      vue: registry.npmmirror.com/vue/2.6.12
+      vue: registry.npmmirror.com/vue/2.6.13
     dev: false
 
   registry.npmmirror.com/vue-style-loader/4.1.3:
@@ -13691,10 +13691,10 @@ packages:
       loader-utils: registry.npmmirror.com/loader-utils/1.4.2
     dev: true
 
-  registry.npmmirror.com/vue-template-compiler/2.6.12:
-    resolution: {integrity: sha512-OzzZ52zS41YUbkCBfdXShQTe69j1gQDZ9HIX8miuC9C3rBCk9wIRjLiZZLrmX9V+Ftq/YEyv1JaVr5Y/hNtByg==, registry: https://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/vue-template-compiler/-/vue-template-compiler-2.6.12.tgz}
+  registry.npmmirror.com/vue-template-compiler/2.6.13:
+    resolution: {integrity: sha512-latKAqpUjCkovB8XppW5gnZbSdYQzkf8pavsMBZYZrQcG6lAnj0EH4Ty7jMwAwFw5Cf4mybKBHlp1UTjnLPOWw==, registry: https://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/vue-template-compiler/-/vue-template-compiler-2.6.13.tgz}
     name: vue-template-compiler
-    version: 2.6.12
+    version: 2.6.13
     dependencies:
       de-indent: registry.npmmirror.com/de-indent/1.0.2
       he: registry.npmmirror.com/he/1.2.0
@@ -13706,10 +13706,10 @@ packages:
     version: 1.9.1
     dev: true
 
-  registry.npmmirror.com/vue/2.6.12:
-    resolution: {integrity: sha512-uhmLFETqPPNyuLLbsKz6ioJ4q7AZHzD8ZVFNATNyICSZouqP2Sz0rotWQC8UNBF6VGSCs5abnKJoStA6JbCbfg==, registry: https://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/vue/-/vue-2.6.12.tgz}
+  registry.npmmirror.com/vue/2.6.13:
+    resolution: {integrity: sha512-O+pAdJkce1ooYS1XyoQtpBQr9An+Oys3w39rkqxukVO3ZD1ilYJkWBGoRuadiQEm2LLJnCL2utV4TMSf52ubjw==, registry: https://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/vue/-/vue-2.6.13.tgz}
     name: vue
-    version: 2.6.12
+    version: 2.6.13
 
   registry.npmmirror.com/vuedraggable/2.24.3:
     resolution: {integrity: sha512-6/HDXi92GzB+Hcs9fC6PAAozK1RLt1ewPTLjK0anTYguXLAeySDmcnqE8IC0xa7shvSzRjQXq3/+dsZ7ETGF3g==, registry: https://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/vuedraggable/-/vuedraggable-2.24.3.tgz}
@@ -13719,7 +13719,7 @@ packages:
       sortablejs: registry.npmmirror.com/sortablejs/1.10.2
     dev: false
 
-  registry.npmmirror.com/vuex/3.6.0_vue@2.6.12:
+  registry.npmmirror.com/vuex/3.6.0_vue@2.6.13:
     resolution: {integrity: sha512-W74OO2vCJPs9/YjNjW8lLbj+jzT24waTo2KShI8jLvJW8OaIkgb3wuAMA7D+ZiUxDOx3ubwSZTaJBip9G8a3aQ==, registry: https://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/vuex/-/vuex-3.6.0.tgz}
     id: registry.npmmirror.com/vuex/3.6.0
     name: vuex
@@ -13727,7 +13727,7 @@ packages:
     peerDependencies:
       vue: ^2.0.0
     dependencies:
-      vue: registry.npmmirror.com/vue/2.6.12
+      vue: registry.npmmirror.com/vue/2.6.13
     dev: false
 
   registry.npmmirror.com/watch-size/2.0.0:

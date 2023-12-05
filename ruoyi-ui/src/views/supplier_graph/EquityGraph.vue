@@ -2,7 +2,7 @@
   <div id="app" style="margin: auto;background-color: #f9f9f9;padding-top: 15px;min-height: 700px">
     <div style="background-color: white;line-height: 70px;height: 70px;text-align: center">
       <el-autocomplete
-        v-model="dataGrid.listQuery.keywords"
+        v-model="dataGrid.listQuery.keyword"
         :fetch-suggestions="querySearchAsync"
         placeholder="请输入公司名称/统一社会信用代码"
         clearable
@@ -34,16 +34,20 @@
         <el-table-column label="序号" width="60" align="center">
           <template slot-scope="scope">{{ scope.$index+1 }}</template>
         </el-table-column>
-        <el-table-column label="企业名称" prop="entname"></el-table-column>
-        <el-table-column label="统一社会信用代码" prop="creditCode"></el-table-column>
-        <el-table-column label="法人" prop="legalPerson"></el-table-column>
-        <el-table-column label="注册资本" prop="regCapital"></el-table-column>
-        <el-table-column label="注册时间" prop="regTime"></el-table-column>
-        <el-table-column label="注册机关" prop="regOrg"></el-table-column>
-        <el-table-column label="所属行政区" prop="regArea"></el-table-column>
+        <el-table-column label="企业名称" prop="entname" width="200"></el-table-column>
+        <el-table-column label="统一社会信用代码" prop="uniscid"></el-table-column>
+        <el-table-column label="法人" prop="lerepname"></el-table-column>
+        <el-table-column label="注册资本" prop="regCapital" width="200">
+          <template slot-scope="scope">
+            {{ scope.row.regcap }}{{ scope.row.regcapcurCn }}
+          </template>
+        </el-table-column>
+        <el-table-column label="注册时间" prop="esdate"></el-table-column>
+        <el-table-column label="注册机关" prop="regorgCn" width="200"></el-table-column>
+        <el-table-column label="所属行政区" prop="domdistrictCn"></el-table-column>
         <el-table-column label="详情">
-          <template slot-scope="row">
-            <el-link size="mini" type="primary">详情</el-link>
+          <template slot-scope="scope">
+            <el-link size="mini" type="primary" @click="viewGraph(scope.row.uniscid)">详情</el-link>
           </template>
         </el-table-column>
       </el-table>
@@ -53,6 +57,7 @@
 </template>
 <script>
 import Pagination from "@/components/Pagination/index.vue";
+import request from "@/utils/request";
 export default ({
   name: "EquityGraph",
   components: { Pagination },
@@ -62,44 +67,24 @@ export default ({
         listQuery: {
           page: 1,
           limit: 10,
-          keywords: undefined
+          keyword: null
         },
         total: 0,
-        list: [
-          {
-            entname: "北京阿里巴巴科技有限公司",
-            creditCode: "91110108584400000A",
-            legalPerson: "张勇",
-            regCapital: "1000万人民币",
-            regTime: "2018-01-01",
-            regOrg: "北京市工商行政管理局",
-            regArea: "北京市",
-          },
-          {
-            entname: "北京阿里巴巴科技有限公司",
-            creditCode: "91110108584400000A",
-            legalPerson: "张勇",
-            regCapital: "1000万人民币",
-            regTime: "2018-01-01",
-            regOrg: "北京市工商行政管理局",
-            regArea: "北京市",
-          },
-          {
-            entname: "北京阿里巴巴科技有限公司",
-            creditCode: "91110108584400000A",
-            legalPerson: "张勇",
-            regCapital: "1000万人民币",
-            regTime: "2018-01-01",
-            regOrg: "北京市工商行政管理局",
-            regArea: "北京市",
-          }
-        ],
+        list: [],
         loading: true
       },
     }
   },
+  mounted() {
+    this.getList();
+  },
   methods: {
-
+    viewGraph(uniscid) {
+      this.$router.push({
+        path: "/supplier_graph/equity_graph_detail",
+        query: { uniscid: uniscid }
+      });
+    },
     handleFilter() {
       this.dataGrid.listQuery.page = 1;
       this.getList();
@@ -114,6 +99,16 @@ export default ({
     },
     getList() {
       this.dataGrid.loading = true;
+      request({
+        url: "/entInfo/searchInfoByKeywordSimple",
+        method: "post",
+        params: { pageNum: this.dataGrid.listQuery.page,pageSize: this.dataGrid.listQuery.limit },
+        data: { keyword: this.dataGrid.listQuery.keyword }
+      }).then(res => {
+        this.dataGrid.list = res.data.item;
+        this.dataGrid.total = res.data.total;
+        this.dataGrid.loading = false;
+      });
     },
     querySearchAsync(queryString, cb) {
     },

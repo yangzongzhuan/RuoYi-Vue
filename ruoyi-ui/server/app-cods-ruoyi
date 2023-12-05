@@ -14,7 +14,7 @@ var http = require('http')
 var port = normalizePort('28006')
 var app = appService.app
 app.set('port', port)
-app.set('dist_path', '../dist_ruoyi')
+app.set('dist_path', './dist')
 appService.init()
 /**
  * Event listener for HTTP server "error" event.

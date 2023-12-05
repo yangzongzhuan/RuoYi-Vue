@@ -6,7 +6,7 @@ var app = express()
 var proxyTable = {
   '/prod-api': {
     // target: 'http://entapi.cods.zhischina.com',
-    target: 'http://192.168.1.199:13131',
+    target: 'http://localhost:13131',
     changeOrigin: true,
     pathRewrite: {
       ['^' + '/prod-api']: ''
