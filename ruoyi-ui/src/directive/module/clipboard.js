@@ -41,7 +41,7 @@ export default {
     }
   },
   unbind(el, binding) {
-    if (!el._vClipboard) return
+    if (!el._vClipBoard) return;
     if (binding.arg === 'success') {
       delete el._vClipBoard_success;
     } else if (binding.arg === 'error') {
