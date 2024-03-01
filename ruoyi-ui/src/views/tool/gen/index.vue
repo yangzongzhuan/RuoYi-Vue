@@ -41,9 +41,20 @@
           plain
           icon="el-icon-download"
           size="mini"
+          :disabled="multiple"
           @click="handleGenTable"
           v-hasPermi="['tool:gen:code']"
         >生成</el-button>
+      </el-col>
+      <el-col :span="1.5">
+        <el-button
+          type="primary"
+          plain
+          icon="el-icon-plus"
+          size="mini"
+          @click="openCreateTable"
+          v-hasRole="['admin']"
+        >创建</el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
@@ -172,12 +183,14 @@
       </el-tabs>
     </el-dialog>
     <import-table ref="import" @ok="handleQuery" />
+    <create-table ref="create" @ok="handleQuery" />
   </div>
 </template>
 
 <script>
 import { listTable, previewTable, delTable, genCode, synchDb } from "@/api/tool/gen";
 import importTable from "./importTable";
+import createTable from "./createTable";
 import hljs from "highlight.js/lib/highlight";
 import "highlight.js/styles/github-gist.css";
 hljs.registerLanguage("java", require("highlight.js/lib/languages/java"));
@@ -189,7 +202,7 @@ hljs.registerLanguage("sql", require("highlight.js/lib/languages/sql"));
 
 export default {
   name: "Gen",
-  components: { importTable },
+  components: { importTable, createTable },
   data() {
     return {
       // 遮罩层
@@ -282,6 +295,10 @@ export default {
     /** 打开导入表弹窗 */
     openImportTable() {
       this.$refs.import.show();
+    },
+    /** 打开创建表弹窗 */
+    openCreateTable() {
+      this.$refs.create.show();
     },
     /** 重置按钮操作 */
     resetQuery() {

@@ -27,7 +27,6 @@ import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.constant.GenConstants;
 import com.ruoyi.common.core.text.CharsetKit;
 import com.ruoyi.common.exception.ServiceException;
-import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.generator.domain.GenTable;
 import com.ruoyi.generator.domain.GenTableColumn;
@@ -151,15 +150,26 @@ public class GenTableServiceImpl implements IGenTableService
     }
 
     /**
+     * 创建表
+     *
+     * @param sql 创建表语句
+     * @return 结果
+     */
+    @Override
+    public boolean createTable(String sql)
+    {
+        return genTableMapper.createTable(sql) == 0;
+    }
+
+    /**
      * 导入表结构
      * 
      * @param tableList 导入表列表
      */
     @Override
     @Transactional
-    public void importGenTable(List<GenTable> tableList)
+    public void importGenTable(List<GenTable> tableList, String operName)
     {
-        String operName = SecurityUtils.getUsername();
         try
         {
             for (GenTable table : tableList)
