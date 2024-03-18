@@ -63,9 +63,8 @@ module.exports = {
       new CompressionPlugin({
         cache: false,                                  // 不启用文件缓存
         test: /\.(js|css|html|jpe?g|png|gif|svg)?$/i,  // 压缩文件格式
-        filename: '[path][name][ext].gz',              // 压缩后的文件名
+        filename: '[path][base].gz[query]',            // 压缩后的文件名
         algorithm: 'gzip',                             // 使用gzip压缩
-        // threshold: 10240,                           // 只有大于 10kb 的文件会被压缩
         minRatio: 0.8,                                 // 压缩比例，小于 80% 的文件不会被压缩
         deleteOriginalAssets: false                    // 压缩后删除原文件
       })
