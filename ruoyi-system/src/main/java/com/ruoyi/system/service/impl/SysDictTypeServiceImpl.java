@@ -1,13 +1,5 @@
 package com.ruoyi.system.service.impl;
 
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-import javax.annotation.PostConstruct;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import com.ruoyi.common.constant.UserConstants;
 import com.ruoyi.common.core.domain.entity.SysDictData;
 import com.ruoyi.common.core.domain.entity.SysDictType;
@@ -17,6 +9,15 @@ import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.system.mapper.SysDictDataMapper;
 import com.ruoyi.system.mapper.SysDictTypeMapper;
 import com.ruoyi.system.service.ISysDictTypeService;
+import lombok.AllArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import javax.annotation.PostConstruct;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * 字典 业务层处理
@@ -24,13 +25,13 @@ import com.ruoyi.system.service.ISysDictTypeService;
  * @author ruoyi
  */
 @Service
+@AllArgsConstructor
 public class SysDictTypeServiceImpl implements ISysDictTypeService
 {
-    @Autowired
-    private SysDictTypeMapper dictTypeMapper;
+    final SysDictTypeMapper dictTypeMapper;
 
-    @Autowired
-    private SysDictDataMapper dictDataMapper;
+
+    final SysDictDataMapper dictDataMapper;
 
     /**
      * 项目启动时，初始化字典到缓存
