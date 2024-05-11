@@ -366,9 +366,15 @@ export default {
 
 // home
 .right-scrollbar {
+  height: calc(100vh - 124px) !important;
+
   .el-scrollbar__view {
     padding: 12px 18px 15px 15px;
   }
+}
+
+.left-scrollbar {
+  height: calc(100vh - 124px) !important;
 }
 
 .left-scrollbar .el-scrollbar__wrap {
@@ -539,9 +545,11 @@ $lighterBlue: #409EFF;
   height: 100vh;
 }
 
-.left-scrollbar {
-  height: calc(100vh - 42px);
-  overflow: hidden;
+
+.left-scrollbar .el-scrollbar__wrap {
+  box-sizing: border-box;
+  overflow-x: hidden !important;
+  margin-bottom: 0 !important;
 }
 
 .center-scrollbar {
@@ -791,4 +799,5 @@ $lighterBlue: #409EFF;
       color: #fff;
     }
   }
-}</style>
+}
+</style>
