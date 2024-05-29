@@ -124,6 +124,8 @@ public class SysUserController extends BaseController
     @PostMapping
     public AjaxResult add(@Validated @RequestBody SysUser user)
     {
+        deptService.checkDeptDataScope(user.getDeptId());
+        roleService.checkRoleDataScope(user.getRoleIds());
         if (!userService.checkUserNameUnique(user))
         {
             return error("新增用户'" + user.getUserName() + "'失败，登录账号已存在");
@@ -151,6 +153,8 @@ public class SysUserController extends BaseController
     {
         userService.checkUserAllowed(user);
         userService.checkUserDataScope(user.getUserId());
+        deptService.checkDeptDataScope(user.getDeptId());
+        roleService.checkRoleDataScope(user.getRoleIds());
         if (!userService.checkUserNameUnique(user))
         {
             return error("修改用户'" + user.getUserName() + "'失败，登录账号已存在");
@@ -235,6 +239,7 @@ public class SysUserController extends BaseController
     public AjaxResult insertAuthRole(Long userId, Long[] roleIds)
     {
         userService.checkUserDataScope(userId);
+        roleService.checkRoleDataScope(roleIds);
         userService.insertUserAuth(userId, roleIds);
         return success();
     }
