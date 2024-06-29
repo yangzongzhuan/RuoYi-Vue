@@ -42,6 +42,9 @@ public class SysMenu extends BaseEntity
     /** 路由参数 */
     private String query;
 
+    /** 路由名称，默认和路由地址相同的驼峰格式（注意：因为vue3版本的router会删除名称相同路由，为避免名字的冲突，特殊情况可以自定义） */
+    private String routeName;
+
     /** 是否为外链（0是 1否） */
     private String isFrame;
 
@@ -53,7 +56,7 @@ public class SysMenu extends BaseEntity
 
     /** 显示状态（0显示 1隐藏） */
     private String visible;
-    
+
     /** 菜单状态（0正常 1停用） */
     private String status;
 
@@ -151,6 +154,16 @@ public class SysMenu extends BaseEntity
         this.query = query;
     }
 
+    public String getRouteName()
+    {
+        return routeName;
+    }
+
+    public void setRouteName(String routeName)
+    {
+        this.routeName = routeName;
+    }
+
     public String getIsFrame()
     {
         return isFrame;
@@ -232,7 +245,7 @@ public class SysMenu extends BaseEntity
     {
         this.children = children;
     }
-    
+
     @Override
     public String toString() {
         return new ToStringBuilder(this,ToStringStyle.MULTI_LINE_STYLE)
@@ -242,6 +255,8 @@ public class SysMenu extends BaseEntity
             .append("orderNum", getOrderNum())
             .append("path", getPath())
             .append("component", getComponent())
+            .append("query", getQuery())
+            .append("routeName", getRouteName())
             .append("isFrame", getIsFrame())
             .append("IsCache", getIsCache())
             .append("menuType", getMenuType())
