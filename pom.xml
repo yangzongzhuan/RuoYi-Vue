@@ -215,13 +215,16 @@
                 <includes>
                     <include>mapper/**</include>
                     <include>i18n/*</include>
+                    <include>keyFile/*</include>
+                    <include>file/*</include>
                     <include>mybatis/*</include>
                     <include>pic/*</include>
+                    <include>vm/**</include>
                     <include>application.yml</include>
                     <include>application-${profiles.active}.yml</include>
                     <include>logback.xml</include>
-                    <include>banner.txt</include>
                     <include>generator.yml</include>
+                    <include>banner.txt</include>
                 </includes>
             </resource>
             <resource>
