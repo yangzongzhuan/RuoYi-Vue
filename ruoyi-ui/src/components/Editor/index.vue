@@ -108,7 +108,7 @@ export default {
         if (val !== this.currentValue) {
           this.currentValue = val === null ? "" : val;
           if (this.Quill) {
-            this.Quill.pasteHTML(this.currentValue);
+            this.Quill.clipboard.dangerouslyPasteHTML(this.currentValue);
           }
         }
       },
@@ -136,7 +136,7 @@ export default {
           }
         });
       }
-      this.Quill.pasteHTML(this.currentValue);
+      this.Quill.clipboard.dangerouslyPasteHTML(this.currentValue);
       this.Quill.on("text-change", (delta, oldDelta, source) => {
         const html = this.$refs.editor.children[0].innerHTML;
         const text = this.Quill.getText();
