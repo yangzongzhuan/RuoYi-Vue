@@ -33,7 +33,7 @@
         <mysql.version>8.2.0</mysql.version>
         <jaxb-api.version>2.3.1</jaxb-api.version>
         <jakarta.version>6.0.0</jakarta.version>
-        <springdoc.version>2.5.0</springdoc.version>
+        <springdoc.version>2.6.0</springdoc.version>
     </properties>
 
     <!-- 依赖声明 -->
