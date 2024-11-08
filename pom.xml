@@ -18,8 +18,6 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <java.version>1.8</java.version>
         <maven-jar-plugin.version>3.1.1</maven-jar-plugin.version>
-        <spring-framework.version>5.3.39</spring-framework.version>
-        <spring-security.version>5.7.12</spring-security.version>
         <druid.version>1.2.23</druid.version>
         <bitwalker.version>1.21</bitwalker.version>
         <swagger.version>3.0.0</swagger.version>
@@ -31,13 +29,18 @@
         <poi.version>4.1.2</poi.version>
         <velocity.version>2.3</velocity.version>
         <jwt.version>0.9.1</jwt.version>
+        <!-- override dependency version -->
+        <tomcat.version>9.0.96</tomcat.version>
+        <logback.version>1.2.13</logback.version>
+        <spring-security.version>5.7.12</spring-security.version>
+        <spring-framework.version>5.3.39</spring-framework.version>
     </properties>
 
     <!-- 依赖声明 -->
     <dependencyManagement>
         <dependencies>
 
-            <!-- SpringFramework的依赖配置-->
+            <!-- 覆盖SpringFramework的依赖配置-->
             <dependency>
                 <groupId>org.springframework</groupId>
                 <artifactId>spring-framework-bom</artifactId>
@@ -46,7 +49,7 @@
                 <scope>import</scope>
             </dependency>
 
-            <!-- SpringSecurity的依赖配置-->
+            <!-- 覆盖SpringSecurity的依赖配置-->
             <dependency>
                 <groupId>org.springframework.security</groupId>
                 <artifactId>spring-security-bom</artifactId>
@@ -62,6 +65,38 @@
                 <version>2.5.15</version>
                 <type>pom</type>
                 <scope>import</scope>
+            </dependency>
+
+            <!-- 覆盖logback的依赖配置-->
+            <dependency>
+                <groupId>ch.qos.logback</groupId>
+                <artifactId>logback-core</artifactId>
+                <version>${logback.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>ch.qos.logback</groupId>
+                <artifactId>logback-classic</artifactId>
+                <version>${logback.version}</version>
+            </dependency>
+
+            <!-- 覆盖tomcat的依赖配置-->
+            <dependency>
+                <groupId>org.apache.tomcat.embed</groupId>
+                <artifactId>tomcat-embed-core</artifactId>
+                <version>${tomcat.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.tomcat.embed</groupId>
+                <artifactId>tomcat-embed-el</artifactId>
+                <version>${tomcat.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.tomcat.embed</groupId>
+                <artifactId>tomcat-embed-websocket</artifactId>
+                <version>${tomcat.version}</version>
             </dependency>
 
             <!-- 阿里数据库连接池 -->
