@@ -1,5 +1,5 @@
 /**
- * ÅĞ¶Ïvalue×Ö·û´®ÊÇ·ñÎª¿Õ 
+ * åˆ¤æ–­valueå­—ç¬¦ä¸²æ˜¯å¦ä¸ºç©º 
  * @param {string} value
  * @returns {Boolean}
  */
@@ -11,7 +11,7 @@ export function isEmpty(value) {
 }
 
 /**
- * ÅĞ¶ÏurlÊÇ·ñÊÇhttp»òhttps 
+ * åˆ¤æ–­urlæ˜¯å¦æ˜¯httpæˆ–https 
  * @param {string} url
  * @returns {Boolean}
  */
@@ -20,7 +20,7 @@ export function isHttp(url) {
 }
 
 /**
- * ÅĞ¶ÏpathÊÇ·ñÎªÍâÁ´
+ * åˆ¤æ–­pathæ˜¯å¦ä¸ºå¤–é“¾
  * @param {string} path
  * @returns {Boolean}
  */

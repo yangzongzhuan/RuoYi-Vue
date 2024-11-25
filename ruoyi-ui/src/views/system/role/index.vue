@@ -522,8 +522,8 @@ export default {
             })
           });
         });
-        this.title = "修改角色";
       });
+      this.title = "修改角色";
     },
     /** 选择角色权限范围触发 */
     dataScopeSelectChange(value) {
@@ -543,8 +543,8 @@ export default {
             this.$refs.dept.setCheckedKeys(res.checkedKeys);
           });
         });
-        this.title = "分配数据权限";
       });
+      this.title = "分配数据权限";
     },
     /** 分配用户操作 */
     handleAuthUser: function(row) {
