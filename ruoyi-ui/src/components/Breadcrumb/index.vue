@@ -41,14 +41,15 @@ export default {
           if (index !== 0) item = item.slice(1)
           return item
         })
-        this.getMatched(pathList, this.$store.getters.sidebarRouters, matched)
+        this.getMatched(pathList, this.$store.getters.defaultRoutes, matched)
       } else {
-        matched = router.matched.filter((item) => item.meta && item.meta.title)
+        matched = router.matched.filter(item => item.meta && item.meta.title)
       }
+      // 判断是否为首页
       if (!this.isDashboard(matched[0])) {
         matched = [{ path: "/index", meta: { title: "首页" } }].concat(matched)
       }
-      this.levelList = matched.filter((item) => item.meta && item.meta.title && item.meta.breadcrumb !== false)
+      this.levelList = matched.filter(item => item.meta && item.meta.title && item.meta.breadcrumb !== false)
     },
     findPathNum(str, char = "/") {
       let index = str.indexOf(char)
@@ -60,11 +61,13 @@ export default {
       return num
     },
     getMatched(pathList, routeList, matched) {
-      let data = routeList.find((item) => item.path == pathList[0])
-      matched.push(data)
-      if (data.children && pathList.length) {
-        pathList.shift()
-        this.getMatched(pathList, data.children, matched)
+      let data = routeList.find(item => item.path == pathList[0] || (item.name += '').toLowerCase() == pathList[0])
+      if (data) {
+        matched.push(data)
+        if (data.children && pathList.length) {
+          pathList.shift()
+          this.getMatched(pathList, data.children, matched)
+        }
       }
     },
     isDashboard(route) {
