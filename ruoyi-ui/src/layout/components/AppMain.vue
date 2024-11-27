@@ -22,6 +22,22 @@ export default {
     key() {
       return this.$route.path
     }
+  },
+  watch: {
+    $route() {
+      this.addIframe()
+    }
+  },
+  mounted() {
+    this.addIframe()
+  },
+  methods: {
+    addIframe() {
+      const {name} = this.$route
+      if (name && this.$route.meta.link) {
+        this.$store.dispatch('tagsView/addIframeView', this.$route)
+      }
+    }
   }
 }
 </script>

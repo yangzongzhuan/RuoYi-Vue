@@ -133,11 +133,7 @@ export default {
       const { name } = this.$route
       if (name) {
         this.$store.dispatch('tagsView/addView', this.$route)
-        if (this.$route.meta.link) {
-          this.$store.dispatch('tagsView/addIframeView', this.$route)
-        }
       }
-      return false
     },
     moveToCurrentTag() {
       const tags = this.$refs.tag
