@@ -8,7 +8,6 @@
 </template>
 
 <script>
-const version = require('element-ui/package.json').version // element-ui version from node_modules
 const ORIGINAL_THEME = '#409EFF' // default color
 
 export default {
@@ -39,7 +38,6 @@ export default {
       this.setTheme(this.defaultTheme)
     }
   },
-
   methods: {
     async setTheme(val) {
       const oldVal = this.chalk ? this.theme : ORIGINAL_THEME
@@ -63,12 +61,11 @@ export default {
       }
 
       if (!this.chalk) {
-        const url = `https://unpkg.com/element-ui@${version}/lib/theme-chalk/index.css`
+        const url = `/styles/theme-chalk/index.css`
         await this.getCSSString(url, 'chalk')
       }
 
       const chalkHandler = getHandler('chalk', 'chalk-style')
-
       chalkHandler()
 
       const styles = [].slice.call(document.querySelectorAll('style'))
