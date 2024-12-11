@@ -105,7 +105,7 @@
           </el-col>
           <el-col :span="12">
             <el-form-item label="归属部门" prop="deptId">
-              <treeselect v-model="form.deptId" :options="deptOptions" :show-count="true" placeholder="请选择归属部门" />
+              <treeselect v-model="form.deptId" :options="enabledDeptOptions" :show-count="true" placeholder="请选择归属部门" />
             </el-form-item>
           </el-col>
         </el-row>
@@ -230,8 +230,10 @@ export default {
       userList: null,
       // 弹出层标题
       title: "",
-      // 部门树选项
+      // 所有部门树选项
       deptOptions: undefined,
+      // 过滤掉已禁用部门树选项
+      enabledDeptOptions: undefined,
       // 是否显示弹出层
       open: false,
       // 部门名称
@@ -343,6 +345,19 @@ export default {
     getDeptTree() {
       deptTreeSelect().then(response => {
         this.deptOptions = response.data;
+        this.enabledDeptOptions = this.filterDisabledDept(JSON.parse(JSON.stringify(response.data)));
+      });
+    },
+    // 过滤禁用的部门
+    filterDisabledDept(deptList) {
+      return deptList.filter(dept => {
+        if (dept.disabled) {
+          return false;
+        }
+        if (dept.children && dept.children.length) {
+          dept.children = this.filterDisabledDept(dept.children);
+        }
+        return true;
       });
     },
     // 筛选节点
