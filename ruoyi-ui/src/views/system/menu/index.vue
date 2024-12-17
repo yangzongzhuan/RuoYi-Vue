@@ -117,6 +117,8 @@
               />
             </el-form-item>
           </el-col>
+        </el-row>
+        <el-row>
           <el-col :span="24">
             <el-form-item label="菜单类型" prop="menuType">
               <el-radio-group v-model="form.menuType">
@@ -126,6 +128,8 @@
               </el-radio-group>
             </el-form-item>
           </el-col>
+        </el-row>
+        <el-row>
           <el-col :span="24" v-if="form.menuType != 'F'">
             <el-form-item label="菜单图标" prop="icon">
               <el-popover
@@ -147,6 +151,8 @@
               </el-popover>
             </el-form-item>
           </el-col>
+        </el-row>
+        <el-row>
           <el-col :span="12">
             <el-form-item label="菜单名称" prop="menuName">
               <el-input v-model="form.menuName" placeholder="请输入菜单名称" />
@@ -157,6 +163,8 @@
               <el-input-number v-model="form.orderNum" controls-position="right" :min="0" />
             </el-form-item>
           </el-col>
+        </el-row>
+        <el-row>
           <el-col :span="12" v-if="form.menuType != 'F'">
             <el-form-item prop="isFrame">
               <span slot="label">
@@ -182,6 +190,8 @@
               <el-input v-model="form.path" placeholder="请输入路由地址" />
             </el-form-item>
           </el-col>
+        </el-row>
+        <el-row>
           <el-col :span="12" v-if="form.menuType == 'C'">
             <el-form-item prop="component">
               <span slot="label">
@@ -204,6 +214,8 @@
               </span>
             </el-form-item>
           </el-col>
+        </el-row>
+        <el-row>
           <el-col :span="12" v-if="form.menuType == 'C'">
             <el-form-item prop="query">
               <el-input v-model="form.query" placeholder="请输入路由参数" maxlength="255" />
@@ -229,6 +241,8 @@
               </el-radio-group>
             </el-form-item>
           </el-col>
+        </el-row>
+        <el-row>
           <el-col :span="12" v-if="form.menuType != 'F'">
             <el-form-item prop="visible">
               <span slot="label">
