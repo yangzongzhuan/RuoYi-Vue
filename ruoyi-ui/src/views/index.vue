@@ -1,14 +1,6 @@
 <template>
   <div class="app-container home">
     <el-row :gutter="20">
-      <el-col :sm="24" :lg="24">
-        <blockquote class="text-warning" style="font-size: 14px">
-          阿里云服务器折扣区<el-link href="http://aly.ruoyi.vip" type="primary" target="_blank">☛☛点我进入☚☚</el-link> &nbsp;&nbsp;&nbsp; 腾讯云服务器秒杀区<el-link href="http://txy.ruoyi.vip" type="primary" target="_blank">☛☛点我进入☚☚</el-link>
-        </blockquote>
-        <hr />
-      </el-col>
-    </el-row>
-    <el-row :gutter="20">
       <el-col :sm="24" :lg="12" style="padding-left: 20px">
         <h2>若依后台管理框架</h2>
         <p>
@@ -94,7 +86,8 @@
               <s> 满101456076 </s> <s> 满101539465 </s> <s> 满264312783 </s> <s> 满167385320 </s> 
               <s> 满104748341 </s> <s> 满160110482 </s> <s> 满170801498 </s> <s> 满108482800 </s> 
               <s> 满101046199 </s> <s> 满136919097 </s> <s> 满143961921 </s> <s> 满174951577 </s> 
-              <s> 满161281055 </s> <s> 满138988063 </s> <a href="http://qm.qq.com/cgi-bin/qm/qr?_wv=1027&k=SUc-msaypcqB2UTFif4eqGlBHkKcvMNP&authKey=JdQBouY2PG%2BS%2BCzAfIgbCGNgxyahpfh24IW%2F03rPxGilhqVbisLma%2FFFnt79DHNh&noverify=0&group_code=151450850" target="_blank">151450850</a>
+              <s> 满161281055 </s> <s> 满138988063 </s> <s> 满151450850 </s> <s> 满224622315 </s>
+              <s> 满287842588 </s> <a href="http://qm.qq.com/cgi-bin/qm/qr?_wv=1027&k=HKz42pk2zQ1WUMbbRo50-N7tY4IDKKrj&authKey=ukBg3edmUbnmoo40xZCo6R1tYdTglYJ1nBFRW9gTHuZwLI1r8wgFT6cWUrAldwcr&noverify=0&group_code=187944233" target="_blank">187944233</a>
             </p>
             <p>
               <i class="el-icon-chat-dot-round"></i> 微信：<a
