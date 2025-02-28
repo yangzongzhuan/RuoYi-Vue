@@ -13,6 +13,7 @@
       :headers="headers"
       class="upload-file-uploader"
       ref="fileUpload"
+      v-if="!disabled"
     >
       <!-- 上传按钮 -->
       <el-button size="mini" type="primary">选取文件</el-button>
@@ -32,7 +33,7 @@
           <span class="el-icon-document"> {{ getFileName(file.name) }} </span>
         </el-link>
         <div class="ele-upload-list__item-content-action">
-          <el-link :underline="false" @click="handleDelete(index)" type="danger">删除</el-link>
+          <el-link :underline="false" @click="handleDelete(index)" type="danger" v-if="!disabled">删除</el-link>
         </div>
       </li>
     </transition-group>
@@ -66,6 +67,11 @@ export default {
     isShowTip: {
       type: Boolean,
       default: true
+    },
+    // 禁用组件（仅查看文件）
+    disabled: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
