@@ -120,6 +120,7 @@ public class TokenService
 
         Map<String, Object> claims = new HashMap<>();
         claims.put(Constants.LOGIN_USER_KEY, token);
+        claims.put(Constants.JWT_USERNAME, loginUser.getUsername());
         return createToken(claims);
     }
 
