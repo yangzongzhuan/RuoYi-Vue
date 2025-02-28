@@ -156,7 +156,7 @@ export default {
       // 日期范围
       dateRange: [],
       // 默认排序
-      defaultSort: {prop: 'loginTime', order: 'descending'},
+      defaultSort: { prop: "loginTime", order: "descending" },
       // 查询参数
       queryParams: {
         pageNum: 1,
