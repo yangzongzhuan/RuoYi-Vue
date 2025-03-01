@@ -365,7 +365,7 @@ public class SysMenuServiceImpl implements ISysMenuService
     /**
      * 获取路由名称，如没有配置路由名称则取路由地址
      * 
-     * @param routerName 路由名称
+     * @param name 路由名称
      * @param path 路由地址
      * @return 路由名称（驼峰格式）
      */

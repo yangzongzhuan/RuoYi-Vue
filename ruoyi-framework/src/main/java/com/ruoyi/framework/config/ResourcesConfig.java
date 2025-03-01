@@ -36,7 +36,7 @@ public class ResourcesConfig implements WebMvcConfigurer
         /** swagger配置 */
         registry.addResourceHandler("/swagger-ui/**")
                 .addResourceLocations("classpath:/META-INF/resources/webjars/springfox-swagger-ui/")
-                .setCacheControl(CacheControl.maxAge(5, TimeUnit.HOURS).cachePublic());;
+                .setCacheControl(CacheControl.maxAge(5, TimeUnit.HOURS).cachePublic());
     }
 
     /**
@@ -55,7 +55,6 @@ public class ResourcesConfig implements WebMvcConfigurer
     public CorsFilter corsFilter()
     {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowCredentials(true);
         // 设置访问源地址
         config.addAllowedOriginPattern("*");
         // 设置访问源请求头
