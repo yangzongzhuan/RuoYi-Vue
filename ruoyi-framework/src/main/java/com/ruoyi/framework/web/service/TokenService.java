@@ -25,7 +25,7 @@ import io.jsonwebtoken.SignatureAlgorithm;
 
 /**
  * token验证处理
- *
+ * 
  * @author ruoyi
  */
 @Component
@@ -49,14 +49,14 @@ public class TokenService
 
     protected static final long MILLIS_MINUTE = 60 * MILLIS_SECOND;
 
-    private static final Long MILLIS_MINUTE_TEN = 20 * 60 * 1000L;
+    private static final Long MILLIS_MINUTE_TWENTY = 20 * 60 * 1000L;
 
     @Autowired
     private RedisCache redisCache;
 
     /**
      * 获取用户身份信息
-     *
+     * 
      * @return 用户信息
      */
     public LoginUser getLoginUser(HttpServletRequest request)
@@ -107,7 +107,7 @@ public class TokenService
 
     /**
      * 创建令牌
-     *
+     * 
      * @param loginUser 用户信息
      * @return 令牌
      */
@@ -126,15 +126,15 @@ public class TokenService
 
     /**
      * 验证令牌有效期，相差不足20分钟，自动刷新缓存
-     *
-     * @param loginUser
+     * 
+     * @param loginUser 登录信息
      * @return 令牌
      */
     public void verifyToken(LoginUser loginUser)
     {
         long expireTime = loginUser.getExpireTime();
         long currentTime = System.currentTimeMillis();
-        if (expireTime - currentTime <= MILLIS_MINUTE_TEN)
+        if (expireTime - currentTime <= MILLIS_MINUTE_TWENTY)
         {
             refreshToken(loginUser);
         }
@@ -142,7 +142,7 @@ public class TokenService
 
     /**
      * 刷新令牌有效期
-     *
+     * 
      * @param loginUser 登录信息
      */
     public void refreshToken(LoginUser loginUser)
@@ -156,7 +156,7 @@ public class TokenService
 
     /**
      * 设置用户代理信息
-     *
+     * 
      * @param loginUser 登录信息
      */
     public void setUserAgent(LoginUser loginUser)

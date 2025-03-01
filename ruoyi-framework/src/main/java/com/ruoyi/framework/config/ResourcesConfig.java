@@ -55,7 +55,6 @@ public class ResourcesConfig implements WebMvcConfigurer
     public CorsFilter corsFilter()
     {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowCredentials(true);
         // 设置访问源地址
         config.addAllowedOriginPattern("*");
         // 设置访问源请求头
