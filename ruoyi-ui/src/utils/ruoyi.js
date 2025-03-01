@@ -1,5 +1,3 @@
-
-
 /**
  * 通用js方法封装处理
  * Copyright (c) 2019 ruoyi
@@ -165,37 +163,19 @@ export function handleTree(data, id, parentId, children) {
   };
 
   var childrenListMap = {};
-  var nodeIds = {};
   var tree = [];
-
   for (let d of data) {
-    let parentId = d[config.parentId];
-    if (childrenListMap[parentId] == null) {
-      childrenListMap[parentId] = [];
-    }
-    nodeIds[d[config.id]] = d;
-    childrenListMap[parentId].push(d);
+    let id = d[config.id];
+    childrenListMap[id] = d;
   }
 
   for (let d of data) {
-    let parentId = d[config.parentId];
-    if (nodeIds[parentId] == null) {
+    let parentId = d[config.parentId]
+    let parentObj = childrenListMap[parentId]
+    if (!parentObj) {
       tree.push(d);
-    }
-  }
-
-  for (let t of tree) {
-    adaptToChildrenList(t);
-  }
-
-  function adaptToChildrenList(o) {
-    if (childrenListMap[o[config.id]] !== null) {
-      o[config.childrenList] = childrenListMap[o[config.id]];
-    }
-    if (o[config.childrenList]) {
-      for (let c of o[config.childrenList]) {
-        adaptToChildrenList(c);
-      }
+    } else {
+      parentObj[config.childrenList].push(d)
     }
   }
   return tree;
@@ -225,6 +205,18 @@ export function tansParams(params) {
     }
   }
   return result
+}
+
+// 返回项目路径
+export function getNormalPath(p) {
+  if (p.length === 0 || !p || p == 'undefined') {
+    return p
+  };
+  let res = p.replace('//', '/')
+  if (res[res.length - 1] === '/') {
+    return res.slice(0, res.length - 1)
+  }
+  return res;
 }
 
 // 验证是否为blob格式
