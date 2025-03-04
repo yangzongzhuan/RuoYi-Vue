@@ -56,6 +56,7 @@ public @interface Excel
     /**
      * BigDecimal 舍入规则 默认:BigDecimal.ROUND_HALF_EVEN
      */
+    @SuppressWarnings("deprecation")
     public int roundingMode() default BigDecimal.ROUND_HALF_EVEN;
 
     /**
