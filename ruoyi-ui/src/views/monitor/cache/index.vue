@@ -1,6 +1,6 @@
 <template>
   <div class="app-container">
-    <el-row>
+    <el-row :gutter="10">
       <el-col :span="24" class="card-box">
         <el-card>
           <div slot="header"><span><i class="el-icon-monitor"></i> 基本信息</span></div>
