@@ -75,7 +75,7 @@
           icon="el-icon-plus"
           size="mini"
           @click="handleAdd"
-          v-hasPermi="['${moduleName}:${businessName}:add']"
+          v-hasPermi="['${permissionPrefix}:add']"
         >新增</el-button>
       </el-col>
       <el-col :span="1.5">
@@ -86,7 +86,7 @@
           size="mini"
           :disabled="single"
           @click="handleUpdate"
-          v-hasPermi="['${moduleName}:${businessName}:edit']"
+          v-hasPermi="['${permissionPrefix}:edit']"
         >修改</el-button>
       </el-col>
       <el-col :span="1.5">
@@ -97,7 +97,7 @@
           size="mini"
           :disabled="multiple"
           @click="handleDelete"
-          v-hasPermi="['${moduleName}:${businessName}:remove']"
+          v-hasPermi="['${permissionPrefix}:remove']"
         >删除</el-button>
       </el-col>
       <el-col :span="1.5">
@@ -107,7 +107,7 @@
           icon="el-icon-download"
           size="mini"
           @click="handleExport"
-          v-hasPermi="['${moduleName}:${businessName}:export']"
+          v-hasPermi="['${permissionPrefix}:export']"
         >导出</el-button>
       </el-col>
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
@@ -158,14 +158,14 @@
             type="text"
             icon="el-icon-edit"
             @click="handleUpdate(scope.row)"
-            v-hasPermi="['${moduleName}:${businessName}:edit']"
+            v-hasPermi="['${permissionPrefix}:edit']"
           >修改</el-button>
           <el-button
             size="mini"
             type="text"
             icon="el-icon-delete"
             @click="handleDelete(scope.row)"
-            v-hasPermi="['${moduleName}:${businessName}:remove']"
+            v-hasPermi="['${permissionPrefix}:remove']"
           >删除</el-button>
         </template>
       </el-table-column>
