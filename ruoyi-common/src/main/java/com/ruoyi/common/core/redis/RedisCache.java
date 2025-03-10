@@ -136,7 +136,7 @@ public class RedisCache
      * @param dataList 待缓存的List数据
      * @return 缓存的对象
      */
-    public <T> long setCacheList(final String key, final List<T> dataList)
+    public <T> long pushToCacheList(final String key, final List<T> dataList)
     {
         Long count = redisTemplate.opsForList().rightPushAll(key, dataList);
         return count == null ? 0 : count;
