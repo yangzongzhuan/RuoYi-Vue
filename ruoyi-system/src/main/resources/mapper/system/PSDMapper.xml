@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+		PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+		"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.PSDMapper">
+
+	<!-- 插入 PSDTemplate -->
+	<insert id="insert" parameterType="com.ruoyi.system.domain.PSDTemplate" useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO psd_template(config)
+		VALUES (#{config})
+	</insert>
+
+	<!-- 根据 id 更新 PSDTemplate -->
+	<update id="updateById" parameterType="com.ruoyi.system.domain.PSDTemplate">
+		UPDATE psd_template
+		SET config = #{config}
+		WHERE id = #{id}
+	</update>
+
+	<!-- 根据 id 删除 PSDTemplate -->
+	<delete id="deleteById" parameterType="java.lang.Integer">
+		DELETE FROM psd_template WHERE id = #{id}
+	</delete>
+
+	<!-- 根据条件查询 PSDTemplate -->
+	<select id="selectByCondition" resultType="com.ruoyi.system.domain.PSDTemplate">
+		SELECT * FROM psd_template
+		<where>
+			<if test="templateName != null and templateName != ''">
+				AND JSON_UNQUOTE(JSON_EXTRACT(config, '$.&quot;基础配置&quot;.&quot;模板名称&quot;'))
+				LIKE CONCAT('%', #{templateName}, '%')
+			</if>
+			<if test="accountName != null and accountName != ''">
+				AND JSON_UNQUOTE(JSON_EXTRACT(config, '$.&quot;基础配置&quot;.&quot;做图账号名称&quot;'))
+				LIKE CONCAT('%', #{accountName}, '%')
+			</if>
+		</where>
+	</select>
+</mapper>

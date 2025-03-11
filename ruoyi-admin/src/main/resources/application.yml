@@ -127,3 +127,8 @@ xss:
   excludes: /system/notice
   # 匹配链接
   urlPatterns: /system/*,/monitor/*,/tool/*
+
+deepseek:
+  api:
+    key: sk-47478f6d0a9949a4b6d2ed4408a3c74e
+    url: https://api.deepseek.com/v1/chat/completions
