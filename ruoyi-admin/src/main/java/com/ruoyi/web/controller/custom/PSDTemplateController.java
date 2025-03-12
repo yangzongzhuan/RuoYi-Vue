@@ -126,7 +126,7 @@ public class PSDTemplateController extends BaseController
 		// 基础配置
 		JSONObject baseConfig = new JSONObject();
 		baseConfig.put("做图账号名称", "test");
-		baseConfig.put("psd本地路径", "C:\\\\Users\\\\11254\\\\Downloads\\\\A4xin.psd"); // 四斜杠
+		baseConfig.put("psd本地路径", "C:\\\\Users\\\\liuxianying\\\\Desktop\\\\qm\\\\A4xin.psd"); // 四斜杠
 		baseConfig.put("图片保存路径", "C:\\\\output");
 		baseConfig.put("模板名称", "动态模板");
 

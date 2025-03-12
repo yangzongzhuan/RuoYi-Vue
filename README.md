@@ -8,6 +8,14 @@
 	<a href="https://gitee.com/y_project/RuoYi-Vue"><img src="https://img.shields.io/badge/RuoYi-v3.8.9-brightgreen.svg"></a>
 	<a href="https://gitee.com/y_project/RuoYi-Vue/blob/master/LICENSE"><img src="https://img.shields.io/github/license/mashape/apistatus.svg"></a>
 </p>
+```
+jacob-1.17-x64.dll 放到C:\Windows\System32
+jacob-1.17-x86.dll 放到C:\Windows\SysWOW64
+```
+
+
+
+
 
 ## 平台简介
 
