@@ -25,37 +25,28 @@
     </el-form>
 
     <el-row :gutter="10" class="mb8">
-<!--      <el-col :span="1.5">-->
-<!--        <el-button-->
-<!--          type="primary"-->
-<!--          plain-->
-<!--          icon="el-icon-plus"-->
-<!--          size="mini"-->
-<!--          @click="handleAdd"-->
-<!--        >新增配置</el-button>-->
-<!--      </el-col>-->
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
 
     <el-table v-loading="loading" :data="configList" style="width: 100%">
       <el-table-column label="模板名称" min-width="150" align="center">
         <template slot-scope="{row}">
-          {{ getConfigValue(row.config, '基础配置.模板名称') }}
+          {{ getConfigValue(row.config, 'baseConfig.templateName') }}
         </template>
       </el-table-column>
       <el-table-column label="账号名称" min-width="120" align="center">
         <template slot-scope="{row}">
-          {{ getConfigValue(row.config, '基础配置.做图账号名称') }}
+          {{ getConfigValue(row.config, 'baseConfig.accountName') }}
         </template>
       </el-table-column>
       <el-table-column label="PSD路径" min-width="200" show-overflow-tooltip>
         <template slot-scope="{row}">
-          {{ getConfigValue(row.config, '基础配置.psd本地路径') }}
+          {{ getConfigValue(row.config, 'baseConfig.psdLocalPath') }}
         </template>
       </el-table-column>
       <el-table-column label="保存路径" min-width="200" show-overflow-tooltip>
         <template slot-scope="{row}">
-          {{ getConfigValue(row.config, '基础配置.图片保存路径') }}
+          {{ getConfigValue(row.config, 'baseConfig.imageSavePath') }}
         </template>
       </el-table-column>
       <el-table-column label="操作" width="180" align="center" fixed="right">
@@ -86,61 +77,59 @@
       @pagination="getList"
     />
 
-    <!-- 新增/编辑对话框 -->
+    <!-- 编辑对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="800px">
       <el-form ref="form" :model="form" :rules="rules" label-width="190px">
         <!-- 基础配置 -->
         <el-form-item label="模板名称" prop="templateName">
-          <el-input v-model="form.templateName" placeholder="请输入模板名称" />
+          <el-input v-model="form.templateName" />
         </el-form-item>
-        <el-form-item label="做图账号名称" prop="accountName">
-          <el-input v-model="form.accountName" placeholder="请输入账号名称" />
+        <el-form-item label="做图账号" prop="accountName">
+          <el-input v-model="form.accountName" />
         </el-form-item>
-        <el-form-item label="PSD路径" prop="psdPath">
-          <el-input v-model="form.psdPath" placeholder="请输入PSD完整路径" />
+        <el-form-item label="PSD路径" prop="psdLocalPath">
+          <el-input v-model="form.psdLocalPath" />
         </el-form-item>
-        <el-form-item label="图片保存路径" prop="savePath">
-          <el-input v-model="form.savePath" placeholder="请输入图片保存路径" />
+        <el-form-item label="保存路径" prop="imageSavePath">
+          <el-input v-model="form.imageSavePath" />
         </el-form-item>
 
         <el-divider>图片配置</el-divider>
-        <!-- 图片配置：支持多条配置 -->
-        <div v-for="(picCfg, index) in form.图片配置" :key="index" style="border: 1px solid #ebeef5; padding: 15px; margin-bottom: 15px;">
-          <div style="display: flex; justify-content: space-between; align-items: center;">
+        <div v-for="(imgCfg, index) in form.imageConfigs" :key="index" class="config-block">
+          <div class="config-header">
             <h3>图片配置 {{ index + 1 }}</h3>
-            <el-button type="danger" size="mini" @click="removePicConfig(index)">删除配置</el-button>
+            <el-button type="danger" size="mini" @click="removeImgConfig(index)">删除</el-button>
           </div>
-          <el-form-item label="图片所在文件夹名称">
-            <el-input v-model="picCfg.图片所在文件夹名称" placeholder="请输入图片所在文件夹名称" />
+          <el-form-item label="文件夹名称">
+            <el-input v-model="imgCfg.folderName" />
           </el-form-item>
-          <el-form-item label="是否有子文件夹">
-            <el-switch v-model="picCfg.是否有子文件夹" :active-value="true" :inactive-value="false"></el-switch>
+          <el-form-item label="包含子文件夹">
+            <el-switch v-model="imgCfg.hasSubfolder" />
           </el-form-item>
-          <el-form-item label="子文件夹名称" v-if="picCfg.是否有子文件夹">
-            <el-input v-model="picCfg.子文件夹名称" placeholder="请输入子文件夹名称" />
+          <el-form-item label="子文件夹名称" v-if="imgCfg.hasSubfolder">
+            <el-input v-model="imgCfg.subfolderName" />
           </el-form-item>
 
-          <el-divider>文字图层配置</el-divider>
-          <!-- 文字图层配置：遍历对象中每个图层 -->
-          <div v-for="(layerCfg, key) in picCfg.文字图层配置" :key="key" style="margin-bottom: 10px;">
-            <el-form-item :label="key + ' - 名称'">
-              <el-input v-model="layerCfg.名称" placeholder="请输入图层名称" />
+          <el-divider>文字图层</el-divider>
+          <div v-for="(layer, key) in imgCfg.textLayerConfigs" :key="key">
+            <el-form-item :label="`${key} - 名称`">
+              <el-input v-model="layer.name" />
             </el-form-item>
-            <el-form-item :label="key + ' - 原文示例'">
-              <el-input v-model="layerCfg.原文示例" placeholder="请输入原文示例" />
+            <el-form-item :label="`${key} - 示例`">
+              <el-input v-model="layer.sampleText" />
             </el-form-item>
-            <el-form-item :label="key + ' - 每行最大字符数'">
-              <el-input v-model="layerCfg.每行最大字符数" placeholder="请输入每行最大字符数" />
+            <el-form-item :label="`${key} - 字符限制`">
+              <el-input v-model.number="layer.maxCharsPerLine" />
             </el-form-item>
           </div>
           <el-form-item label="提示词">
-            <el-input v-model="picCfg.提示词" placeholder="请输入提示词" />
+            <el-input v-model="imgCfg.prompt" />
           </el-form-item>
         </div>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button @click="cancel">取 消</el-button>
-        <el-button type="primary" @click="submitForm">确 定</el-button>
+        <el-button @click="cancel">取消</el-button>
+        <el-button type="primary" @click="submitForm">确定</el-button>
       </div>
     </el-dialog>
   </div>
@@ -154,7 +143,6 @@ export default {
   data() {
     return {
       loading: true,
-      ids: [],
       showSearch: true,
       total: 0,
       configList: [],
@@ -163,30 +151,21 @@ export default {
       queryParams: {
         pageNum: 1,
         pageSize: 10,
-        templateName: undefined,
-        accountName: undefined
+        templateName: null,
+        accountName: null
       },
-      // form中包含基础配置和图片配置
       form: {
         templateName: '',
         accountName: '',
-        psdPath: '',
-        savePath: '',
-        图片配置: []
+        psdLocalPath: '',
+        imageSavePath: '',
+        imageConfigs: []
       },
       rules: {
-        templateName: [
-          { required: true, message: "模板名称不能为空", trigger: "blur" }
-        ],
-        accountName: [
-          { required: true, message: "账号名称不能为空", trigger: "blur" }
-        ],
-        psdPath: [
-          { required: true, message: "PSD路径不能为空", trigger: "blur" }
-        ],
-        savePath: [
-          { required: true, message: "图片保存路径不能为空", trigger: "blur" }
-        ]
+        templateName: [{ required: true, message: "必填项", trigger: "blur" }],
+        accountName: [{ required: true, message: "必填项", trigger: "blur" }],
+        psdLocalPath: [{ required: true, message: "必填项", trigger: "blur" }],
+        imageSavePath: [{ required: true, message: "必填项", trigger: "blur" }]
       }
     };
   },
@@ -194,122 +173,102 @@ export default {
     this.getList();
   },
   methods: {
-    /**
-     * 将返回的非标准 JSON 格式字符串转换为合法 JSON 对象
-     * 例如：
-     * "{基础配置={做图账号名称=2, psd本地路径=2, 图片保存路径=2, 模板名称=2}, 图片配置=[{...}]}"
-     * 转换为合法 JSON 对象
-     */
-    parseConfig(configStr) {
-      configStr = configStr.trim();
-      if ((configStr.startsWith('"') && configStr.endsWith('"')) ||
-        (configStr.startsWith("'") && configStr.endsWith("'"))) {
-        configStr = configStr.substring(1, configStr.length - 1);
-      }
-      configStr = configStr.replace(/([{,]\s*)([^:{}\[\],]+)(?=\s*=)/g, '$1"$2"');
-      configStr = configStr.replace(/=/g, ':');
-      return JSON.parse(configStr);
-    },
-    // 根据路径获取配置中的值，路径用点分隔
-    getConfigValue(config, path) {
-      try {
-        const configObj = this.parseConfig(config);
-        return path.split('.').reduce((obj, key) => (obj && obj[key]) || '', configObj);
-      } catch (e) {
-        console.error(e);
-        return '-';
-      }
-    },
-    // 获取配置列表
+    // 数据获取方法
     getList() {
       this.loading = true;
-      listPSDConfig(this.queryParams).then(response => {
-        this.configList = response.rows;
-        this.total = response.total;
+      listPSDConfig(this.queryParams).then(res => {
+        this.configList = res.rows;
+        this.total = res.total;
         this.loading = false;
       });
     },
-    reset() {
-      this.form = {
-        templateName: '',
-        accountName: '',
-        psdPath: '',
-        savePath: '',
-        图片配置: []
-      };
-    },
+
+    // 查询处理
     handleQuery() {
       this.queryParams.pageNum = 1;
       this.getList();
     },
+
+    // 重置查询
     resetQuery() {
       this.queryParams = {
         pageNum: 1,
         pageSize: 10,
-        templateName: undefined,
-        accountName: undefined
+        templateName: null,
+        accountName: null
       };
-      this.handleQuery();
+      this.getList();
     },
-    handleAdd() {
-      this.reset();
-      this.open = true;
-      this.title = "添加PSD配置";
+
+    // 数据解析
+    getConfigValue(config, path) {
+      try {
+        const configObj = JSON.parse(config);
+        return path.split('.').reduce((obj, key) => obj?.[key] ?? '-', configObj);
+      } catch {
+        return '-';
+      }
     },
+
+    // 表单处理
     handleUpdate(row) {
-      this.reset();
-      const config = this.parseConfig(row.config);
+      this.resetForm();
+      const config = JSON.parse(row.config);
       this.form = {
         id: row.id,
-        templateName: config["基础配置"]["模板名称"],
-        accountName: config["基础配置"]["做图账号名称"],
-        psdPath: config["基础配置"]["psd本地路径"],
-        savePath: config["基础配置"]["图片保存路径"],
-        图片配置: config["图片配置"] || []
+        templateName: config.baseConfig?.templateName || '',
+        accountName: config.baseConfig?.accountName || '',
+        psdLocalPath: config.baseConfig?.psdLocalPath || '',
+        imageSavePath: config.baseConfig?.imageSavePath || '',
+        imageConfigs: config.imageConfigs?.map(cfg => ({
+          folderName: cfg.folderName,
+          hasSubfolder: cfg.hasSubfolder,
+          subfolderName: cfg.subfolderName,
+          textLayerConfigs: cfg.textLayerConfigs,
+          prompt: cfg.prompt
+        })) || []
       };
       this.open = true;
-      this.title = "修改PSD配置";
+      this.title = "编辑配置";
     },
+
+    // 提交表单
     submitForm() {
-      this.$refs["form"].validate(valid => {
+      this.$refs.form.validate(valid => {
         if (valid) {
-          const configData = {
-            "基础配置": {
-              "模板名称": this.form.templateName,
-              "做图账号名称": this.form.accountName,
-              "psd本地路径": this.form.psdPath,
-              "图片保存路径": this.form.savePath
-            },
-            "图片配置": this.form.图片配置
-          };
           const postData = {
             id: this.form.id,
-            config: JSON.stringify(configData)
+            config: JSON.stringify({
+              baseConfig: {
+                templateName: this.form.templateName,
+                accountName: this.form.accountName,
+                psdLocalPath: this.form.psdLocalPath,
+                imageSavePath: this.form.imageSavePath
+              },
+              imageConfigs: this.form.imageConfigs.map(cfg => ({
+                folderName: cfg.folderName,
+                hasSubfolder: cfg.hasSubfolder,
+                subfolderName: cfg.subfolderName,
+                textLayerConfigs: cfg.textLayerConfigs,
+                prompt: cfg.prompt
+              }))
+            })
           };
-          if (this.form.id) {
-            updatePSDConfig(postData).then(response => {
-              this.$message.success("修改成功");
-              this.open = false;
-              this.getList();
-            });
-          } else {
-            // addPSDConfig(postData).then(response => {
-            //   this.$message.success("新增成功");
-            //   this.open = false;
-            //   this.getList();
-            // });
-          }
+
+          updatePSDConfig(postData).then(() => {
+            this.$message.success("更新成功");
+            this.open = false;
+            this.getList();
+          });
         }
       });
     },
-    cancel() {
-      this.open = false;
-    },
+
+    // 删除配置
     handleDelete(row) {
-      this.$confirm('确认删除该PSD配置?', "警告", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "warning"
+      this.$confirm("确认删除该配置？", "警告", {
+        confirmButtonText: "确认",
+        cancelButtonText: "取消"
       }).then(() => {
         return delPSDConfig(row.id);
       }).then(() => {
@@ -317,22 +276,45 @@ export default {
         this.$message.success("删除成功");
       });
     },
-    // 删除指定索引的图片配置
-    removePicConfig(index) {
-      this.form.图片配置.splice(index, 1);
+
+    // 辅助方法
+    resetForm() {
+      this.form = {
+        templateName: '',
+        accountName: '',
+        psdLocalPath: '',
+        imageSavePath: '',
+        imageConfigs: []
+      };
     },
-  },
+
+    removeImgConfig(index) {
+      this.form.imageConfigs.splice(index, 1);
+    },
+
+    cancel() {
+      this.open = false;
+    }
+  }
 };
 </script>
 
 <style scoped>
-.app-container {
-  padding: 20px;
+.config-block {
+  margin: 15px 0;
+  padding: 15px;
+  border: 1px solid #ebeef5;
+  border-radius: 4px;
 }
+
+.config-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
 .el-form-item {
   margin-bottom: 15px;
-}
-.el-form--inline .el-form-item {
-  width: 300px;
 }
 </style>

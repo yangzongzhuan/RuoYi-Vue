@@ -9,9 +9,9 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="作图账号名称" prop="username">
+      <el-form-item label="作图账号名称" prop="accountName">
         <el-input
-          v-model="queryParams.username"
+          v-model="queryParams.accountName"
           placeholder="请输入作图账号名称"
           clearable
           @keyup.enter.native="handleQuery"
@@ -80,7 +80,7 @@
     <el-table v-loading="loading" :data="taskList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
       <el-table-column label="任务名称" align="center" prop="taskName" />
-      <el-table-column label="作图账号名称" align="center" prop="username" />
+      <el-table-column label="作图账号名称" align="center" prop="accountName" />
       <el-table-column label="模板名称" align="center" prop="templateName" />
 <!--      <el-table-column label="图片生产数量，[1,2,3] 表示图一1张，图二两张" align="center" prop="imageCount" />-->
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
@@ -117,12 +117,95 @@
         <el-form-item label="任务名称" prop="taskName">
           <el-input v-model="form.taskName" placeholder="请输入任务名称" />
         </el-form-item>
-        <el-form-item label="作图账号名称" prop="username">
-          <el-input v-model="form.username" placeholder="请输入作图账号名称" />
+        <el-form-item label="作图账号名称" prop="accountName">
+          <el-input v-model="form.accountName" placeholder="请输入作图账号名称" />
         </el-form-item>
         <el-form-item label="模板名称" prop="templateName">
           <el-input v-model="form.templateName" placeholder="请输入模板名称" />
         </el-form-item>
+        <el-button @click="getTemplateInfo" :disabled="isEmpty(form.accountName) || isEmpty(form.templateName)">获取模板信息</el-button>
+        <!-- 模板信息展示区 -->
+        <div v-if="!isEmpty(templateInfo.imageConfigs)" class="template-container">
+          <!-- 基础配置展示 -->
+          <el-card class="config-section">
+            <div class="section-header">
+              <h3>基础配置</h3>
+            </div>
+            <div class="config-item">
+              <span class="label">账号名称：</span>
+              <el-tag type="info">{{ templateInfo.baseConfig.accountName }}</el-tag>
+            </div>
+            <div class="config-item">
+              <span class="label">PSD路径：</span>
+              <el-tooltip :content="templateInfo.baseConfig.psdLocalPath">
+                <span class="path">{{ templateInfo.baseConfig.psdLocalPath }}</span>
+              </el-tooltip>
+            </div>
+            <div class="config-item">
+              <span class="label">输出路径：</span>
+              <el-tooltip :content="templateInfo.baseConfig.imageSavePath">
+                <span class="path">{{ templateInfo.baseConfig.imageSavePath }}</span>
+              </el-tooltip>
+            </div>
+          </el-card>
+
+          <!-- 图片配置展示 -->
+          <el-card
+            v-for="(imgConfig, index) in templateInfo.imageConfigs"
+            :key="index"
+            class="config-section image-config">
+            <div class="section-header">
+              <h3>图片配置 {{ index + 1 }}</h3>
+              <el-input-number
+                v-model="imgConfig.generateCount"
+                :min="0"
+                :max="Infinity"
+                :precision="0"
+                controls-position="right"
+                class="generate-count"
+                placeholder="生成数量">
+              </el-input-number>
+            </div>
+
+            <!-- 文件夹配置 -->
+            <div class="config-item">
+              <span class="label">目标文件夹：</span>
+              <el-tag>{{ imgConfig.folderName }}</el-tag>
+              <span v-if="imgConfig.hasSubfolder" class="subfolder">
+            / {{ imgConfig.subfolderName }}
+          </span>
+            </div>
+
+            <!-- 文字图层配置 -->
+            <div
+              v-for="(layer, key) in imgConfig.textLayerConfigs"
+              :key="key"
+              class="text-layer">
+              <div class="layer-header">
+                <el-tag type="success">{{ key }}: {{layer.name}}</el-tag>
+              </div>
+              <div class="config-item">
+                <span class="label">示例文本：</span>
+                <el-input
+                  :value="layer.sampleText"
+                  readonly
+                  class="sample-text">
+                  <template slot="append">
+                    <span class="char-limit">{{ layer.maxCharsPerLine }}字/行</span>
+                  </template>
+                </el-input>
+              </div>
+            </div>
+            <div class="config-item">
+              <span class="label">提示词：</span>
+              <el-input
+                :value="imgConfig.prompt"
+                readonly
+                class="sample-text">
+              </el-input>
+            </div>
+          </el-card>
+        </div>
 <!--        <el-form-item label="图片生产数量，[1,2,3] 表示图一1张，图二两张" prop="imageCount">-->
 <!--          <el-input v-model="form.imageCount" placeholder="请输入图片生产数量，[1,2,3] 表示图一1张，图二两张" />-->
 <!--        </el-form-item>-->
@@ -137,6 +220,8 @@
 
 <script>
 import { listTask, getTask, delTask, addTask, updateTask } from "@/api/custom/task";
+import {listPSDConfig} from "@/api/custom/psd";
+import {isEmpty} from "@/utils/validate";
 
 export default {
   name: "Task",
@@ -165,7 +250,7 @@ export default {
         pageNum: 1,
         pageSize: 10,
         taskName: null,
-        username: null,
+        accountName: null,
         templateName: null,
         imageCount: null
       },
@@ -173,6 +258,14 @@ export default {
       form: {},
       // 表单校验
       rules: {
+      },
+      templateInfo: {
+        baseConfig: {
+          accountName: '',
+          psdLocalPath: '',
+          imageSavePath: ''
+        },
+        imageConfigs: [] // 每个元素需要包含 generateCount 字段
       }
     };
   },
@@ -180,6 +273,7 @@ export default {
     this.getList();
   },
   methods: {
+    isEmpty,
     /** 查询任务列表 */
     getList() {
       this.loading = true;
@@ -199,7 +293,7 @@ export default {
       this.form = {
         id: null,
         taskName: null,
-        username: null,
+        accountName: null,
         templateName: null,
         imageCount: null
       };
@@ -239,21 +333,39 @@ export default {
     },
     /** 提交按钮 */
     submitForm() {
+      console.log(this.templateInfo)
       this.$refs["form"].validate(valid => {
         if (valid) {
           this.loading = true;
+          this.form.config = this.templateInfo;
           if (this.form.id != null) {
             updateTask(this.form).then(response => {
               this.$modal.msgSuccess("修改成功");
               this.open = false;
               this.getList();
-            });
+              this.templateInfo = {
+                baseConfig: {
+                accountName: '',
+                psdLocalPath: '',
+                imageSavePath: ''
+                },
+                imageConfigs: [] // 每个元素需要包含 generateCount 字段
+              }
+            }).finally(() => {this.loading = false;});
           } else {
             addTask(this.form).then(response => {
               this.$modal.msgSuccess("新增成功");
               this.open = false;
               this.getList();
-            });
+              this.templateInfo = {
+                baseConfig: {
+                  accountName: '',
+                  psdLocalPath: '',
+                  imageSavePath: ''
+                },
+                imageConfigs: [] // 每个元素需要包含 generateCount 字段
+              }
+            }).finally(() => {this.loading = false;});
           }
         }
       });
@@ -273,7 +385,113 @@ export default {
       this.download('psd/task/export', {
         ...this.queryParams
       }, `task_${new Date().getTime()}.xlsx`)
+    },
+    // 修改后代码
+    getTemplateInfo() {
+      this.loading = true;
+      listPSDConfig({
+        accountName: this.form.accountName,
+        templateName: this.form.templateName
+      }).then(res => {
+        if (res.rows[0]?.config) {
+          const parsedConfig = JSON.parse(res.rows[0].config);
+          // 合并基础配置（保留响应式）
+          Object.assign(this.templateInfo.baseConfig, parsedConfig.baseConfig);
+          // 替换图片配置数组（确保响应式更新）
+          this.templateInfo.imageConfigs = parsedConfig.imageConfigs.map(config => ({
+            ...config,
+            generateCount: config.generateCount || 1 // 初始化生成数量
+          }));
+          this.$modal.msgSuccess("模板信息获取成功");
+        } else {
+          this.$modal.msgError("模板配置数据不存在");
+        }
+        this.loading = false;
+      }).catch(() => {
+        this.loading = false;
+      });
     }
   }
 };
 </script>
+
+<style scoped>
+.template-container {
+  margin-top: 20px;
+  background: #f5f7fa;
+  padding: 15px;
+  border-radius: 4px;
+}
+
+.config-section {
+  margin-bottom: 20px;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+
+  h3 {
+    color: #409EFF;
+    margin: 0;
+    font-size: 16px;
+  }
+}
+
+.generate-count {
+  width: 150px;
+
+  >>> .el-input__inner {
+    text-align: right;
+  }
+}
+
+.config-item {
+  display: flex;
+  align-items: center;
+  margin: 10px 0;
+
+  .label {
+    width: 80px;
+    color: #666;
+    font-size: 13px;
+  }
+
+  .path {
+    color: #909399;
+    cursor: pointer;
+    &:hover {
+      color: #409EFF;
+    }
+  }
+
+  .subfolder {
+    color: #E6A23C;
+    margin-left: 5px;
+  }
+}
+
+.text-layer {
+  border-left: 3px solid #EBEEF5;
+  padding-left: 10px;
+  margin: 15px 0;
+
+  .layer-header {
+    margin-bottom: 8px;
+  }
+
+  .sample-text {
+    >>> .el-input__inner {
+      background: #f5f7fa;
+      cursor: default;
+    }
+
+    .char-limit {
+      color: #F56C6C;
+      font-size: 12px;
+    }
+  }
+}
+</style>

@@ -9,9 +9,9 @@ var CONFIG = {};
 
 try {
     // 从配置中获取基础路径配置
-    var baseConfig = CONFIG["基础配置"];
-    var psdPath = baseConfig.psd本地路径.replace(/\\/g, "/");
-    var outputDir = new Folder(baseConfig.图片保存路径);
+    var baseConfig = CONFIG.baseConfig; // 原"基础配置"
+    var psdPath = baseConfig.psdLocalPath.replace(/\\/g, "/"); // 原"psd本地路径"
+    var outputDir = new Folder(baseConfig.imageSavePath); // 原"图片保存路径"
     if (!outputDir.exists) {
         outputDir.create();
     }
@@ -20,7 +20,7 @@ try {
     var originalDoc = app.open(File(psdPath));
 
     // 2. 遍历每个图片配置，逐次处理
-    var imgConfigs = CONFIG["图片配置"];
+    var imgConfigs = CONFIG.imageConfigs; // 原"图片配置"
     for (var i = 0; i < imgConfigs.length; i++) {
         var cfg = imgConfigs[i];
 
@@ -29,22 +29,22 @@ try {
 
         // 查找目标文件夹时添加可见性控制
         var targetSet;
-        if (cfg["是否有子文件夹"]) {
-            var parentSet = findParentLayerSet(workingDoc, cfg["图片所在文件夹名称"]);
-            hideOtherSubfolders(parentSet, cfg["子文件夹名称"]); // 新增关键函数
-            targetSet = findExactLayerSet(workingDoc, cfg["图片所在文件夹名称"], cfg["子文件夹名称"]);
+        if (cfg.hasSubfolder) { // 原"是否有子文件夹"
+            var parentSet = findParentLayerSet(workingDoc, cfg.folderName); // 原"图片所在文件夹名称"
+            hideOtherSubfolders(parentSet, cfg.subfolderName); // 原"子文件夹名称"
+            targetSet = findExactLayerSet(workingDoc, cfg.folderName, cfg.subfolderName);
         } else {
-            targetSet = findLayerSetByName(workingDoc, cfg["图片所在文件夹名称"]);
+            targetSet = findLayerSetByName(workingDoc, cfg.folderName);
         }
 
         // 新增：确保目标图层组及其父级可见
         ensureLayerVisibility(targetSet);
 
         // 2.3 修改指定文本图层的内容
-        var textConfig = cfg["文字图层配置"];
+        var textConfig = cfg.textLayerConfigs; // 原"文字图层配置"
         for (var key in textConfig) {
             if (textConfig.hasOwnProperty(key)) {
-                var layerName = textConfig[key]["名称"];
+                var layerName = textConfig[key].name; // 原"名称"
                 var layer = findTextLayer(targetSet.layers, layerName);
                 if (!layer) {
                     throw new Error("找不到文本图层: " + layerName);
@@ -53,8 +53,8 @@ try {
                 // 更新文本内容并检查结果
                 if (!smartTextUpdate(
                     layer,
-                    textConfig[key]["原文示例"],
-                    textConfig[key]["每行最大字符数"]
+                    textConfig[key].sampleText, // 原"原文示例"
+                    textConfig[key].maxCharsPerLine // 原"每行最大字符数"
                 )) {
                     throw new Error("文本更新失败: " + layerName);
                 }
@@ -62,15 +62,15 @@ try {
         }
 
         // 2.4 隐藏其他文件夹（改进版）
-        var currentFolderName = cfg["图片所在文件夹名称"];
+        var currentFolderName = cfg.folderName;
         var allLayerSets = workingDoc.layerSets;
         for (var j = 0; j < allLayerSets.length; j++) {
             allLayerSets[j].visible = (allLayerSets[j].name === currentFolderName);
         }
 
         // 2.5 生成导出文件名
-        var fileName = baseConfig["模板名称"] + "_" +
-            cfg["图片所在文件夹名称"].replace(/ /g, "") + "_" +
+        var fileName = baseConfig.templateName + "_" + // 原"模板名称"
+            cfg.folderName.replace(/ /g, "") + "_" +
             Date.now() + ".png";
 
         // 2.6 导出为 PNG
@@ -81,17 +81,15 @@ try {
 
         // 2.7 关闭工作文档，不保存更改
         workingDoc.close(SaveOptions.DONOTSAVECHANGES);
-
     }
 
     // 3. 处理完毕后，关闭原始文档
     originalDoc.close(SaveOptions.DONOTSAVECHANGES);
 
-    alert("处理完成！文件保存在:\n" + outputDir.fsName);
-
+    // alert("处理完成！文件保存在:\n" + outputDir.fsName);
 
 } catch (e) {
-    alert("严重错误:\n" + e.message + "\n行号: " + e.line);
+    // alert("严重错误:\n" + e.message + "\n行号: " + e.line);
 }
 
 // ===================== 新增关键函数 =====================

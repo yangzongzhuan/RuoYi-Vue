@@ -35,7 +35,10 @@
       </div>
       <div class="form-group">
         <label>要修改的文字图层数量:</label>
-        <input type="number" v-model.number="picCfg.textLayerCount" min="1" @change="updateTextLayerCount(picCfg)" />
+        <input type="number"
+               v-model.number="picCfg.layersToModify"
+               min="1"
+               @change="updateTextLayerCount(picCfg)"/>
       </div>
       <div class="text-layer-group">
         <div
@@ -74,10 +77,21 @@ export default {
       baseConfig: {
         accountName: "",
         templateName: "",
-        psdPath: "",
+        psdPath: "", // 对应Java的psdLocalPath
         imageSavePath: ""
       },
-      picConfigs: [] // 数组中每一项代表一条图片配置
+      picConfigs: [{
+        folderName: "",
+        hasSubfolder: false,
+        subfolderName: "",
+        layersToModify: 1, // 原textLayerCount改为layersToModify
+        prompt: "", // 新增图片配置级提示词
+        textLayers: [{
+          name: "",
+          example: "",
+          maxChars: 0,
+        }]
+      }]
     };
   },
   methods: {
@@ -96,7 +110,7 @@ export default {
         folderName: "",
         hasSubfolder: false,
         subfolderName: "",
-        textLayerCount: initialCount,
+        layersToModify: initialCount,
         textLayers: [this.createBlankTextLayer()]
       });
     },
@@ -106,7 +120,7 @@ export default {
     },
     // 当文字图层数量发生变化时，根据新数量更新配置数组
     updateTextLayerCount(picCfg) {
-      const newCount = picCfg.textLayerCount;
+      const newCount = picCfg.layersToModify;
       const currentCount = picCfg.textLayers.length;
       if (newCount > currentCount) {
         // 增加文字图层配置
@@ -121,28 +135,29 @@ export default {
     // 构造模板数据后发送 AJAX 请求
     createAccountTemplate() {
       const template = {
-        "基础配置": {
-          "做图账号名称": this.baseConfig.accountName,
-          "模板名称": this.baseConfig.templateName,
-          "psd本地路径": this.baseConfig.psdPath,
-          "图片保存路径": this.baseConfig.imageSavePath
+        baseConfig: {
+          accountName: this.baseConfig.accountName,
+          templateName: this.baseConfig.templateName,
+          psdLocalPath: this.baseConfig.psdPath, // 注意字段名映射
+          imageSavePath: this.baseConfig.imageSavePath
         },
-        "图片配置": this.picConfigs.map(picCfg => {
-          // 将文字图层数组转换为对象，键名为 "文字图层1", "文字图层2" 等
-          const textLayerObj = {};
+        imageConfigs: this.picConfigs.map(picCfg => {
+          const textLayerConfigs = {};
           picCfg.textLayers.forEach((layer, index) => {
-            textLayerObj[`文字图层${index + 1}`] = {
-              "名称": layer.name,
-              "原文示例": layer.example,
-              "每行最大字符数": layer.maxChars
+            textLayerConfigs[`textLayer${index + 1}`] = {
+              name: layer.name,
+              sampleText: layer.example,
+              maxCharsPerLine: layer.maxChars,
             };
           });
+
           return {
-            "图片所在文件夹名称": picCfg.folderName,
-            "是否有子文件夹": picCfg.hasSubfolder,
-            "子文件夹名称": picCfg.subfolderName,
-            "要修改的文字图层数量": picCfg.textLayerCount,
-            "文字图层配置": textLayerObj
+            folderName: picCfg.folderName,
+            hasSubfolder: picCfg.hasSubfolder,
+            subfolderName: picCfg.subfolderName,
+            layersToModify: picCfg.layersToModify, // 原textLayerCount改为layersToModify
+            textLayerConfigs: textLayerConfigs,
+            prompt: picCfg.prompt // 新增图片配置级提示词
           };
         })
       };

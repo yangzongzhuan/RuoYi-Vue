@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.core.page.TableDataInfo;
+import com.ruoyi.system.domain.PSDConfig;
 import com.ruoyi.system.domain.PSDTemplate;
 import com.ruoyi.system.mapper.PSDMapper;
 import com.ruoyi.system.service.impl.DeepSeekService;
@@ -41,12 +42,12 @@ public class PSDTemplateController extends BaseController
 
    @PostMapping("/saveTemplate")
    @PreAuthorize("@ss.hasPermi('namegenerator:psd:add')")
-	public AjaxResult saveTemplate(@RequestBody Map map) throws JsonProcessingException {
-		System.out.println(map);
+	public AjaxResult saveTemplate(@RequestBody PSDConfig config) throws JsonProcessingException {
+		System.out.println(config);
 		PSDTemplate psdTemplate = new PSDTemplate();
 		// 将 map 序列化为合法 JSON 字符串
 	    ObjectMapper objectMapper = new ObjectMapper();
-		String json = objectMapper.writeValueAsString(map);
+		String json = objectMapper.writeValueAsString(config);
 		psdTemplate.setConfig(json);
 		psdMapper.insert(psdTemplate);
 		return AjaxResult.success();

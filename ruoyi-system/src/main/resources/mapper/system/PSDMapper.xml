@@ -27,11 +27,11 @@
 		SELECT * FROM psd_template
 		<where>
 			<if test="templateName != null and templateName != ''">
-				AND JSON_UNQUOTE(JSON_EXTRACT(config, '$.&quot;基础配置&quot;.&quot;模板名称&quot;'))
+				AND JSON_UNQUOTE(JSON_EXTRACT(config, '$.baseConfig.templateName'))
 				LIKE CONCAT('%', #{templateName}, '%')
 			</if>
 			<if test="accountName != null and accountName != ''">
-				AND JSON_UNQUOTE(JSON_EXTRACT(config, '$.&quot;基础配置&quot;.&quot;做图账号名称&quot;'))
+				AND JSON_UNQUOTE(JSON_EXTRACT(config, '$.baseConfig.accountName'))
 				LIKE CONCAT('%', #{accountName}, '%')
 			</if>
 		</where>
