@@ -64,7 +64,7 @@ public class GenController extends BaseController
     }
 
     /**
-     * 修改代码生成业务
+     * 获取代码生成信息
      */
     @PreAuthorize("@ss.hasPermi('tool:gen:query')")
     @GetMapping(value = "/{tableId}")

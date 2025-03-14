@@ -177,7 +177,7 @@ public class SysJobController extends BaseController
     @PreAuthorize("@ss.hasPermi('monitor:job:remove')")
     @Log(title = "定时任务", businessType = BusinessType.DELETE)
     @DeleteMapping("/{jobIds}")
-    public AjaxResult remove(@PathVariable Long[] jobIds) throws SchedulerException, TaskException
+    public AjaxResult remove(@PathVariable Long[] jobIds) throws SchedulerException
     {
         jobService.deleteJobByIds(jobIds);
         return success();
