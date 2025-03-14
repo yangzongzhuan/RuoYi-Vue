@@ -151,13 +151,17 @@ function smartTextUpdate(layer, newText, maxChars) {
         var safeText = newText.substr(0, 32767);
 
         if (maxChars && maxChars > 0) {
-            var wrapped = "";
-            // 改用正确的换行符
-            var lineBreak = "\r"; // Photoshop 使用\r作为换行符
-            for (var i = 0; i < safeText.length; i += maxChars) {
-                wrapped += safeText.substr(i, maxChars) + lineBreak;
+            var chars = safeText.split('');
+            var lineBreak = "\r";
+            var wrapped = '';
+
+            // 按字符数分割
+            for (var i = 0; i < chars.length; i += maxChars) {
+                var line = chars.slice(i, i + maxChars).join('');
+                wrapped += line + (i + maxChars < chars.length ? lineBreak : '');
             }
-            safeText = wrapped.replace(new RegExp(lineBreak + "$"), "");
+
+            safeText = wrapped.replace(/\r$/, '');
         }
 
         layer.textItem.contents = safeText;

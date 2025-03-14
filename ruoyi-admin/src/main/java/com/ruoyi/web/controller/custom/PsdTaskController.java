@@ -10,10 +10,9 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.alibaba.fastjson2.JSONObject;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.ruoyi.system.domain.PSDTemplate;
+import com.ruoyi.system.coze.CozeRequestJsonUtils;
 import com.ruoyi.system.domain.PsdTask;
 import com.ruoyi.system.mapper.PSDMapper;
-import com.ruoyi.system.mapper.PsdTaskMapper;
 import com.ruoyi.system.service.IPsdTaskService;
 import com.ruoyi.system.service.impl.DeepSeekService;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -106,7 +105,8 @@ public class PsdTaskController extends BaseController
             String jsxTemplatePath = basePath + File.separator + "jsx" + File.separator + "generate.jsx";
             // 读取 JSX 模板内容
             String jsxTemplate = new String(Files.readAllBytes(Paths.get(jsxTemplatePath)), StandardCharsets.UTF_8);
-            String configStr = deepSeekService.generateNames(config);
+//            String configStr = deepSeekService.generateNames(config);
+            String configStr = CozeRequestJsonUtils.test_chat_completions(String.valueOf(config));
             // 将 config 转为字符串
 //                String configStr = config.toString();
             // 处理反斜杠：将单个 "\" 替换成双 "\" 以便 ExtendScript 正确识别

@@ -317,6 +317,13 @@ export default {
     },
     /** 新增按钮操作 */
     handleAdd() {
+      this.templateInfo = {
+        baseConfig: {
+          accountName: '',
+          psdLocalPath: '',
+          imageSavePath: ''
+        }
+      }
       this.reset();
       this.open = true;
       this.title = "添加任务";
@@ -326,6 +333,13 @@ export default {
       this.reset();
       const id = row.id || this.ids
       getTask(id).then(response => {
+        this.templateInfo = {
+          baseConfig: {
+            accountName: '',
+            psdLocalPath: '',
+            imageSavePath: ''
+          }
+        }
         this.form = response.data;
         this.open = true;
         this.title = "修改任务";
