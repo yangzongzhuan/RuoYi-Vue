@@ -7,6 +7,8 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 import com.ruoyi.common.annotation.Excel;
 import com.ruoyi.common.core.domain.BaseEntity;
 
+import java.time.LocalDateTime;
+
 /**
  * 【请填写功能名称】对象 psd_task
  *
@@ -38,6 +40,11 @@ public class PsdTask extends BaseEntity
 
     @TableField(exist = false)
     private JSONObject config;
+
+    @TableField(exist = false)
+    private String jsonInfo;
+
+    private LocalDateTime createDate;
 
     public void setId(Long id)
     {
@@ -97,6 +104,23 @@ public class PsdTask extends BaseEntity
         this.config = config;
     }
 
+    public LocalDateTime getcreateDate() {
+        return createDate;
+    }
+
+    public void setcreateDate(LocalDateTime createDate) {
+        this.createDate = createDate;
+    }
+
+    public String getJsonInfo() {
+        return jsonInfo;
+    }
+
+    public void setJsonInfo(String jsonInfo) {
+        this.jsonInfo = jsonInfo;
+    }
+
+
     @Override
     public String toString() {
         return new ToStringBuilder(this,ToStringStyle.MULTI_LINE_STYLE)
@@ -105,6 +129,8 @@ public class PsdTask extends BaseEntity
             .append("accountName", getAccountName())
             .append("templateName", getTemplateName())
             .append("imageCount", getImageCount())
+            .append("createDate", getcreateDate())
+            .append("jsonInfo", getJsonInfo())
             .toString();
     }
 }

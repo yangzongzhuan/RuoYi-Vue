@@ -44,3 +44,12 @@ export function delTask(id) {
     method: 'delete'
   })
 }
+
+export function getCoze(data) {
+  return request({
+    url: '/psd/task/getCoze',
+    method: 'post',
+    data: data,
+    timeout: 999999
+  })
+}

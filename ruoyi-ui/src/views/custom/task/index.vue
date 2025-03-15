@@ -82,6 +82,7 @@
       <el-table-column label="任务名称" align="center" prop="taskName" />
       <el-table-column label="作图账号名称" align="center" prop="accountName" />
       <el-table-column label="模板名称" align="center" prop="templateName" />
+      <el-table-column label="创建时间" align="center" prop="createDate" />
 <!--      <el-table-column label="图片生产数量，[1,2,3] 表示图一1张，图二两张" align="center" prop="imageCount" />-->
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
@@ -205,10 +206,36 @@
               </el-input>
             </div>
           </el-card>
+          <el-button type="primary" @click="getCozeInfo">请求coze</el-button>
         </div>
-<!--        <el-form-item label="图片生产数量，[1,2,3] 表示图一1张，图二两张" prop="imageCount">-->
-<!--          <el-input v-model="form.imageCount" placeholder="请输入图片生产数量，[1,2,3] 表示图一1张，图二两张" />-->
-<!--        </el-form-item>-->
+        <!-- 在点击按钮后添加 JSON 展示区域 -->
+        <div v-if="form.jsonInfo" class="json-preview-container">
+          <el-card class="json-card">
+            <div slot="header" class="json-header">
+              <span>JSON 响应数据</span>
+              <el-button
+                type="text"
+                @click="toggleJsonView"
+                class="toggle-btn">
+                {{ showRawJson ? '展开结构' : '原始数据' }}
+              </el-button>
+            </div>
+
+            <!-- 结构化展示 -->
+            <div v-if="!showRawJson" class="formatted-json">
+              <div
+                v-for="(value, key) in parsedJson"
+                :key="key"
+                class="json-item">
+                <span class="json-key">{{ key }}:</span>
+                <span class="json-value">{{ value }}</span>
+              </div>
+            </div>
+
+            <!-- 原始 JSON 展示 -->
+            <pre v-else class="raw-json">{{ formatJson(form.jsonInfo) }}</pre>
+          </el-card>
+        </div>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button type="primary" @click="submitForm">确 定</el-button>
@@ -219,7 +246,7 @@
 </template>
 
 <script>
-import { listTask, getTask, delTask, addTask, updateTask } from "@/api/custom/task";
+import {listTask, getTask, delTask, addTask, updateTask, getCoze} from "@/api/custom/task";
 import {listPSDConfig} from "@/api/custom/psd";
 import {isEmpty} from "@/utils/validate";
 
@@ -266,11 +293,24 @@ export default {
           imageSavePath: ''
         },
         imageConfigs: [] // 每个元素需要包含 generateCount 字段
-      }
+      },
+      showRawJson: false, // 切换显示模式
     };
   },
   created() {
     this.getList();
+  },
+  computed: {
+    // 自动解析 JSON 为对象
+    parsedJson() {
+      try {
+        return typeof this.form.jsonInfo === 'string'
+          ? JSON.parse(this.form.jsonInfo)
+          : this.form.jsonInfo;
+      } catch {
+        return { error: 'Invalid JSON format' };
+      }
+    }
   },
   methods: {
     isEmpty,
@@ -295,7 +335,9 @@ export default {
         taskName: null,
         accountName: null,
         templateName: null,
-        imageCount: null
+        imageCount: null,
+        config: null,
+        jsonInfo: null
       };
       this.resetForm("form");
     },
@@ -424,6 +466,30 @@ export default {
       }).catch(() => {
         this.loading = false;
       });
+    },
+    getCozeInfo() {
+      this.loading = true;
+      this.form.config = this.templateInfo;
+      getCoze(this.form).then(res => {
+        this.form.jsonInfo = res.msg;
+      }).finally(() => {this.loading = false;})
+    },
+    // 格式化 JSON 的函数
+    formatJson(json) {
+      if (!json) return '';
+      try {
+        return JSON.stringify(
+          typeof json === 'string' ? JSON.parse(json) : json,
+          null,
+          2
+        );
+      } catch {
+        return json;
+      }
+    },
+    // 切换显示模式
+    toggleJsonView() {
+      this.showRawJson = !this.showRawJson;
     }
   }
 };
@@ -507,5 +573,54 @@ export default {
       font-size: 12px;
     }
   }
+}
+/* 样式优化 */
+.json-preview-container {
+  margin-top: 20px;
+}
+
+.json-card {
+  background: #f8f9fa;
+}
+
+.json-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.toggle-btn {
+  padding: 0;
+  font-size: 12px;
+}
+
+.formatted-json {
+  padding: 10px;
+  border-radius: 4px;
+  background: white;
+}
+
+.json-item {
+  margin: 6px 0;
+  font-family: Monaco, Consolas, monospace;
+}
+
+.json-key {
+  color: #007bff;
+  margin-right: 8px;
+}
+
+.json-value {
+  color: #28a745;
+}
+
+.raw-json {
+  max-height: 400px;
+  overflow: auto;
+  padding: 12px;
+  background: #f8f9fa;
+  border-radius: 4px;
+  white-space: pre-wrap;
+  word-wrap: break-word;
 }
 </style>

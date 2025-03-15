@@ -10,10 +10,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="accountName"    column="account_name"    />
         <result property="templateName"    column="template_name"    />
         <result property="imageCount"    column="image_count"    />
+        <result property="createDate"    column="create_date"    />
     </resultMap>
 
     <sql id="selectPsdTaskVo">
-        select id, task_name, account_name, template_name, image_count from psd_task
+        select id, task_name, account_name, template_name, image_count, create_date from psd_task order by create_date desc
     </sql>
 
     <select id="selectPsdTaskList" parameterType="PsdTask" resultMap="PsdTaskResult">
@@ -39,6 +40,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="accountName != null">account_name,</if>
             <if test="templateName != null">template_name,</if>
             <if test="imageCount != null">image_count,</if>
+            <if test="createDate != null">create_date,</if>
          </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="id != null">#{id},</if>
@@ -46,6 +48,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="accountName != null">#{accountName},</if>
             <if test="templateName != null">#{templateName},</if>
             <if test="imageCount != null">#{imageCount},</if>
+            <if test="createDate != null">#{createDate},</if>
          </trim>
     </insert>
 
@@ -56,6 +59,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="accountName != null">account_name = #{accountName},</if>
             <if test="templateName != null">template_name = #{templateName},</if>
             <if test="imageCount != null">image_count = #{imageCount},</if>
+            <if test="createDate != null">create_date = #{createDate},</if>
         </trim>
         where id = #{id}
     </update>

@@ -65,8 +65,6 @@
             <groupId>net.sf.jacob-project</groupId>
             <artifactId>jacob</artifactId>
             <version>1.20</version>
-            <scope>system</scope>
-            <systemPath>${project.basedir}/lib/jacob.jar</systemPath>
         </dependency>
 
 
