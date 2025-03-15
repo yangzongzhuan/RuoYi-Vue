@@ -23,6 +23,13 @@ export function listPSDConfig(query) {
   })
 }
 
+export function getListPSDConfigAll() {
+  return request({
+    url: '/psd/listAll',
+    method: 'get'
+  })
+}
+
 /**
  * 修改 PSD 配置
  * @param {Object} data 包含 id 和配置数据

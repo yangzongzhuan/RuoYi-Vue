@@ -1,5 +1,5 @@
 <template>
-  <div class="app-container">
+  <div class="app-container" v-loading="loading">
     <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="100px">
       <el-form-item label="任务名称" prop="taskName">
         <el-input
@@ -119,10 +119,39 @@
           <el-input v-model="form.taskName" placeholder="请输入任务名称" />
         </el-form-item>
         <el-form-item label="作图账号名称" prop="accountName">
-          <el-input v-model="form.accountName" placeholder="请输入作图账号名称" />
+          <el-select
+            v-model="form.accountName"
+            placeholder="请选择账号"
+            filterable
+            clearable
+            style="width: 100%"
+            :popper-append-to-body="false"
+          >
+            <el-option
+              v-for="item in accountOptions"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            />
+          </el-select>
         </el-form-item>
+
         <el-form-item label="模板名称" prop="templateName">
-          <el-input v-model="form.templateName" placeholder="请输入模板名称" />
+          <el-select
+            v-model="form.templateName"
+            placeholder="请选择模板"
+            filterable
+            clearable
+            style="width: 100%"
+            :popper-append-to-body="false"
+          >
+            <el-option
+              v-for="item in templateOptions"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            />
+          </el-select>
         </el-form-item>
         <el-button @click="getTemplateInfo" :disabled="isEmpty(form.accountName) || isEmpty(form.templateName)">获取模板信息</el-button>
         <!-- 模板信息展示区 -->
@@ -247,7 +276,7 @@
 
 <script>
 import {listTask, getTask, delTask, addTask, updateTask, getCoze} from "@/api/custom/task";
-import {listPSDConfig} from "@/api/custom/psd";
+import {getListPSDConfigAll, listPSDConfig} from "@/api/custom/psd";
 import {isEmpty} from "@/utils/validate";
 
 export default {
@@ -295,6 +324,9 @@ export default {
         imageConfigs: [] // 每个元素需要包含 generateCount 字段
       },
       showRawJson: false, // 切换显示模式
+      psdList: {},
+      templateOptions: [], // 模板下拉选项
+      accountOptions: []   // 账号下拉选项
     };
   },
   created() {
@@ -366,9 +398,36 @@ export default {
           imageSavePath: ''
         }
       }
-      this.reset();
-      this.open = true;
-      this.title = "添加任务";
+      getListPSDConfigAll().then(response => {
+        this.psdList = response.rows
+        this.psdList.forEach(item => {
+          try {
+            const config = JSON.parse(item.config)
+            const { templateName, accountName } = config.baseConfig
+
+            // 去重后添加到选项
+            if (!this.templateOptions.find(opt => opt.value === templateName)) {
+              this.templateOptions.push({
+                value: templateName,
+                label: templateName
+              })
+            }
+
+            if (!this.accountOptions.find(opt => opt.value === accountName)) {
+              this.accountOptions.push({
+                value: accountName,
+                label: accountName
+              })
+            }
+          } catch (e) {
+            console.error('JSON 解析错误:', e)
+          }
+        })
+        console.log(this.psdList)
+        this.reset();
+        this.open = true;
+        this.title = "添加任务";
+      })
     },
     /** 修改按钮操作 */
     handleUpdate(row) {

@@ -36,4 +36,7 @@
 			</if>
 		</where>
 	</select>
+    <select id="selectAll" resultType="com.ruoyi.system.domain.PSDTemplate">
+		SELECT * FROM psd_template
+	</select>
 </mapper>

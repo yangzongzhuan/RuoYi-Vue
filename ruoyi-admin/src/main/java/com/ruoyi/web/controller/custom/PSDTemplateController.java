@@ -64,18 +64,13 @@ public class PSDTemplateController extends BaseController
 		return getDataTable(list);
 	}
 
-//	/**
-//	 * 新增 PSD 配置
-//	 */
-//	@PostMapping("/addTemplate")
-//	public AjaxResult addTemplate(@RequestBody Map<String, Object> map) throws JsonProcessingException {
-//		ObjectMapper objectMapper = new ObjectMapper();
-//		String json = objectMapper.writeValueAsString(map);
-//		PSDTemplate psdTemplate = new PSDTemplate();
-//		psdTemplate.setConfig(json);
-//		psdMapper.insert(psdTemplate);
-//		return AjaxResult.success();
-//	}
+	@GetMapping("/listAll")
+	@PreAuthorize("@ss.hasPermi('namegenerator:psd:listAll')")
+	public TableDataInfo listAll()
+	{
+		List<PSDTemplate> list = psdMapper.selectAll();
+		return getDataTable(list);
+	}
 
 	/**
 	 * 修改 PSD 配置

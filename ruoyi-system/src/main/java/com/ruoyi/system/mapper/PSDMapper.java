@@ -26,4 +26,6 @@ public interface PSDMapper {
 	 */
 	List<PSDTemplate> selectByCondition(@Param("templateName") String templateName,
 										@Param("accountName") String accountName);
+
+	List<PSDTemplate> selectAll();
 }
