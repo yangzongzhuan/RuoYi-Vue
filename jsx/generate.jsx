@@ -11,10 +11,22 @@ try {
     // 从配置中获取基础路径配置
     var baseConfig = CONFIG.baseConfig; // 原"基础配置"
     var psdPath = baseConfig.psdLocalPath.replace(/\\/g, "/"); // 原"psd本地路径"
-    var outputDir = new Folder(baseConfig.imageSavePath); // 原"图片保存路径"
-    if (!outputDir.exists) {
-        outputDir.create();
-    }
+   // 创建基础路径
+    var outputBase = new Folder(baseConfig.imageSavePath);
+    if (!outputBase.exists) outputBase.create();
+
+    // 生成日期路径 格式如：2025-03-16
+    function pad(n) { return n < 10 ? '0' + n : n.toString(); }
+    var now = new Date();
+    var datePath = now.getFullYear() + '-' + pad(now.getMonth()+1) + '-' + pad(now.getDate());
+
+    // 创建日期文件夹
+    var dateDir = new Folder(outputBase.fsName + "/" + datePath);
+    if (!dateDir.exists) dateDir.create();
+
+    // 创建任务名称文件夹（使用模板名称）
+    var taskDir = new Folder(dateDir.fsName + "/" + baseConfig.templateName);
+    if (!taskDir.exists) taskDir.create();
 
     // 1. 打开原始 PSD 文件（仅一次）
     var originalDoc = app.open(File(psdPath));
@@ -69,12 +81,10 @@ try {
         }
 
         // 2.5 生成导出文件名
-        var fileName = baseConfig.templateName + "_" + // 原"模板名称"
-            cfg.folderName.replace(/ /g, "") + "_" +
-            Date.now() + ".png";
+       var fileName = baseConfig.templateName + "_" + cfg.folderName.replace(/ /g, "") + "_" + Date.now() + ".png";
 
         // 2.6 导出为 PNG
-        var saveFile = new File(outputDir.fsName + "/" + fileName);
+       var saveFile = new File(taskDir.fsName + "/" + fileName); // 修改保存路径
         var saveOptions = new PNGSaveOptions();
         saveOptions.compression = 9;
         workingDoc.saveAs(saveFile, saveOptions, true);
@@ -87,9 +97,52 @@ try {
     originalDoc.close(SaveOptions.DONOTSAVECHANGES);
 
     // alert("处理完成！文件保存在:\n" + outputDir.fsName);
-
+    // 执行退出
+    forceQuitPhotoshop();
 } catch (e) {
     // alert("严重错误:\n" + e.message + "\n行号: " + e.line);
+    // 执行退出
+    forceQuitPhotoshop();
+    throw new Error("严重错误:\n" + e.message + "\n行号: " + e.line);
+}
+
+// =============== 修复后的退出逻辑 ===============
+function forceQuitPhotoshop() {
+    try {
+        // 方法1: 官方推荐退出方式 (兼容所有版本)
+        var quitAction = stringIDToTypeID("quit");
+        app.executeAction(quitAction, undefined, DialogModes.NO);
+    } catch(e1) {
+        try {
+            // 方法2: 基础退出方式
+            if (app.documents.length === 0) {
+                app.quit();
+            }
+        } catch(e2) {
+            // 方法3: 强制解除进程引用 (仅限Windows)
+            if (Folder.fs === "Windows") {
+                var photoshopProcess = "Photoshop.exe";
+                var cmd = 'wscript.exe "C:\\close_photoshop.vbs"'; // 使用外部脚本
+                writeVBSScript(); // 生成VB脚本
+                $.sleep(2000);
+                app.system(cmd); // 使用app.system替代system.callSystem
+            }
+        }
+    }
+}
+
+// =============== 辅助函数：生成VB脚本 ===============
+function writeVBSScript() {
+    var vbsCode = [
+        'Set WshShell = WScript.CreateObject("WScript.Shell")',
+        'WshShell.Run "taskkill /f /im Photoshop.exe", 0, True',
+        'Set WshShell = Nothing'
+    ].join('\n');
+
+    var vbsFile = new File("C:\\close_photoshop.vbs");
+    vbsFile.open("w");
+    vbsFile.writeln(vbsCode);
+    vbsFile.close();
 }
 
 // ===================== 新增关键函数 =====================
