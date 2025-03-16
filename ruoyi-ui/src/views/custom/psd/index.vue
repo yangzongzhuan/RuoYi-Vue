@@ -78,7 +78,7 @@
     />
 
     <!-- 编辑对话框 -->
-    <el-dialog :title="title" :visible.sync="open" width="800px" v-loading="loading">
+    <el-dialog :title="title" :visible.sync="open" width="80%" v-loading="loading" :close-on-click-modal="false">
       <el-form ref="form" :model="form" :rules="rules" label-width="190px">
         <!-- 基础配置 -->
         <el-form-item label="模板名称" prop="templateName">
@@ -123,7 +123,18 @@
             </el-form-item>
           </div>
           <el-form-item label="提示词">
-            <el-input v-model="imgCfg.prompt" />
+            <el-input type="textarea" :rows="3" v-model="imgCfg.prompt" />
+          </el-form-item>
+          <el-form-item label="生成数量">
+            <el-input-number
+              v-model="imgCfg.generateCount"
+              :min="0"
+              :max="Infinity"
+              :precision="0"
+              controls-position="right"
+              class="generate-count"
+              placeholder="生成数量">
+            </el-input-number>
           </el-form-item>
         </div>
       </el-form>
@@ -157,8 +168,8 @@
         </el-card>
       </div>
       <div slot="footer" class="dialog-footer">
-        <el-button @click="cancel">取消</el-button>
         <el-button type="primary" @click="submitForm">确定</el-button>
+        <el-button @click="cancel">取消</el-button>
       </div>
     </el-dialog>
   </div>
@@ -190,7 +201,6 @@ export default {
         psdLocalPath: '',
         imageSavePath: '',
         imageConfigs: [],
-        config: '',
         jsonInfo: ''
       },
       rules: {
@@ -270,9 +280,9 @@ export default {
           hasSubfolder: cfg.hasSubfolder,
           subfolderName: cfg.subfolderName,
           textLayerConfigs: cfg.textLayerConfigs,
-          prompt: cfg.prompt
+          prompt: cfg.prompt,
+          generateCount: 1
         })) || [],
-        config: config
       };
       this.open = true;
       this.title = "编辑配置";
@@ -332,7 +342,6 @@ export default {
         imageSavePath: '',
         imageConfigs: [],
         jsonInfo: '',
-        confi: ''
       };
     },
     removeImgConfig(index) {
@@ -343,7 +352,26 @@ export default {
     },
     getCozeInfo() {
       this.loading = true;
-      getCoze(this.form).then(res => {
+      const postData = {
+        id: this.form.id,
+        config: {
+          baseConfig: {
+            templateName: this.form.templateName,
+            accountName: this.form.accountName,
+            psdLocalPath: this.form.psdLocalPath,
+            imageSavePath: this.form.imageSavePath
+          },
+          imageConfigs: this.form.imageConfigs.map(cfg => ({
+            folderName: cfg.folderName,
+            hasSubfolder: cfg.hasSubfolder,
+            subfolderName: cfg.subfolderName,
+            textLayerConfigs: cfg.textLayerConfigs,
+            prompt: cfg.prompt,
+            generateCount: cfg.generateCount
+          }))
+        }
+      };
+      getCoze(postData).then(res => {
         this.form.jsonInfo = res.msg;
       }).finally(() => {this.loading = false;})
     },

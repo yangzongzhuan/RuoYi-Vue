@@ -113,7 +113,7 @@
     />
 
     <!-- 添加或修改任务对话框 -->
-    <el-dialog :title="title" :visible.sync="open" width="70%" append-to-body v-loading="loading">
+    <el-dialog :title="title" :visible.sync="open" width="70%" append-to-body v-loading="loading" :close-on-click-modal="false">
       <el-form ref="form" :model="form" :rules="rules" label-width="100px">
         <el-form-item label="任务名称" prop="taskName">
           <el-input v-model="form.taskName" placeholder="请输入任务名称" />
@@ -125,6 +125,7 @@
             filterable
             clearable
             style="width: 100%"
+            @change="filterTemplate"
             :popper-append-to-body="false"
           >
             <el-option
@@ -146,7 +147,7 @@
             :popper-append-to-body="false"
           >
             <el-option
-              v-for="item in templateOptions"
+              v-for="item in templateOptionsFilter"
               :key="item.value"
               :label="item.label"
               :value="item.value"
@@ -229,6 +230,8 @@
             <div class="config-item">
               <span class="label">提示词：</span>
               <el-input
+                type="textarea"
+                :rows="3"
                 :value="imgConfig.prompt"
                 readonly
                 class="sample-text">
@@ -326,7 +329,8 @@ export default {
       showRawJson: false, // 切换显示模式
       psdList: {},
       templateOptions: [], // 模板下拉选项
-      accountOptions: []   // 账号下拉选项
+      templateOptionsFilter: [], // 模板下拉选项过滤后的数据
+      accountOptions: [],   // 账号下拉选项
     };
   },
   created() {
@@ -412,6 +416,9 @@ export default {
                 label: templateName
               })
             }
+
+            // 初始化时显示全部模板
+            this.templateOptionsFilter = [...this.templateOptions];
 
             if (!this.accountOptions.find(opt => opt.value === accountName)) {
               this.accountOptions.push({
@@ -549,6 +556,41 @@ export default {
     // 切换显示模式
     toggleJsonView() {
       this.showRawJson = !this.showRawJson;
+    },
+    // 修改过滤方法
+    filterTemplate() {
+      this.form.templateName = ''
+      if (!this.form.accountName) {
+        // 如果未选择账号，显示全部模板
+        this.templateOptionsFilter = [...this.templateOptions];
+        return;
+      }
+
+      // 根据账号名称过滤模板
+      const relatedTemplates = this.psdList
+        .filter(item => {
+          try {
+            const config = JSON.parse(item.config);
+            return config.baseConfig?.accountName === this.form.accountName;
+          } catch(e) {
+            return false;
+          }
+        })
+        .map(item => {
+          try {
+            const config = JSON.parse(item.config);
+            return config.baseConfig?.templateName;
+          } catch(e) {
+            return null;
+          }
+        })
+        .filter(Boolean); // 过滤空值
+
+      // 去重并转换为选项格式
+      this.templateOptionsFilter = [...new Set(relatedTemplates)].map(name => ({
+        value: name,
+        label: name
+      }));
     }
   }
 };

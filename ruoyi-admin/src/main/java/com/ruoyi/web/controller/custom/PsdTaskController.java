@@ -96,38 +96,34 @@ public class PsdTaskController extends BaseController
     @Log(title = "psd任务", businessType = BusinessType.INSERT)
     @PostMapping
     public AjaxResult add(@RequestBody PsdTask psdTask) throws JsonProcessingException {
-//        List<PSDTemplate> psdTemplates = psdMapper.selectByCondition(psdTask.getTemplateName(), psdTask.getAccountName());
-//        PSDTemplate psdTemplate = psdTask.getConfig();
-        // 解析数据库中的配置字符串为 JSON 对象
-//        JSONObject config = psdTask.getConfig();
         try {
             // 获取 JSX 模板路径（相对路径）
             String basePath = System.getProperty("user.dir");
             String jsxTemplatePath = basePath + File.separator + "jsx" + File.separator + "generate.jsx";
             // 读取 JSX 模板内容
             String jsxTemplate = new String(Files.readAllBytes(Paths.get(jsxTemplatePath)), StandardCharsets.UTF_8);
-//            String configStr = deepSeekService.generateNames(config);
-//            String configStr = CozeRequestJsonUtils.test_chat_completions(String.valueOf(config));
-            String configStr = psdTask.getJsonInfo();
-            // 将 config 转为字符串
-//                String configStr = config.toString();
-            // 处理反斜杠：将单个 "\" 替换成双 "\" 以便 ExtendScript 正确识别
-            configStr = configStr.replaceAll("\\\\", "\\\\\\\\");
+
+            // 处理反斜杠
+            String configStr = psdTask.getJsonInfo().replaceAll("\\\\", "\\\\\\\\");
 
             // 替换 JSX 模板中的 CONFIG 部分
-            String modifiedJsx = jsxTemplate.replaceFirst("var CONFIG = .*?;", "var CONFIG = " + configStr + ";");
+            String modifiedJsx = jsxTemplate.replaceFirst("var CONFIG = .*?;", "var CONFIG = " + configStr + ";")
+                    .replaceFirst("(?s)var\\s+taskName\\s*=\\s*\".*?\";", "var taskName = \"" + psdTask.getTaskName() + "\";");
             System.out.println(modifiedJsx);
 
-            // 调用 Photoshop 执行 JSX
+            // 调试输出
+            System.out.println("替换后的 JSX:\n" + modifiedJsx);
+
+            // 调用 Photoshop
             ActiveXComponent ps = new ActiveXComponent("Photoshop.Application");
             Dispatch.invoke(ps, "DoJavaScript", Dispatch.Method, new Object[]{modifiedJsx}, new int[1]);
-            System.out.println("JSX 执行成功！");
+
+            // 保存任务
+            psdTask.setCreateDate(LocalDateTime.now());
+            return toAjax(psdTaskService.insertPsdTask(psdTask));
         } catch (IOException e) {
-            System.out.println("JSX 读取失败：" + e.getMessage());
-            throw new RuntimeException("JSX 读取失败：" + e.getMessage());
+            throw new RuntimeException("JSX 文件处理失败: " + e.getMessage());
         }
-        psdTask.setcreateDate(LocalDateTime.now());
-        return toAjax(psdTaskService.insertPsdTask(psdTask));
     }
 
     @Log(title = "psd任务", businessType = BusinessType.INSERT)

@@ -6,12 +6,13 @@ app.displayDialogs = DialogModes.NO;
 
 // =============== 配置信息（示例） ===============
 var CONFIG = {};
+var taskName = "";
 
 try {
     // 从配置中获取基础路径配置
     var baseConfig = CONFIG.baseConfig; // 原"基础配置"
     var psdPath = baseConfig.psdLocalPath.replace(/\\/g, "/"); // 原"psd本地路径"
-   // 创建基础路径
+    // 创建基础路径
     var outputBase = new Folder(baseConfig.imageSavePath);
     if (!outputBase.exists) outputBase.create();
 
@@ -24,8 +25,8 @@ try {
     var dateDir = new Folder(outputBase.fsName + "/" + datePath);
     if (!dateDir.exists) dateDir.create();
 
-    // 创建任务名称文件夹（使用模板名称）
-    var taskDir = new Folder(dateDir.fsName + "/" + baseConfig.templateName);
+    // 创建任务名称文件夹（使用任务名称）
+    var taskDir = new Folder(dateDir.fsName + "/" + taskName);
     if (!taskDir.exists) taskDir.create();
 
     // 1. 打开原始 PSD 文件（仅一次）
@@ -81,10 +82,10 @@ try {
         }
 
         // 2.5 生成导出文件名
-       var fileName = baseConfig.templateName + "_" + cfg.folderName.replace(/ /g, "") + "_" + Date.now() + ".png";
+        var fileName = baseConfig.templateName + "_" + cfg.folderName.replace(/ /g, "") + "_" + Date.now() + ".png";
 
         // 2.6 导出为 PNG
-       var saveFile = new File(taskDir.fsName + "/" + fileName); // 修改保存路径
+        var saveFile = new File(taskDir.fsName + "/" + fileName); // 修改保存路径
         var saveOptions = new PNGSaveOptions();
         saveOptions.compression = 9;
         workingDoc.saveAs(saveFile, saveOptions, true);

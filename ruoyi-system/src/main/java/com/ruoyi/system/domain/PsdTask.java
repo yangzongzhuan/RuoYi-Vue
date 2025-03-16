@@ -108,7 +108,7 @@ public class PsdTask extends BaseEntity
         return createDate;
     }
 
-    public void setcreateDate(LocalDateTime createDate) {
+    public void setCreateDate(LocalDateTime createDate) {
         this.createDate = createDate;
     }
 
