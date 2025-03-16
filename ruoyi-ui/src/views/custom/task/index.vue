@@ -682,4 +682,9 @@ export default {
   white-space: pre-wrap;
   word-wrap: break-word;
 }
+
+::v-deep .el-dialog {
+  height: 90%;
+  overflow: auto;
+}
 </style>

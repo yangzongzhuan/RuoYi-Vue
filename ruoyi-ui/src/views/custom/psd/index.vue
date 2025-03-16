@@ -78,7 +78,7 @@
     />
 
     <!-- 编辑对话框 -->
-    <el-dialog :title="title" :visible.sync="open" width="800px">
+    <el-dialog :title="title" :visible.sync="open" width="800px" v-loading="loading">
       <el-form ref="form" :model="form" :rules="rules" label-width="190px">
         <!-- 基础配置 -->
         <el-form-item label="模板名称" prop="templateName">
@@ -127,6 +127,35 @@
           </el-form-item>
         </div>
       </el-form>
+      <el-button type="primary" @click="getCozeInfo">请求coze</el-button>
+      <!-- 在点击按钮后添加 JSON 展示区域 -->
+      <div v-if="form.jsonInfo" class="json-preview-container">
+        <el-card class="json-card">
+          <div slot="header" class="json-header">
+            <span>JSON 响应数据</span>
+            <el-button
+              type="text"
+              @click="toggleJsonView"
+              class="toggle-btn">
+              {{ showRawJson ? '展开结构' : '原始数据' }}
+            </el-button>
+          </div>
+
+          <!-- 结构化展示 -->
+          <div v-if="!showRawJson" class="formatted-json">
+            <div
+              v-for="(value, key) in parsedJson"
+              :key="key"
+              class="json-item">
+              <span class="json-key">{{ key }}:</span>
+              <span class="json-value">{{ value }}</span>
+            </div>
+          </div>
+
+          <!-- 原始 JSON 展示 -->
+          <pre v-else class="raw-json">{{ formatJson(form.jsonInfo) }}</pre>
+        </el-card>
+      </div>
       <div slot="footer" class="dialog-footer">
         <el-button @click="cancel">取消</el-button>
         <el-button type="primary" @click="submitForm">确定</el-button>
@@ -137,6 +166,7 @@
 
 <script>
 import { listPSDConfig, updatePSDConfig, delPSDConfig } from "@/api/custom/psd";
+import {getCoze} from "@/api/custom/task";
 
 export default {
   name: 'PSDConfig',
@@ -159,15 +189,30 @@ export default {
         accountName: '',
         psdLocalPath: '',
         imageSavePath: '',
-        imageConfigs: []
+        imageConfigs: [],
+        config: '',
+        jsonInfo: ''
       },
       rules: {
         templateName: [{ required: true, message: "必填项", trigger: "blur" }],
         accountName: [{ required: true, message: "必填项", trigger: "blur" }],
         psdLocalPath: [{ required: true, message: "必填项", trigger: "blur" }],
         imageSavePath: [{ required: true, message: "必填项", trigger: "blur" }]
-      }
+      },
+      showRawJson: false, // 切换显示模式
     };
+  },
+  computed: {
+    // 自动解析 JSON 为对象
+    parsedJson() {
+      try {
+        return typeof this.form.jsonInfo === 'string'
+          ? JSON.parse(this.form.jsonInfo)
+          : this.form.jsonInfo;
+      } catch {
+        return { error: 'Invalid JSON format' };
+      }
+    }
   },
   created() {
     this.getList();
@@ -226,7 +271,8 @@ export default {
           subfolderName: cfg.subfolderName,
           textLayerConfigs: cfg.textLayerConfigs,
           prompt: cfg.prompt
-        })) || []
+        })) || [],
+        config: config
       };
       this.open = true;
       this.title = "编辑配置";
@@ -284,16 +330,39 @@ export default {
         accountName: '',
         psdLocalPath: '',
         imageSavePath: '',
-        imageConfigs: []
+        imageConfigs: [],
+        jsonInfo: '',
+        confi: ''
       };
     },
-
     removeImgConfig(index) {
       this.form.imageConfigs.splice(index, 1);
     },
-
     cancel() {
       this.open = false;
+    },
+    getCozeInfo() {
+      this.loading = true;
+      getCoze(this.form).then(res => {
+        this.form.jsonInfo = res.msg;
+      }).finally(() => {this.loading = false;})
+    },
+    // 格式化 JSON 的函数
+    formatJson(json) {
+      if (!json) return '';
+      try {
+        return JSON.stringify(
+          typeof json === 'string' ? JSON.parse(json) : json,
+          null,
+          2
+        );
+      } catch {
+        return json;
+      }
+    },
+    // 切换显示模式
+    toggleJsonView() {
+      this.showRawJson = !this.showRawJson;
     }
   }
 };
@@ -317,4 +386,60 @@ export default {
 .el-form-item {
   margin-bottom: 15px;
 }
+
+/* 样式优化 */
+.json-preview-container {
+  margin-top: 20px;
+}
+
+.json-card {
+  background: #f8f9fa;
+}
+
+.json-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.toggle-btn {
+  padding: 0;
+  font-size: 12px;
+}
+
+.formatted-json {
+  padding: 10px;
+  border-radius: 4px;
+  background: white;
+}
+
+.json-item {
+  margin: 6px 0;
+  font-family: Monaco, Consolas, monospace;
+}
+
+.json-key {
+  color: #007bff;
+  margin-right: 8px;
+}
+
+.json-value {
+  color: #28a745;
+}
+
+.raw-json {
+  max-height: 400px;
+  overflow: auto;
+  padding: 12px;
+  background: #f8f9fa;
+  border-radius: 4px;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+::v-deep .el-dialog {
+  height: 90%;
+  overflow: auto;
+}
+
 </style>
