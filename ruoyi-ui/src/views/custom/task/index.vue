@@ -1,14 +1,14 @@
 <template>
   <div class="app-container" v-loading="loading">
     <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="100px">
-      <el-form-item label="任务名称" prop="taskName">
-        <el-input
-          v-model="queryParams.taskName"
-          placeholder="请输入任务名称"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
+<!--      <el-form-item label="任务名称" prop="taskName">-->
+<!--        <el-input-->
+<!--          v-model="queryParams.taskName"-->
+<!--          placeholder="请输入任务名称"-->
+<!--          clearable-->
+<!--          @keyup.enter.native="handleQuery"-->
+<!--        />-->
+<!--      </el-form-item>-->
       <el-form-item label="作图账号名称" prop="accountName">
         <el-input
           v-model="queryParams.accountName"
@@ -79,7 +79,7 @@
 
     <el-table v-loading="loading" :data="taskList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
-      <el-table-column label="任务名称" align="center" prop="taskName" />
+<!--      <el-table-column label="任务名称" align="center" prop="taskName" />-->
       <el-table-column label="作图账号名称" align="center" prop="accountName" />
       <el-table-column label="模板名称" align="center" prop="templateName" />
       <el-table-column label="创建时间" align="center" prop="createDate" />
@@ -115,9 +115,9 @@
     <!-- 添加或修改任务对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="70%" append-to-body v-loading="loading" :close-on-click-modal="false">
       <el-form ref="form" :model="form" :rules="rules" label-width="100px">
-        <el-form-item label="任务名称" prop="taskName">
-          <el-input v-model="form.taskName" placeholder="请输入任务名称" />
-        </el-form-item>
+<!--        <el-form-item label="任务名称" prop="taskName">-->
+<!--          <el-input v-model="form.taskName" placeholder="请输入任务名称" />-->
+<!--        </el-form-item>-->
         <el-form-item label="作图账号名称" prop="accountName">
           <el-select
             v-model="form.accountName"
@@ -238,7 +238,7 @@
               </el-input>
             </div>
           </el-card>
-          <el-button type="primary" @click="getCozeInfo">请求coze</el-button>
+<!--          <el-button type="primary" @click="getCozeInfo">请求coze</el-button>-->
         </div>
         <!-- 在点击按钮后添加 JSON 展示区域 -->
         <div v-if="form.jsonInfo" class="json-preview-container">
@@ -270,7 +270,7 @@
         </div>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="submitForm" :disabled="this.loading || isEmpty(form.jsonInfo)">确 定</el-button>
+        <el-button type="primary" @click="submitForm" :disabled="this.loading">确 定</el-button>
         <el-button @click="cancel">取 消</el-button>
       </div>
     </el-dialog>

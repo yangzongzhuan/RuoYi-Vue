@@ -6,7 +6,6 @@ app.displayDialogs = DialogModes.NO;
 
 // =============== 配置信息（示例） ===============
 var CONFIG = {};
-var taskName = "";
 
 try {
     // 从配置中获取基础路径配置
@@ -25,8 +24,9 @@ try {
     var dateDir = new Folder(outputBase.fsName + "/" + datePath);
     if (!dateDir.exists) dateDir.create();
 
-    // 创建任务名称文件夹（使用任务名称）
-    var taskDir = new Folder(dateDir.fsName + "/" + taskName);
+    // 创建任务名称文件夹
+    var timePart = pad(now.getHours()) + "-" + pad(now.getMinutes()) + "-"+ pad(now.getSeconds());
+    var taskDir = new Folder(dateDir.fsName + "/" + baseConfig.accountName + "_" + baseConfig.templateName + "_" + timePart);
     if (!taskDir.exists) taskDir.create();
 
     // 1. 打开原始 PSD 文件（仅一次）
@@ -99,11 +99,11 @@ try {
 
     // alert("处理完成！文件保存在:\n" + outputDir.fsName);
     // 执行退出
-    forceQuitPhotoshop();
+    // forceQuitPhotoshop();
 } catch (e) {
     // alert("严重错误:\n" + e.message + "\n行号: " + e.line);
     // 执行退出
-    forceQuitPhotoshop();
+    // forceQuitPhotoshop();
     throw new Error("严重错误:\n" + e.message + "\n行号: " + e.line);
 }
 

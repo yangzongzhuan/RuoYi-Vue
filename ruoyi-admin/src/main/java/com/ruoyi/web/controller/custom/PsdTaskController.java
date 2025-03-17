@@ -103,20 +103,23 @@ public class PsdTaskController extends BaseController
             // 读取 JSX 模板内容
             String jsxTemplate = new String(Files.readAllBytes(Paths.get(jsxTemplatePath)), StandardCharsets.UTF_8);
 
-            // 处理反斜杠
-            String configStr = psdTask.getJsonInfo().replaceAll("\\\\", "\\\\\\\\");
+            JSONObject config = psdTask.getConfig();
+            new Thread (() -> {
+                String configStr = CozeRequestJsonUtils.test_chat_completions(String.valueOf(config)).replaceAll("\\\\", "\\\\\\\\");
+                // 处理反斜杠
+//            String configStr = psdTask.getJsonInfo().replaceAll("\\\\", "\\\\\\\\");
 
-            // 替换 JSX 模板中的 CONFIG 部分
-            String modifiedJsx = jsxTemplate.replaceFirst("var CONFIG = .*?;", "var CONFIG = " + configStr + ";")
-                    .replaceFirst("(?s)var\\s+taskName\\s*=\\s*\".*?\";", "var taskName = \"" + psdTask.getTaskName() + "\";");
-            System.out.println(modifiedJsx);
+                // 替换 JSX 模板中的 CONFIG 部分
+                String modifiedJsx = jsxTemplate.replaceFirst("var CONFIG = .*?;", "var CONFIG = " + configStr + ";");
+                System.out.println(modifiedJsx);
 
-            // 调试输出
-            System.out.println("替换后的 JSX:\n" + modifiedJsx);
+                // 调试输出
+                System.out.println("替换后的 JSX:\n" + modifiedJsx);
 
-            // 调用 Photoshop
-            ActiveXComponent ps = new ActiveXComponent("Photoshop.Application");
-            Dispatch.invoke(ps, "DoJavaScript", Dispatch.Method, new Object[]{modifiedJsx}, new int[1]);
+                // 调用 Photoshop
+                ActiveXComponent ps = new ActiveXComponent("Photoshop.Application");
+                Dispatch.invoke(ps, "DoJavaScript", Dispatch.Method, new Object[]{modifiedJsx}, new int[1]);
+            }).start();
 
             // 保存任务
             psdTask.setCreateDate(LocalDateTime.now());

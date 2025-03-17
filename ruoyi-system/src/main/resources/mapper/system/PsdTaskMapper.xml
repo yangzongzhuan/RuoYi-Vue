@@ -14,7 +14,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </resultMap>
 
     <sql id="selectPsdTaskVo">
-        select id, task_name, account_name, template_name, image_count, create_date from psd_task order by create_date desc
+        select id, task_name, account_name, template_name, image_count, create_date from psd_task
     </sql>
 
     <select id="selectPsdTaskList" parameterType="PsdTask" resultMap="PsdTaskResult">
@@ -25,6 +25,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="templateName != null  and templateName != ''"> and template_name like concat('%', #{templateName}, '%')</if>
             <if test="imageCount != null  and imageCount != ''"> and image_count = #{imageCount}</if>
         </where>
+        order by create_date desc
     </select>
 
     <select id="selectPsdTaskById" parameterType="Long" resultMap="PsdTaskResult">
