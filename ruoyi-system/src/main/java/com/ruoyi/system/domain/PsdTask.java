@@ -44,7 +44,13 @@ public class PsdTask extends BaseEntity
     @TableField(exist = false)
     private String jsonInfo;
 
+    private String status;
+    private String uuid;
+
     private LocalDateTime createDate;
+
+    public PsdTask() {
+    }
 
     public void setId(Long id)
     {
@@ -120,6 +126,24 @@ public class PsdTask extends BaseEntity
         this.jsonInfo = jsonInfo;
     }
 
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+
+    public String getUuid() {
+        return uuid;
+    }
+
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
+    }
+
+
 
     @Override
     public String toString() {
@@ -131,6 +155,7 @@ public class PsdTask extends BaseEntity
             .append("imageCount", getImageCount())
             .append("createDate", getcreateDate())
             .append("jsonInfo", getJsonInfo())
+            .append("status", getStatus())
             .toString();
     }
 }

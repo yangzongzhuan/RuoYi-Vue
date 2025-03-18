@@ -25,6 +25,16 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
+      <el-form-item label="任务状态" prop="status">
+        <el-select v-model="queryParams.status" placeholder="任务状态" clearable>
+          <el-option
+            v-for="dict in dict.type.psd_task_status"
+            :key="dict.value"
+            :label="dict.label"
+            :value="dict.value"
+          />
+        </el-select>
+      </el-form-item>
       <el-form-item>
         <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
         <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
@@ -82,6 +92,11 @@
 <!--      <el-table-column label="任务名称" align="center" prop="taskName" />-->
       <el-table-column label="作图账号名称" align="center" prop="accountName" />
       <el-table-column label="模板名称" align="center" prop="templateName" />
+      <el-table-column prop="status" label="任务状态" width="80">
+        <template slot-scope="scope">
+          <dict-tag :options="dict.type.psd_task_status" :value="scope.row.status"/>
+        </template>
+      </el-table-column>
       <el-table-column label="创建时间" align="center" prop="createDate" />
 <!--      <el-table-column label="图片生产数量，[1,2,3] 表示图一1张，图二两张" align="center" prop="imageCount" />-->
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
@@ -270,7 +285,7 @@
         </div>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="submitForm" :disabled="this.loading">确 定</el-button>
+        <el-button type="primary" @click="submitForm" :disabled="loading || isEmpty(templateInfo.imageConfigs)">确 定</el-button>
         <el-button @click="cancel">取 消</el-button>
       </div>
     </el-dialog>
@@ -284,6 +299,7 @@ import {isEmpty} from "@/utils/validate";
 
 export default {
   name: "Task",
+  dicts: ['psd_task_status'],
   data() {
     return {
       // 遮罩层

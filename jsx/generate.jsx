@@ -6,6 +6,7 @@ app.displayDialogs = DialogModes.NO;
 
 // =============== 配置信息（示例） ===============
 var CONFIG = {};
+var foldersName = "";
 
 try {
     // 从配置中获取基础路径配置
@@ -25,8 +26,7 @@ try {
     if (!dateDir.exists) dateDir.create();
 
     // 创建任务名称文件夹
-    var timePart = pad(now.getHours()) + "-" + pad(now.getMinutes()) + "-"+ pad(now.getSeconds());
-    var taskDir = new Folder(dateDir.fsName + "/" + baseConfig.accountName + "_" + baseConfig.templateName + "_" + timePart);
+    var taskDir = new Folder(dateDir.fsName + "/" + foldersName);
     if (!taskDir.exists) taskDir.create();
 
     // 1. 打开原始 PSD 文件（仅一次）
@@ -67,7 +67,7 @@ try {
                 if (!smartTextUpdate(
                     layer,
                     textConfig[key].sampleText, // 原"原文示例"
-                    textConfig[key].maxCharsPerLine // 原"每行最大字符数"
+                    parseInt(textConfig[key].maxCharsPerLine, 10) // 转换为数字
                 )) {
                     throw new Error("文本更新失败: " + layerName);
                 }
@@ -81,13 +81,16 @@ try {
             allLayerSets[j].visible = (allLayerSets[j].name === currentFolderName);
         }
 
-        // 2.5 生成导出文件名
-        var fileName = baseConfig.templateName + "_" + cfg.folderName.replace(/ /g, "") + "_" + Date.now() + ".png";
+        // 2.5 生成JPG文件名（注意扩展名变更）
+        var fileName = baseConfig.templateName + "_" + cfg.folderName.replace(/ /g, "") + "_" + Date.now() + ".jpg";
 
-        // 2.6 导出为 PNG
-        var saveFile = new File(taskDir.fsName + "/" + fileName); // 修改保存路径
-        var saveOptions = new PNGSaveOptions();
-        saveOptions.compression = 9;
+        // 2.6 创建JPG保存选项
+        var saveOptions = new JPEGSaveOptions();
+        saveOptions.quality = 12;  // 质量等级1-12（12为最高质量）[6](@ref)
+        saveOptions.formatOptions = FormatOptions.OPTIMIZEDBASELINE; // 基线优化[6](@ref)
+
+        // 2.6 导出为JPG
+        var saveFile = new File(taskDir.fsName + "/" + fileName);
         workingDoc.saveAs(saveFile, saveOptions, true);
 
         // 2.7 关闭工作文档，不保存更改

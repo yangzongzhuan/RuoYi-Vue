@@ -6,16 +6,21 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import javax.servlet.http.HttpServletResponse;
 
+import cn.hutool.core.lang.UUID;
 import com.alibaba.fastjson2.JSONObject;
+import com.alibaba.ttl.TransmittableThreadLocal;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.ruoyi.system.coze.CozeRequestJsonUtils;
 import com.ruoyi.system.domain.PsdTask;
 import com.ruoyi.system.mapper.PSDMapper;
 import com.ruoyi.system.service.IPsdTaskService;
 import com.ruoyi.system.service.impl.DeepSeekService;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -53,6 +58,9 @@ public class PsdTaskController extends BaseController
 
     @Autowired
     private DeepSeekService deepSeekService;
+
+    // 创建一个 TransmittableThreadLocal 对象
+    private static ThreadLocal<PsdTask> myThreadLocal = new TransmittableThreadLocal<>();
 
     /**
      * 查询psd任务列表
@@ -96,22 +104,41 @@ public class PsdTaskController extends BaseController
     @Log(title = "psd任务", businessType = BusinessType.INSERT)
     @PostMapping
     public AjaxResult add(@RequestBody PsdTask psdTask) throws JsonProcessingException {
-        try {
-            // 获取 JSX 模板路径（相对路径）
-            String basePath = System.getProperty("user.dir");
-            String jsxTemplatePath = basePath + File.separator + "jsx" + File.separator + "generate.jsx";
-            // 读取 JSX 模板内容
-            String jsxTemplate = new String(Files.readAllBytes(Paths.get(jsxTemplatePath)), StandardCharsets.UTF_8);
+        // 先保存任务到数据库
+        psdTask.setCreateDate(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS));
+        psdTask.setUuid(String.valueOf(UUID.randomUUID()));
+        psdTask.setStatus("2");
+        psdTaskService.insertPsdTask(psdTask);
 
-            JSONObject config = psdTask.getConfig();
-            new Thread (() -> {
-                String configStr = CozeRequestJsonUtils.test_chat_completions(String.valueOf(config)).replaceAll("\\\\", "\\\\\\\\");
-                // 处理反斜杠
-//            String configStr = psdTask.getJsonInfo().replaceAll("\\\\", "\\\\\\\\");
+        myThreadLocal.set(psdTask);
 
-                // 替换 JSX 模板中的 CONFIG 部分
-                String modifiedJsx = jsxTemplate.replaceFirst("var CONFIG = .*?;", "var CONFIG = " + configStr + ";");
-                System.out.println(modifiedJsx);
+        new Thread(() -> {
+            PsdTask taskCopy = myThreadLocal.get();
+            try {
+                // 读取 JSX 模板
+                String basePath = System.getProperty("user.dir");
+                String jsxTemplatePath = basePath + File.separator + "jsx" + File.separator + "generate.jsx";
+                String jsxTemplate = new String(Files.readAllBytes(Paths.get(jsxTemplatePath)), StandardCharsets.UTF_8);
+
+                // 生成配置字符串
+                String configStr = CozeRequestJsonUtils.test_chat_completions(String.valueOf(taskCopy.getConfig()))
+                        .replaceAll("\\\\", "\\\\\\\\");
+
+                // 替换 JSX 模板
+                LocalDateTime time = taskCopy.getcreateDate();
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH-mm-ss");
+                String formattedDate = time.format(formatter); // 输出示例：25-03-19
+                // 安全转义
+                String safeDate = StringEscapeUtils.escapeEcmaScript(formattedDate);
+                String foldersName = taskCopy.getTemplateName() + "_" + taskCopy.getAccountName() + "_" + safeDate;
+
+                // 精准替换
+                String configPattern = "var CONFIG = .*?;";
+                String timePattern = "(var\\s+foldersName\\s*=\\s*)[^;]*;";
+
+                String modifiedJsx = jsxTemplate
+                        .replaceFirst(configPattern, "var CONFIG = " + configStr + ";")
+                        .replaceFirst(timePattern, "$1\"" + foldersName + "\";");
 
                 // 调试输出
                 System.out.println("替换后的 JSX:\n" + modifiedJsx);
@@ -119,15 +146,26 @@ public class PsdTaskController extends BaseController
                 // 调用 Photoshop
                 ActiveXComponent ps = new ActiveXComponent("Photoshop.Application");
                 Dispatch.invoke(ps, "DoJavaScript", Dispatch.Method, new Object[]{modifiedJsx}, new int[1]);
-            }).start();
+                // 更新状态为成功
+                taskCopy.setStatus("0");
+                psdTaskService.updatePsdTask(taskCopy);
 
-            // 保存任务
-            psdTask.setCreateDate(LocalDateTime.now());
-            return toAjax(psdTaskService.insertPsdTask(psdTask));
-        } catch (IOException e) {
-            throw new RuntimeException("JSX 文件处理失败: " + e.getMessage());
-        }
+            } catch (IOException e) {
+                System.out.println("JSX 读取失败：" + e.getMessage());
+            }finally {
+                // 任务失败，更新状态
+                if (taskCopy.getStatus().equals("2")) {
+                    taskCopy.setStatus("1");
+                    psdTaskService.updatePsdTask(taskCopy);
+                }
+                // 清理线程本地变量
+                myThreadLocal.remove();
+            }
+        }).start();
+
+        return toAjax(1);
     }
+
 
     @Log(title = "psd任务", businessType = BusinessType.INSERT)
     @PostMapping("/getCoze")

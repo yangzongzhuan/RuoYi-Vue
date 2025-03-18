@@ -111,7 +111,7 @@
           </el-form-item>
 
           <el-divider>文字图层</el-divider>
-          <div v-for="(layer, key) in imgCfg.textLayerConfigs" :key="key">
+          <div v-for="(layer, key) in imgCfg.textLayerConfigs" :key="key" class="text-layer-item">
             <el-form-item :label="`${key} - 名称`">
               <el-input v-model="layer.name" />
             </el-form-item>
@@ -121,6 +121,7 @@
             <el-form-item :label="`${key} - 字符限制`">
               <el-input v-model.number="layer.maxCharsPerLine" />
             </el-form-item>
+            <el-button type="danger" size="mini" @click="deleteTextLayer(imgCfg, key)">删除该文字图层</el-button>
           </div>
           <el-form-item label="提示词">
             <el-input type="textarea" :rows="3" v-model="imgCfg.prompt" />
@@ -391,6 +392,10 @@ export default {
     // 切换显示模式
     toggleJsonView() {
       this.showRawJson = !this.showRawJson;
+    },
+    // 其他方法...
+    deleteTextLayer(imgCfg, key) {
+      this.$delete(imgCfg.textLayerConfigs, key);
     }
   }
 };

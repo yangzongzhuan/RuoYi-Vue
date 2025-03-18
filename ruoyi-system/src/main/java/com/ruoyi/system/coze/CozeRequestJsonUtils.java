@@ -46,7 +46,7 @@ public class CozeRequestJsonUtils {
 		for (Message message : yuanQiCompletionResponse.getMessages()) {
 			// answer 是机器人回答的
 			if (message.getType().equals("answer")) {
-				System.err.println("内容介绍："+message.getContent() + System.lineSeparator()); // 写入并换行
+//				System.err.println("内容介绍："+message.getContent() + System.lineSeparator()); // 写入并换行
 				return message.getContent();
 			}
 		}

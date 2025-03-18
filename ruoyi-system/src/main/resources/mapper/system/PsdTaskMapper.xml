@@ -6,15 +6,17 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
     <resultMap type="PsdTask" id="PsdTaskResult">
         <result property="id"    column="id"    />
+        <result property="uuid"    column="uuid"    />
         <result property="taskName"    column="task_name"    />
         <result property="accountName"    column="account_name"    />
         <result property="templateName"    column="template_name"    />
         <result property="imageCount"    column="image_count"    />
+        <result property="status"    column="status"    />
         <result property="createDate"    column="create_date"    />
     </resultMap>
 
     <sql id="selectPsdTaskVo">
-        select id, task_name, account_name, template_name, image_count, create_date from psd_task
+        select id, uuid, task_name, account_name, template_name, image_count, status, create_date from psd_task
     </sql>
 
     <select id="selectPsdTaskList" parameterType="PsdTask" resultMap="PsdTaskResult">
@@ -24,6 +26,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="accountName != null  and accountName != ''"> and account_name like concat('%', #{accountName}, '%')</if>
             <if test="templateName != null  and templateName != ''"> and template_name like concat('%', #{templateName}, '%')</if>
             <if test="imageCount != null  and imageCount != ''"> and image_count = #{imageCount}</if>
+            <if test="status != null  and status != ''"> and status = #{status}</if>
         </where>
         order by create_date desc
     </select>
@@ -41,7 +44,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="accountName != null">account_name,</if>
             <if test="templateName != null">template_name,</if>
             <if test="imageCount != null">image_count,</if>
+            <if test="status != null">status,</if>
             <if test="createDate != null">create_date,</if>
+            <if test="uuid != null">uuid,</if>
          </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="id != null">#{id},</if>
@@ -49,7 +54,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="accountName != null">#{accountName},</if>
             <if test="templateName != null">#{templateName},</if>
             <if test="imageCount != null">#{imageCount},</if>
+            <if test="status != null">#{status},</if>
             <if test="createDate != null">#{createDate},</if>
+            <if test="uuid != null">#{uuid},</if>
          </trim>
     </insert>
 
@@ -60,9 +67,10 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="accountName != null">account_name = #{accountName},</if>
             <if test="templateName != null">template_name = #{templateName},</if>
             <if test="imageCount != null">image_count = #{imageCount},</if>
+            <if test="status != null">status = #{status},</if>
             <if test="createDate != null">create_date = #{createDate},</if>
         </trim>
-        where id = #{id}
+        where uuid = #{uuid}
     </update>
 
     <delete id="deletePsdTaskById" parameterType="Long">
