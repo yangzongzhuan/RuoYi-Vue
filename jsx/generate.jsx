@@ -107,7 +107,7 @@ try {
     // alert("严重错误:\n" + e.message + "\n行号: " + e.line);
     // 执行退出
     // forceQuitPhotoshop();
-    throw new Error("严重错误:\n" + e.message + "\n行号: " + e.line);
+    // throw new Error("严重错误:\n" + e.message + "\n行号: " + e.line);
 }
 
 // =============== 修复后的退出逻辑 ===============
@@ -205,6 +205,9 @@ function findLayerSetByName(doc, setName) {
 
 function smartTextUpdate(layer, newText, maxChars) {
     try {
+        // 将所有形式的换行符（\r, \n, /r, /n, \\r, \\n）连续出现的部分统一替换为单个 Photoshop 换行符 \r
+        newText = newText.replace(/(?:\\r|\\n|\/r|\/n|\r|\n)+/g, "\r");
+
         var safeText = newText.substr(0, 32767);
 
         if (maxChars && maxChars > 0) {
@@ -212,7 +215,7 @@ function smartTextUpdate(layer, newText, maxChars) {
             var lineBreak = "\r";
             var wrapped = '';
 
-            // 按字符数分割
+            // 按指定的字符数分割文本
             for (var i = 0; i < chars.length; i += maxChars) {
                 var line = chars.slice(i, i + maxChars).join('');
                 wrapped += line + (i + maxChars < chars.length ? lineBreak : '');
@@ -227,6 +230,7 @@ function smartTextUpdate(layer, newText, maxChars) {
         return false;
     }
 }
+
 
 // 递归查找文本图层
 function findTextLayer(layers, name) {
