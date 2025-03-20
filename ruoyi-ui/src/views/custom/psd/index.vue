@@ -124,7 +124,7 @@
             <el-button type="danger" size="mini" @click="deleteTextLayer(imgCfg, key)">删除该文字图层</el-button>
           </div>
           <el-form-item label="提示词">
-            <el-input type="textarea" :rows="3" v-model="imgCfg.prompt" />
+            <el-input type="textarea" :rows="7" v-model="imgCfg.prompt" />
           </el-form-item>
           <el-form-item label="生成数量">
             <el-input-number
