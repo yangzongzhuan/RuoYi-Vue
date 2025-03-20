@@ -36,7 +36,21 @@
 			</if>
 		</where>
 	</select>
+
     <select id="selectAll" resultType="com.ruoyi.system.domain.PSDTemplate">
 		SELECT * FROM psd_template
+	</select>
+
+
+	<insert id="insertAccountByName">
+		insert into ai_history_name (account_name, name, create_date)
+		values
+		<foreach collection="name" item="item" separator="," open="(" close=")">
+			#{accountName}, #{item}, NOW()
+		</foreach>
+	</insert>
+
+	<select id="selectAccountByName" resultType="java.lang.String">
+		select `name` from  ai_history_name where account_name = #{accountName} and create_date >= DATE_SUB(NOW(), INTERVAL 7 DAY)
 	</select>
 </mapper>

@@ -42,7 +42,7 @@ try {
 
         // 查找目标文件夹时添加可见性控制
         var targetSet;
-        if (cfg.hasSubfolder) { // 原"是否有子文件夹"
+        if (cfg.hasSubfolder === true || cfg.hasSubfolder === "true") {
             var parentSet = findParentLayerSet(workingDoc, cfg.folderName); // 原"图片所在文件夹名称"
             hideOtherSubfolders(parentSet, cfg.subfolderName); // 原"子文件夹名称"
             targetSet = findExactLayerSet(workingDoc, cfg.folderName, cfg.subfolderName);

@@ -28,4 +28,8 @@ public interface PSDMapper {
 										@Param("accountName") String accountName);
 
 	List<PSDTemplate> selectAll();
+
+	void insertAccountByName(@Param("accountName") String accountName, @Param("name") List<String> nameList);
+
+	List<String> selectAccountByName(@Param("accountName") String accountName);
 }

@@ -8,13 +8,21 @@ import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import javax.servlet.http.HttpServletResponse;
 
 import cn.hutool.core.lang.UUID;
+import com.alibaba.fastjson2.JSON;
+import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONObject;
 import com.alibaba.ttl.TransmittableThreadLocal;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.ruoyi.system.coze.CozeRequestJsonUtils;
 import com.ruoyi.system.domain.PsdTask;
 import com.ruoyi.system.mapper.PSDMapper;
@@ -119,10 +127,21 @@ public class PsdTaskController extends BaseController
                 String basePath = System.getProperty("user.dir");
                 String jsxTemplatePath = basePath + File.separator + "jsx" + File.separator + "generate.jsx";
                 String jsxTemplate = new String(Files.readAllBytes(Paths.get(jsxTemplatePath)), StandardCharsets.UTF_8);
+                JSONObject config = taskCopy.getConfig();
+                List<String> nameList = psdMapper.selectAccountByName(psdTask.getAccountName());
+                System.err.println("历史名字：" + nameList);
+
+                JSONArray historyArray = new JSONArray(nameList);
+                config.put("historyName", historyArray);
 
                 // 生成配置字符串
-                String configStr = CozeRequestJsonUtils.test_chat_completions(String.valueOf(taskCopy.getConfig()))
-                        .replaceAll("\\\\", "\\\\\\\\");
+                String answer = CozeRequestJsonUtils.test_chat_completions(String.valueOf(config));
+
+                // 将 answer 转换为 JSONObject 对象
+                // 使用 Jackson 解析 JSON 字符串
+                ObjectMapper mapper = new ObjectMapper();
+                JsonNode root = mapper.readTree(answer);
+                answer = answer.replaceAll("\\\\", "\\\\\\\\");
 
                 // 替换 JSX 模板
                 LocalDateTime time = taskCopy.getcreateDate();
@@ -137,7 +156,7 @@ public class PsdTaskController extends BaseController
                 String timePattern = "(var\\s+foldersName\\s*=\\s*)[^;]*;";
 
                 String modifiedJsx = jsxTemplate
-                        .replaceFirst(configPattern, "var CONFIG = " + configStr + ";")
+                        .replaceFirst(configPattern, "var CONFIG = " + answer + ";")
                         .replaceFirst(timePattern, "$1\"" + foldersName + "\";");
 
                 // 调试输出
@@ -149,6 +168,37 @@ public class PsdTaskController extends BaseController
                 // 更新状态为成功
                 taskCopy.setStatus("0");
                 psdTaskService.updatePsdTask(taskCopy);
+
+                List<String> sampleTextList = new ArrayList<>();
+
+                // 获取 imageConfigs 数组节点
+                JsonNode imageConfigs = root.get("imageConfigs");
+                if (imageConfigs != null && imageConfigs.isArray()) {
+                    for (JsonNode imageConfig : imageConfigs) {
+                        // 获取 textLayerConfigs 对象节点
+                        JsonNode textLayerConfigs = imageConfig.get("textLayerConfigs");
+                        if (textLayerConfigs != null && textLayerConfigs.isObject()) {
+                            // 遍历 textLayerConfigs 的每个字段
+                            Iterator<Map.Entry<String, JsonNode>> fields = textLayerConfigs.fields();
+                            while (fields.hasNext()) {
+                                Map.Entry<String, JsonNode> entry = fields.next();
+                                JsonNode textLayer = entry.getValue();
+                                String name = textLayer.get("name").asText();
+                                // 判断 name 中是否包含 "名字"
+                                if (name.contains("名字")) {
+                                    String sampleText = textLayer.get("sampleText").asText();
+                                    sampleTextList.add(sampleText);
+                                }
+                            }
+                        }
+                    }
+                }
+
+                // 输出结果
+                System.err.println("包含 '名字' 的 sampleText 列表: " + sampleTextList);
+                if (!sampleTextList.isEmpty()) {
+                    psdMapper.insertAccountByName(taskCopy.getAccountName(), sampleTextList);
+                }
 
             } catch (IOException e) {
                 System.out.println("JSX 读取失败：" + e.getMessage());
@@ -169,9 +219,16 @@ public class PsdTaskController extends BaseController
 
     @Log(title = "psd任务", businessType = BusinessType.INSERT)
     @PostMapping("/getCoze")
-    public AjaxResult getCoze(@RequestBody PsdTask psdTask){
+    public AjaxResult getCoze(@RequestBody PsdTask psdTask) throws JsonProcessingException {
         JSONObject config = psdTask.getConfig();
-        return AjaxResult.success(CozeRequestJsonUtils.test_chat_completions(String.valueOf(config)));
+        String accountName = config.getJSONObject("baseConfig").getString("accountName");
+        List<String> nameList = psdMapper.selectAccountByName(accountName);
+
+        JSONArray historyArray = new JSONArray(nameList);
+        config.put("historyName", historyArray);
+        System.err.println("历史名字： " + nameList);
+        String answer = CozeRequestJsonUtils.test_chat_completions(String.valueOf(config));
+        return AjaxResult.success(answer);
     }
 
     /**
