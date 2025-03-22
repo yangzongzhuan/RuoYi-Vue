@@ -109,6 +109,11 @@
           <el-input v-model="form.imageSavePath" />
         </el-form-item>
 
+        <el-form-item label="文章提示词" prop="copywriterPrompt">
+          <el-input type="textarea" :rows="7" v-model="form.copywriterPrompt" />
+        </el-form-item>
+
+
         <el-divider>图片配置</el-divider>
         <div v-for="(imgCfg, index) in form.imageConfigs" :key="index" class="config-block">
           <div class="config-header">
@@ -217,6 +222,7 @@ export default {
         accountName: '',
         psdLocalPath: '',
         imageSavePath: '',
+        copywriterPrompt: '',
         imageConfigs: [],
         jsonInfo: ''
       },
@@ -224,7 +230,8 @@ export default {
         templateName: [{ required: true, message: "必填项", trigger: "blur" }],
         accountName: [{ required: true, message: "必填项", trigger: "blur" }],
         psdLocalPath: [{ required: true, message: "必填项", trigger: "blur" }],
-        imageSavePath: [{ required: true, message: "必填项", trigger: "blur" }]
+        imageSavePath: [{ required: true, message: "必填项", trigger: "blur" }],
+        copywriterPrompt: [{ required: true, message: "必填项", trigger: "blur" }]
       },
       showRawJson: false, // 切换显示模式
       imageCache: {} // 缓存对象[2,7](@ref)
@@ -299,6 +306,7 @@ export default {
         accountName: config.baseConfig?.accountName || '',
         psdLocalPath: config.baseConfig?.psdLocalPath || '',
         imageSavePath: config.baseConfig?.imageSavePath || '',
+        copywriterPrompt: config.baseConfig?.copywriterPrompt || '',
         imageConfigs: config.imageConfigs?.map(cfg => ({
           folderName: cfg.folderName,
           hasSubfolder: cfg.hasSubfolder,
@@ -323,7 +331,8 @@ export default {
                 templateName: this.form.templateName,
                 accountName: this.form.accountName,
                 psdLocalPath: this.form.psdLocalPath,
-                imageSavePath: this.form.imageSavePath
+                imageSavePath: this.form.imageSavePath,
+                copywriterPrompt: this.form.copywriterPrompt
               },
               imageConfigs: this.form.imageConfigs.map(cfg => ({
                 folderName: cfg.folderName,
@@ -364,6 +373,7 @@ export default {
         accountName: '',
         psdLocalPath: '',
         imageSavePath: '',
+        copywriterPrompt: '',
         imageConfigs: [],
         jsonInfo: '',
       };
@@ -383,7 +393,8 @@ export default {
             templateName: this.form.templateName,
             accountName: this.form.accountName,
             psdLocalPath: this.form.psdLocalPath,
-            imageSavePath: this.form.imageSavePath
+            imageSavePath: this.form.imageSavePath,
+            copywriterPrompt: this.form.copywriterPrompt
           },
           imageConfigs: this.form.imageConfigs.map(cfg => ({
             folderName: cfg.folderName,
