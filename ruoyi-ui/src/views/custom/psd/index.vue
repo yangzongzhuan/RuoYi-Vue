@@ -49,6 +49,21 @@
           {{ getConfigValue(row.config, 'baseConfig.imageSavePath') }}
         </template>
       </el-table-column>
+      <el-table-column label="图片预览" width="150" align="center">
+        <template slot-scope="{ row }">
+          <el-image
+          :src="imageCache[psdPath(row)]"
+          :preview-src-list="[imageCache[psdPath(row)]]"
+          style="width: 100px; height: 100px"
+          fit="cover"
+          :zoom-rate="1.2"
+          :max-scale="7"
+          :min-scale="0.2"
+          hide-on-click-modal>
+          </el-image>
+        </template>
+      </el-table-column>
+
       <el-table-column label="操作" width="180" align="center" fixed="right">
         <template slot-scope="scope">
           <el-button
@@ -177,8 +192,9 @@
 </template>
 
 <script>
-import { listPSDConfig, updatePSDConfig, delPSDConfig } from "@/api/custom/psd";
+import {listPSDConfig, updatePSDConfig, delPSDConfig, getImage} from "@/api/custom/psd";
 import {getCoze} from "@/api/custom/task";
+import {isEmpty} from "@/utils/validate";
 
 export default {
   name: 'PSDConfig',
@@ -211,6 +227,7 @@ export default {
         imageSavePath: [{ required: true, message: "必填项", trigger: "blur" }]
       },
       showRawJson: false, // 切换显示模式
+      imageCache: {} // 缓存对象[2,7](@ref)
     };
   },
   computed: {
@@ -234,6 +251,12 @@ export default {
       this.loading = true;
       listPSDConfig(this.queryParams).then(res => {
         this.configList = res.rows;
+        this.$nextTick(() => {
+          this.configList.forEach(row => {
+            const path = this.psdPath(row)
+            this.loadImage(path)  // 主动调用加载方法
+          })
+        })
         this.total = res.total;
         this.loading = false;
       });
@@ -396,7 +419,27 @@ export default {
     // 其他方法...
     deleteTextLayer(imgCfg, key) {
       this.$delete(imgCfg.textLayerConfigs, key);
-    }
+    },
+    // 同步获取路径（模板直接调用）
+    psdPath(row) {
+      return this.getConfigValue(row.config, 'baseConfig.psdLocalPath')
+        .replace(/^"+|"+$/g, '')
+        .replace(/\\/g, '/')
+    },
+
+    // 异步加载方法（在created/mounted中调用）
+    async loadImage(path) {
+      if (!path || this.imageCache[path]) return
+
+      try {
+        const blob = await getImage(encodeURIComponent(path))
+        console.log(blob)
+        this.$set(this.imageCache, path, URL.createObjectURL(blob));
+        this.$forceUpdate(); // 强制更新视图
+      } catch(e) {
+      }
+    },
+
   }
 };
 </script>

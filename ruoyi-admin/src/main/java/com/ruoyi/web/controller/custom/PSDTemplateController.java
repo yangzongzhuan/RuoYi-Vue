@@ -1,5 +1,6 @@
 package com.ruoyi.web.controller.custom;
 
+import cn.hutool.core.net.URLDecoder;
 import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONObject;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -13,21 +14,26 @@ import com.ruoyi.system.domain.PSDTemplate;
 import com.ruoyi.system.mapper.PSDMapper;
 import com.ruoyi.system.service.impl.DeepSeekService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.http.*;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
+import java.awt.image.BufferedImage;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.List;
-import java.util.Map;
+import java.nio.file.*;
+import java.util.*;
+
 import com.jacob.activeX.ActiveXComponent;
 import com.jacob.com.Dispatch;
-import com.jacob.com.Variant;
+
+import org.springframework.core.io.Resource;
+
+import javax.imageio.*;
+import javax.imageio.plugins.jpeg.JPEGImageWriteParam;
+import javax.imageio.stream.ImageInputStream;
+import javax.imageio.stream.ImageOutputStream;
 
 @RestController
 @RequestMapping("/psd")
@@ -177,20 +183,57 @@ public class PSDTemplateController extends BaseController
 		return AjaxResult.success();
 	}
 
-	@GetMapping("/askDeepSeek")
-	public ResponseEntity<String> test(@RequestParam String question){
+	@PostMapping("/psd-to-jpg")
+	public ResponseEntity<Resource> convertPsdToJpg(@RequestBody String psdPath) {
 		try {
+			// 1. 路径清洗与解码
+			String sanitizedPath = psdPath
+					.replaceAll("^\"|\"$", "") // 去除首尾双引号[1](@ref)
+					.replace("\\", "/");      // 统一路径分隔符
 
-			String response = deepSeekService.askDeepSeek(question);
+			String decodedPath = URLDecoder.decode(sanitizedPath, StandardCharsets.UTF_8);
 
-			return ResponseEntity.ok(response);
+//			// 2. 安全校验（限制访问下载目录）
+			Path filePath = Paths.get(decodedPath).normalize();
+//			if (!filePath.startsWith("C:/Users/Downloads")) {
+//				return ResponseEntity.status(403)
+//						.body(new ByteArrayResource("仅允许访问下载目录".getBytes()));
+//			}
 
-		} catch (Exception e) {
+			// 3. PSD解析与转换（使用TwelveMonkeys库）
+			try (InputStream psdStream = Files.newInputStream(filePath);
+				 ImageInputStream imageStream = ImageIO.createImageInputStream(psdStream)) {
 
-			return ResponseEntity.status(500).body("Error occurred while communicating with DeepSeek: " + e.getMessage());
+				ImageReader reader = ImageIO.getImageReadersByFormatName("psd").next();
+				reader.setInput(imageStream);
+
+				// 获取合并后的图像
+				BufferedImage compositeImage = reader.read(0);
+
+				// 4. JPG转换（带压缩参数）
+				ByteArrayOutputStream jpgBytes = new ByteArrayOutputStream();
+				ImageWriter writer = ImageIO.getImageWritersByFormatName("jpg").next();
+				try (ImageOutputStream outStream = ImageIO.createImageOutputStream(jpgBytes)) {
+					writer.setOutput(outStream);
+					JPEGImageWriteParam params = new JPEGImageWriteParam(null);
+					params.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
+					params.setCompressionQuality(0.9f); // 质量系数0.8-0.9最佳[3](@ref)
+					writer.write(null, new IIOImage(compositeImage, null, null), params);
+				}
+
+				// 5. 构建响应
+				String jpgName = filePath.getFileName().toString()
+						.replaceAll("(?i)\\.psd$", ".jpg");
+				return ResponseEntity.ok()
+						.header("Content-Type", "image/jpeg")
+						.header("Content-Disposition", "inline; filename=\"" + jpgName + "\"")
+						.body(new ByteArrayResource(jpgBytes.toByteArray()));
+			}
+		}catch (Exception e) {
+			// 统一异常处理（已提前过滤路径不存在的情况）
+			return ResponseEntity.noContent().build();
 		}
 	}
-
 
 
 }

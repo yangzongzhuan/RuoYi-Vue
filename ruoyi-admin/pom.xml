@@ -73,6 +73,13 @@
             <version>2.13.0</version>
         </dependency>
 
+        <!-- PSD处理依赖 -->
+        <dependency>
+            <groupId>com.twelvemonkeys.imageio</groupId>
+            <artifactId>imageio-psd</artifactId>
+            <version>3.9.4</version>
+        </dependency>
+
     </dependencies>
 
     <build>

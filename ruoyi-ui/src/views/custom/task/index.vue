@@ -170,30 +170,56 @@
           </el-select>
         </el-form-item>
         <el-button @click="getTemplateInfo" :disabled="isEmpty(form.accountName) || isEmpty(form.templateName)">获取模板信息</el-button>
-        <!-- 模板信息展示区 -->
         <div v-if="!isEmpty(templateInfo.imageConfigs)" class="template-container">
-          <!-- 基础配置展示 -->
-          <el-card class="config-section">
-            <div class="section-header">
-              <h3>基础配置</h3>
-            </div>
-            <div class="config-item">
-              <span class="label">账号名称：</span>
-              <el-tag type="info">{{ templateInfo.baseConfig.accountName }}</el-tag>
-            </div>
-            <div class="config-item">
-              <span class="label">PSD路径：</span>
-              <el-tooltip :content="templateInfo.baseConfig.psdLocalPath">
-                <span class="path">{{ templateInfo.baseConfig.psdLocalPath }}</span>
-              </el-tooltip>
-            </div>
-            <div class="config-item">
-              <span class="label">输出路径：</span>
-              <el-tooltip :content="templateInfo.baseConfig.imageSavePath">
-                <span class="path">{{ templateInfo.baseConfig.imageSavePath }}</span>
-              </el-tooltip>
-            </div>
-          </el-card>
+          <el-row>
+            <!-- 模板信息展示区 -->
+            <el-col :span="16">
+              <el-card class="config-section">
+                <div class="section-header">
+                  <h3>基础配置</h3>
+                </div>
+                <div class="config-item">
+                  <span class="label">账号名称：</span>
+                  <el-tag type="info">{{ templateInfo.baseConfig.accountName }}</el-tag>
+                </div>
+                <div class="config-item">
+                  <span class="label">PSD路径：</span>
+                  <el-tooltip :content="templateInfo.baseConfig.psdLocalPath">
+                    <span class="path">{{ templateInfo.baseConfig.psdLocalPath }}</span>
+                  </el-tooltip>
+                </div>
+                <div class="config-item">
+                  <span class="label">输出路径：</span>
+                  <el-tooltip :content="templateInfo.baseConfig.imageSavePath">
+                    <span class="path">{{ templateInfo.baseConfig.imageSavePath }}</span>
+                  </el-tooltip>
+                </div>
+              </el-card>
+            </el-col>
+            <el-col :span="8">
+              <el-card class="config-section right-panel">
+                <div class="section-header">
+                  <h3>模板预览</h3>
+                  <el-tooltip content="点击可放大查看" placement="top">
+                    <i class="el-icon-info"></i>
+                  </el-tooltip>
+                </div>
+
+                <!-- 图片预览组件 -->
+                <el-image
+                  :src="imageCache[templateInfo.baseConfig.psdLocalPath]"
+                  :preview-src-list="[imageCache[templateInfo.baseConfig.psdLocalPath]]"
+                  style="width: 100px; height: 100px"
+                  fit="cover"
+                  :zoom-rate="1.2"
+                  :max-scale="7"
+                  :min-scale="0.2"
+                  hide-on-click-modal>
+                </el-image>
+
+              </el-card>
+            </el-col>
+          </el-row>
 
           <!-- 图片配置展示 -->
           <el-card
@@ -294,7 +320,7 @@
 
 <script>
 import {listTask, getTask, delTask, addTask, updateTask, getCoze} from "@/api/custom/task";
-import {getListPSDConfigAll, listPSDConfig} from "@/api/custom/psd";
+import {getImage, getListPSDConfigAll, listPSDConfig} from "@/api/custom/psd";
 import {isEmpty} from "@/utils/validate";
 
 export default {
@@ -347,6 +373,7 @@ export default {
       templateOptions: [], // 模板下拉选项
       templateOptionsFilter: [], // 模板下拉选项过滤后的数据
       accountOptions: [],   // 账号下拉选项
+      imageCache: {}
     };
   },
   created() {
@@ -540,6 +567,7 @@ export default {
             ...config,
             generateCount: config.generateCount || 1 // 初始化生成数量
           }));
+          this.loadImage(this.templateInfo.baseConfig.psdLocalPath)
           this.$modal.msgSuccess("模板信息获取成功");
         } else {
           this.$modal.msgError("模板配置数据不存在");
@@ -607,7 +635,20 @@ export default {
         value: name,
         label: name
       }));
-    }
+    },
+
+    // 异步加载方法（在created/mounted中调用）
+    async loadImage(path) {
+      if (!path || this.imageCache[path]) return
+
+      try {
+        const blob = await getImage(encodeURIComponent(path))
+        console.log(blob)
+        this.$set(this.imageCache, path, URL.createObjectURL(blob));
+        this.$forceUpdate(); // 强制更新视图
+      } catch(e) {
+      }
+    },
   }
 };
 </script>

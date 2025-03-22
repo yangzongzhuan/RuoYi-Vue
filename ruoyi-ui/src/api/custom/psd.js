@@ -52,3 +52,16 @@ export function delPSDConfig(id) {
     method: 'delete'
   })
 }
+// 增强版请求函数
+export function getImage(imagePath) {
+  return request({
+    url: '/psd/psd-to-jpg',
+    method: 'post',
+    data: imagePath,
+    headers: {
+      'Content-Type': 'text/plain; charset=UTF-8' // 明确编码格式[1](@ref)
+    },
+    responseType: 'blob',
+    transformRequest: [(data) => data] // 禁止axios自动序列化
+  })
+}
