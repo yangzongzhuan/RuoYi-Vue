@@ -49,20 +49,25 @@
           {{ getConfigValue(row.config, 'baseConfig.imageSavePath') }}
         </template>
       </el-table-column>
-      <el-table-column label="图片预览" width="150" align="center">
-        <template slot-scope="{ row }">
-          <el-image
-          :src="imageCache[psdPath(row)]"
-          :preview-src-list="[imageCache[psdPath(row)]]"
-          style="width: 100px; height: 100px"
-          fit="cover"
-          :zoom-rate="1.2"
-          :max-scale="7"
-          :min-scale="0.2"
-          hide-on-click-modal>
-          </el-image>
+      <el-table-column label="保存路径" min-width="200" show-overflow-tooltip>
+        <template slot-scope="{row}">
+          <image-preview :src="row.images" :width="100" :height="100"></image-preview>
         </template>
       </el-table-column>
+<!--      <el-table-column label="图片预览" width="150" align="center">-->
+<!--        <template slot-scope="{ row }">-->
+<!--          <el-image-->
+<!--              :src="imageCache[psdPath(row)] ? imageCache[psdPath(row)][0] : ''"-->
+<!--              :preview-src-list="imageCache[psdPath(row)]"-->
+<!--              style="width: 100px; height: 100px"-->
+<!--              fit="cover"-->
+<!--              :zoom-rate="1.2"-->
+<!--              :max-scale="7"-->
+<!--              :min-scale="0.2"-->
+<!--              hide-on-click-modal>-->
+<!--          </el-image>-->
+<!--        </template>-->
+<!--      </el-table-column>-->
 
       <el-table-column label="操作" width="180" align="center" fixed="right">
         <template slot-scope="scope">
@@ -111,6 +116,15 @@
 
         <el-form-item label="文章提示词" prop="copywriterPrompt">
           <el-input type="textarea" :rows="7" v-model="form.copywriterPrompt" />
+        </el-form-item>
+
+        <el-form-item label="文件上传" prop="images">
+          <ImageUpload
+              v-model="form.images"
+              :limit="100"
+              :file-type="['jpg','png']"
+              :file-size="50"
+          />
         </el-form-item>
 
 
@@ -199,7 +213,8 @@
 <script>
 import {listPSDConfig, updatePSDConfig, delPSDConfig, getImage} from "@/api/custom/psd";
 import {getCoze} from "@/api/custom/task";
-import {isEmpty} from "@/utils/validate";
+import JSZip from 'jszip';
+import {getToken} from "@/utils/auth";
 
 export default {
   name: 'PSDConfig',
@@ -247,23 +262,24 @@ export default {
       } catch {
         return { error: 'Invalid JSON format' };
       }
-    }
+    },
   },
   created() {
     this.getList();
   },
   methods: {
+    getToken,
     // 数据获取方法
     getList() {
       this.loading = true;
       listPSDConfig(this.queryParams).then(res => {
         this.configList = res.rows;
-        this.$nextTick(() => {
-          this.configList.forEach(row => {
-            const path = this.psdPath(row)
-            this.loadImage(path)  // 主动调用加载方法
-          })
-        })
+        // this.$nextTick(() => {
+        //   this.configList.forEach(row => {
+        //     const path = this.psdPath(row)
+        //     this.loadImage(path)  // 主动调用加载方法
+        //   })
+        // })
         this.total = res.total;
         this.loading = false;
       });
@@ -315,6 +331,7 @@ export default {
           prompt: cfg.prompt,
           generateCount: 1
         })) || [],
+        images: row.images || [],
       };
       this.open = true;
       this.title = "编辑配置";
@@ -341,7 +358,8 @@ export default {
                 textLayerConfigs: cfg.textLayerConfigs,
                 prompt: cfg.prompt
               }))
-            })
+            }),
+            images: this.form.images
           };
 
           updatePSDConfig(postData).then(() => {
@@ -431,6 +449,7 @@ export default {
     deleteTextLayer(imgCfg, key) {
       this.$delete(imgCfg.textLayerConfigs, key);
     },
+
     // 同步获取路径（模板直接调用）
     psdPath(row) {
       return this.getConfigValue(row.config, 'baseConfig.psdLocalPath')
@@ -438,18 +457,37 @@ export default {
         .replace(/\\/g, '/')
     },
 
-    // 异步加载方法（在created/mounted中调用）
-    async loadImage(path) {
-      if (!path || this.imageCache[path]) return
-
-      try {
-        const blob = await getImage(encodeURIComponent(path))
-        console.log(blob)
-        this.$set(this.imageCache, path, URL.createObjectURL(blob));
-        this.$forceUpdate(); // 强制更新视图
-      } catch(e) {
-      }
-    },
+    // // 异步加载方法（在created/mounted中调用）
+    // async loadImage(path) {
+    //   if (!path || this.imageCache[path]) return;
+    //
+    //   try {
+    //     // 获取 ZIP Blob 数据
+    //     const blob = await getImage(encodeURIComponent(path));
+    //     console.log('Received ZIP blob:', blob);
+    //
+    //     // 使用 JSZip 解析 ZIP 数据
+    //     const zip = await JSZip.loadAsync(blob);
+    //     console.log('ZIP contains files:', Object.keys(zip.files));
+    //
+    //     // 遍历 ZIP 内的所有文件，生成图片 URL 数组
+    //     const imageList = [];
+    //     for (const [filename, file] of Object.entries(zip.files)) {
+    //       // 如果是目录则跳过
+    //       if (file.dir) continue;
+    //       // 读取文件为 Blob，然后生成 URL
+    //       const fileBlob = await file.async('blob');
+    //       const imageUrl = URL.createObjectURL(fileBlob);
+    //       imageList.push(imageUrl);
+    //     }
+    //
+    //     // 将解压后的图片 URL 数组写入 imageCache
+    //     this.$set(this.imageCache, path, imageList);
+    //     this.$forceUpdate(); // 强制更新视图
+    //   } catch(e) {
+    //     console.error('Error loading images from ZIP:', e);
+    //   }
+    // }
 
   }
 };

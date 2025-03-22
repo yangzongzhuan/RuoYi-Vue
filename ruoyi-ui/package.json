@@ -48,6 +48,7 @@
     "js-beautify": "1.13.0",
     "js-cookie": "3.0.1",
     "jsencrypt": "3.0.0-rc.1",
+    "jszip": "^3.10.1",
     "nprogress": "0.2.0",
     "quill": "2.0.2",
     "screenfull": "5.0.2",

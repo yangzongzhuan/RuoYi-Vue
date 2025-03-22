@@ -6,9 +6,13 @@ import com.alibaba.fastjson2.JSONObject;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;
+import com.ruoyi.common.config.RuoYiConfig;
 import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.core.page.TableDataInfo;
+import com.ruoyi.common.utils.file.FileUploadUtils;
+import com.ruoyi.common.utils.file.FileUtils;
+import com.ruoyi.framework.config.ServerConfig;
 import com.ruoyi.system.domain.PSDConfig;
 import com.ruoyi.system.domain.PSDTemplate;
 import com.ruoyi.system.mapper.PSDMapper;
@@ -24,11 +28,14 @@ import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
 import java.util.*;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 import com.jacob.activeX.ActiveXComponent;
 import com.jacob.com.Dispatch;
 
 import org.springframework.core.io.Resource;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.imageio.*;
 import javax.imageio.plugins.jpeg.JPEGImageWriteParam;
@@ -46,7 +53,11 @@ public class PSDTemplateController extends BaseController
 	private DeepSeekService deepSeekService;
 
 
-   @PostMapping("/saveTemplate")
+	@Autowired
+	private ServerConfig serverConfig;
+
+
+	@PostMapping("/saveTemplate")
    @PreAuthorize("@ss.hasPermi('namegenerator:psd:add')")
 	public AjaxResult saveTemplate(@RequestBody PSDConfig config) throws JsonProcessingException {
 		System.out.println(config);
@@ -93,6 +104,7 @@ public class PSDTemplateController extends BaseController
 		PSDTemplate psdTemplate = new PSDTemplate();
 		psdTemplate.setId(id);
 		psdTemplate.setConfig(config);
+		psdTemplate.setImages((String) map.get("images"));
 		psdMapper.updateById(psdTemplate);
 		return AjaxResult.success();
 	}
@@ -183,57 +195,71 @@ public class PSDTemplateController extends BaseController
 		return AjaxResult.success();
 	}
 
-	@PostMapping("/psd-to-jpg")
-	public ResponseEntity<Resource> convertPsdToJpg(@RequestBody String psdPath) {
-		try {
-			// 1. 路径清洗与解码
-			String sanitizedPath = psdPath
-					.replaceAll("^\"|\"$", "") // 去除首尾双引号[1](@ref)
-					.replace("\\", "/");      // 统一路径分隔符
-
-			String decodedPath = URLDecoder.decode(sanitizedPath, StandardCharsets.UTF_8);
-
-//			// 2. 安全校验（限制访问下载目录）
-			Path filePath = Paths.get(decodedPath).normalize();
-//			if (!filePath.startsWith("C:/Users/Downloads")) {
-//				return ResponseEntity.status(403)
-//						.body(new ByteArrayResource("仅允许访问下载目录".getBytes()));
+//	@PostMapping("/psd-to-jpg")
+//	public ResponseEntity<Resource> convertPsdLayersToJpg(@RequestBody String psdPath) {
+//		try {
+//			// 1. 路径清洗与解码
+//			String sanitizedPath = psdPath
+//					.replaceAll("^\"|\"$", "") // 去除首尾双引号
+//					.replace("\\", "/");       // 统一路径分隔符
+//			String decodedPath = URLDecoder.decode(sanitizedPath, StandardCharsets.UTF_8);
+//
+//			// 2. 获取文件路径
+//			Path filePath = Paths.get(decodedPath).normalize();
+//
+//			// 3. 打开PSD文件
+//			try (InputStream psdStream = Files.newInputStream(filePath);
+//				 ImageInputStream imageStream = ImageIO.createImageInputStream(psdStream)) {
+//
+//				ImageReader reader = ImageIO.getImageReadersByFormatName("psd").next();
+//				reader.setInput(imageStream);
+//
+//				// 获取PSD中图像数量（包含合并图像及各图层）
+//				int numImages = reader.getNumImages(true);
+//
+//				// 4. 使用Zip打包所有转换后的JPG图层
+//				ByteArrayOutputStream zipBytes = new ByteArrayOutputStream();
+//				try (ZipOutputStream zos = new ZipOutputStream(zipBytes)) {
+//					for (int i = 0; i < numImages; i++) {
+//						// 读取每个图层
+//						BufferedImage layerImage = reader.read(i);
+//						if (layerImage == null) {
+//							System.out.println("Layer " + i + " is null, skipping.");
+//							continue;
+//						}
+//						ByteArrayOutputStream jpgBytes = new ByteArrayOutputStream();
+//
+//						// 转换为JPG
+//						ImageWriter writer = ImageIO.getImageWritersByFormatName("jpg").next();
+//						try (ImageOutputStream outStream = ImageIO.createImageOutputStream(jpgBytes)) {
+//							writer.setOutput(outStream);
+//							JPEGImageWriteParam params = new JPEGImageWriteParam(null);
+//							params.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
+//							params.setCompressionQuality(0.9f); // 质量参数，可根据需求调整
+//							writer.write(null, new IIOImage(layerImage, null, null), params);
+//						}
+//
+//						// 将每个JPG作为ZIP中的一个条目
+//						String baseName = filePath.getFileName().toString().replaceAll("(?i)\\.psd$", "");
+//						String entryName = baseName + "_layer" + i + ".jpg";
+//						ZipEntry entry = new ZipEntry(entryName);
+//						zos.putNextEntry(entry);
+//						zos.write(jpgBytes.toByteArray());
+//						zos.closeEntry();
+//					}
+//				}
+//
+//				// 5. 返回ZIP文件（设置响应头，前端可以下载或直接解压使用）
+//				return ResponseEntity.ok()
+//						.header("Content-Type", "application/zip")
+//						.header("Content-Disposition", "attachment; filename=\"converted_layers.zip\"")
+//						.body(new ByteArrayResource(zipBytes.toByteArray()));
 //			}
-
-			// 3. PSD解析与转换（使用TwelveMonkeys库）
-			try (InputStream psdStream = Files.newInputStream(filePath);
-				 ImageInputStream imageStream = ImageIO.createImageInputStream(psdStream)) {
-
-				ImageReader reader = ImageIO.getImageReadersByFormatName("psd").next();
-				reader.setInput(imageStream);
-
-				// 获取合并后的图像
-				BufferedImage compositeImage = reader.read(0);
-
-				// 4. JPG转换（带压缩参数）
-				ByteArrayOutputStream jpgBytes = new ByteArrayOutputStream();
-				ImageWriter writer = ImageIO.getImageWritersByFormatName("jpg").next();
-				try (ImageOutputStream outStream = ImageIO.createImageOutputStream(jpgBytes)) {
-					writer.setOutput(outStream);
-					JPEGImageWriteParam params = new JPEGImageWriteParam(null);
-					params.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
-					params.setCompressionQuality(0.9f); // 质量系数0.8-0.9最佳[3](@ref)
-					writer.write(null, new IIOImage(compositeImage, null, null), params);
-				}
-
-				// 5. 构建响应
-				String jpgName = filePath.getFileName().toString()
-						.replaceAll("(?i)\\.psd$", ".jpg");
-				return ResponseEntity.ok()
-						.header("Content-Type", "image/jpeg")
-						.header("Content-Disposition", "inline; filename=\"" + jpgName + "\"")
-						.body(new ByteArrayResource(jpgBytes.toByteArray()));
-			}
-		}catch (Exception e) {
-			// 统一异常处理（已提前过滤路径不存在的情况）
-			return ResponseEntity.noContent().build();
-		}
-	}
-
+//		} catch (Exception e) {
+//			System.out.println("转换失败：" + e.getMessage());
+//			// 异常统一处理（可以根据实际需要记录日志）
+//			return ResponseEntity.noContent().build();
+//		}
+//	}
 
 }

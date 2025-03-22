@@ -206,16 +206,7 @@
                 </div>
 
                 <!-- 图片预览组件 -->
-                <el-image
-                  :src="imageCache[templateInfo.baseConfig.psdLocalPath]"
-                  :preview-src-list="[imageCache[templateInfo.baseConfig.psdLocalPath]]"
-                  style="width: 100px; height: 100px"
-                  fit="cover"
-                  :zoom-rate="1.2"
-                  :max-scale="7"
-                  :min-scale="0.2"
-                  hide-on-click-modal>
-                </el-image>
+                <image-preview :src="imageList" :width="100" :height="100"></image-preview>
 
               </el-card>
             </el-col>
@@ -373,7 +364,7 @@ export default {
       templateOptions: [], // 模板下拉选项
       templateOptionsFilter: [], // 模板下拉选项过滤后的数据
       accountOptions: [],   // 账号下拉选项
-      imageCache: {}
+      imageList: ''
     };
   },
   created() {
@@ -558,6 +549,9 @@ export default {
         accountName: this.form.accountName,
         templateName: this.form.templateName
       }).then(res => {
+        if (res.rows[0]?.images) {
+          this.imageList = res.rows[0].images
+        }
         if (res.rows[0]?.config) {
           const parsedConfig = JSON.parse(res.rows[0].config);
           // 合并基础配置（保留响应式）
@@ -567,7 +561,7 @@ export default {
             ...config,
             generateCount: config.generateCount || 1 // 初始化生成数量
           }));
-          this.loadImage(this.templateInfo.baseConfig.psdLocalPath)
+          // this.loadImage(this.templateInfo.baseConfig.psdLocalPath)
           this.$modal.msgSuccess("模板信息获取成功");
         } else {
           this.$modal.msgError("模板配置数据不存在");
@@ -637,18 +631,18 @@ export default {
       }));
     },
 
-    // 异步加载方法（在created/mounted中调用）
-    async loadImage(path) {
-      if (!path || this.imageCache[path]) return
-
-      try {
-        const blob = await getImage(encodeURIComponent(path))
-        console.log(blob)
-        this.$set(this.imageCache, path, URL.createObjectURL(blob));
-        this.$forceUpdate(); // 强制更新视图
-      } catch(e) {
-      }
-    },
+    // // 异步加载方法（在created/mounted中调用）
+    // async loadImage(path) {
+    //   if (!path || this.imageCache[path]) return
+    //
+    //   try {
+    //     const blob = await getImage(encodeURIComponent(path))
+    //     console.log(blob)
+    //     this.$set(this.imageCache, path, URL.createObjectURL(blob));
+    //     this.$forceUpdate(); // 强制更新视图
+    //   } catch(e) {
+    //   }
+    // },
   }
 };
 </script>

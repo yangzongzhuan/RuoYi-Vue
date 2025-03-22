@@ -15,4 +15,6 @@ public class PSDTemplate {
 
 	private String config;
 
+	private String images;
+
 }

@@ -13,7 +13,7 @@
 	<!-- 根据 id 更新 PSDTemplate -->
 	<update id="updateById" parameterType="com.ruoyi.system.domain.PSDTemplate">
 		UPDATE psd_template
-		SET config = #{config}
+		SET config = #{config}, images = #{images}
 		WHERE id = #{id}
 	</update>
 
