@@ -406,7 +406,7 @@ export default {
       this.loading = true;
       const postData = {
         id: this.form.id,
-        config: {
+        config: JSON.stringify({
           baseConfig: {
             templateName: this.form.templateName,
             accountName: this.form.accountName,
@@ -422,7 +422,7 @@ export default {
             prompt: cfg.prompt,
             generateCount: cfg.generateCount
           }))
-        }
+        })
       };
       getCoze(postData).then(res => {
         this.form.jsonInfo = res.msg;

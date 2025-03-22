@@ -28,6 +28,7 @@ import com.ruoyi.system.domain.PsdTask;
 import com.ruoyi.system.mapper.PSDMapper;
 import com.ruoyi.system.service.IPsdTaskService;
 import com.ruoyi.system.service.impl.DeepSeekService;
+import com.ruoyi.web.controller.Queue.PhotoshopTaskQueue;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -112,106 +113,14 @@ public class PsdTaskController extends BaseController
     @Log(title = "psd任务", businessType = BusinessType.INSERT)
     @PostMapping
     public AjaxResult add(@RequestBody PsdTask psdTask) throws JsonProcessingException {
-        // 先保存任务到数据库
+        // 保存任务到数据库
         psdTask.setCreateDate(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS));
         psdTask.setUuid(String.valueOf(UUID.randomUUID()));
         psdTask.setStatus("2");
         psdTaskService.insertPsdTask(psdTask);
 
-        myThreadLocal.set(psdTask);
-
-        new Thread(() -> {
-            PsdTask taskCopy = myThreadLocal.get();
-            try {
-                // 读取 JSX 模板
-                String basePath = System.getProperty("user.dir");
-                String jsxTemplatePath = basePath + File.separator + "jsx" + File.separator + "generate.jsx";
-                String jsxTemplate = new String(Files.readAllBytes(Paths.get(jsxTemplatePath)), StandardCharsets.UTF_8);
-                JSONObject config = taskCopy.getConfig();
-                List<String> nameList = psdMapper.selectAccountByName(psdTask.getAccountName());
-                System.err.println("历史名字：" + nameList);
-
-                JSONArray historyArray = new JSONArray(nameList);
-                config.put("historyName", historyArray);
-
-                // 生成配置字符串
-                String answer = CozeRequestJsonUtils.test_chat_completions(String.valueOf(config));
-
-                // 将 answer 转换为 JSONObject 对象
-                // 使用 Jackson 解析 JSON 字符串
-                ObjectMapper mapper = new ObjectMapper();
-                JsonNode root = mapper.readTree(answer);
-                answer = answer.replaceAll("\\\\", "\\\\\\\\");
-
-                // 替换 JSX 模板
-                LocalDateTime time = taskCopy.getcreateDate();
-                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH-mm-ss");
-                String formattedDate = time.format(formatter); // 输出示例：25-03-19
-                // 安全转义
-                String safeDate = StringEscapeUtils.escapeEcmaScript(formattedDate);
-                String foldersName = taskCopy.getTemplateName() + "_" + taskCopy.getAccountName() + "_" + safeDate;
-
-                // 精准替换
-                String configPattern = "var CONFIG = .*?;";
-                String timePattern = "(var\\s+foldersName\\s*=\\s*)[^;]*;";
-
-                String modifiedJsx = jsxTemplate
-                        .replaceFirst(configPattern, "var CONFIG = " + answer + ";")
-                        .replaceFirst(timePattern, "$1\"" + foldersName + "\";");
-
-                // 调试输出
-                System.out.println("替换后的 JSX:\n" + modifiedJsx);
-
-                // 调用 Photoshop
-                ActiveXComponent ps = new ActiveXComponent("Photoshop.Application");
-                Dispatch.invoke(ps, "DoJavaScript", Dispatch.Method, new Object[]{modifiedJsx}, new int[1]);
-                // 更新状态为成功
-                taskCopy.setStatus("0");
-                psdTaskService.updatePsdTask(taskCopy);
-
-                List<String> sampleTextList = new ArrayList<>();
-
-                // 获取 imageConfigs 数组节点
-                JsonNode imageConfigs = root.get("imageConfigs");
-                if (imageConfigs != null && imageConfigs.isArray()) {
-                    for (JsonNode imageConfig : imageConfigs) {
-                        // 获取 textLayerConfigs 对象节点
-                        JsonNode textLayerConfigs = imageConfig.get("textLayerConfigs");
-                        if (textLayerConfigs != null && textLayerConfigs.isObject()) {
-                            // 遍历 textLayerConfigs 的每个字段
-                            Iterator<Map.Entry<String, JsonNode>> fields = textLayerConfigs.fields();
-                            while (fields.hasNext()) {
-                                Map.Entry<String, JsonNode> entry = fields.next();
-                                JsonNode textLayer = entry.getValue();
-                                String name = textLayer.get("name").asText();
-                                // 判断 name 中是否包含 "名字"
-                                if (name.contains("名字")) {
-                                    String sampleText = textLayer.get("sampleText").asText();
-                                    sampleTextList.add(sampleText);
-                                }
-                            }
-                        }
-                    }
-                }
-
-                // 输出结果
-                System.err.println("包含 '名字' 的 sampleText 列表: " + sampleTextList);
-                if (!sampleTextList.isEmpty()) {
-                    psdMapper.insertAccountByName(taskCopy.getAccountName(), sampleTextList);
-                }
-
-            } catch (IOException e) {
-                System.out.println("JSX 读取失败：" + e.getMessage());
-            }finally {
-                // 任务失败，更新状态
-                if (taskCopy.getStatus().equals("2")) {
-                    taskCopy.setStatus("1");
-                    psdTaskService.updatePsdTask(taskCopy);
-                }
-                // 清理线程本地变量
-                myThreadLocal.remove();
-            }
-        }).start();
+        // 将任务放入队列，等待 Photoshop 线程执行
+        PhotoshopTaskQueue.addTask(psdTask);
 
         return toAjax(1);
     }
@@ -220,7 +129,8 @@ public class PsdTaskController extends BaseController
     @Log(title = "psd任务", businessType = BusinessType.INSERT)
     @PostMapping("/getCoze")
     public AjaxResult getCoze(@RequestBody PsdTask psdTask) throws JsonProcessingException {
-        JSONObject config = psdTask.getConfig();
+        String configString = psdTask.getConfig();
+        JSONObject config = JSONObject.parseObject(configString);
         String accountName = config.getJSONObject("baseConfig").getString("accountName");
         List<String> nameList = psdMapper.selectAccountByName(accountName);
 

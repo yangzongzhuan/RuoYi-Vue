@@ -16,7 +16,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </resultMap>
 
     <sql id="selectPsdTaskVo">
-        select id, uuid, task_name, account_name, template_name, image_count, status, create_date from psd_task
+        select id, uuid, task_name, account_name, template_name, image_count, status, create_date, config from psd_task
     </sql>
 
     <select id="selectPsdTaskList" parameterType="PsdTask" resultMap="PsdTaskResult">
@@ -44,6 +44,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="accountName != null">account_name,</if>
             <if test="templateName != null">template_name,</if>
             <if test="imageCount != null">image_count,</if>
+            <if test="config != null">config,</if>
             <if test="status != null">status,</if>
             <if test="createDate != null">create_date,</if>
             <if test="uuid != null">uuid,</if>
@@ -54,6 +55,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="accountName != null">#{accountName},</if>
             <if test="templateName != null">#{templateName},</if>
             <if test="imageCount != null">#{imageCount},</if>
+            <if test="config != null">#{config},</if>
             <if test="status != null">#{status},</if>
             <if test="createDate != null">#{createDate},</if>
             <if test="uuid != null">#{uuid},</if>

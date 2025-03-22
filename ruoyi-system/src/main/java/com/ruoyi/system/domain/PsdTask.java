@@ -38,8 +38,7 @@ public class PsdTask extends BaseEntity
     @Excel(name = "图片生产数量，[1,2,3] 表示图一1张，图二两张")
     private String imageCount;
 
-    @TableField(exist = false)
-    private JSONObject config;
+    private String config;
 
     @TableField(exist = false)
     private String jsonInfo;
@@ -102,11 +101,11 @@ public class PsdTask extends BaseEntity
         return imageCount;
     }
 
-    public JSONObject getConfig() {
+    public String getConfig() {
         return config;
     }
 
-    public void setConfig(JSONObject config) {
+    public void setConfig(String config) {
         this.config = config;
     }
 

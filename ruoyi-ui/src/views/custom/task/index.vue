@@ -493,7 +493,7 @@ export default {
       this.$refs["form"].validate(valid => {
         if (valid) {
           this.loading = true;
-          this.form.config = this.templateInfo;
+          this.form.config = JSON.stringify(this.templateInfo);
           if (this.form.id != null) {
             updateTask(this.form).then(response => {
               this.$modal.msgSuccess("修改成功");
