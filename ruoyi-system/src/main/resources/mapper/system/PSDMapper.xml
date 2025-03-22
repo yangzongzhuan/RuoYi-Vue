@@ -43,10 +43,10 @@
 
 
 	<insert id="insertAccountByName">
-		insert into ai_history_name (account_name, name, create_date)
-		values
-		<foreach collection="name" item="item" separator="," open="(" close=")">
-			#{accountName}, #{item}, NOW()
+		INSERT INTO ai_history_name (account_name, name, create_date)
+		VALUES
+		<foreach collection="list" item="item" separator=",">
+			(#{item.accountName}, #{item.name}, NOW())
 		</foreach>
 	</insert>
 
