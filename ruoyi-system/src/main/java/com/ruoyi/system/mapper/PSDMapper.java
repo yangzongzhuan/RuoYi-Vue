@@ -29,7 +29,7 @@ public interface PSDMapper {
 
 	List<PSDTemplate> selectAll();
 
-	void insertAccountByName(@Param("accountName") String accountName, @Param("name") List<String> nameList);
+	void insertAccountByName(@Param("accountName") String accountName, @Param("nameList") List<String> nameList);
 
 	List<String> selectAccountByName(@Param("accountName") String accountName);
 }
