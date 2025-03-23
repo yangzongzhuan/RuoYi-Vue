@@ -331,7 +331,7 @@ export default {
           prompt: cfg.prompt,
           generateCount: 1
         })) || [],
-        images: row.images || [],
+        images: row.images || '',
       };
       this.open = true;
       this.title = "编辑配置";
