@@ -194,9 +194,13 @@
                     <span class="path">{{ templateInfo.baseConfig.imageSavePath }}</span>
                   </el-tooltip>
                 </div>
+                <div class="config-item">
+                  <span class="label">文章提示词：</span>
+                  <el-input type="textarea" :rows="7" v-model="templateInfo.baseConfig.copywriterPrompt" />
+                </div>
               </el-card>
             </el-col>
-            <el-col :span="8">
+            <el-col :span="8" style="height: 300px">
               <el-card class="config-section right-panel">
                 <div class="section-header">
                   <h3>模板预览</h3>
@@ -355,7 +359,8 @@ export default {
         baseConfig: {
           accountName: '',
           psdLocalPath: '',
-          imageSavePath: ''
+          imageSavePath: '',
+          copywriterPrompt: ''
         },
         imageConfigs: [] // 每个元素需要包含 generateCount 字段
       },
@@ -433,7 +438,8 @@ export default {
         baseConfig: {
           accountName: '',
           psdLocalPath: '',
-          imageSavePath: ''
+          imageSavePath: '',
+          copywriterPrompt: ''
         }
       }
       getListPSDConfigAll().then(response => {
@@ -479,7 +485,8 @@ export default {
           baseConfig: {
             accountName: '',
             psdLocalPath: '',
-            imageSavePath: ''
+            imageSavePath: '',
+            copywriterPrompt: ''
           }
         }
         this.form = response.data;
@@ -503,7 +510,8 @@ export default {
                 baseConfig: {
                 accountName: '',
                 psdLocalPath: '',
-                imageSavePath: ''
+                imageSavePath: '',
+                copywriterPrompt: ''
                 },
                 imageConfigs: [] // 每个元素需要包含 generateCount 字段
               }
@@ -517,7 +525,8 @@ export default {
                 baseConfig: {
                   accountName: '',
                   psdLocalPath: '',
-                  imageSavePath: ''
+                  imageSavePath: '',
+                  copywriterPrompt: ''
                 },
                 imageConfigs: [] // 每个元素需要包含 generateCount 字段
               }
