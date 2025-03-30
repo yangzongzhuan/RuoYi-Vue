@@ -23,7 +23,10 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.ruoyi.system.coze.CozeRequestJsonUtils;
+import com.ruoyi.system.coze.utils.CozeWorkflowClient;
 import com.ruoyi.system.domain.PsdTask;
 import com.ruoyi.system.mapper.PSDMapper;
 import com.ruoyi.system.service.IPsdTaskService;
@@ -130,15 +133,27 @@ public class PsdTaskController extends BaseController
     @PostMapping("/getCoze")
     public AjaxResult getCoze(@RequestBody PsdTask psdTask) throws JsonProcessingException {
         String configString = psdTask.getConfig();
-        JSONObject config = JSONObject.parseObject(configString);
-        String accountName = config.getJSONObject("baseConfig").getString("accountName");
+        ObjectMapper mapper = new ObjectMapper();
+        // 配置解析改造
+        JsonNode configNode = mapper.readTree(configString);  // [5](@ref)
+        ObjectNode config = (ObjectNode) configNode;
+        String accountName = String.valueOf(config.get("baseConfig").get("accountName"));
         List<String> nameList = psdMapper.selectAccountByName(accountName);
 
-        JSONArray historyArray = new JSONArray(nameList);
-        config.put("historyName", historyArray);
+        ArrayNode historyArray = mapper.createArrayNode();
+        nameList.forEach(historyArray::add);
+        config.set("historyName", historyArray);
+
         System.err.println("历史名字： " + nameList);
-        String answer = CozeRequestJsonUtils.test_chat_completions(String.valueOf(config));
-        return AjaxResult.success(answer);
+//        String answer = CozeRequestJsonUtils.test_chat_completions(String.valueOf(config));
+        try {
+            System.err.println("Coze API 请求开始。。。。。。");
+            CozeWorkflowClient.JsonResponse jsonResponse = CozeWorkflowClient.executeWorkflow(config);
+            System.err.println("Coze API 请求结束。。。。。。");
+            return success(jsonResponse.getData());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**

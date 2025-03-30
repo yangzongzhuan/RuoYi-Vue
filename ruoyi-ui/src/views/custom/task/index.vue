@@ -171,6 +171,10 @@
         </el-form-item>
         <el-button @click="getTemplateInfo" :disabled="isEmpty(form.accountName) || isEmpty(form.templateName)">获取模板信息</el-button>
         <div v-if="!isEmpty(templateInfo.imageConfigs)" class="template-container">
+          <div class="config-item">
+            <span class="label">文章提示词：</span>
+            <el-input type="textarea" :rows="7" v-model="templateInfo.copywriterPrompt" />
+          </div>
           <el-row>
             <!-- 模板信息展示区 -->
             <el-col :span="16">
@@ -194,13 +198,9 @@
                     <span class="path">{{ templateInfo.baseConfig.imageSavePath }}</span>
                   </el-tooltip>
                 </div>
-                <div class="config-item">
-                  <span class="label">文章提示词：</span>
-                  <el-input type="textarea" :rows="7" v-model="templateInfo.baseConfig.copywriterPrompt" />
-                </div>
               </el-card>
             </el-col>
-            <el-col :span="8" style="height: 300px">
+            <el-col :span="8">
               <el-card class="config-section right-panel">
                 <div class="section-header">
                   <h3>模板预览</h3>
@@ -264,11 +264,21 @@
               </div>
             </div>
             <div class="config-item">
-              <span class="label">提示词：</span>
+              <span class="label">名字提示词：</span>
               <el-input
                 type="textarea"
-                :rows="3"
-                :value="imgConfig.prompt"
+                :rows="7"
+                :value="imgConfig.namePrompt"
+                readonly
+                class="sample-text">
+              </el-input>
+            </div>
+            <div class="config-item">
+              <span class="label">其他提示词：</span>
+              <el-input
+                type="textarea"
+                :rows="7"
+                :value="imgConfig.otherPrompt"
                 readonly
                 class="sample-text">
               </el-input>
@@ -356,11 +366,11 @@ export default {
       rules: {
       },
       templateInfo: {
+        copywriterPrompt: '',
         baseConfig: {
           accountName: '',
           psdLocalPath: '',
           imageSavePath: '',
-          copywriterPrompt: ''
         },
         imageConfigs: [] // 每个元素需要包含 generateCount 字段
       },
@@ -435,11 +445,11 @@ export default {
     /** 新增按钮操作 */
     handleAdd() {
       this.templateInfo = {
+        copywriterPrompt: '',
         baseConfig: {
           accountName: '',
           psdLocalPath: '',
           imageSavePath: '',
-          copywriterPrompt: ''
         }
       }
       getListPSDConfigAll().then(response => {
@@ -482,11 +492,11 @@ export default {
       const id = row.id || this.ids
       getTask(id).then(response => {
         this.templateInfo = {
+          copywriterPrompt: '',
           baseConfig: {
             accountName: '',
             psdLocalPath: '',
             imageSavePath: '',
-            copywriterPrompt: ''
           }
         }
         this.form = response.data;
@@ -507,11 +517,11 @@ export default {
               this.open = false;
               this.getList();
               this.templateInfo = {
+                copywriterPrompt: '',
                 baseConfig: {
                 accountName: '',
                 psdLocalPath: '',
                 imageSavePath: '',
-                copywriterPrompt: ''
                 },
                 imageConfigs: [] // 每个元素需要包含 generateCount 字段
               }
@@ -522,11 +532,11 @@ export default {
               this.open = false;
               this.getList();
               this.templateInfo = {
+                copywriterPrompt: '',
                 baseConfig: {
                   accountName: '',
                   psdLocalPath: '',
                   imageSavePath: '',
-                  copywriterPrompt: ''
                 },
                 imageConfigs: [] // 每个元素需要包含 generateCount 字段
               }
@@ -565,6 +575,7 @@ export default {
           const parsedConfig = JSON.parse(res.rows[0].config);
           // 合并基础配置（保留响应式）
           Object.assign(this.templateInfo.baseConfig, parsedConfig.baseConfig);
+          this.templateInfo.copywriterPrompt = parsedConfig.copywriterPrompt;
           // 替换图片配置数组（确保响应式更新）
           this.templateInfo.imageConfigs = parsedConfig.imageConfigs.map(config => ({
             ...config,
@@ -665,7 +676,7 @@ export default {
 }
 
 .config-section {
-  margin-bottom: 20px;
+  margin-bottom: 1px;
 }
 
 .section-header {

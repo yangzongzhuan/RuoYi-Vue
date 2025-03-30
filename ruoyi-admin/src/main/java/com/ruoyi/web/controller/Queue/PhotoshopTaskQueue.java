@@ -4,9 +4,12 @@ import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONObject;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.jacob.activeX.ActiveXComponent;
 import com.jacob.com.Dispatch;
 import com.ruoyi.system.coze.CozeRequestJsonUtils;
+import com.ruoyi.system.coze.utils.CozeWorkflowClient;
 import com.ruoyi.system.domain.PsdTask;
 import com.ruoyi.system.mapper.PSDMapper;
 import com.ruoyi.system.service.IPsdTaskService;
@@ -98,20 +101,36 @@ public class PhotoshopTaskQueue {
             String jsxTemplatePath = basePath + File.separator + "jsx" + File.separator + "generate.jsx";
             String jsxTemplate = new String(Files.readAllBytes(Paths.get(jsxTemplatePath)), StandardCharsets.UTF_8);
             String configString = task.getConfig();
-            JSONObject config = JSONObject.parseObject(configString);
-            List<String> nameList = psdMapper.selectAccountByName(task.getAccountName());
-            System.err.println("历史名字：" + nameList);
+            // 初始化ObjectMapper（推荐作为静态成员）
+            ObjectMapper mapper = new ObjectMapper();
 
-            JSONArray historyArray = new JSONArray(nameList);
-            config.put("historyName", historyArray);
+            // 配置解析改造
+            JsonNode configNode = mapper.readTree(configString);  // [5](@ref)
+
+            // 转换为可修改的ObjectNode
+
+            ObjectNode config = (ObjectNode) configNode;  // [3](@ref)
+            List<String> nameList = psdMapper.selectAccountByName(task.getAccountName());
+            ArrayNode historyArray = mapper.createArrayNode();
+            nameList.forEach(historyArray::add);
+            config.set("historyName", historyArray);  // [3,5](@ref)
 
             // 生成配置字符串
-            String answer = CozeRequestJsonUtils.test_chat_completions(String.valueOf(config));
+//            String answer = CozeRequestJsonUtils.test_chat_completions(String.valueOf(config));
+            System.err.println("开始请求工作流。。。。。。");
+            CozeWorkflowClient.JsonResponse jsonResponse = CozeWorkflowClient.executeWorkflow(config);
+            System.err.println("工作流请求结束。。。。。。");
+
+            if (jsonResponse.getCode() != 0) {
+                System.err.println("Coze API 请求失败");
+                throw new RuntimeException("Coze API 请求失败");
+            }
 
             // 将 answer 转换为 JSONObject 对象
-            // 使用 Jackson 解析 JSON 字符串
-            ObjectMapper mapper = new ObjectMapper();
-            JsonNode root = mapper.readTree(answer);
+            JsonNode rootNode = jsonResponse.getData();
+            ObjectNode root = (ObjectNode) rootNode;
+            root.set("baseConfig", config.get("baseConfig"));
+            String answer = root.toString();
             answer = answer.replaceAll("\\\\", "\\\\\\\\");
 
             // 替换 JSX 模板
@@ -131,7 +150,7 @@ public class PhotoshopTaskQueue {
                     .replaceFirst(timePattern, "$1\"" + foldersName + "\";");
 
             // 调试输出
-            System.out.println("替换后的 JSX:\n" + modifiedJsx);
+            System.err.println("替换后的 JSX:\n" + modifiedJsx);
 
             // 调用 Photoshop
             ActiveXComponent ps = new ActiveXComponent("Photoshop.Application");
@@ -172,7 +191,7 @@ public class PhotoshopTaskQueue {
             }
 
         } catch (IOException e) {
-            System.out.println("JSX 读取失败：" + e.getMessage());
+            System.err.println("JSX 读取失败：" + e.getMessage());
         }finally {
             // 任务失败，更新状态
             if (task.getStatus().equals("2")) {

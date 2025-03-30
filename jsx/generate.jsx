@@ -29,11 +29,11 @@ try {
     var taskDir = new Folder(dateDir.fsName + "/" + foldersName);
     if (!taskDir.exists) taskDir.create();
 
-    if (CONFIG.baseConfig.copywriter) {
+    if (CONFIG.copywriter) {
         var copywriterFile = new File(taskDir.fsName + "/copywriter.txt");
         copywriterFile.encoding = "UTF-8";  // 确保中文编码正确
         copywriterFile.open("w");
-        copywriterFile.writeln(CONFIG.baseConfig.copywriter);
+        copywriterFile.writeln(CONFIG.copywriter);
         copywriterFile.close();
 
         // 网页3的浏览器处理方案启发文件编码设置

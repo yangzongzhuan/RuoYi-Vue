@@ -157,8 +157,11 @@
             </el-form-item>
             <el-button type="danger" size="mini" @click="deleteTextLayer(imgCfg, key)">删除该文字图层</el-button>
           </div>
-          <el-form-item label="提示词">
-            <el-input type="textarea" :rows="7" v-model="imgCfg.prompt" />
+          <el-form-item label="名字提示词">
+            <el-input type="textarea" :rows="7" v-model="imgCfg.namePrompt" />
+          </el-form-item>
+          <el-form-item label="其他提示词">
+            <el-input type="textarea" :rows="7" v-model="imgCfg.otherPrompt" />
           </el-form-item>
           <el-form-item label="生成数量">
             <el-input-number
@@ -322,13 +325,14 @@ export default {
         accountName: config.baseConfig?.accountName || '',
         psdLocalPath: config.baseConfig?.psdLocalPath || '',
         imageSavePath: config.baseConfig?.imageSavePath || '',
-        copywriterPrompt: config.baseConfig?.copywriterPrompt || '',
+        copywriterPrompt: config.copywriterPrompt || '',
         imageConfigs: config.imageConfigs?.map(cfg => ({
           folderName: cfg.folderName,
           hasSubfolder: cfg.hasSubfolder,
           subfolderName: cfg.subfolderName,
           textLayerConfigs: cfg.textLayerConfigs,
-          prompt: cfg.prompt,
+          namePrompt: cfg.namePrompt,
+          otherPrompt: cfg.otherPrompt,
           generateCount: 1
         })) || [],
         images: row.images || '',
@@ -344,19 +348,20 @@ export default {
           const postData = {
             id: this.form.id,
             config: JSON.stringify({
+              copywriterPrompt: this.form.copywriterPrompt,
               baseConfig: {
                 templateName: this.form.templateName,
                 accountName: this.form.accountName,
                 psdLocalPath: this.form.psdLocalPath,
                 imageSavePath: this.form.imageSavePath,
-                copywriterPrompt: this.form.copywriterPrompt
               },
               imageConfigs: this.form.imageConfigs.map(cfg => ({
                 folderName: cfg.folderName,
                 hasSubfolder: cfg.hasSubfolder,
                 subfolderName: cfg.subfolderName,
                 textLayerConfigs: cfg.textLayerConfigs,
-                prompt: cfg.prompt
+                namePrompt: cfg.namePrompt,
+                otherPrompt: cfg.otherPrompt,
               }))
             }),
             images: this.form.images
@@ -407,25 +412,26 @@ export default {
       const postData = {
         id: this.form.id,
         config: JSON.stringify({
+          copywriterPrompt: this.form.copywriterPrompt,
           baseConfig: {
             templateName: this.form.templateName,
             accountName: this.form.accountName,
             psdLocalPath: this.form.psdLocalPath,
             imageSavePath: this.form.imageSavePath,
-            copywriterPrompt: this.form.copywriterPrompt
           },
           imageConfigs: this.form.imageConfigs.map(cfg => ({
             folderName: cfg.folderName,
             hasSubfolder: cfg.hasSubfolder,
             subfolderName: cfg.subfolderName,
             textLayerConfigs: cfg.textLayerConfigs,
-            prompt: cfg.prompt,
+            namePrompt: cfg.namePrompt,
+            otherPrompt: cfg.otherPrompt,
             generateCount: cfg.generateCount
           }))
         })
       };
       getCoze(postData).then(res => {
-        this.form.jsonInfo = res.msg;
+        this.form.jsonInfo = res.data;
       }).finally(() => {this.loading = false;})
     },
     // 格式化 JSON 的函数
