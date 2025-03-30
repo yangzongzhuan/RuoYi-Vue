@@ -175,6 +175,10 @@
             <span class="label">文章提示词：</span>
             <el-input type="textarea" :rows="7" v-model="templateInfo.copywriterPrompt" />
           </div>
+          <div class="config-item">
+            <span class="label">提示词：</span>
+            <el-input type="textarea" :rows="7" v-model="templateInfo.prompt" />
+          </div>
           <el-row>
             <!-- 模板信息展示区 -->
             <el-col :span="16">
@@ -263,26 +267,26 @@
                 </el-input>
               </div>
             </div>
-            <div class="config-item">
-              <span class="label">名字提示词：</span>
-              <el-input
-                type="textarea"
-                :rows="7"
-                :value="imgConfig.namePrompt"
-                readonly
-                class="sample-text">
-              </el-input>
-            </div>
-            <div class="config-item">
-              <span class="label">其他提示词：</span>
-              <el-input
-                type="textarea"
-                :rows="7"
-                :value="imgConfig.otherPrompt"
-                readonly
-                class="sample-text">
-              </el-input>
-            </div>
+<!--            <div class="config-item">-->
+<!--              <span class="label">名字提示词：</span>-->
+<!--              <el-input-->
+<!--                type="textarea"-->
+<!--                :rows="7"-->
+<!--                :value="imgConfig.namePrompt"-->
+<!--                readonly-->
+<!--                class="sample-text">-->
+<!--              </el-input>-->
+<!--            </div>-->
+<!--            <div class="config-item">-->
+<!--              <span class="label">其他提示词：</span>-->
+<!--              <el-input-->
+<!--                type="textarea"-->
+<!--                :rows="7"-->
+<!--                :value="imgConfig.otherPrompt"-->
+<!--                readonly-->
+<!--                class="sample-text">-->
+<!--              </el-input>-->
+<!--            </div>-->
           </el-card>
 <!--          <el-button type="primary" @click="getCozeInfo">请求coze</el-button>-->
         </div>
@@ -367,6 +371,7 @@ export default {
       },
       templateInfo: {
         copywriterPrompt: '',
+        prompt: '',
         baseConfig: {
           accountName: '',
           psdLocalPath: '',
@@ -446,6 +451,7 @@ export default {
     handleAdd() {
       this.templateInfo = {
         copywriterPrompt: '',
+        prompt: '',
         baseConfig: {
           accountName: '',
           psdLocalPath: '',
@@ -493,6 +499,7 @@ export default {
       getTask(id).then(response => {
         this.templateInfo = {
           copywriterPrompt: '',
+          prompt: '',
           baseConfig: {
             accountName: '',
             psdLocalPath: '',
@@ -518,6 +525,7 @@ export default {
               this.getList();
               this.templateInfo = {
                 copywriterPrompt: '',
+                prompt: '',
                 baseConfig: {
                 accountName: '',
                 psdLocalPath: '',
@@ -533,6 +541,7 @@ export default {
               this.getList();
               this.templateInfo = {
                 copywriterPrompt: '',
+                prompt: '',
                 baseConfig: {
                   accountName: '',
                   psdLocalPath: '',
@@ -576,6 +585,7 @@ export default {
           // 合并基础配置（保留响应式）
           Object.assign(this.templateInfo.baseConfig, parsedConfig.baseConfig);
           this.templateInfo.copywriterPrompt = parsedConfig.copywriterPrompt;
+          this.templateInfo.prompt = parsedConfig.prompt;
           // 替换图片配置数组（确保响应式更新）
           this.templateInfo.imageConfigs = parsedConfig.imageConfigs.map(config => ({
             ...config,

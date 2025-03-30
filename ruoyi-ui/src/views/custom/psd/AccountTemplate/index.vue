@@ -134,6 +134,7 @@ export default {
     },
     // 构造模板数据后发送 AJAX 请求
     createAccountTemplate() {
+      let layerIndex = 0; // 声明全局索引计数器
       const template = {
         baseConfig: {
           accountName: this.baseConfig.accountName,
@@ -141,23 +142,27 @@ export default {
           psdLocalPath: this.baseConfig.psdPath, // 注意字段名映射
           imageSavePath: this.baseConfig.imageSavePath
         },
-        imageConfigs: this.picConfigs.map(picCfg => {
+
+        imageConfigs : this.picConfigs.map(picCfg => {
           const textLayerConfigs = {};
-          picCfg.textLayers.forEach((layer, index) => {
-            textLayerConfigs[`textLayer${index + 1}`] = {
+
+          // 改用for循环控制索引
+          for (const layer of picCfg.textLayers) {
+            layerIndex++; // 每次迭代自增
+            textLayerConfigs[`textLayer${layerIndex}`] = {
               name: layer.name,
               sampleText: layer.example,
               maxCharsPerLine: layer.maxChars,
             };
-          });
+          }
 
           return {
             folderName: picCfg.folderName,
             hasSubfolder: picCfg.hasSubfolder,
             subfolderName: picCfg.subfolderName,
-            layersToModify: picCfg.layersToModify, // 原textLayerCount改为layersToModify
+            layersToModify: picCfg.layersToModify,
             textLayerConfigs: textLayerConfigs,
-            prompt: picCfg.prompt // 新增图片配置级提示词
+            prompt: picCfg.prompt
           };
         })
       };

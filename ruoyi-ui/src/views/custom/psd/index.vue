@@ -118,6 +118,10 @@
           <el-input type="textarea" :rows="7" v-model="form.copywriterPrompt" />
         </el-form-item>
 
+        <el-form-item label="提示词" prop="prompt">
+          <el-input type="textarea" :rows="7" v-model="form.prompt" />
+        </el-form-item>
+
         <el-form-item label="文件上传" prop="images">
           <ImageUpload
               v-model="form.images"
@@ -157,12 +161,19 @@
             </el-form-item>
             <el-button type="danger" size="mini" @click="deleteTextLayer(imgCfg, key)">删除该文字图层</el-button>
           </div>
-          <el-form-item label="名字提示词">
-            <el-input type="textarea" :rows="7" v-model="imgCfg.namePrompt" />
-          </el-form-item>
-          <el-form-item label="其他提示词">
-            <el-input type="textarea" :rows="7" v-model="imgCfg.otherPrompt" />
-          </el-form-item>
+          <el-button
+            type="success"
+            size="mini"
+            @click="addTextLayer(imgCfg)"
+            style="margin-top:10px;margin-right: 10px">
+            + 新增文字图层
+          </el-button>
+<!--          <el-form-item label="名字提示词">-->
+<!--            <el-input type="textarea" :rows="7" v-model="imgCfg.namePrompt" />-->
+<!--          </el-form-item>-->
+<!--          <el-form-item label="其他提示词">-->
+<!--            <el-input type="textarea" :rows="7" v-model="imgCfg.otherPrompt" />-->
+<!--          </el-form-item>-->
           <el-form-item label="生成数量">
             <el-input-number
               v-model="imgCfg.generateCount"
@@ -177,6 +188,13 @@
         </div>
       </el-form>
       <el-button type="primary" @click="getCozeInfo">请求coze</el-button>
+
+      <el-button
+        type="primary"
+        @click="addImageConfig"
+        style="margin-top:15px">
+        + 新增图片配置
+      </el-button>
       <!-- 在点击按钮后添加 JSON 展示区域 -->
       <div v-if="form.jsonInfo" class="json-preview-container">
         <el-card class="json-card">
@@ -241,6 +259,7 @@ export default {
         psdLocalPath: '',
         imageSavePath: '',
         copywriterPrompt: '',
+        prompt: '',
         imageConfigs: [],
         jsonInfo: ''
       },
@@ -249,10 +268,12 @@ export default {
         accountName: [{ required: true, message: "必填项", trigger: "blur" }],
         psdLocalPath: [{ required: true, message: "必填项", trigger: "blur" }],
         imageSavePath: [{ required: true, message: "必填项", trigger: "blur" }],
-        copywriterPrompt: [{ required: true, message: "必填项", trigger: "blur" }]
+        copywriterPrompt: [{ required: true, message: "必填项", trigger: "blur" }],
+        prompt: [{ required: true, message: "必填项", trigger: "blur" }]
       },
       showRawJson: false, // 切换显示模式
-      imageCache: {} // 缓存对象[2,7](@ref)
+      imageCache: {}, // 缓存对象[2,7](@ref)
+      layerIndex: 0,
     };
   },
   computed: {
@@ -319,6 +340,19 @@ export default {
     handleUpdate(row) {
       this.resetForm();
       const config = JSON.parse(row.config);
+
+      // 动态计算全局最大图层索引
+      let maxLayerIndex = 0;
+      config.imageConfigs?.forEach(cfg => {
+        Object.keys(cfg.textLayerConfigs || {}).forEach(key => {
+          const num = parseInt(key.replace('textLayer', ''));
+          if (!isNaN(num)) maxLayerIndex = Math.max(maxLayerIndex, num);
+        });
+      });
+
+      // 设置初始值（最大索引 + 1 或默认 1）
+      this.layerIndex = maxLayerIndex > 0 ? maxLayerIndex : 1;
+
       this.form = {
         id: row.id,
         templateName: config.baseConfig?.templateName || '',
@@ -326,13 +360,14 @@ export default {
         psdLocalPath: config.baseConfig?.psdLocalPath || '',
         imageSavePath: config.baseConfig?.imageSavePath || '',
         copywriterPrompt: config.copywriterPrompt || '',
+        prompt: config.prompt || '',
         imageConfigs: config.imageConfigs?.map(cfg => ({
           folderName: cfg.folderName,
           hasSubfolder: cfg.hasSubfolder,
           subfolderName: cfg.subfolderName,
           textLayerConfigs: cfg.textLayerConfigs,
-          namePrompt: cfg.namePrompt,
-          otherPrompt: cfg.otherPrompt,
+          // namePrompt: cfg.namePrompt,
+          // otherPrompt: cfg.otherPrompt,
           generateCount: 1
         })) || [],
         images: row.images || '',
@@ -349,6 +384,7 @@ export default {
             id: this.form.id,
             config: JSON.stringify({
               copywriterPrompt: this.form.copywriterPrompt,
+              prompt: this.form.prompt,
               baseConfig: {
                 templateName: this.form.templateName,
                 accountName: this.form.accountName,
@@ -360,8 +396,8 @@ export default {
                 hasSubfolder: cfg.hasSubfolder,
                 subfolderName: cfg.subfolderName,
                 textLayerConfigs: cfg.textLayerConfigs,
-                namePrompt: cfg.namePrompt,
-                otherPrompt: cfg.otherPrompt,
+                // namePrompt: cfg.namePrompt,
+                // otherPrompt: cfg.otherPrompt,
               }))
             }),
             images: this.form.images
@@ -397,6 +433,7 @@ export default {
         psdLocalPath: '',
         imageSavePath: '',
         copywriterPrompt: '',
+        prompt: '',
         imageConfigs: [],
         jsonInfo: '',
       };
@@ -413,6 +450,7 @@ export default {
         id: this.form.id,
         config: JSON.stringify({
           copywriterPrompt: this.form.copywriterPrompt,
+          prompt: this.form.prompt,
           baseConfig: {
             templateName: this.form.templateName,
             accountName: this.form.accountName,
@@ -424,8 +462,8 @@ export default {
             hasSubfolder: cfg.hasSubfolder,
             subfolderName: cfg.subfolderName,
             textLayerConfigs: cfg.textLayerConfigs,
-            namePrompt: cfg.namePrompt,
-            otherPrompt: cfg.otherPrompt,
+            // namePrompt: cfg.namePrompt,
+            // otherPrompt: cfg.otherPrompt,
             generateCount: cfg.generateCount
           }))
         })
@@ -456,12 +494,38 @@ export default {
       this.$delete(imgCfg.textLayerConfigs, key);
     },
 
+    addTextLayer(imgCfg) {
+      const newKey = `textLayer${this.layerIndex + 1}`;
+      this.$set(imgCfg.textLayerConfigs, newKey, {
+        name: '新图层',
+        sampleText: '示例文本',
+        maxCharsPerLine: 20
+      });
+      this.layerIndex++; // 更新全局索引[5](@ref)
+    },
+
     // 同步获取路径（模板直接调用）
     psdPath(row) {
       return this.getConfigValue(row.config, 'baseConfig.psdLocalPath')
         .replace(/^"+|"+$/g, '')
         .replace(/\\/g, '/')
     },
+    addImageConfig() {
+      const newConfig = JSON.parse(JSON.stringify({
+        folderName: '默认文件夹',
+        hasSubfolder: false,
+        textLayerConfigs: {
+          [`textLayer${this.layerIndex + 1}`]: { // 使用全局索引[5](@ref)
+            name: '新图层',
+            sampleText: '示例文本',
+            maxCharsPerLine: 20
+          }
+        },
+        generateCount: 1
+      }));
+      this.layerIndex++; // 递增全局索引[7](@ref)
+      this.form.imageConfigs.push(newConfig);
+    }
 
     // // 异步加载方法（在created/mounted中调用）
     // async loadImage(path) {
