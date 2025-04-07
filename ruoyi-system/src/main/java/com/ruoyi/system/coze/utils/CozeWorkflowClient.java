@@ -3,11 +3,11 @@ package com.ruoyi.system.coze.utils;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.util.concurrent.*;
 
 public class CozeWorkflowClient {
     private static final ObjectMapper mapper = new ObjectMapper()
@@ -55,6 +55,44 @@ public class CozeWorkflowClient {
 
             return new JsonResponse(code, dataNode);
         }
+    }
+
+    /**
+     * 重试请求工作流方法，最多尝试3次，每次等待最多3分钟
+     * @param parameters 请求参数
+     * @return JsonResponse 响应结果
+     * @throws Exception 超过最大重试次数后抛出异常
+     */
+    public static JsonResponse executeWorkflowWithRetry(JsonNode parameters) throws Exception {
+        final int TIMEOUT_MINUTES = 3;
+        final int MAX_ATTEMPTS = 3;
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        Exception lastException = null;
+        int attempt = 0;
+
+        while (attempt < MAX_ATTEMPTS) {
+            attempt++;
+            System.err.println("开始请求工作流，第 " + attempt + " 次尝试。。。");
+
+            Future<JsonResponse> future = executor.submit(() -> executeWorkflow(parameters));
+
+            try {
+                // 等待最多 3 分钟
+                JsonResponse response = future.get(TIMEOUT_MINUTES, TimeUnit.MINUTES);
+                System.err.println("工作流请求结束。。。");
+                executor.shutdown();
+                return response;
+            } catch (TimeoutException e) {
+                System.err.println("请求超时超过 " + TIMEOUT_MINUTES + " 分钟，重试中。。。");
+                lastException = e;
+                future.cancel(true);
+            } catch (Exception e) {
+                System.err.println("请求出现异常：" + e.getMessage() + "，重试中。。。");
+                lastException = e;
+            }
+        }
+        executor.shutdownNow();
+        throw new Exception("工作流请求超过最大尝试次数 " + MAX_ATTEMPTS, lastException);
     }
 
     public static class JsonResponse {

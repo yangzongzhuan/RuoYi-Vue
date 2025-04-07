@@ -215,23 +215,37 @@ function findLayerSetByName(doc, setName) {
 
 function smartTextUpdate(layer, newText, maxChars) {
     try {
-        // 将所有形式的换行符（\r, \n, /r, /n, \\r, \\n）连续出现的部分统一替换为单个 Photoshop 换行符 \r
+        // 将所有形式的换行符（\r, \n, /r, /n, \\r, \\n）替换为 Photoshop 识别的换行符 \r
         newText = newText.replace(/(?:\\r|\\n|\/r|\/n|\r|\n)+/g, "\r");
 
         var safeText = newText.substr(0, 32767);
 
         if (maxChars && maxChars > 0) {
-            var chars = safeText.split('');
             var lineBreak = "\r";
-            var wrapped = '';
+            // 先根据换行符将文本拆分成若干行
+            var originalLines = safeText.split(lineBreak);
+            var wrappedLines = [];
 
-            // 按指定的字符数分割文本
-            for (var i = 0; i < chars.length; i += maxChars) {
-                var line = chars.slice(i, i + maxChars).join('');
-                wrapped += line + (i + maxChars < chars.length ? lineBreak : '');
+            // 针对每一行进行处理
+            for (var j = 0; j < originalLines.length; j++) {
+                var line = originalLines[j];
+                // 如果当前行长度超过 maxChars，则对该行进行自动换行处理
+                if (line.length > maxChars) {
+                    var temp = "";
+                    for (var i = 0; i < line.length; i += maxChars) {
+                        temp += line.substr(i, maxChars);
+                        // 如果这一行还未结束，则插入换行符
+                        if (i + maxChars < line.length) {
+                            temp += lineBreak;
+                        }
+                    }
+                    wrappedLines.push(temp);
+                } else {
+                    wrappedLines.push(line);
+                }
             }
-
-            safeText = wrapped.replace(/\r$/, '');
+            // 使用统一的换行符将所有行拼接起来
+            safeText = wrappedLines.join(lineBreak);
         }
 
         layer.textItem.contents = safeText;
@@ -240,6 +254,7 @@ function smartTextUpdate(layer, newText, maxChars) {
         return false;
     }
 }
+
 
 
 // 递归查找文本图层

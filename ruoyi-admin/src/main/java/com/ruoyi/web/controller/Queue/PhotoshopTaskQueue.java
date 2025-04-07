@@ -117,9 +117,9 @@ public class PhotoshopTaskQueue {
 
             // 生成配置字符串
 //            String answer = CozeRequestJsonUtils.test_chat_completions(String.valueOf(config));
-            System.err.println("开始请求工作流。。。。。。");
-            CozeWorkflowClient.JsonResponse jsonResponse = CozeWorkflowClient.executeWorkflow(config);
-            System.err.println("工作流请求结束。。。。。。");
+//            System.err.println("开始请求工作流。。。。。。");
+            CozeWorkflowClient.JsonResponse jsonResponse = CozeWorkflowClient.executeWorkflowWithRetry(config);
+//            System.err.println("工作流请求结束。。。。。。");
 
             if (jsonResponse.getCode() != 0) {
                 System.err.println("Coze API 请求失败");
@@ -190,7 +190,7 @@ public class PhotoshopTaskQueue {
                 psdMapper.insertAccountByName(task.getAccountName(), sampleTextList);
             }
 
-        } catch (IOException e) {
+        } catch (Exception e) {
             System.err.println("JSX 读取失败：" + e.getMessage());
         }finally {
             // 任务失败，更新状态
