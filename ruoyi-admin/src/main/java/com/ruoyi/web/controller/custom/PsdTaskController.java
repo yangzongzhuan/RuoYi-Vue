@@ -137,7 +137,8 @@ public class PsdTaskController extends BaseController
         // 配置解析改造
         JsonNode configNode = mapper.readTree(configString);  // [5](@ref)
         ObjectNode config = (ObjectNode) configNode;
-        String accountName = String.valueOf(config.get("baseConfig").get("accountName"));
+        String accountName = config.get("baseConfig").get("accountName").asText();
+        System.out.println(accountName);
         List<String> nameList = psdMapper.selectAccountByName(accountName);
 
         ArrayNode historyArray = mapper.createArrayNode();
