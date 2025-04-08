@@ -118,16 +118,11 @@ public class PhotoshopTaskQueue {
             // 生成配置字符串
 //            String answer = CozeRequestJsonUtils.test_chat_completions(String.valueOf(config));
 //            System.err.println("开始请求工作流。。。。。。");
-            CozeWorkflowClient.JsonResponse jsonResponse = CozeWorkflowClient.executeWorkflowWithRetry(config);
+            JsonNode jsonResponse = CozeWorkflowClient.executeWithRetry(config);
 //            System.err.println("工作流请求结束。。。。。。");
 
-            if (jsonResponse.getCode() != 0) {
-                System.err.println("Coze API 请求失败");
-                throw new RuntimeException("Coze API 请求失败");
-            }
-
             // 将 answer 转换为 JSONObject 对象
-            JsonNode rootNode = jsonResponse.getData();
+            JsonNode rootNode = jsonResponse;
             ObjectNode root = (ObjectNode) rootNode;
             root.set("baseConfig", config.get("baseConfig"));
             String answer = root.toString();
