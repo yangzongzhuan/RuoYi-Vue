@@ -40,6 +40,11 @@ try {
     }
 
     // 1. 打开原始 PSD 文件（仅一次）
+    // 先检查文件是否存在
+    var psdFile = new File(psdPath);
+    if (!psdFile.exists) {
+        throw new Error("PSD文件不存在: " + psdPath);
+    }
     var originalDoc = app.open(File(psdPath));
 
     // 2. 遍历每个图片配置，逐次处理

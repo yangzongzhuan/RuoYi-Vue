@@ -20,6 +20,7 @@ import org.springframework.stereotype.Component;
 import javax.annotation.PostConstruct;
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -186,6 +187,10 @@ public class PhotoshopTaskQueue {
             }
 
         } catch (Exception e) {
+            // 判断是否为路径不存在的异常
+            if (isPathNotFound(e)) {
+                throw new RuntimeException("PSD文件路径不存在或无法访问", e); // 手动抛出自定义异常
+            }
             System.err.println("JSX 读取失败：" + e.getMessage());
         }finally {
             // 任务失败，更新状态
@@ -193,6 +198,24 @@ public class PhotoshopTaskQueue {
                 task.setStatus("1");
                 psdTaskService.updatePsdTask(task);
             }
+        }
+    }
+
+    private static boolean isPathNotFound(Exception e) {
+        // 优先检查消息关键词
+        String msg = e.getMessage() != null ? e.getMessage().toLowerCase() : "";
+        if (msg.contains("打不开") || msg.contains("不存在") || msg.contains("找不到")) {
+            return true;
+        }
+
+        // 尝试通过反射获取错误码（Jacob库的ComFailException实际包含private的hresult字段）
+        try {
+            Field hresultField = e.getClass().getDeclaredField("hresult");
+            hresultField.setAccessible(true);
+            int code = hresultField.getInt(e);
+            return code == 0x80030003 || code == 0x80070002; // 文件不存在的错误码
+        } catch (Exception ex) {
+            return false; // 反射失败则仅依赖消息判断
         }
     }
 }
