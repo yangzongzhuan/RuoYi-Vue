@@ -3,18 +3,21 @@ package com.ruoyi.system.coze.utils;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.stereotype.Component;
+
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.concurrent.*;
 
+@Component
 public class CozeWorkflowClient {
     private static final ObjectMapper mapper = new ObjectMapper()
             .configure(JsonParser.Feature.AUTO_CLOSE_SOURCE, false);
 
     // 全局控制参数
-    private static final int MAX_RETRIES = 3;           // 最大异步请求重试次数（每次包含 4 分钟轮询）
-    private static final long TOTAL_TIMEOUT_MS = 240_000; // 单次异步请求轮询总超时 4 分钟
+    private static final int MAX_RETRIES = 3;           // 最大异步请求重试次数（每次包含 6 分钟轮询）
+    private static final long TOTAL_TIMEOUT_MS = 360_000; // 单次异步请求轮询总超时 6 分钟
     private static final long POLL_INTERVAL_MS = 2_000;   // 轮询间隔 2 秒
 
     /**
