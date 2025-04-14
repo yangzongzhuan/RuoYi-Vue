@@ -163,7 +163,7 @@ public class PhotoshopTaskQueue {
             // 调试输出
             System.err.println("替换后的 JSX:\n" + modifiedJsx);
             sendCardNotification("https://open.feishu.cn/open-apis/bot/v2/hook/92db315f-20e9-486e-bd9f-f04f566fe3be",
-                    task.getUserName(), task.getTemplateName(), url);
+                    task.getUserName(), task.getAccountName() + "-" + task.getTemplateName(), url);
 
             // 调用 Photoshop
             ActiveXComponent ps = new ActiveXComponent("Photoshop.Application");

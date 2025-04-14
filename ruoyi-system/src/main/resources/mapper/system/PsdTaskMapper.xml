@@ -69,6 +69,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         update psd_task
         <trim prefix="SET" suffixOverrides=",">
             <if test="taskName != null">task_name = #{taskName},</if>
+            <if test="config != null">config = #{config},</if>
             <if test="accountName != null">account_name = #{accountName},</if>
             <if test="templateName != null">template_name = #{templateName},</if>
             <if test="imageCount != null">image_count = #{imageCount},</if>
