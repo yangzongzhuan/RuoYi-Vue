@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.jacob.activeX.ActiveXComponent;
 import com.jacob.com.Dispatch;
+import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.system.coze.CozeRequestJsonUtils;
 import com.ruoyi.system.coze.utils.CozeWorkflowClient;
 import com.ruoyi.system.domain.PsdTask;
@@ -139,10 +140,12 @@ public class PhotoshopTaskQueue {
 
             // 精准替换
             String configPattern = "var CONFIG = .*?;";
+            String userName = "(var\\s+userName\\s*=\\s*)[^;]*;";
             String timePattern = "(var\\s+foldersName\\s*=\\s*)[^;]*;";
 
             String modifiedJsx = jsxTemplate
                     .replaceFirst(configPattern, "var CONFIG = " + answer + ";")
+                    .replaceFirst(userName, "$1\"" + task.getUserName() + "\";")
                     .replaceFirst(timePattern, "$1\"" + foldersName + "\";");
 
             // 调试输出

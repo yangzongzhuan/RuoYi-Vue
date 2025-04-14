@@ -6,6 +6,7 @@ app.displayDialogs = DialogModes.NO;
 
 // =============== 配置信息（示例） ===============
 var CONFIG = {};
+var userName = "";
 var foldersName = "";
 
 try {
@@ -25,8 +26,12 @@ try {
     var dateDir = new Folder(outputBase.fsName + "/" + datePath);
     if (!dateDir.exists) dateDir.create();
 
+    // 创建用户名文件夹
+    var userNameDir = new Folder(dateDir.fsName + "/" + userName);
+    if (!userNameDir.exists) userNameDir.create();
+
     // 创建任务名称文件夹
-    var taskDir = new Folder(dateDir.fsName + "/" + foldersName);
+    var taskDir = new Folder(userNameDir.fsName + "/" + foldersName);
     if (!taskDir.exists) taskDir.create();
 
     if (CONFIG.copywriter) {

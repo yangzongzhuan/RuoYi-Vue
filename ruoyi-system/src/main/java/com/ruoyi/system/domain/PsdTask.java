@@ -48,6 +48,9 @@ public class PsdTask extends BaseEntity
 
     private LocalDateTime createDate;
 
+    @TableField(exist = false)
+    private String userName;
+
     public PsdTask() {
     }
 
@@ -156,5 +159,13 @@ public class PsdTask extends BaseEntity
             .append("jsonInfo", getJsonInfo())
             .append("status", getStatus())
             .toString();
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
+    public String getUserName() {
+        return userName;
     }
 }

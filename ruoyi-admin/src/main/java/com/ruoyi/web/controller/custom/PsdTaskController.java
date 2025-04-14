@@ -25,6 +25,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.system.coze.CozeRequestJsonUtils;
 import com.ruoyi.system.coze.utils.CozeWorkflowClient;
 import com.ruoyi.system.domain.PsdTask;
@@ -145,6 +146,7 @@ public class PsdTaskController extends BaseController
         psdTask.setCreateDate(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS));
         psdTask.setUuid(String.valueOf(UUID.randomUUID()));
         psdTask.setStatus("2");
+        psdTask.setUserName(SecurityUtils.getAuthentication().getName());
         psdTaskService.insertPsdTask(psdTask);
 
         // 将任务放入队列，等待 Photoshop 线程执行
