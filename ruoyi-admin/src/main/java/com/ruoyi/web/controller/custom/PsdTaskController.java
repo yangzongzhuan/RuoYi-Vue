@@ -116,6 +116,31 @@ public class PsdTaskController extends BaseController
     @Log(title = "psd任务", businessType = BusinessType.INSERT)
     @PostMapping
     public AjaxResult add(@RequestBody PsdTask psdTask) throws JsonProcessingException {
+
+        // 初始化ObjectMapper（推荐作为静态成员）
+        ObjectMapper mapper = new ObjectMapper();
+        ObjectNode config = (ObjectNode) mapper.readTree(psdTask.getConfig());  // [3](@ref)
+        JsonNode psdPathNode = config.path("baseConfig").path("psdLocalPath");
+
+        if (psdPathNode.isMissingNode()) {
+            throw new RuntimeException("配置中缺少 baseConfig.psdLocalPath 字段");
+        }
+
+        String psdPath = psdPathNode.asText();
+        File psdFile = new File(psdPath);
+
+        if (!psdFile.exists()) {
+            throw new RuntimeException("PSD文件不存在，路径: " + psdPath);
+        }
+
+        if (!psdFile.isFile()) {
+            throw new RuntimeException("指定路径不是文件: " + psdPath);
+        }
+
+        if (!psdFile.canRead()) {
+            throw new RuntimeException("PSD文件不可读，请检查权限: " + psdPath);
+        }
+
         // 保存任务到数据库
         psdTask.setCreateDate(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS));
         psdTask.setUuid(String.valueOf(UUID.randomUUID()));
