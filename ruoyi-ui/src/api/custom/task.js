@@ -17,6 +17,13 @@ export function getTask(id) {
   })
 }
 
+export function getTaskByUuid(uuid) {
+  return request({
+    url: '/psd/task/byUuid/' + uuid,
+    method: 'get'
+  })
+}
+
 // 新增【请填写功能名称】
 export function addTask(data) {
   return request({

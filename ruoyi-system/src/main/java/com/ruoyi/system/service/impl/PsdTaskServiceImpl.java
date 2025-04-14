@@ -97,4 +97,9 @@ public class PsdTaskServiceImpl implements IPsdTaskService
         return psdTaskMapper.deletePsdTaskById(id);
     }
 
+    @Override
+    public PsdTask selectPsdTaskByUuid(String uuid) {
+        return psdTaskMapper.selectPsdTaskByUuid(uuid);
+    }
+
 }

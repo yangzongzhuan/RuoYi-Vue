@@ -35,6 +35,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <include refid="selectPsdTaskVo"/>
         where id = #{id}
     </select>
+    <select id="selectPsdTaskByUuid" resultType="com.ruoyi.system.domain.PsdTask">
+        select * from psd_task where uuid = #{uuid}
+    </select>
 
     <insert id="insertPsdTask" parameterType="PsdTask">
         insert into psd_task

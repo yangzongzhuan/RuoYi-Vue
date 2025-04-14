@@ -33,6 +33,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.serializer.SerializerFeature;
+
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 
 @Component
 public class PhotoshopTaskQueue {
@@ -143,13 +151,19 @@ public class PhotoshopTaskQueue {
             String userName = "(var\\s+userName\\s*=\\s*)[^;]*;";
             String timePattern = "(var\\s+foldersName\\s*=\\s*)[^;]*;";
 
+            // 更新当前任务config
+            task.setConfig(answer);
+
             String modifiedJsx = jsxTemplate
                     .replaceFirst(configPattern, "var CONFIG = " + answer + ";")
                     .replaceFirst(userName, "$1\"" + task.getUserName() + "\";")
                     .replaceFirst(timePattern, "$1\"" + foldersName + "\";");
 
+            String url = "http://localhost/check?uuid=" + task.getUuid();
             // 调试输出
             System.err.println("替换后的 JSX:\n" + modifiedJsx);
+            sendCardNotification("https://open.feishu.cn/open-apis/bot/v2/hook/92db315f-20e9-486e-bd9f-f04f566fe3be",
+                    task.getUserName(), task.getTemplateName(), url);
 
             // 调用 Photoshop
             ActiveXComponent ps = new ActiveXComponent("Photoshop.Application");
@@ -220,5 +234,75 @@ public class PhotoshopTaskQueue {
         } catch (Exception ex) {
             return false; // 反射失败则仅依赖消息判断
         }
+    }
+
+    public static void sendCardNotification(String webhookUrl, String reviewer, String templateName, String auditUrl) {
+        // 构建卡片消息内容
+        JSONObject card = new JSONObject();
+        card.put("config", new JSONObject() {{
+            put("wide_screen_mode", true);
+        }});
+        card.put("header", new JSONObject() {{
+            put("title", new JSONObject() {{
+                put("tag", "plain_text");
+                put("content", "图片生成通知");
+            }});
+        }});
+        card.put("elements", JSON.parseArray("[" +
+                "  {" +
+                "    \"tag\": \"div\"," +
+                "    \"text\": { \"tag\": \"lark_md\", \"content\": \"**审核人：** " + reviewer + "\" }" +
+                "  }," +
+                "  {" +
+                "    \"tag\": \"div\"," +
+                "    \"text\": { \"tag\": \"lark_md\", \"content\": \"**模板名称：** " + templateName + "\" }" +
+                "  }," +
+                "  {" +
+                "    \"tag\": \"div\"," +
+                "    \"text\": { \"tag\": \"lark_md\", \"content\": \"**审核网址：** [点击前往](" + auditUrl + ")\" }" +
+                "  }" +
+                "]"));
+
+        JSONObject content = new JSONObject();
+        content.put("card", card);
+
+        JSONObject payload = new JSONObject();
+        payload.put("msg_type", "interactive");
+        payload.put("card", card);
+
+        // 发送 POST 请求
+        try {
+            URL url = new URL(webhookUrl);
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestMethod("POST");
+            connection.setRequestProperty("Content-Type", "application/json; charset=utf-8");
+            connection.setDoOutput(true);
+
+            String payloadStr = payload.toJSONString();
+            try (OutputStream os = connection.getOutputStream()) {
+                byte[] input = payloadStr.getBytes("utf-8");
+                os.write(input, 0, input.length);
+            }
+
+            int responseCode = connection.getResponseCode();
+            System.out.println("Response code: " + responseCode);
+            try (BufferedReader br = new BufferedReader(new InputStreamReader(connection.getInputStream(), "utf-8"))) {
+                StringBuilder response = new StringBuilder();
+                String responseLine;
+                while ((responseLine = br.readLine()) != null) {
+                    response.append(responseLine.trim());
+                }
+                System.out.println("Response: " + response.toString());
+            }
+
+            connection.disconnect();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void main(String[] args) {
+        sendCardNotification("https://open.feishu.cn/open-apis/bot/v2/hook/92db315f-20e9-486e-bd9f-f04f566fe3be",
+                "admin", "test", "http://localhost/check?uuid=9911e4c5-6bbf-40e5-9d1a-9f142a7d16e5");
     }
 }

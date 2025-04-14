@@ -16,8 +16,8 @@ public class CozeWorkflowClient {
             .configure(JsonParser.Feature.AUTO_CLOSE_SOURCE, false);
 
     // 全局控制参数
-    private static final int MAX_RETRIES = 3;           // 最大异步请求重试次数（每次包含 6 分钟轮询）
-    private static final long TOTAL_TIMEOUT_MS = 360_000; // 单次异步请求轮询总超时 6 分钟
+    private static final int MAX_RETRIES = 3;           // 最大异步请求重试次数（每次包含 10 分钟轮询）
+    private static final long TOTAL_TIMEOUT_MS = 600_000; // 单次异步请求轮询总超时 10 分钟
     private static final long POLL_INTERVAL_MS = 2_000;   // 轮询间隔 2 秒
 
     /**
@@ -89,7 +89,7 @@ public class CozeWorkflowClient {
     /**
      * 轮询请求：
      * 在单次异步请求中，使用 execute_id 轮询任务状态，每 POLL_INTERVAL_MS 轮询一次，
-     * 若在 TOTAL_TIMEOUT_MS（4 分钟）内获取到 "Success" 状态，则返回解析后的输出；
+     * 若在 TOTAL_TIMEOUT_MS（10 分钟）内获取到 "Success" 状态，则返回解析后的输出；
      * 若任务返回 "Failed" 或轮询超时，则抛出异常。
      */
     private static JsonNode pollResultWithTimeout(String executeId) throws Exception {
@@ -116,7 +116,7 @@ public class CozeWorkflowClient {
             }
             Thread.sleep(POLL_INTERVAL_MS);
         }
-        throw new Exception("轮询超时，未在4分钟内获得结果");
+        throw new Exception("轮询超时，未在10分钟内获得结果");
     }
 
     /**

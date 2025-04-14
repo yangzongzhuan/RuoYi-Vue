@@ -58,4 +58,6 @@ public interface PsdTaskMapper
      * @return 结果
      */
     public int deletePsdTaskByIds(Long[] ids);
+
+    PsdTask selectPsdTaskByUuid(String uuid);
 }

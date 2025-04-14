@@ -110,6 +110,12 @@ public class PsdTaskController extends BaseController
         return success(psdTaskService.selectPsdTaskById(id));
     }
 
+    @GetMapping(value = "/byUuid/{uuid}")
+    public AjaxResult getInfoByUuid(@PathVariable("uuid") String uuid)
+    {
+        return success(psdTaskService.selectPsdTaskByUuid(uuid));
+    }
+
     /**
      * 新增psd任务
      */
