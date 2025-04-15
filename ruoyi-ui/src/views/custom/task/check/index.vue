@@ -3,37 +3,48 @@
     <div class="card">
       <h2>审核页面</h2>
       <div class="config-box">
-        <pre class="json-preview" v-if="config">{{ formattedConfig }}</pre>
+        <!-- 使用 vue-json-editor 实现可编辑 JSON -->
+        <vue-json-editor v-if="editableConfig" v-model="editableConfig" :options="editorOptions" />
         <p v-else>加载中...</p>
       </div>
       <div class="button-box">
-        <button class="confirm-btn" v-if="status != 3">已审核</button>
-        <button @click="confirm" class="confirm-btn" v-else>确认</button>
+        <el-button v-if="from.status == 2" type="primary" disabled>生成图片中</el-button>
+        <el-button v-if="from.status == 0" type="success" disabled>已成功</el-button>
+        <el-button v-if="from.status == 1" type="danger" disabled>生成失败</el-button>
+        <el-button @click="confirm" type="primary" v-if="from.status == 3">确认</el-button>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import axios from 'axios';
-import { getTaskByUuid } from "@/api/custom/task";
+import VueJsonEditor from 'vue-json-editor';
+import {checkTask, getTaskByUuid} from "@/api/custom/task";
 
 export default {
   name: 'AuditPage',
+  components: {
+    VueJsonEditor
+  },
   data() {
     return {
       uuid: null,
-      config: null,
-      status: null,
+      from: {},
+      editableConfig: null,
+      editorOptions: {
+        mode: 'code',        // 使用代码模式，支持 JSON 格式高亮和编辑
+        mainMenuBar: true,   // 显示主菜单栏
+        statusBar: false,    // 隐藏状态栏（根据需求调整）
+      }
     }
   },
   computed: {
     formattedConfig() {
       try {
-        let configObj = typeof this.config === 'string' ? JSON.parse(this.config) : this.config;
+        let configObj = typeof this.from.config === 'string' ? JSON.parse(this.from.config) : this.from.config;
         return JSON.stringify(configObj, null, 2);
       } catch (e) {
-        return this.config;
+        return this.from.config;
       }
     }
   },
@@ -48,17 +59,26 @@ export default {
         return;
       }
       getTaskByUuid(this.uuid).then(response => {
-        this.config = response.data.config;
-        this.status = response.data.status;
+        this.from = response.data;
+        // 将返回的 config 赋值到 editableConfig，以便编辑
+        try {
+          this.editableConfig = typeof this.from.config === 'string' ? JSON.parse(this.from.config) : this.from.config;
+        } catch (e) {
+          this.editableConfig = this.from.config;
+        }
       });
     },
     confirm() {
-      axios.post(`/api/confirm/${this.uuid}`)
-        .then(() => alert('确认成功！'))
-        .catch(err => {
-          console.error('确认失败:', err);
-          alert('确认失败：' + err);
-        });
+      // 确认时可以将 editableConfig 再转换为字符串或直接传 JSON 对象到后端
+      this.from.config = JSON.stringify(this.editableConfig);
+      checkTask(this.from).then(response => {
+        if (response.code === 200) {
+          this.fetchData()
+          this.$message.success("审核成功！")
+        }
+      }).catch(() => {
+        this.$message.error("审核失败！")
+      })
     }
   },
   mounted() {
@@ -94,7 +114,6 @@ h2 {
 }
 
 .config-box {
-  position: relative;
   background: #f8f8f8;
   padding: 20px;
   border-radius: 6px;
@@ -103,32 +122,14 @@ h2 {
   overflow: auto;
 }
 
-.json-preview {
-  font-family: Menlo, Monaco, Consolas, monospace;
-  font-size: 14px;
-  white-space: pre-wrap;
-  word-wrap: break-word;
-  color: #333;
-}
-
 .button-box {
   display: flex;
   justify-content: flex-end;
   margin-top: 20px;
 }
 
-.confirm-btn {
-  background-color: #42b983;
-  color: white;
-  border: none;
-  padding: 8px 16px;
-  border-radius: 4px;
-  font-size: 14px;
-  cursor: pointer;
-}
 
 .confirm-btn:hover {
   background-color: #369d75;
 }
 </style>
-

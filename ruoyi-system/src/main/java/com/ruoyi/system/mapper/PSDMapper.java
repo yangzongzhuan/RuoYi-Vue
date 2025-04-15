@@ -32,4 +32,6 @@ public interface PSDMapper {
 	void insertAccountByName(@Param("accountName") String accountName, @Param("nameList") List<String> nameList);
 
 	List<String> selectAccountByName(@Param("accountName") String accountName);
+
+	String getAutoCheck();
 }

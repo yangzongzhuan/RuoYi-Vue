@@ -33,6 +33,7 @@ import com.ruoyi.system.mapper.PSDMapper;
 import com.ruoyi.system.service.IPsdTaskService;
 import com.ruoyi.system.service.impl.DeepSeekService;
 import com.ruoyi.web.controller.Queue.PhotoshopTaskQueue;
+import com.ruoyi.web.controller.Queue.TemPhotoshopJsxQuenu;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -210,5 +211,18 @@ public class PsdTaskController extends BaseController
     public AjaxResult remove(@PathVariable Long[] ids)
     {
         return toAjax(psdTaskService.deletePsdTaskByIds(ids));
+    }
+
+    /**
+     * 审核任务
+     */
+    @Log(title = "psd任务", businessType = BusinessType.UPDATE)
+    @PostMapping("/checkTask")
+    public AjaxResult checkTask(@RequestBody PsdTask psdTask)
+    {
+        psdTask.setStatus("2"); // 更新为进行中
+        psdTaskService.updatePsdTask(psdTask);
+        TemPhotoshopJsxQuenu.addTask(psdTask);
+        return toAjax(1);
     }
 }

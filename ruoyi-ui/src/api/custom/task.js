@@ -60,3 +60,12 @@ export function getCoze(data) {
     timeout: 999999
   })
 }
+
+export function checkTask(data) {
+  return request({
+    url: '/psd/task/checkTask',
+    method: 'post',
+    data: data,
+    timeout: 999999
+  })
+}

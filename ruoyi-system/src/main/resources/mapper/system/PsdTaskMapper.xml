@@ -7,6 +7,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     <resultMap type="PsdTask" id="PsdTaskResult">
         <result property="id"    column="id"    />
         <result property="uuid"    column="uuid"    />
+        <result property="config"    column="config"    />
         <result property="taskName"    column="task_name"    />
         <result property="accountName"    column="account_name"    />
         <result property="templateName"    column="template_name"    />

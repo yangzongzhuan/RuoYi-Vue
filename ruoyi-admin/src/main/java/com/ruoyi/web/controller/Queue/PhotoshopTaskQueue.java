@@ -151,25 +151,31 @@ public class PhotoshopTaskQueue {
             String userName = "(var\\s+userName\\s*=\\s*)[^;]*;";
             String timePattern = "(var\\s+foldersName\\s*=\\s*)[^;]*;";
 
-            // 更新当前任务config
-            task.setConfig(answer);
-
             String modifiedJsx = jsxTemplate
                     .replaceFirst(configPattern, "var CONFIG = " + answer + ";")
                     .replaceFirst(userName, "$1\"" + task.getUserName() + "\";")
                     .replaceFirst(timePattern, "$1\"" + foldersName + "\";");
 
-            String url = "http://localhost/check?uuid=" + task.getUuid();
-            // 调试输出
-            System.err.println("替换后的 JSX:\n" + modifiedJsx);
-            sendCardNotification("https://open.feishu.cn/open-apis/bot/v2/hook/92db315f-20e9-486e-bd9f-f04f566fe3be",
-                    task.getUserName(), task.getAccountName() + "-" + task.getTemplateName(), url);
 
-            // 调用 Photoshop
-            ActiveXComponent ps = new ActiveXComponent("Photoshop.Application");
-            Dispatch.invoke(ps, "DoJavaScript", Dispatch.Method, new Object[]{modifiedJsx}, new int[1]);
-            // 更新状态为成功
-            task.setStatus("0");
+            if (psdMapper.getAutoCheck().equals("0")) {
+                // 人工审核
+                String url = "http://localhost/check?uuid=" + task.getUuid();
+                // 调试输出
+                System.err.println("替换后的 JSX:\n" + modifiedJsx);
+                sendCardNotification("https://open.feishu.cn/open-apis/bot/v2/hook/92db315f-20e9-486e-bd9f-f04f566fe3be",
+                        task.getUserName(), task.getAccountName() + "-" + task.getTemplateName(), url);
+                // 更新状态为审核中
+                task.setStatus("3");
+            }else {
+                // 调用 Photoshop
+                ActiveXComponent ps = new ActiveXComponent("Photoshop.Application");
+                Dispatch.invoke(ps, "DoJavaScript", Dispatch.Method, new Object[]{modifiedJsx}, new int[1]);
+                // 更新状态为成功
+                task.setStatus("0");
+            }
+
+            // 更新当前任务config
+            task.setConfig(answer);
             psdTaskService.updatePsdTask(task);
 
             List<String> sampleTextList = new ArrayList<>();
