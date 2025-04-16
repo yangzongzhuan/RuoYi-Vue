@@ -106,10 +106,6 @@ public class PhotoshopTaskQueue {
 
     private static void processTask(PsdTask task) {
         try {
-            // 读取 JSX 模板
-            String basePath = System.getProperty("user.dir");
-            String jsxTemplatePath = basePath + File.separator + "jsx" + File.separator + "generate.jsx";
-            String jsxTemplate = new String(Files.readAllBytes(Paths.get(jsxTemplatePath)), StandardCharsets.UTF_8);
             String configString = task.getConfig();
             // 初始化ObjectMapper（推荐作为静态成员）
             ObjectMapper mapper = new ObjectMapper();
@@ -125,48 +121,51 @@ public class PhotoshopTaskQueue {
             nameList.forEach(historyArray::add);
             config.set("historyName", historyArray);  // [3,5](@ref)
 
-            // 生成配置字符串
-//            String answer = CozeRequestJsonUtils.test_chat_completions(String.valueOf(config));
-//            System.err.println("开始请求工作流。。。。。。");
+            // 请求数据
             JsonNode jsonResponse = CozeWorkflowClient.executeWithRetry(config);
-//            System.err.println("工作流请求结束。。。。。。");
 
             // 将 answer 转换为 JSONObject 对象
             JsonNode rootNode = jsonResponse;
             ObjectNode root = (ObjectNode) rootNode;
             root.set("baseConfig", config.get("baseConfig"));
             String answer = root.toString();
-            answer = answer.replaceAll("\\\\", "\\\\\\\\");
-
-            // 替换 JSX 模板
-            LocalDateTime time = task.getcreateDate();
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH-mm-ss");
-            String formattedDate = time.format(formatter); // 输出示例：25-03-19
-            // 安全转义
-            String safeDate = StringEscapeUtils.escapeEcmaScript(formattedDate);
-            String foldersName = task.getTemplateName() + "_" + task.getAccountName() + "_" + safeDate;
-
-            // 精准替换
-            String configPattern = "var CONFIG = .*?;";
-            String userName = "(var\\s+userName\\s*=\\s*)[^;]*;";
-            String timePattern = "(var\\s+foldersName\\s*=\\s*)[^;]*;";
-
-            String modifiedJsx = jsxTemplate
-                    .replaceFirst(configPattern, "var CONFIG = " + answer + ";")
-                    .replaceFirst(userName, "$1\"" + task.getUserName() + "\";")
-                    .replaceFirst(timePattern, "$1\"" + foldersName + "\";");
-
 
             if (psdMapper.getAutoCheck().equals("0")) {
+                String extranetIp = psdMapper.getCheckInfo().getExtranetIp();
                 // 人工审核
-                String url = "http://localhost/check?uuid=" + task.getUuid();
+                String url = "http://" + extranetIp + "/check?uuid=" + task.getUuid();
                 // 调试输出
-                System.err.println("替换后的 JSX:\n" + modifiedJsx);
                 sendCardNotification("https://open.feishu.cn/open-apis/bot/v2/hook/92db315f-20e9-486e-bd9f-f04f566fe3be",
-                        task.getUserName(), task.getAccountName() + "-" + task.getTemplateName(), url);
+                        task.getCreateBy(), task.getAccountName() + "-" + task.getTemplateName(), url);
                 // 更新状态为审核中
                 task.setStatus("3");
             }else {
+                // 读取 JSX 模板
+                String basePath = System.getProperty("user.dir");
+                String jsxTemplatePath = basePath + File.separator + "jsx" + File.separator + "generate.jsx";
+                String jsxTemplate = new String(Files.readAllBytes(Paths.get(jsxTemplatePath)), StandardCharsets.UTF_8);
+                answer = answer.replaceAll("\\\\", "\\\\\\\\");
+
+                // 替换 JSX 模板
+                LocalDateTime time = task.getcreateDate();
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH-mm-ss");
+                String formattedDate = time.format(formatter); // 输出示例：25-03-19
+                // 安全转义
+                String safeDate = StringEscapeUtils.escapeEcmaScript(formattedDate);
+                String foldersName = task.getTemplateName() + "_" + task.getAccountName() + "_" + safeDate;
+
+                // 精准替换
+                String configPattern = "var CONFIG = .*?;";
+                String userName = "(var\\s+userName\\s*=\\s*)[^;]*;";
+                String timePattern = "(var\\s+foldersName\\s*=\\s*)[^;]*;";
+
+                String modifiedJsx = jsxTemplate
+                        .replaceFirst(configPattern, "var CONFIG = " + answer + ";")
+                        .replaceFirst(userName, "$1\"" + task.getCreateBy() + "\";")
+                        .replaceFirst(timePattern, "$1\"" + foldersName + "\";");
+
+                System.err.println("替换后的 JSX:\n" + modifiedJsx);
+
                 // 调用 Photoshop
                 ActiveXComponent ps = new ActiveXComponent("Photoshop.Application");
                 Dispatch.invoke(ps, "DoJavaScript", Dispatch.Method, new Object[]{modifiedJsx}, new int[1]);

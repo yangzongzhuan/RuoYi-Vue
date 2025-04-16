@@ -48,8 +48,7 @@ public class PsdTask extends BaseEntity
 
     private LocalDateTime createDate;
 
-    @TableField(exist = false)
-    private String userName;
+    private String createBy;
 
     public PsdTask() {
     }
@@ -161,11 +160,13 @@ public class PsdTask extends BaseEntity
             .toString();
     }
 
-    public void setUserName(String userName) {
-        this.userName = userName;
+    @Override
+    public String getCreateBy() {
+        return createBy;
     }
 
-    public String getUserName() {
-        return userName;
+    @Override
+    public void setCreateBy(String createBy) {
+        this.createBy = createBy;
     }
 }

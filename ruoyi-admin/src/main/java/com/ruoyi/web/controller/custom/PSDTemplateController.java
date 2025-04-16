@@ -13,6 +13,7 @@ import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.common.utils.file.FileUploadUtils;
 import com.ruoyi.common.utils.file.FileUtils;
 import com.ruoyi.framework.config.ServerConfig;
+import com.ruoyi.system.domain.AutoCheck;
 import com.ruoyi.system.domain.PSDConfig;
 import com.ruoyi.system.domain.PSDTemplate;
 import com.ruoyi.system.mapper.PSDMapper;
@@ -193,6 +194,19 @@ public class PSDTemplateController extends BaseController
 	public AjaxResult deleteTemplate(@PathVariable Integer id) {
 		psdMapper.deleteById(id);
 		return AjaxResult.success();
+	}
+
+	@GetMapping("/getCheckInfo")
+	public AjaxResult getCheckInfo()
+	{
+		AutoCheck autoCheck= psdMapper.getCheckInfo();
+		return success(autoCheck);
+	}
+
+	@PostMapping("/updateCheck")
+	public AjaxResult updateCheck(@RequestBody AutoCheck autoCheck)
+	{
+		return success(psdMapper.updateCheck(autoCheck));
 	}
 
 //	@PostMapping("/psd-to-jpg")

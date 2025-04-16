@@ -56,4 +56,12 @@
     <select id="getAutoCheck" resultType="java.lang.String">
 		select status from auto_check limit 1
 	</select>
+
+	<select id="getCheckInfo" resultType="com.ruoyi.system.domain.AutoCheck">
+		select status, extranet_ip extranetIp from auto_check
+	</select>
+
+	<update id="updateCheck">
+		update auto_check set status = #{status}, extranet_ip = #{extranetIp}
+	</update>
 </mapper>

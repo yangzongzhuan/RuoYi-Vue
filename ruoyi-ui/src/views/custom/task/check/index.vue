@@ -69,16 +69,23 @@ export default {
       });
     },
     confirm() {
-      // 确认时可以将 editableConfig 再转换为字符串或直接传 JSON 对象到后端
-      this.from.config = JSON.stringify(this.editableConfig);
-      checkTask(this.from).then(response => {
-        if (response.code === 200) {
-          this.fetchData()
-          this.$message.success("审核成功！")
-        }
-      }).catch(() => {
-        this.$message.error("审核失败！")
-      })
+      // 确认弹窗
+      this.$confirm('确认审核通过？', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        // 确认时可以将 editableConfig 再转换为字符串或直接传 JSON 对象到后端
+        this.from.config = JSON.stringify(this.editableConfig);
+        checkTask(this.from).then(response => {
+          if (response.code === 200) {
+            this.fetchData()
+            this.$message.success("审核成功！")
+          }
+        }).catch(() => {
+          this.$message.error("审核失败！")
+        })
+      });
     }
   },
   mounted() {

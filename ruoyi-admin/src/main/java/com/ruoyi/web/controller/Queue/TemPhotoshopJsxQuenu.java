@@ -5,10 +5,17 @@ import com.jacob.com.Dispatch;
 import com.ruoyi.system.domain.PsdTask;
 import com.ruoyi.system.mapper.PSDMapper;
 import com.ruoyi.system.mapper.PsdTaskMapper;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
+import java.io.File;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -63,9 +70,34 @@ public class TemPhotoshopJsxQuenu {
 
     private static void processTask(PsdTask task) {
         try {
+            String basePath = System.getProperty("user.dir");
+            String jsxTemplatePath = basePath + File.separator + "jsx" + File.separator + "generate.jsx";
+            String jsxTemplate = new String(Files.readAllBytes(Paths.get(jsxTemplatePath)), StandardCharsets.UTF_8);
+            String answer = task.getConfig();
+            answer = answer.replaceAll("\\\\", "\\\\\\\\");
+
+            // 替换 JSX 模板
+            LocalDateTime time = task.getcreateDate();
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH-mm-ss");
+            String formattedDate = time.format(formatter); // 输出示例：25-03-19
+            // 安全转义
+            String safeDate = StringEscapeUtils.escapeEcmaScript(formattedDate);
+            String foldersName = task.getTemplateName() + "_" + task.getAccountName() + "_" + safeDate;
+
+            // 精准替换
+            String configPattern = "var CONFIG = .*?;";
+            String userName = "(var\\s+userName\\s*=\\s*)[^;]*;";
+            String timePattern = "(var\\s+foldersName\\s*=\\s*)[^;]*;";
+
+            String modifiedJsx = jsxTemplate
+                    .replaceFirst(configPattern, "var CONFIG = " + answer + ";")
+                    .replaceFirst(userName, "$1\"" + task.getCreateBy() + "\";")
+                    .replaceFirst(timePattern, "$1\"" + foldersName + "\";");
+            System.err.println("替换后的 JSX:\n" + modifiedJsx);
+
             // 调用 Photoshop
             ActiveXComponent ps = new ActiveXComponent("Photoshop.Application");
-            Dispatch.invoke(ps, "DoJavaScript", Dispatch.Method, new Object[]{task.getConfig()}, new int[1]);
+            Dispatch.invoke(ps, "DoJavaScript", Dispatch.Method, new Object[]{modifiedJsx}, new int[1]);
             task.setStatus("0"); // 更新为成功
             psdTaskMapper.updatePsdTask(task);
         } catch (Exception e) {

@@ -21,6 +21,7 @@
       <el-form-item>
         <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
         <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
+        <el-button icon="el-icon-edit" type="success" size="mini" @click="systemEdit">系统设置</el-button>
       </el-form-item>
     </el-form>
 
@@ -228,11 +229,30 @@
         <el-button @click="cancel">取消</el-button>
       </div>
     </el-dialog>
+
+    <el-dialog title="配置信息" :visible.sync="checkVisible" width="30%" :close-on-click-modal="false">
+      <el-form :model="checkFrom" label-width="70px" ref="checkForm" :rules="checkRules" >
+        <el-form-item label="人工检测">
+          <el-switch
+            v-model="checkFrom.status"
+            active-value="0"
+            inactive-value="1"
+          />
+        </el-form-item>
+        <el-form-item label="外网ip">
+          <el-input v-model="checkFrom.extranetIp" />
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="submitCheckForm">确定</el-button>
+        <el-button @click="checkVisible = false">取消</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
 <script>
-import {listPSDConfig, updatePSDConfig, delPSDConfig, getImage} from "@/api/custom/psd";
+import {listPSDConfig, updatePSDConfig, delPSDConfig, getImage, getCheckInfo, updateCheck} from "@/api/custom/psd";
 import {getCoze} from "@/api/custom/task";
 import JSZip from 'jszip';
 import {getToken} from "@/utils/auth";
@@ -274,6 +294,15 @@ export default {
       showRawJson: false, // 切换显示模式
       imageCache: {}, // 缓存对象[2,7](@ref)
       layerIndex: 0,
+      checkFrom : {
+        status: false,
+        extranetIp: ''
+      }, // 是否开启人工检查信息
+      checkVisible : false,
+      checkRules : {
+        status: [{ required: true, message: "必填项", trigger: "blur" }],
+        extranetIp: [{ required: true, message: "必填项", trigger: "blur" }],
+    }
     };
   },
   computed: {
@@ -525,40 +554,23 @@ export default {
       }));
       this.layerIndex++; // 递增全局索引[7](@ref)
       this.form.imageConfigs.push(newConfig);
+    },
+    systemEdit() {
+      getCheckInfo().then(res => {
+        this.checkFrom = res.data
+      })
+      this.checkVisible = true
+    },
+    submitCheckForm() {
+      this.$refs.checkForm.validate(valid => {
+        if (valid) {
+          updateCheck(this.checkFrom).then(res => {
+            this.$message.success("更新成功");
+            this.checkVisible = false;
+          })
+        }
+      })
     }
-
-    // // 异步加载方法（在created/mounted中调用）
-    // async loadImage(path) {
-    //   if (!path || this.imageCache[path]) return;
-    //
-    //   try {
-    //     // 获取 ZIP Blob 数据
-    //     const blob = await getImage(encodeURIComponent(path));
-    //     console.log('Received ZIP blob:', blob);
-    //
-    //     // 使用 JSZip 解析 ZIP 数据
-    //     const zip = await JSZip.loadAsync(blob);
-    //     console.log('ZIP contains files:', Object.keys(zip.files));
-    //
-    //     // 遍历 ZIP 内的所有文件，生成图片 URL 数组
-    //     const imageList = [];
-    //     for (const [filename, file] of Object.entries(zip.files)) {
-    //       // 如果是目录则跳过
-    //       if (file.dir) continue;
-    //       // 读取文件为 Blob，然后生成 URL
-    //       const fileBlob = await file.async('blob');
-    //       const imageUrl = URL.createObjectURL(fileBlob);
-    //       imageList.push(imageUrl);
-    //     }
-    //
-    //     // 将解压后的图片 URL 数组写入 imageCache
-    //     this.$set(this.imageCache, path, imageList);
-    //     this.$forceUpdate(); // 强制更新视图
-    //   } catch(e) {
-    //     console.error('Error loading images from ZIP:', e);
-    //   }
-    // }
-
   }
 };
 </script>
@@ -630,11 +642,6 @@ export default {
   border-radius: 4px;
   white-space: pre-wrap;
   word-wrap: break-word;
-}
-
-::v-deep .el-dialog {
-  height: 90%;
-  overflow: auto;
 }
 
 </style>

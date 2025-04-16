@@ -65,3 +65,18 @@ export function getImage(imagePath) {
     transformRequest: [(data) => data] // 禁止axios自动序列化
   })
 }
+
+export function getCheckInfo() {
+  return request({
+    url: '/psd/getCheckInfo',
+    method: 'get'
+  })
+}
+
+export function updateCheck(data) {
+  return request({
+    url: '/psd/updateCheck',
+    method: 'post',
+    data: data
+  })
+}

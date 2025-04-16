@@ -11,13 +11,14 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="taskName"    column="task_name"    />
         <result property="accountName"    column="account_name"    />
         <result property="templateName"    column="template_name"    />
+        <result property="createBy"    column="create_by"    />
         <result property="imageCount"    column="image_count"    />
         <result property="status"    column="status"    />
         <result property="createDate"    column="create_date"    />
     </resultMap>
 
     <sql id="selectPsdTaskVo">
-        select id, uuid, task_name, account_name, template_name, image_count, status, create_date, config from psd_task
+        select id, uuid, task_name, account_name, template_name, create_by, image_count, status, create_date, config from psd_task
     </sql>
 
     <select id="selectPsdTaskList" parameterType="PsdTask" resultMap="PsdTaskResult">
@@ -36,8 +37,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <include refid="selectPsdTaskVo"/>
         where id = #{id}
     </select>
-    <select id="selectPsdTaskByUuid" resultType="com.ruoyi.system.domain.PsdTask">
-        select * from psd_task where uuid = #{uuid}
+    <select id="selectPsdTaskByUuid" resultMap="PsdTaskResult">
+        <include refid="selectPsdTaskVo"/>
+        where uuid = #{uuid}
     </select>
 
     <insert id="insertPsdTask" parameterType="PsdTask">
@@ -49,6 +51,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="templateName != null">template_name,</if>
             <if test="imageCount != null">image_count,</if>
             <if test="config != null">config,</if>
+            <if test="createBy != null">create_by,</if>
             <if test="status != null">status,</if>
             <if test="createDate != null">create_date,</if>
             <if test="uuid != null">uuid,</if>
@@ -60,6 +63,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="templateName != null">#{templateName},</if>
             <if test="imageCount != null">#{imageCount},</if>
             <if test="config != null">#{config},</if>
+            <if test="createBy != null">#{createBy},</if>
             <if test="status != null">#{status},</if>
             <if test="createDate != null">#{createDate},</if>
             <if test="uuid != null">#{uuid},</if>

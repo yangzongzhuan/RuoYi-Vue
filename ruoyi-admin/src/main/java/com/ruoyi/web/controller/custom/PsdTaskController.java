@@ -153,7 +153,7 @@ public class PsdTaskController extends BaseController
         psdTask.setCreateDate(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS));
         psdTask.setUuid(String.valueOf(UUID.randomUUID()));
         psdTask.setStatus("2");
-        psdTask.setUserName(SecurityUtils.getAuthentication().getName());
+        psdTask.setCreateBy(SecurityUtils.getAuthentication().getName());
         psdTaskService.insertPsdTask(psdTask);
 
         // 将任务放入队列，等待 Photoshop 线程执行
@@ -225,4 +225,5 @@ public class PsdTaskController extends BaseController
         TemPhotoshopJsxQuenu.addTask(psdTask);
         return toAjax(1);
     }
+
 }

@@ -1,5 +1,6 @@
 package com.ruoyi.system.mapper;
 
+import com.ruoyi.system.domain.AutoCheck;
 import com.ruoyi.system.domain.PSDTemplate;
 import org.apache.ibatis.annotations.Param;
 import java.util.List;
@@ -34,4 +35,8 @@ public interface PSDMapper {
 	List<String> selectAccountByName(@Param("accountName") String accountName);
 
 	String getAutoCheck();
+
+	AutoCheck getCheckInfo();
+
+	int updateCheck(AutoCheck autoCheck);
 }
