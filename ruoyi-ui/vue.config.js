@@ -9,6 +9,8 @@ const CompressionPlugin = require('compression-webpack-plugin')
 
 const name = process.env.VUE_APP_TITLE || '若依管理系统' // 网页标题
 
+const baseUrl = 'http://localhost:8080' // 后端接口
+
 const port = process.env.port || process.env.npm_config_port || 80 // 端口
 
 // vue.config.js 配置说明
@@ -36,11 +38,16 @@ module.exports = {
     proxy: {
       // detail: https://cli.vuejs.org/config/#devserver-proxy
       [process.env.VUE_APP_BASE_API]: {
-        target: `http://localhost:8080`,
+        target: baseUrl,
         changeOrigin: true,
         pathRewrite: {
           ['^' + process.env.VUE_APP_BASE_API]: ''
         }
+      },
+      // springdoc proxy
+      '^/v3/api-docs/(.*)': {
+        target: baseUrl,
+        changeOrigin: true
       }
     },
     disableHostCheck: true
