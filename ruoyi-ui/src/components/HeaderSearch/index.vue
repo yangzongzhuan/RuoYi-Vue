@@ -1,25 +1,44 @@
 <template>
-  <div :class="{'show':show}" class="header-search">
+  <div class="header-search">
     <svg-icon class-name="search-icon" icon-class="search" @click.stop="click" />
-    <el-select
-      ref="headerSearchSelect"
-      v-model="search"
-      :remote-method="querySearch"
-      filterable
-      default-first-option
-      remote
-      placeholder="Search"
-      class="header-search-select"
-      @change="change"
+    <el-dialog
+      :visible.sync="show"
+      width="600px"
+      @close="close"
+      :show-close="false"
+      append-to-body
     >
-      <el-option v-for="option in options" :key="option.item.path" :value="option.item" :label="option.item.title.join(' > ')" />
-    </el-select>
+      <el-input
+        v-model="search"
+        ref="headerSearchSelectRef"
+        size="large"
+        @input="querySearch"
+        prefix-icon="Search"
+        placeholder="菜单搜索，支持标题、URL模糊查询"
+      >
+      </el-input>
+      <el-scrollbar wrap-class="right-scrollbar-wrapper">
+        <div class="result-wrap">
+          <div class="search-item" v-for="item in options" :key="item.path">
+            <div class="left">
+              <svg-icon class="menu-icon" :icon-class="item.icon" />
+            </div>
+            <div class="search-info" @click="change(item)">
+              <div class="menu-title">
+                {{ item.title.join(" / ") }}
+              </div>
+              <div class="menu-path">
+                {{ item.path }}
+              </div>
+            </div>
+          </div>
+       </div>
+      </el-scrollbar>
+    </el-dialog>
   </div>
 </template>
 
 <script>
-// fuse is a lightweight fuzzy-search module
-// make search results more in line with expectations
 import Fuse from 'fuse.js/dist/fuse.min.js'
 import path from 'path'
 import { isHttp } from '@/utils/validate'
@@ -46,13 +65,6 @@ export default {
     },
     searchPool(list) {
       this.initFuse(list)
-    },
-    show(value) {
-      if (value) {
-        document.body.addEventListener('click', this.close)
-      } else {
-        document.body.removeEventListener('click', this.close)
-      }
     }
   },
   mounted() {
@@ -63,23 +75,25 @@ export default {
       this.show = !this.show
       if (this.show) {
         this.$refs.headerSearchSelect && this.$refs.headerSearchSelect.focus()
+        this.options = this.searchPool
       }
     },
     close() {
       this.$refs.headerSearchSelect && this.$refs.headerSearchSelect.blur()
+      this.search = ''
       this.options = []
       this.show = false
     },
     change(val) {
-      const path = val.path;
-      const query = val.query;
+      const path = val.path
+      const query = val.query
       if(isHttp(val.path)) {
         // http(s):// 路径新窗口打开
         const pindex = path.indexOf("http");
-        window.open(path.substr(pindex, path.length), "_blank");
+        window.open(path.substr(pindex, path.length), "_blank")
       } else {
         if (query) {
-          this.$router.push({ path: path, query: JSON.parse(query) });
+          this.$router.push({ path: path, query: JSON.parse(query) })
         } else {
           this.$router.push(path)
         }
@@ -117,11 +131,13 @@ export default {
 
         const data = {
           path: !isHttp(router.path) ? path.resolve(basePath, router.path) : router.path,
-          title: [...prefixTitle]
+          title: [...prefixTitle],
+          icon: ''
         }
 
         if (router.meta && router.meta.title) {
           data.title = [...data.title, router.meta.title]
+          data.icon = router.meta.icon
 
           if (router.redirect !== 'noRedirect') {
             // only push the routes with title
@@ -146,51 +162,70 @@ export default {
     },
     querySearch(query) {
       if (query !== '') {
-        this.options = this.fuse.search(query)
+        this.options = this.fuse.search(query).map((item) => item.item) ?? this.searchPool
       } else {
-        this.options = []
+        this.options = this.searchPool
       }
     }
   }
 }
 </script>
 
-<style lang="scss" scoped>
-.header-search {
-  font-size: 0 !important;
+<style lang='scss' scoped>
+::v-deep {
+  .el-dialog__header {
+    padding: 0 !important;
+  }
+}
 
+.header-search {
   .search-icon {
     cursor: pointer;
     font-size: 18px;
     vertical-align: middle;
   }
+}
 
-  .header-search-select {
-    font-size: 18px;
-    transition: width 0.2s;
-    width: 0;
-    overflow: hidden;
-    background: transparent;
-    border-radius: 0;
-    display: inline-block;
-    vertical-align: middle;
+.result-wrap {
+  height: 280px;
+  margin: 12px 0;
 
-    ::v-deep .el-input__inner {
-      border-radius: 0;
-      border: 0;
-      padding-left: 0;
-      padding-right: 0;
-      box-shadow: none !important;
-      border-bottom: 1px solid #d9d9d9;
-      vertical-align: middle;
+  .search-item {
+    display: flex;
+    height: 48px;
+
+    .left {
+      width: 60px;
+      text-align: center;
+
+      .menu-icon {
+        width: 18px;
+        height: 18px;
+        margin-top: 5px;
+      }
+    }
+
+    .search-info {
+      padding-left: 5px;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+
+      .menu-title,
+      .menu-path {
+        height: 20px;
+      }
+      .menu-path {
+        color: #ccc;
+        font-size: 10px;
+      }
     }
   }
 
-  &.show {
-    .header-search-select {
-      width: 210px;
-      margin-left: 10px;
-    }
+  .search-item:hover {
+    cursor: pointer;
   }
 }
 </style>
+
