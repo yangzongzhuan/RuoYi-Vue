@@ -37,6 +37,13 @@
             <version>1.6.2</version>
         </dependency>
 
+        <!-- ruoyi-springboot2 / swagger knife4j 配置 -->
+        <dependency>
+            <groupId>com.github.xiaoymin</groupId>
+            <artifactId>knife4j-spring-boot-starter</artifactId>
+            <version>3.0.3</version>
+        </dependency>
+
          <!-- Mysql驱动包 -->
         <dependency>
             <groupId>mysql</groupId>
