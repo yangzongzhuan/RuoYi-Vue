@@ -12,9 +12,14 @@
         <el-dropdown trigger="click" :hide-on-click="false" style="padding-left: 12px" v-if="showColumnsType == 'checkbox'">
           <el-button size="mini" circle icon="el-icon-menu" />
           <el-dropdown-menu slot="dropdown">
+            <!-- 全选/反选 按钮 -->
+            <el-dropdown-item>
+              <el-checkbox :indeterminate="isIndeterminate" v-model="isChecked" @change="toggleCheckAll"> 列展示 </el-checkbox>
+            </el-dropdown-item>
+            <div class="check-line"></div>
             <template v-for="item in columns">
               <el-dropdown-item :key="item.key">
-                <el-checkbox :checked="item.visible" @change="checkboxChange($event, item.label)" :label="item.label" />
+                <el-checkbox v-model="item.visible" @change="checkboxChange($event, item.label)" :label="item.label" />
               </el-dropdown-item>
             </template>
           </el-dropdown-menu>
@@ -41,33 +46,33 @@ export default {
       // 弹出层标题
       title: "显示/隐藏",
       // 是否显示弹出层
-      open: false,
+      open: false
     };
   },
   props: {
     /* 是否显示检索条件 */
     showSearch: {
       type: Boolean,
-      default: true,
+      default: true
     },
     /* 显隐列信息 */
     columns: {
-      type: Array,
+      type: Array
     },
     /* 是否显示检索图标 */
     search: {
       type: Boolean,
-      default: true,
+      default: true
     },
     /* 显隐列类型（transfer穿梭框、checkbox复选框） */
     showColumnsType: {
       type: String,
-      default: "checkbox",
+      default: "checkbox"
     },
     /* 右外边距 */
     gutter: {
       type: Number,
-      default: 10,
+      default: 10
     },
   },
   computed: {
@@ -77,6 +82,15 @@ export default {
         ret.marginRight = `${this.gutter / 2}px`;
       }
       return ret;
+    },
+    isChecked: {
+      get() {
+        return this.columns.every((col) => col.visible);
+      },
+      set() {}
+    },
+    isIndeterminate() {
+      return this.columns.some((col) => col.visible) && !this.isChecked;
     }
   },
   created() {
@@ -109,9 +123,14 @@ export default {
     showColumn() {
       this.open = true;
     },
-    // 勾选
+    // 单勾选
     checkboxChange(event, label) {
       this.columns.filter(item => item.label == label)[0].visible = event;
+    },
+    // 切换全选/反选
+    toggleCheckAll() {
+      const newValue = !this.isChecked;
+      this.columns.forEach((col) => (col.visible = newValue))
     }
   },
 };
@@ -125,5 +144,11 @@ export default {
 }
 ::v-deep .el-transfer__button:first-child {
   margin-bottom: 10px;
+}
+.check-line {
+  width: 90%;
+  height: 1px;
+  background-color: #ccc;
+  margin: 3px auto;
 }
 </style>
