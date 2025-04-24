@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.jacob.activeX.ActiveXComponent;
 import com.jacob.com.Dispatch;
+import com.ruoyi.common.utils.JYFileUploadUtil;
 import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.system.coze.CozeRequestJsonUtils;
 import com.ruoyi.system.coze.utils.CozeWorkflowClient;
@@ -16,15 +17,17 @@ import com.ruoyi.system.mapper.PSDMapper;
 import com.ruoyi.system.service.IPsdTaskService;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.lang.reflect.Field;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -33,12 +36,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
+
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.serializer.SerializerFeature;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
@@ -71,7 +73,7 @@ public class PhotoshopTaskQueue {
         query.setStatus("2"); // 状态2表示进行中
 
         List<PsdTask> pendingTasks = psdTaskService.selectPsdTaskList(query);
-        System.out.println("发现"+pendingTasks.size()+"个未完成任务");
+        System.out.println("发现" + pendingTasks.size() + "个未完成任务");
 
         pendingTasks.forEach(task -> {
             // 加入队列
@@ -139,7 +141,7 @@ public class PhotoshopTaskQueue {
                         task.getCreateBy(), task.getAccountName() + "-" + task.getTemplateName(), url);
                 // 更新状态为审核中
                 task.setStatus("3");
-            }else {
+            } else {
                 // 读取 JSX 模板
                 String basePath = System.getProperty("user.dir");
                 String jsxTemplatePath = basePath + File.separator + "jsx" + File.separator + "generate.jsx";
@@ -169,6 +171,58 @@ public class PhotoshopTaskQueue {
                 // 调用 Photoshop
                 ActiveXComponent ps = new ActiveXComponent("Photoshop.Application");
                 Dispatch.invoke(ps, "DoJavaScript", Dispatch.Method, new Object[]{modifiedJsx}, new int[1]);
+
+                LocalDate today = LocalDate.now();
+                DateTimeFormatter formatter1 = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+                String datePath = today.format(formatter1);
+                String path = config.path("baseConfig").path("imageSavePath").asText();
+                String realPath = path + "\\" + datePath + "\\" + task.getCreateBy() + "\\" + foldersName;
+                System.out.println(realPath);
+                File outputDir = new File(realPath);
+                File[] images = outputDir.listFiles((dir, name) -> name.toLowerCase().endsWith(".jpg"));
+
+                if (images == null || images.length == 0) {
+                    System.out.println("目录中无 JPG 文件，跳过上传。");
+                    return;
+                }
+
+                File urlFile = new File(outputDir, "url.txt");
+
+                try (
+                        FileWriter fw = new FileWriter(urlFile, true);
+                        BufferedWriter writer = new BufferedWriter(fw)
+                ) {
+
+                    for (File img : images) {
+                        try (FileInputStream fis = new FileInputStream(img)) {
+                            // 转为 MultipartFile
+                            MultipartFile multipart = new MockMultipartFile(
+                                    "file",
+                                    img.getName(),
+                                    MediaType.IMAGE_JPEG_VALUE,
+                                    fis
+                            );
+
+                            // 调用上传工具，返回图片 URL
+                            String imageUrl = JYFileUploadUtil.uploadFile(multipart, img.getName());
+
+                            // 追加写入 url.txt，并换行
+                            writer.write(imageUrl);
+                            writer.newLine();  // BufferedWriter.newLine()
+
+                            System.out.println("上传成功: " + img.getName() + " → " + imageUrl);
+                        } catch (IOException ioe) {
+                            System.err.println("处理失败: " + img.getName());
+                            ioe.printStackTrace();
+                        }
+                    }
+                } catch (IOException e) {
+                    System.err.println("无法打开或写入 url.txt: " + urlFile.getAbsolutePath());
+                    e.printStackTrace();
+                }
+
+                System.out.println("所有图片处理完成，URL 已追加到：" + urlFile.getAbsolutePath());
+
                 // 更新状态为成功
                 task.setStatus("0");
             }
@@ -214,7 +268,7 @@ public class PhotoshopTaskQueue {
                 throw new RuntimeException("PSD文件路径不存在或无法访问", e); // 手动抛出自定义异常
             }
             System.err.println("JSX 读取失败：" + e.getMessage());
-        }finally {
+        } finally {
             // 任务失败，更新状态
             if (task.getStatus().equals("2")) {
                 task.setStatus("1");

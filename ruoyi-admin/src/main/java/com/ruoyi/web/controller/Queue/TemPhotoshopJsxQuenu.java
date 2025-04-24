@@ -1,19 +1,26 @@
 package com.ruoyi.web.controller.Queue;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.jacob.activeX.ActiveXComponent;
 import com.jacob.com.Dispatch;
+import com.ruoyi.common.utils.JYFileUploadUtil;
 import com.ruoyi.system.domain.PsdTask;
 import com.ruoyi.system.mapper.PSDMapper;
 import com.ruoyi.system.mapper.PsdTaskMapper;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.stereotype.Component;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.PostConstruct;
-import java.io.File;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.concurrent.BlockingQueue;
@@ -98,8 +105,64 @@ public class TemPhotoshopJsxQuenu {
             // 调用 Photoshop
             ActiveXComponent ps = new ActiveXComponent("Photoshop.Application");
             Dispatch.invoke(ps, "DoJavaScript", Dispatch.Method, new Object[]{modifiedJsx}, new int[1]);
+
+            LocalDate today = LocalDate.now();
+            DateTimeFormatter formatter1 = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+            String datePath = today.format(formatter1);
+            // 初始化ObjectMapper
+            ObjectMapper mapper = new ObjectMapper();
+            ObjectNode config = (ObjectNode) mapper.readTree(task.getConfig());
+            String path = config.path("baseConfig").path("imageSavePath").asText();
+            String realPath = path + "\\" + datePath + "\\" + task.getCreateBy() + "\\" + foldersName;
+            File outputDir = new File(realPath);
+            File[] images = outputDir.listFiles((dir, name) -> name.toLowerCase().endsWith(".jpg"));
+
+            if (images == null || images.length == 0) {
+                System.out.println("目录中无 JPG 文件，跳过上传。");
+                return;
+            }
+
+            File urlFile = new File(outputDir, "url.txt");
+
+            try (
+                    FileWriter fw = new FileWriter(urlFile, true);
+                    BufferedWriter writer = new BufferedWriter(fw)
+            ) {
+
+                for (File img : images) {
+                    try (FileInputStream fis = new FileInputStream(img)) {
+                        // 转为 MultipartFile
+                        MultipartFile multipart = new MockMultipartFile(
+                                "file",
+                                img.getName(),
+                                MediaType.IMAGE_JPEG_VALUE,
+                                fis
+                        );
+
+                        // 调用上传工具，返回图片 URL
+                        String imageUrl = JYFileUploadUtil.uploadFile(multipart, img.getName());
+
+                        // 追加写入 url.txt，并换行
+                        writer.write(imageUrl);
+                        writer.newLine();
+
+                        System.out.println("上传成功: " + img.getName() + " → " + imageUrl);
+                    } catch (IOException ioe) {
+                        System.err.println("处理失败: " + img.getName());
+                        ioe.printStackTrace();
+                    }
+                }
+            } catch (IOException e) {
+                System.err.println("无法打开或写入 url.txt: " + urlFile.getAbsolutePath());
+                e.printStackTrace();
+            }
+
+            System.out.println("所有图片处理完成，URL 已追加到：" + urlFile.getAbsolutePath());
+
+
             task.setStatus("0"); // 更新为成功
             psdTaskMapper.updatePsdTask(task);
+
         } catch (Exception e) {
             // 任务失败，更新状态
             task.setStatus("1");
