@@ -18,6 +18,7 @@
 </template>
 
 <script>
+import axios from 'axios';
 import Quill from "quill";
 import "quill/dist/quill.core.css";
 import "quill/dist/quill.snow.css";
@@ -135,6 +136,7 @@ export default {
             this.quill.format("image", false);
           }
         });
+        this.Quill.root.addEventListener('paste', this.handlePasteCapture, true);
       }
       this.Quill.clipboard.dangerouslyPasteHTML(this.currentValue);
       this.Quill.on("text-change", (delta, oldDelta, source) => {
@@ -192,8 +194,31 @@ export default {
     handleUploadError() {
       this.$message.error("图片插入失败");
     },
-  },
-};
+    // 复制粘贴图片处理
+    handlePasteCapture(e) {
+      const clipboard = e.clipboardData || window.clipboardData;
+      if (clipboard && clipboard.items) {
+        for (let i = 0; i < clipboard.items.length; i++) {
+          const item = clipboard.items[i];
+          if (item.type.indexOf('image') !== -1) {
+            e.preventDefault();
+            const file = item.getAsFile();
+            this.insertImage(file);
+          }
+        }
+      }
+    },
+    insertImage(file) {
+      const formData = new FormData();
+      formData.append("file", file);
+      axios.post(this.uploadUrl, formData, { headers: { "Content-Type": "multipart/form-data", Authorization: this.headers.Authorization } }).then(res => {
+        this.handleUploadSuccess(res.data);
+      })
+    }
+  }
+}
+
+ 
 </script>
 
 <style>
