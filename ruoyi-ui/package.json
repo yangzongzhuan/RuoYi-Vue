@@ -5,9 +5,9 @@
   "author": "若依",
   "license": "MIT",
   "scripts": {
-    "dev": "SET NODE_OPTIONS=--openssl-legacy-provider && vue-cli-service serve",
-    "build:prod": "SET NODE_OPTIONS=--openssl-legacy-provider && vue-cli-service build",
-    "build:stage": "SET NODE_OPTIONS=--openssl-legacy-provider && vue-cli-service build --mode staging",
+    "dev": "vue-cli-service serve",
+    "build:prod": "vue-cli-service build",
+    "build:stage": "vue-cli-service build --mode staging",
     "preview": "node build/index.js --preview",
     "lint": "eslint --ext .js,.vue src"
   },
