@@ -119,7 +119,7 @@ public class TemPhotoshopJsxQuenu {
 
             if (images == null || images.length == 0) {
                 System.out.println("目录中无 JPG 文件，跳过上传。");
-                return;
+                throw new RuntimeException("目录中无 JPG 文件");
             }
 
             File urlFile = new File(outputDir, "url.txt");

@@ -169,8 +169,8 @@ public class PhotoshopTaskQueue {
                 System.err.println("替换后的 JSX:\n" + modifiedJsx);
 
                 // 调用 Photoshop
-                ActiveXComponent ps = new ActiveXComponent("Photoshop.Application");
-                Dispatch.invoke(ps, "DoJavaScript", Dispatch.Method, new Object[]{modifiedJsx}, new int[1]);
+//                ActiveXComponent ps = new ActiveXComponent("Photoshop.Application");
+//                Dispatch.invoke(ps, "DoJavaScript", Dispatch.Method, new Object[]{modifiedJsx}, new int[1]);
 
                 LocalDate today = LocalDate.now();
                 DateTimeFormatter formatter1 = DateTimeFormatter.ofPattern("yyyy-MM-dd");
@@ -183,7 +183,7 @@ public class PhotoshopTaskQueue {
 
                 if (images == null || images.length == 0) {
                     System.out.println("目录中无 JPG 文件，跳过上传。");
-                    return;
+                    throw new RuntimeException("目录中无 JPG 文件");
                 }
 
                 File urlFile = new File(outputDir, "url.txt");
