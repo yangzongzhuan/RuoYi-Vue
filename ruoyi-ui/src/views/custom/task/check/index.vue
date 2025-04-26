@@ -3,10 +3,41 @@
     <div class="card">
       <h2>审核页面</h2>
       <div class="config-box">
-        <!-- 使用 vue-json-editor 实现可编辑 JSON -->
-        <vue-json-editor v-if="editableConfig" v-model="editableConfig" :options="editorOptions" />
+        <div v-if="editableConfig">
+          <!-- 文案编辑卡片 -->
+          <div class="config-card copywriter-card">
+            <label class="field-label">文案：</label>
+            <el-input
+              type="textarea"
+              :rows="6"
+              v-model="editableConfig.copywriter"
+            />
+          </div>
+
+          <!-- 图片配置卡片 -->
+          <div
+            class="config-card image-config-card"
+            v-for="(imgCfg, idx) in editableConfig.imageConfigs"
+            :key="idx"
+          >
+            <h3>配置 {{ idx + 1 }}：{{ imgCfg.folderName }}</h3>
+            <div
+              class="text-layer"
+              v-for="(layerConfig, key) in imgCfg.textLayerConfigs"
+              :key="key"
+            >
+              <label class="field-label">{{ layerConfig.name }}:</label>
+              <el-input
+                type="textarea"
+                :autosize="{ minRows: 1, maxRows: 6 }"
+                v-model="editableConfig.imageConfigs[idx].textLayerConfigs[key].sampleText"
+              />
+            </div>
+          </div>
+        </div>
         <p v-else>加载中...</p>
       </div>
+
       <div class="button-box">
         <el-button v-if="from.status == 2" type="primary" disabled>生成图片中</el-button>
         <el-button v-if="from.status == 0" type="success" disabled>已成功</el-button>
@@ -18,35 +49,16 @@
 </template>
 
 <script>
-import VueJsonEditor from 'vue-json-editor';
-import {checkTask, getTaskByUuid} from "@/api/custom/task";
+import { checkTask, getTaskByUuid } from '@/api/custom/task';
 
 export default {
   name: 'AuditPage',
-  components: {
-    VueJsonEditor
-  },
   data() {
     return {
       uuid: null,
       from: {},
       editableConfig: null,
-      editorOptions: {
-        mode: 'code',        // 使用代码模式，支持 JSON 格式高亮和编辑
-        mainMenuBar: true,   // 显示主菜单栏
-        statusBar: false,    // 隐藏状态栏（根据需求调整）
-      }
-    }
-  },
-  computed: {
-    formattedConfig() {
-      try {
-        let configObj = typeof this.from.config === 'string' ? JSON.parse(this.from.config) : this.from.config;
-        return JSON.stringify(configObj, null, 2);
-      } catch (e) {
-        return this.from.config;
-      }
-    }
+    };
   },
   methods: {
     getUuid() {
@@ -58,41 +70,43 @@ export default {
         alert('缺少 uuid 参数');
         return;
       }
-      getTaskByUuid(this.uuid).then(response => {
+      getTaskByUuid(this.uuid).then((response) => {
         this.from = response.data;
-        // 将返回的 config 赋值到 editableConfig，以便编辑
         try {
-          this.editableConfig = typeof this.from.config === 'string' ? JSON.parse(this.from.config) : this.from.config;
+          this.editableConfig =
+            typeof this.from.config === 'string'
+              ? JSON.parse(this.from.config)
+              : this.from.config;
         } catch (e) {
           this.editableConfig = this.from.config;
         }
       });
     },
     confirm() {
-      // 确认弹窗
       this.$confirm('确认审核通过？', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
-        type: 'warning'
+        type: 'warning',
       }).then(() => {
-        // 确认时可以将 editableConfig 再转换为字符串或直接传 JSON 对象到后端
         this.from.config = JSON.stringify(this.editableConfig);
-        checkTask(this.from).then(response => {
-          if (response.code === 200) {
-            this.fetchData()
-            this.$message.success("审核成功！")
-          }
-        }).catch(() => {
-          this.$message.error("审核失败！")
-        })
+        checkTask(this.from)
+          .then((response) => {
+            if (response.code === 200) {
+              this.fetchData();
+              this.$message.success('审核成功！');
+            }
+          })
+          .catch(() => {
+            this.$message.error('审核失败！');
+          });
       });
-    }
+    },
   },
   mounted() {
     this.getUuid();
     this.fetchData();
-  }
-}
+  },
+};
 </script>
 
 <style scoped>
@@ -100,18 +114,23 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 80vh;
-  padding: 20px;
+  width: 100vw;
+  height: 100vh;
+  padding: 0;
+  margin: 0;
   box-sizing: border-box;
 }
 
 .card {
-  width: 80%;
-  max-width: 1200px;
+  width: 100%;
+  height: 100%;
+  max-width: none;
   background: #fff;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  border-radius: 8px;
+  box-shadow: none;
+  border-radius: 0;
   padding: 20px;
+  display: flex;
+  flex-direction: column;
 }
 
 h2 {
@@ -125,18 +144,40 @@ h2 {
   padding: 20px;
   border-radius: 6px;
   border: 1px solid #ddd;
-  max-height: 500px;
+  flex: 1;
   overflow: auto;
+  padding-bottom: 100px; /* 给底部按钮留出空间 */
+}
+
+.config-card {
+  background: #ffffff;
+  padding: 15px;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  margin-bottom: 20px;
+}
+
+.copywriter-card {
+  margin-bottom: 30px;
+}
+
+.field-label {
+  display: block;
+  font-weight: 500;
+  margin-bottom: 6px;
+}
+
+.text-layer {
+  margin-bottom: 12px;
 }
 
 .button-box {
+  position: sticky;
+  bottom: 0;
   display: flex;
   justify-content: flex-end;
-  margin-top: 20px;
-}
-
-
-.confirm-btn:hover {
-  background-color: #369d75;
+  padding: 10px 20px;
+  background: #fff;
+  z-index: 10;
 }
 </style>
