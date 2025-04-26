@@ -213,12 +213,12 @@ public class PhotoshopTaskQueue {
                             System.out.println("上传成功: " + img.getName() + " → " + imageUrl);
                         } catch (IOException ioe) {
                             System.err.println("处理失败: " + img.getName());
-                            ioe.printStackTrace();
+//                            ioe.printStackTrace();
                         }
                     }
                 } catch (IOException e) {
                     System.err.println("无法打开或写入 url.txt: " + urlFile.getAbsolutePath());
-                    e.printStackTrace();
+//                    e.printStackTrace();
                 }
 
                 System.out.println("所有图片处理完成，URL 已追加到：" + urlFile.getAbsolutePath());
