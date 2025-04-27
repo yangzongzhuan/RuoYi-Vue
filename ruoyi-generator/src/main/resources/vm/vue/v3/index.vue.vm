@@ -343,33 +343,33 @@
 </template>
 
 <script setup name="${BusinessName}">
-import { list${BusinessName}, get${BusinessName}, del${BusinessName}, add${BusinessName}, update${BusinessName} } from "@/api/${moduleName}/${businessName}";
+import { list${BusinessName}, get${BusinessName}, del${BusinessName}, add${BusinessName}, update${BusinessName} } from "@/api/${moduleName}/${businessName}"
 
-const { proxy } = getCurrentInstance();
+const { proxy } = getCurrentInstance()
 #if(${dicts} != '')
 #set($dictsNoSymbol=$dicts.replace("'", ""))
-const { ${dictsNoSymbol} } = proxy.useDict(${dicts});
+const { ${dictsNoSymbol} } = proxy.useDict(${dicts})
 #end
 
-const ${businessName}List = ref([]);
+const ${businessName}List = ref([])
 #if($table.sub)
-const ${subclassName}List = ref([]);
+const ${subclassName}List = ref([])
 #end
-const open = ref(false);
-const loading = ref(true);
-const showSearch = ref(true);
-const ids = ref([]);
+const open = ref(false)
+const loading = ref(true)
+const showSearch = ref(true)
+const ids = ref([])
 #if($table.sub)
-const checked${subClassName} = ref([]);
+const checked${subClassName} = ref([])
 #end
-const single = ref(true);
-const multiple = ref(true);
-const total = ref(0);
-const title = ref("");
+const single = ref(true)
+const multiple = ref(true)
+const total = ref(0)
+const title = ref("")
 #foreach ($column in $columns)
 #if($column.htmlType == "datetime" && $column.queryType == "BETWEEN")
 #set($AttrName=$column.javaField.substring(0,1).toUpperCase() + ${column.javaField.substring(1)})
-const daterange${AttrName} = ref([]);
+const daterange${AttrName} = ref([])
 #end
 #end
 
@@ -399,16 +399,16 @@ const data = reactive({
 #end
 #end
   }
-});
+})
 
-const { queryParams, form, rules } = toRefs(data);
+const { queryParams, form, rules } = toRefs(data)
 
 /** 查询${functionName}列表 */
 function getList() {
-  loading.value = true;
+  loading.value = true
 #foreach ($column in $columns)
 #if($column.htmlType == "datetime" && $column.queryType == "BETWEEN")
-  queryParams.value.params = {};
+  queryParams.value.params = {}
 #break
 #end
 #end
@@ -416,22 +416,22 @@ function getList() {
 #if($column.htmlType == "datetime" && $column.queryType == "BETWEEN")
 #set($AttrName=$column.javaField.substring(0,1).toUpperCase() + ${column.javaField.substring(1)})
   if (null != daterange${AttrName} && '' != daterange${AttrName}) {
-    queryParams.value.params["begin${AttrName}"] = daterange${AttrName}.value[0];
-    queryParams.value.params["end${AttrName}"] = daterange${AttrName}.value[1];
+    queryParams.value.params["begin${AttrName}"] = daterange${AttrName}.value[0]
+    queryParams.value.params["end${AttrName}"] = daterange${AttrName}.value[1]
   }
 #end
 #end
   list${BusinessName}(queryParams.value).then(response => {
-    ${businessName}List.value = response.rows;
-    total.value = response.total;
-    loading.value = false;
-  });
+    ${businessName}List.value = response.rows
+    total.value = response.total
+    loading.value = false
+  })
 }
 
 // 取消按钮
 function cancel() {
-  open.value = false;
-  reset();
+  open.value = false
+  reset()
 }
 
 // 表单重置
@@ -444,17 +444,17 @@ function reset() {
     $column.javaField: null#if($foreach.count != $columns.size()),#end
 #end
 #end
-  };
+  }
 #if($table.sub)
-  ${subclassName}List.value = [];
+  ${subclassName}List.value = []
 #end
-  proxy.resetForm("${businessName}Ref");
+  proxy.resetForm("${businessName}Ref")
 }
 
 /** 搜索按钮操作 */
 function handleQuery() {
-  queryParams.value.pageNum = 1;
-  getList();
+  queryParams.value.pageNum = 1
+  getList()
 }
 
 /** 重置按钮操作 */
@@ -462,44 +462,44 @@ function resetQuery() {
 #foreach ($column in $columns)
 #if($column.htmlType == "datetime" && $column.queryType == "BETWEEN")
 #set($AttrName=$column.javaField.substring(0,1).toUpperCase() + ${column.javaField.substring(1)})
-  daterange${AttrName}.value = [];
+  daterange${AttrName}.value = []
 #end
 #end
-  proxy.resetForm("queryRef");
-  handleQuery();
+  proxy.resetForm("queryRef")
+  handleQuery()
 }
 
 // 多选框选中数据
 function handleSelectionChange(selection) {
-  ids.value = selection.map(item => item.${pkColumn.javaField});
-  single.value = selection.length != 1;
-  multiple.value = !selection.length;
+  ids.value = selection.map(item => item.${pkColumn.javaField})
+  single.value = selection.length != 1
+  multiple.value = !selection.length
 }
 
 /** 新增按钮操作 */
 function handleAdd() {
-  reset();
-  open.value = true;
-  title.value = "添加${functionName}";
+  reset()
+  open.value = true
+  title.value = "添加${functionName}"
 }
 
 /** 修改按钮操作 */
 function handleUpdate(row) {
-  reset();
+  reset()
   const _${pkColumn.javaField} = row.${pkColumn.javaField} || ids.value
   get${BusinessName}(_${pkColumn.javaField}).then(response => {
-    form.value = response.data;
+    form.value = response.data
 #foreach ($column in $columns)
 #if($column.htmlType == "checkbox")
-    form.value.$column.javaField = form.value.${column.javaField}.split(",");
+    form.value.$column.javaField = form.value.${column.javaField}.split(",")
 #end
 #end
 #if($table.sub)
-    ${subclassName}List.value = response.data.${subclassName}List;
+    ${subclassName}List.value = response.data.${subclassName}List
 #end
-    open.value = true;
-    title.value = "修改${functionName}";
-  });
+    open.value = true
+    title.value = "修改${functionName}"
+  })
 }
 
 /** 提交按钮 */
@@ -508,68 +508,68 @@ function submitForm() {
     if (valid) {
 #foreach ($column in $columns)
 #if($column.htmlType == "checkbox")
-      form.value.$column.javaField = form.value.${column.javaField}.join(",");
+      form.value.$column.javaField = form.value.${column.javaField}.join(",")
 #end
 #end
 #if($table.sub)
-      form.value.${subclassName}List = ${subclassName}List.value;
+      form.value.${subclassName}List = ${subclassName}List.value
 #end
       if (form.value.${pkColumn.javaField} != null) {
         update${BusinessName}(form.value).then(response => {
-          proxy.#[[$modal]]#.msgSuccess("修改成功");
-          open.value = false;
-          getList();
-        });
+          proxy.#[[$modal]]#.msgSuccess("修改成功")
+          open.value = false
+          getList()
+        })
       } else {
         add${BusinessName}(form.value).then(response => {
-          proxy.#[[$modal]]#.msgSuccess("新增成功");
-          open.value = false;
-          getList();
-        });
+          proxy.#[[$modal]]#.msgSuccess("新增成功")
+          open.value = false
+          getList()
+        })
       }
     }
-  });
+  })
 }
 
 /** 删除按钮操作 */
 function handleDelete(row) {
-  const _${pkColumn.javaField}s = row.${pkColumn.javaField} || ids.value;
+  const _${pkColumn.javaField}s = row.${pkColumn.javaField} || ids.value
   proxy.#[[$modal]]#.confirm('是否确认删除${functionName}编号为"' + _${pkColumn.javaField}s + '"的数据项？').then(function() {
-    return del${BusinessName}(_${pkColumn.javaField}s);
+    return del${BusinessName}(_${pkColumn.javaField}s)
   }).then(() => {
-    getList();
-    proxy.#[[$modal]]#.msgSuccess("删除成功");
-  }).catch(() => {});
+    getList()
+    proxy.#[[$modal]]#.msgSuccess("删除成功")
+  }).catch(() => {})
 }
 
 #if($table.sub)
 /** ${subTable.functionName}序号 */
 function row${subClassName}Index({ row, rowIndex }) {
-  row.index = rowIndex + 1;
+  row.index = rowIndex + 1
 }
 
 /** ${subTable.functionName}添加按钮操作 */
 function handleAdd${subClassName}() {
-  let obj = {};
+  let obj = {}
 #foreach($column in $subTable.columns)
 #if($column.pk || $column.javaField == ${subTableFkclassName})
 #elseif($column.list && "" != $javaField)
-  obj.$column.javaField = "";
+  obj.$column.javaField = ""
 #end
 #end
-  ${subclassName}List.value.push(obj);
+  ${subclassName}List.value.push(obj)
 }
 
 /** ${subTable.functionName}删除按钮操作 */
 function handleDelete${subClassName}() {
   if (checked${subClassName}.value.length == 0) {
-    proxy.#[[$modal]]#.msgError("请先选择要删除的${subTable.functionName}数据");
+    proxy.#[[$modal]]#.msgError("请先选择要删除的${subTable.functionName}数据")
   } else {
-    const ${subclassName}s = ${subclassName}List.value;
-    const checked${subClassName}s = checked${subClassName}.value;
+    const ${subclassName}s = ${subclassName}List.value
+    const checked${subClassName}s = checked${subClassName}.value
     ${subclassName}List.value = ${subclassName}s.filter(function(item) {
       return checked${subClassName}s.indexOf(item.index) == -1
-    });
+    })
   }
 }
 
@@ -586,5 +586,5 @@ function handleExport() {
   }, `${businessName}_#[[${new Date().getTime()}]]#.xlsx`)
 }
 
-getList();
+getList()
 </script>

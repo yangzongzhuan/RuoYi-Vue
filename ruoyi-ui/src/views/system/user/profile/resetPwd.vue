@@ -17,17 +17,17 @@
 </template>
 
 <script>
-import { updateUserPwd } from "@/api/system/user";
+import { updateUserPwd } from "@/api/system/user"
 
 export default {
   data() {
     const equalToPassword = (rule, value, callback) => {
       if (this.user.newPassword !== value) {
-        callback(new Error("两次输入的密码不一致"));
+        callback(new Error("两次输入的密码不一致"))
       } else {
-        callback();
+        callback()
       }
-    };
+    }
     return {
       user: {
         oldPassword: undefined,
@@ -49,21 +49,21 @@ export default {
           { required: true, validator: equalToPassword, trigger: "blur" }
         ]
       }
-    };
+    }
   },
   methods: {
     submit() {
       this.$refs["form"].validate(valid => {
         if (valid) {
           updateUserPwd(this.user.oldPassword, this.user.newPassword).then(response => {
-            this.$modal.msgSuccess("修改成功");
-          });
+            this.$modal.msgSuccess("修改成功")
+          })
         }
-      });
+      })
     },
     close() {
-      this.$tab.closePage();
+      this.$tab.closePage()
     }
   }
-};
+}
 </script>

@@ -54,9 +54,9 @@
 </template>
 
 <script>
-import store from "@/store";
-import { VueCropper } from "vue-cropper";
-import { uploadAvatar } from "@/api/system/user";
+import store from "@/store"
+import { VueCropper } from "vue-cropper"
+import { uploadAvatar } from "@/api/system/user"
 import { debounce } from '@/utils'
 
 export default {
@@ -80,16 +80,16 @@ export default {
       },
       previews: {},
       resizeHandler: null
-    };
+    }
   },
   methods: {
     // 编辑头像
     editCropper() {
-      this.open = true;
+      this.open = true
     },
     // 打开弹出层结束时的回调
     modalOpened() {
-      this.visible = true;
+      this.visible = true
       if (!this.resizeHandler) {
         this.resizeHandler = debounce(() => {
           this.refresh()
@@ -99,63 +99,63 @@ export default {
     },
     // 刷新组件
     refresh() {
-      this.$refs.cropper.refresh();
+      this.$refs.cropper.refresh()
     },
     // 覆盖默认的上传行为
     requestUpload() {
     },
     // 向左旋转
     rotateLeft() {
-      this.$refs.cropper.rotateLeft();
+      this.$refs.cropper.rotateLeft()
     },
     // 向右旋转
     rotateRight() {
-      this.$refs.cropper.rotateRight();
+      this.$refs.cropper.rotateRight()
     },
     // 图片缩放
     changeScale(num) {
-      num = num || 1;
-      this.$refs.cropper.changeScale(num);
+      num = num || 1
+      this.$refs.cropper.changeScale(num)
     },
     // 上传预处理
     beforeUpload(file) {
       if (file.type.indexOf("image/") == -1) {
-        this.$modal.msgError("文件格式错误，请上传图片类型,如：JPG，PNG后缀的文件。");
+        this.$modal.msgError("文件格式错误，请上传图片类型,如：JPG，PNG后缀的文件。")
       } else {
-        const reader = new FileReader();
-        reader.readAsDataURL(file);
+        const reader = new FileReader()
+        reader.readAsDataURL(file)
         reader.onload = () => {
-          this.options.img = reader.result;
-          this.options.filename = file.name;
-        };
+          this.options.img = reader.result
+          this.options.filename = file.name
+        }
       }
     },
     // 上传图片
     uploadImg() {
       this.$refs.cropper.getCropBlob(data => {
-        let formData = new FormData();
-        formData.append("avatarfile", data, this.options.filename);
+        let formData = new FormData()
+        formData.append("avatarfile", data, this.options.filename)
         uploadAvatar(formData).then(response => {
-          this.open = false;
-          this.options.img = process.env.VUE_APP_BASE_API + response.imgUrl;
-          store.commit('SET_AVATAR', this.options.img);
-          this.$modal.msgSuccess("修改成功");
-          this.visible = false;
-        });
-      });
+          this.open = false
+          this.options.img = process.env.VUE_APP_BASE_API + response.imgUrl
+          store.commit('SET_AVATAR', this.options.img)
+          this.$modal.msgSuccess("修改成功")
+          this.visible = false
+        })
+      })
     },
     // 实时预览
     realTime(data) {
-      this.previews = data;
+      this.previews = data
     },
     // 关闭窗口
     closeDialog() {
       this.options.img = store.getters.avatar
-      this.visible = false;
+      this.visible = false
       window.removeEventListener("resize", this.resizeHandler)
     }
   }
-};
+}
 </script>
 <style scoped lang="scss">
 .user-info-head {

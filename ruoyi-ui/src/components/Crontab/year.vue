@@ -61,38 +61,38 @@ export default {
 		radioChange() {
 			switch (this.radioValue) {
 				case 1:
-					this.$emit('update', 'year', '');
-					break;
+					this.$emit('update', 'year', '')
+					break
 				case 2:
-					this.$emit('update', 'year', '*');
-					break;
+					this.$emit('update', 'year', '*')
+					break
 				case 3:
-					this.$emit('update', 'year', this.cycleTotal);
-					break;
+					this.$emit('update', 'year', this.cycleTotal)
+					break
 				case 4:
-					this.$emit('update', 'year', this.averageTotal);
-					break;
+					this.$emit('update', 'year', this.averageTotal)
+					break
 				case 5:
-					this.$emit('update', 'year', this.checkboxString);
-					break;
+					this.$emit('update', 'year', this.checkboxString)
+					break
 			}
 		},
 		// 周期两个值变化时
 		cycleChange() {
 			if (this.radioValue == '3') {
-				this.$emit('update', 'year', this.cycleTotal);
+				this.$emit('update', 'year', this.cycleTotal)
 			}
 		},
 		// 平均两个值变化时
 		averageChange() {
 			if (this.radioValue == '4') {
-				this.$emit('update', 'year', this.averageTotal);
+				this.$emit('update', 'year', this.averageTotal)
 			}
 		},
 		// checkbox值变化时
 		checkboxChange() {
 			if (this.radioValue == '5') {
-				this.$emit('update', 'year', this.checkboxString);
+				this.$emit('update', 'year', this.checkboxString)
 			}
 		}
 	},
@@ -107,23 +107,23 @@ export default {
 		cycleTotal: function () {
 			const cycle01 = this.checkNum(this.cycle01, this.fullYear, 2098)
 			const cycle02 = this.checkNum(this.cycle02, cycle01 ? cycle01 + 1 : this.fullYear + 1, 2099)
-			return cycle01 + '-' + cycle02;
+			return cycle01 + '-' + cycle02
 		},
 		// 计算平均用到的值
 		averageTotal: function () {
 			const average01 = this.checkNum(this.average01, this.fullYear, 2098)
 			const average02 = this.checkNum(this.average02, 1, 2099 - average01 || this.fullYear)
-			return average01 + '/' + average02;
+			return average01 + '/' + average02
 		},
 		// 计算勾选的checkbox值合集
 		checkboxString: function () {
-			let str = this.checkboxList.join();
-			return str;
+			let str = this.checkboxList.join()
+			return str
 		}
 	},
 	mounted: function () {
 		// 仅获取当前年份
-		this.fullYear = Number(new Date().getFullYear());
+		this.fullYear = Number(new Date().getFullYear())
 		this.cycle01 = this.fullYear
 		this.average01 = this.fullYear
 	}

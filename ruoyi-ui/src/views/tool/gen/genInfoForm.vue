@@ -223,8 +223,8 @@
 </template>
 
 <script>
-import Treeselect from "@riophae/vue-treeselect";
-import "@riophae/vue-treeselect/dist/vue-treeselect.css";
+import Treeselect from "@riophae/vue-treeselect"
+import "@riophae/vue-treeselect/dist/vue-treeselect.css"
 
 export default {
   components: { Treeselect },
@@ -240,7 +240,7 @@ export default {
     menus: {
       type: Array,
       default: []
-    },
+    }
   },
   data() {
     return {
@@ -260,17 +260,17 @@ export default {
         ],
         functionName: [
           { required: true, message: "请输入生成功能名", trigger: "blur" }
-        ],
+        ]
       }
-    };
+    }
   },
   watch: {
     'info.subTableName': function(val) {
-      this.setSubTableColumns(val);
+      this.setSubTableColumns(val)
     },
     'info.tplWebType': function(val) {
       if (val === '') {
-        this.info.tplWebType = "element-ui";
+        this.info.tplWebType = "element-ui"
       }
     }
   },
@@ -278,35 +278,35 @@ export default {
     /** 转换菜单数据结构 */
     normalizer(node) {
       if (node.children && !node.children.length) {
-        delete node.children;
+        delete node.children
       }
       return {
         id: node.menuId,
         label: node.menuName,
         children: node.children
-      };
+      }
     },
     /** 选择子表名触发 */
     subSelectChange(value) {
-      this.info.subTableFkName = '';
+      this.info.subTableFkName = ''
     },
     /** 选择生成模板触发 */
     tplSelectChange(value) {
       if(value !== 'sub') {
-        this.info.subTableName = '';
-        this.info.subTableFkName = '';
+        this.info.subTableName = ''
+        this.info.subTableFkName = ''
       }
     },
     /** 设置关联外键 */
     setSubTableColumns(value) {
       for (var item in this.tables) {
-        const name = this.tables[item].tableName;
+        const name = this.tables[item].tableName
         if (value === name) {
-          this.subColumns = this.tables[item].columns;
-          break;
+          this.subColumns = this.tables[item].columns
+          break
         }
       }
     }
   }
-};
+}
 </script>

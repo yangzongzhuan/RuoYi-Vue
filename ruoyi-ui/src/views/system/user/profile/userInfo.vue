@@ -23,7 +23,7 @@
 </template>
 
 <script>
-import { updateUserProfile } from "@/api/system/user";
+import { updateUserProfile } from "@/api/system/user"
 
 export default {
   props: {
@@ -56,13 +56,13 @@ export default {
           }
         ]
       }
-    };
+    }
   },
   watch: {
     user: {
       handler(user) {
         if (user) {
-          this.form = { nickName: user.nickName, phonenumber: user.phonenumber, email: user.email, sex: user.sex };
+          this.form = { nickName: user.nickName, phonenumber: user.phonenumber, email: user.email, sex: user.sex }
         }
       },
       immediate: true
@@ -73,16 +73,16 @@ export default {
       this.$refs["form"].validate(valid => {
         if (valid) {
           updateUserProfile(this.form).then(response => {
-            this.$modal.msgSuccess("修改成功");
-            this.user.phonenumber = this.form.phonenumber;
-            this.user.email = this.form.email;
-          });
+            this.$modal.msgSuccess("修改成功")
+            this.user.phonenumber = this.form.phonenumber
+            this.user.email = this.form.email
+          })
         }
-      });
+      })
     },
     close() {
-      this.$tab.closePage();
+      this.$tab.closePage()
     }
   }
-};
+}
 </script>

@@ -82,7 +82,7 @@ export default {
     return {
       theme: this.$store.state.settings.theme,
       sideTheme: this.$store.state.settings.sideTheme
-    };
+    }
   },
   computed: {
     visible: {
@@ -111,8 +111,8 @@ export default {
           value: val
         })
         if (!val) {
-          this.$store.dispatch('app/toggleSideBarHide', false);
-          this.$store.commit("SET_SIDEBAR_ROUTERS", this.$store.state.permission.defaultRoutes);
+          this.$store.dispatch('app/toggleSideBarHide', false)
+          this.$store.commit("SET_SIDEBAR_ROUTERS", this.$store.state.permission.defaultRoutes)
         }
       }
     },
@@ -156,17 +156,17 @@ export default {
         key: 'theme',
         value: val
       })
-      this.theme = val;
+      this.theme = val
     },
     handleTheme(val) {
       this.$store.dispatch('settings/changeSetting', {
         key: 'sideTheme',
         value: val
       })
-      this.sideTheme = val;
+      this.sideTheme = val
     },
     saveSetting() {
-      this.$modal.loading("正在保存到本地，请稍候...");
+      this.$modal.loading("正在保存到本地，请稍候...")
       this.$cache.local.set(
         "layout-setting",
         `{
@@ -178,11 +178,11 @@ export default {
             "sideTheme":"${this.sideTheme}",
             "theme":"${this.theme}"
           }`
-      );
+      )
       setTimeout(this.$modal.closeLoading(), 1000)
     },
     resetSetting() {
-      this.$modal.loading("正在清除设置缓存并刷新，请稍候...");
+      this.$modal.loading("正在清除设置缓存并刷新，请稍候...")
       this.$cache.local.remove("layout-setting")
       setTimeout("window.location.reload()", 1000)
     }

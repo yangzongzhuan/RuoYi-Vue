@@ -18,12 +18,12 @@
 </template>
 
 <script>
-import axios from 'axios';
-import Quill from "quill";
-import "quill/dist/quill.core.css";
-import "quill/dist/quill.snow.css";
-import "quill/dist/quill.bubble.css";
-import { getToken } from "@/utils/auth";
+import axios from 'axios'
+import Quill from "quill"
+import "quill/dist/quill.core.css"
+import "quill/dist/quill.snow.css"
+import "quill/dist/quill.bubble.css"
+import { getToken } from "@/utils/auth"
 
 export default {
   name: "Editor",
@@ -89,27 +89,27 @@ export default {
         placeholder: "请输入内容",
         readOnly: this.readOnly,
       },
-    };
+    }
   },
   computed: {
     styles() {
-      let style = {};
+      let style = {}
       if (this.minHeight) {
-        style.minHeight = `${this.minHeight}px`;
+        style.minHeight = `${this.minHeight}px`
       }
       if (this.height) {
-        style.height = `${this.height}px`;
+        style.height = `${this.height}px`
       }
-      return style;
+      return style
     },
   },
   watch: {
     value: {
       handler(val) {
         if (val !== this.currentValue) {
-          this.currentValue = val === null ? "" : val;
+          this.currentValue = val === null ? "" : val
           if (this.Quill) {
-            this.Quill.clipboard.dangerouslyPasteHTML(this.currentValue);
+            this.Quill.clipboard.dangerouslyPasteHTML(this.currentValue)
           }
         }
       },
@@ -117,102 +117,102 @@ export default {
     },
   },
   mounted() {
-    this.init();
+    this.init()
   },
   beforeDestroy() {
-    this.Quill = null;
+    this.Quill = null
   },
   methods: {
     init() {
-      const editor = this.$refs.editor;
-      this.Quill = new Quill(editor, this.options);
+      const editor = this.$refs.editor
+      this.Quill = new Quill(editor, this.options)
       // 如果设置了上传地址则自定义图片上传事件
       if (this.type == 'url') {
-        let toolbar = this.Quill.getModule("toolbar");
+        let toolbar = this.Quill.getModule("toolbar")
         toolbar.addHandler("image", (value) => {
           if (value) {
-            this.$refs.upload.$children[0].$refs.input.click();
+            this.$refs.upload.$children[0].$refs.input.click()
           } else {
-            this.quill.format("image", false);
+            this.quill.format("image", false)
           }
-        });
-        this.Quill.root.addEventListener('paste', this.handlePasteCapture, true);
+        })
+        this.Quill.root.addEventListener('paste', this.handlePasteCapture, true)
       }
-      this.Quill.clipboard.dangerouslyPasteHTML(this.currentValue);
+      this.Quill.clipboard.dangerouslyPasteHTML(this.currentValue)
       this.Quill.on("text-change", (delta, oldDelta, source) => {
-        const html = this.$refs.editor.children[0].innerHTML;
-        const text = this.Quill.getText();
-        const quill = this.Quill;
-        this.currentValue = html;
-        this.$emit("input", html);
-        this.$emit("on-change", { html, text, quill });
-      });
+        const html = this.$refs.editor.children[0].innerHTML
+        const text = this.Quill.getText()
+        const quill = this.Quill
+        this.currentValue = html
+        this.$emit("input", html)
+        this.$emit("on-change", { html, text, quill })
+      })
       this.Quill.on("text-change", (delta, oldDelta, source) => {
-        this.$emit("on-text-change", delta, oldDelta, source);
-      });
+        this.$emit("on-text-change", delta, oldDelta, source)
+      })
       this.Quill.on("selection-change", (range, oldRange, source) => {
-        this.$emit("on-selection-change", range, oldRange, source);
-      });
+        this.$emit("on-selection-change", range, oldRange, source)
+      })
       this.Quill.on("editor-change", (eventName, ...args) => {
-        this.$emit("on-editor-change", eventName, ...args);
-      });
+        this.$emit("on-editor-change", eventName, ...args)
+      })
     },
     // 上传前校检格式和大小
     handleBeforeUpload(file) {
-      const type = ["image/jpeg", "image/jpg", "image/png", "image/svg"];
-      const isJPG = type.includes(file.type);
+      const type = ["image/jpeg", "image/jpg", "image/png", "image/svg"]
+      const isJPG = type.includes(file.type)
       // 检验文件格式
       if (!isJPG) {
-        this.$message.error(`图片格式错误!`);
-        return false;
+        this.$message.error(`图片格式错误!`)
+        return false
       }
       // 校检文件大小
       if (this.fileSize) {
-        const isLt = file.size / 1024 / 1024 < this.fileSize;
+        const isLt = file.size / 1024 / 1024 < this.fileSize
         if (!isLt) {
-          this.$message.error(`上传文件大小不能超过 ${this.fileSize} MB!`);
-          return false;
+          this.$message.error(`上传文件大小不能超过 ${this.fileSize} MB!`)
+          return false
         }
       }
-      return true;
+      return true
     },
     handleUploadSuccess(res, file) {
       // 如果上传成功
       if (res.code == 200) {
         // 获取富文本组件实例
-        let quill = this.Quill;
+        let quill = this.Quill
         // 获取光标所在位置
-        let length = quill.getSelection().index;
+        let length = quill.getSelection().index
         // 插入图片  res.url为服务器返回的图片地址
-        quill.insertEmbed(length, "image", process.env.VUE_APP_BASE_API + res.fileName);
+        quill.insertEmbed(length, "image", process.env.VUE_APP_BASE_API + res.fileName)
         // 调整光标到最后
-        quill.setSelection(length + 1);
+        quill.setSelection(length + 1)
       } else {
-        this.$message.error("图片插入失败");
+        this.$message.error("图片插入失败")
       }
     },
     handleUploadError() {
-      this.$message.error("图片插入失败");
+      this.$message.error("图片插入失败")
     },
     // 复制粘贴图片处理
     handlePasteCapture(e) {
-      const clipboard = e.clipboardData || window.clipboardData;
+      const clipboard = e.clipboardData || window.clipboardData
       if (clipboard && clipboard.items) {
         for (let i = 0; i < clipboard.items.length; i++) {
-          const item = clipboard.items[i];
+          const item = clipboard.items[i]
           if (item.type.indexOf('image') !== -1) {
-            e.preventDefault();
-            const file = item.getAsFile();
-            this.insertImage(file);
+            e.preventDefault()
+            const file = item.getAsFile()
+            this.insertImage(file)
           }
         }
       }
     },
     insertImage(file) {
-      const formData = new FormData();
-      formData.append("file", file);
+      const formData = new FormData()
+      formData.append("file", file)
       axios.post(this.uploadUrl, formData, { headers: { "Content-Type": "multipart/form-data", Authorization: this.headers.Authorization } }).then(res => {
-        this.handleUploadSuccess(res.data);
+        this.handleUploadSuccess(res.data)
       })
     }
   }

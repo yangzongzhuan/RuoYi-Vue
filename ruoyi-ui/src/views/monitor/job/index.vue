@@ -291,7 +291,7 @@
 </template>
 
 <script>
-import { listJob, getJob, delJob, addJob, updateJob, runJob, changeJobStatus } from "@/api/monitor/job";
+import { listJob, getJob, delJob, addJob, updateJob, runJob, changeJobStatus } from "@/api/monitor/job"
 import Crontab from '@/components/Crontab'
 
 export default {
@@ -346,29 +346,29 @@ export default {
           { required: true, message: "cron执行表达式不能为空", trigger: "blur" }
         ]
       }
-    };
+    }
   },
   created() {
-    this.getList();
+    this.getList()
   },
   methods: {
     /** 查询定时任务列表 */
     getList() {
-      this.loading = true;
+      this.loading = true
       listJob(this.queryParams).then(response => {
-        this.jobList = response.rows;
-        this.total = response.total;
-        this.loading = false;
-      });
+        this.jobList = response.rows
+        this.total = response.total
+        this.loading = false
+      })
     },
     // 任务组名字典翻译
     jobGroupFormat(row, column) {
-      return this.selectDictLabel(this.dict.type.sys_job_group, row.jobGroup);
+      return this.selectDictLabel(this.dict.type.sys_job_group, row.jobGroup)
     },
     // 取消按钮
     cancel() {
-      this.open = false;
-      this.reset();
+      this.open = false
+      this.reset()
     },
     // 表单重置
     reset() {
@@ -381,96 +381,96 @@ export default {
         misfirePolicy: 1,
         concurrent: 1,
         status: "0"
-      };
-      this.resetForm("form");
+      }
+      this.resetForm("form")
     },
     /** 搜索按钮操作 */
     handleQuery() {
-      this.queryParams.pageNum = 1;
-      this.getList();
+      this.queryParams.pageNum = 1
+      this.getList()
     },
     /** 重置按钮操作 */
     resetQuery() {
-      this.resetForm("queryForm");
-      this.handleQuery();
+      this.resetForm("queryForm")
+      this.handleQuery()
     },
     // 多选框选中数据
     handleSelectionChange(selection) {
-      this.ids = selection.map(item => item.jobId);
-      this.single = selection.length != 1;
-      this.multiple = !selection.length;
+      this.ids = selection.map(item => item.jobId)
+      this.single = selection.length != 1
+      this.multiple = !selection.length
     },
     // 更多操作触发
     handleCommand(command, row) {
       switch (command) {
         case "handleRun":
-          this.handleRun(row);
-          break;
+          this.handleRun(row)
+          break
         case "handleView":
-          this.handleView(row);
-          break;
+          this.handleView(row)
+          break
         case "handleJobLog":
-          this.handleJobLog(row);
-          break;
+          this.handleJobLog(row)
+          break
         default:
-          break;
+          break
       }
     },
     // 任务状态修改
     handleStatusChange(row) {
-      let text = row.status === "0" ? "启用" : "停用";
+      let text = row.status === "0" ? "启用" : "停用"
       this.$modal.confirm('确认要"' + text + '""' + row.jobName + '"任务吗？').then(function() {
-        return changeJobStatus(row.jobId, row.status);
+        return changeJobStatus(row.jobId, row.status)
       }).then(() => {
-        this.$modal.msgSuccess(text + "成功");
+        this.$modal.msgSuccess(text + "成功")
       }).catch(function() {
-        row.status = row.status === "0" ? "1" : "0";
-      });
+        row.status = row.status === "0" ? "1" : "0"
+      })
     },
     /* 立即执行一次 */
     handleRun(row) {
       this.$modal.confirm('确认要立即执行一次"' + row.jobName + '"任务吗？').then(function() {
-        return runJob(row.jobId, row.jobGroup);
+        return runJob(row.jobId, row.jobGroup)
       }).then(() => {
-        this.$modal.msgSuccess("执行成功");
-      }).catch(() => {});
+        this.$modal.msgSuccess("执行成功")
+      }).catch(() => {})
     },
     /** 任务详细信息 */
     handleView(row) {
       getJob(row.jobId).then(response => {
-        this.form = response.data;
-        this.openView = true;
-      });
+        this.form = response.data
+        this.openView = true
+      })
     },
     /** cron表达式按钮操作 */
     handleShowCron() {
-      this.expression = this.form.cronExpression;
-      this.openCron = true;
+      this.expression = this.form.cronExpression
+      this.openCron = true
     },
     /** 确定后回传值 */
     crontabFill(value) {
-      this.form.cronExpression = value;
+      this.form.cronExpression = value
     },
     /** 任务日志列表查询 */
     handleJobLog(row) {
-      const jobId = row.jobId || 0;
+      const jobId = row.jobId || 0
       this.$router.push('/monitor/job-log/index/' + jobId)
     },
     /** 新增按钮操作 */
     handleAdd() {
-      this.reset();
-      this.open = true;
-      this.title = "添加任务";
+      this.reset()
+      this.open = true
+      this.title = "添加任务"
     },
     /** 修改按钮操作 */
     handleUpdate(row) {
-      this.reset();
-      const jobId = row.jobId || this.ids;
+      this.reset()
+      const jobId = row.jobId || this.ids
       getJob(jobId).then(response => {
-        this.form = response.data;
-        this.open = true;
-        this.title = "修改任务";
-      });
+        this.form = response.data
+        this.open = true
+        this.title = "修改任务"
+      })
     },
     /** 提交按钮 */
     submitForm: function() {
@@ -478,29 +478,29 @@ export default {
         if (valid) {
           if (this.form.jobId != undefined) {
             updateJob(this.form).then(response => {
-              this.$modal.msgSuccess("修改成功");
-              this.open = false;
-              this.getList();
-            });
+              this.$modal.msgSuccess("修改成功")
+              this.open = false
+              this.getList()
+            })
           } else {
             addJob(this.form).then(response => {
-              this.$modal.msgSuccess("新增成功");
-              this.open = false;
-              this.getList();
-            });
+              this.$modal.msgSuccess("新增成功")
+              this.open = false
+              this.getList()
+            })
           }
         }
-      });
+      })
     },
     /** 删除按钮操作 */
     handleDelete(row) {
-      const jobIds = row.jobId || this.ids;
+      const jobIds = row.jobId || this.ids
       this.$modal.confirm('是否确认删除定时任务编号为"' + jobIds + '"的数据项？').then(function() {
-        return delJob(jobIds);
+        return delJob(jobIds)
       }).then(() => {
-        this.getList();
-        this.$modal.msgSuccess("删除成功");
-      }).catch(() => {});
+        this.getList()
+        this.$modal.msgSuccess("删除成功")
+      }).catch(() => {})
     },
     /** 导出按钮操作 */
     handleExport() {
@@ -509,5 +509,5 @@ export default {
       }, `job_${new Date().getTime()}.xlsx`)
     }
   }
-};
+}
 </script>

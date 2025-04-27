@@ -51,7 +51,7 @@ export default {
       return this.$store.state.permission.routes
     },
     theme() {
-      return this.$store.state.settings.theme;
+      return this.$store.state.settings.theme
     }
   },
   watch: {
@@ -76,11 +76,11 @@ export default {
       return route.path === this.$route.path
     },
     activeStyle(tag) {
-      if (!this.isActive(tag)) return {};
+      if (!this.isActive(tag)) return {}
       return {
         "background-color": this.theme,
         "border-color": this.theme
-      };
+      }
     },
     isAffix(tag) {
       return tag.meta && tag.meta.affix
@@ -151,7 +151,7 @@ export default {
       })
     },
     refreshSelectedTag(view) {
-      this.$tab.refreshPage(view);
+      this.$tab.refreshPage(view)
       if (this.$route.meta.link) {
         this.$store.dispatch('tagsView/delIframeView', this.$route)
       }
@@ -178,7 +178,7 @@ export default {
       })
     },
     closeOthersTags() {
-      this.$router.push(this.selectedTag.fullPath).catch(()=>{});
+      this.$router.push(this.selectedTag.fullPath).catch(()=>{})
       this.$tab.closeOtherPage(this.selectedTag).then(() => {
         this.moveToCurrentTag()
       })

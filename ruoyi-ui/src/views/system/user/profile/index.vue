@@ -59,10 +59,10 @@
 </template>
 
 <script>
-import userAvatar from "./userAvatar";
-import userInfo from "./userInfo";
-import resetPwd from "./resetPwd";
-import { getUserProfile } from "@/api/system/user";
+import userAvatar from "./userAvatar"
+import userInfo from "./userInfo"
+import resetPwd from "./resetPwd"
+import { getUserProfile } from "@/api/system/user"
 
 export default {
   name: "Profile",
@@ -73,19 +73,19 @@ export default {
       roleGroup: {},
       postGroup: {},
       activeTab: "userinfo"
-    };
+    }
   },
   created() {
-    this.getUser();
+    this.getUser()
   },
   methods: {
     getUser() {
       getUserProfile().then(response => {
-        this.user = response.data;
-        this.roleGroup = response.roleGroup;
-        this.postGroup = response.postGroup;
-      });
+        this.user = response.data
+        this.roleGroup = response.roleGroup
+        this.postGroup = response.postGroup
+      })
     }
   }
-};
+}
 </script>

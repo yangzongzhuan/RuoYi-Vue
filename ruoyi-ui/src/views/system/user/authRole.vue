@@ -46,7 +46,7 @@
 </template>
 
 <script>
-import { getAuthRole, updateAuthRole } from "@/api/system/user";
+import { getAuthRole, updateAuthRole } from "@/api/system/user"
 
 export default {
   name: "AuthRole",
@@ -64,60 +64,60 @@ export default {
       roles: [],
       // 用户信息
       form: {}
-    };
+    }
   },
   created() {
-    const userId = this.$route.params && this.$route.params.userId;
+    const userId = this.$route.params && this.$route.params.userId
     if (userId) {
-      this.loading = true;
+      this.loading = true
       getAuthRole(userId).then((response) => {
-        this.form = response.user;
-        this.roles = response.roles;
-        this.total = this.roles.length;
+        this.form = response.user
+        this.roles = response.roles
+        this.total = this.roles.length
         this.$nextTick(() => {
           this.roles.forEach((row) => {
             if (row.flag) {
-              this.$refs.table.toggleRowSelection(row);
+              this.$refs.table.toggleRowSelection(row)
             }
-          });
-        });
-        this.loading = false;
-      });
+          })
+        })
+        this.loading = false
+      })
     }
   },
   methods: {
     /** 单击选中行数据 */
     clickRow(row) {
       if (this.checkSelectable(row)) {
-        this.$refs.table.toggleRowSelection(row);
+        this.$refs.table.toggleRowSelection(row)
       }
     },
     // 多选框选中数据
     handleSelectionChange(selection) {
-      this.roleIds = selection.map((item) => item.roleId);
+      this.roleIds = selection.map((item) => item.roleId)
     },
     // 保存选中的数据编号
     getRowKey(row) {
-      return row.roleId;
+      return row.roleId
     },
     // 检查角色状态
     checkSelectable(row) {
-      return row.status === "0" ? true : false;
+      return row.status === "0" ? true : false
     },
     /** 提交按钮 */
     submitForm() {
-      const userId = this.form.userId;
-      const roleIds = this.roleIds.join(",");
+      const userId = this.form.userId
+      const roleIds = this.roleIds.join(",")
       updateAuthRole({ userId: userId, roleIds: roleIds }).then((response) => {
-        this.$modal.msgSuccess("授权成功");
-        this.close();
-      });
+        this.$modal.msgSuccess("授权成功")
+        this.close()
+      })
     },
     /** 关闭按钮 */
     close() {
-      const obj = { path: "/system/user" };
-      this.$tab.closeOpenPage(obj);
-    },
-  },
-};
+      const obj = { path: "/system/user" }
+      this.$tab.closeOpenPage(obj)
+    }
+  }
+}
 </script>

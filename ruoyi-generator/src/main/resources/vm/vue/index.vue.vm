@@ -353,7 +353,7 @@
 </template>
 
 <script>
-import { list${BusinessName}, get${BusinessName}, del${BusinessName}, add${BusinessName}, update${BusinessName} } from "@/api/${moduleName}/${businessName}";
+import { list${BusinessName}, get${BusinessName}, del${BusinessName}, add${BusinessName}, update${BusinessName} } from "@/api/${moduleName}/${businessName}"
 
 export default {
   name: "${BusinessName}",
@@ -423,18 +423,18 @@ export default {
 #end
 #end
       }
-    };
+    }
   },
   created() {
-    this.getList();
+    this.getList()
   },
   methods: {
     /** 查询${functionName}列表 */
     getList() {
-      this.loading = true;
+      this.loading = true
 #foreach ($column in $columns)
 #if($column.htmlType == "datetime" && $column.queryType == "BETWEEN")
-      this.queryParams.params = {};
+      this.queryParams.params = {}
 #break
 #end
 #end
@@ -442,21 +442,21 @@ export default {
 #if($column.htmlType == "datetime" && $column.queryType == "BETWEEN")
 #set($AttrName=$column.javaField.substring(0,1).toUpperCase() + ${column.javaField.substring(1)})
       if (null != this.daterange${AttrName} && '' != this.daterange${AttrName}) {
-        this.queryParams.params["begin${AttrName}"] = this.daterange${AttrName}[0];
-        this.queryParams.params["end${AttrName}"] = this.daterange${AttrName}[1];
+        this.queryParams.params["begin${AttrName}"] = this.daterange${AttrName}[0]
+        this.queryParams.params["end${AttrName}"] = this.daterange${AttrName}[1]
       }
 #end
 #end
       list${BusinessName}(this.queryParams).then(response => {
-        this.${businessName}List = response.rows;
-        this.total = response.total;
-        this.loading = false;
-      });
+        this.${businessName}List = response.rows
+        this.total = response.total
+        this.loading = false
+      })
     },
     // 取消按钮
     cancel() {
-      this.open = false;
-      this.reset();
+      this.open = false
+      this.reset()
     },
     // 表单重置
     reset() {
@@ -468,27 +468,27 @@ export default {
         $column.javaField: null#if($foreach.count != $columns.size()),#end
 #end
 #end
-      };
+      }
 #if($table.sub)
-      this.${subclassName}List = [];
+      this.${subclassName}List = []
 #end
-      this.resetForm("form");
+      this.resetForm("form")
     },
     /** 搜索按钮操作 */
     handleQuery() {
-      this.queryParams.pageNum = 1;
-      this.getList();
+      this.queryParams.pageNum = 1
+      this.getList()
     },
     /** 重置按钮操作 */
     resetQuery() {
 #foreach ($column in $columns)
 #if($column.htmlType == "datetime" && $column.queryType == "BETWEEN")
 #set($AttrName=$column.javaField.substring(0,1).toUpperCase() + ${column.javaField.substring(1)})
-      this.daterange${AttrName} = [];
+      this.daterange${AttrName} = []
 #end
 #end
-      this.resetForm("queryForm");
-      this.handleQuery();
+      this.resetForm("queryForm")
+      this.handleQuery()
     },
     // 多选框选中数据
     handleSelectionChange(selection) {
@@ -498,27 +498,27 @@ export default {
     },
     /** 新增按钮操作 */
     handleAdd() {
-      this.reset();
-      this.open = true;
-      this.title = "添加${functionName}";
+      this.reset()
+      this.open = true
+      this.title = "添加${functionName}"
     },
     /** 修改按钮操作 */
     handleUpdate(row) {
-      this.reset();
+      this.reset()
       const ${pkColumn.javaField} = row.${pkColumn.javaField} || this.ids
       get${BusinessName}(${pkColumn.javaField}).then(response => {
-        this.form = response.data;
+        this.form = response.data
 #foreach ($column in $columns)
 #if($column.htmlType == "checkbox")
-        this.form.$column.javaField = this.form.${column.javaField}.split(",");
+        this.form.$column.javaField = this.form.${column.javaField}.split(",")
 #end
 #end
 #if($table.sub)
-        this.${subclassName}List = response.data.${subclassName}List;
+        this.${subclassName}List = response.data.${subclassName}List
 #end
-        this.open = true;
-        this.title = "修改${functionName}";
-      });
+        this.open = true
+        this.title = "修改${functionName}"
+      })
     },
     /** 提交按钮 */
     submitForm() {
@@ -526,64 +526,64 @@ export default {
         if (valid) {
 #foreach ($column in $columns)
 #if($column.htmlType == "checkbox")
-          this.form.$column.javaField = this.form.${column.javaField}.join(",");
+          this.form.$column.javaField = this.form.${column.javaField}.join(",")
 #end
 #end
 #if($table.sub)
-          this.form.${subclassName}List = this.${subclassName}List;
+          this.form.${subclassName}List = this.${subclassName}List
 #end
           if (this.form.${pkColumn.javaField} != null) {
             update${BusinessName}(this.form).then(response => {
-              this.#[[$modal]]#.msgSuccess("修改成功");
-              this.open = false;
-              this.getList();
-            });
+              this.#[[$modal]]#.msgSuccess("修改成功")
+              this.open = false
+              this.getList()
+            })
           } else {
             add${BusinessName}(this.form).then(response => {
-              this.#[[$modal]]#.msgSuccess("新增成功");
-              this.open = false;
-              this.getList();
-            });
+              this.#[[$modal]]#.msgSuccess("新增成功")
+              this.open = false
+              this.getList()
+            })
           }
         }
-      });
+      })
     },
     /** 删除按钮操作 */
     handleDelete(row) {
-      const ${pkColumn.javaField}s = row.${pkColumn.javaField} || this.ids;
+      const ${pkColumn.javaField}s = row.${pkColumn.javaField} || this.ids
       this.#[[$modal]]#.confirm('是否确认删除${functionName}编号为"' + ${pkColumn.javaField}s + '"的数据项？').then(function() {
-        return del${BusinessName}(${pkColumn.javaField}s);
+        return del${BusinessName}(${pkColumn.javaField}s)
       }).then(() => {
-        this.getList();
-        this.#[[$modal]]#.msgSuccess("删除成功");
-      }).catch(() => {});
+        this.getList()
+        this.#[[$modal]]#.msgSuccess("删除成功")
+      }).catch(() => {})
     },
 #if($table.sub)
 	/** ${subTable.functionName}序号 */
     row${subClassName}Index({ row, rowIndex }) {
-      row.index = rowIndex + 1;
+      row.index = rowIndex + 1
     },
     /** ${subTable.functionName}添加按钮操作 */
     handleAdd${subClassName}() {
-      let obj = {};
+      let obj = {}
 #foreach($column in $subTable.columns)
 #if($column.pk || $column.javaField == ${subTableFkclassName})
 #elseif($column.list && "" != $javaField)
-      obj.$column.javaField = "";
+      obj.$column.javaField = ""
 #end
 #end
-      this.${subclassName}List.push(obj);
+      this.${subclassName}List.push(obj)
     },
     /** ${subTable.functionName}删除按钮操作 */
     handleDelete${subClassName}() {
       if (this.checked${subClassName}.length == 0) {
-        this.#[[$modal]]#.msgError("请先选择要删除的${subTable.functionName}数据");
+        this.#[[$modal]]#.msgError("请先选择要删除的${subTable.functionName}数据")
       } else {
-        const ${subclassName}List = this.${subclassName}List;
-        const checked${subClassName} = this.checked${subClassName};
+        const ${subclassName}List = this.${subclassName}List
+        const checked${subClassName} = this.checked${subClassName}
         this.${subclassName}List = ${subclassName}List.filter(function(item) {
           return checked${subClassName}.indexOf(item.index) == -1
-        });
+        })
       }
     },
     /** 复选框选中数据 */
@@ -598,5 +598,5 @@ export default {
       }, `${businessName}_#[[${new Date().getTime()}]]#.xlsx`)
     }
   }
-};
+}
 </script>

@@ -67,18 +67,18 @@
 </template>
 
 <script>
-import { getCodeImg, register } from "@/api/login";
+import { getCodeImg, register } from "@/api/login"
 
 export default {
   name: "Register",
   data() {
     const equalToPassword = (rule, value, callback) => {
       if (this.registerForm.password !== value) {
-        callback(new Error("两次输入的密码不一致"));
+        callback(new Error("两次输入的密码不一致"))
       } else {
-        callback();
+        callback()
       }
-    };
+    }
     return {
       title: process.env.VUE_APP_TITLE,
       codeUrl: "",
@@ -107,44 +107,44 @@ export default {
       },
       loading: false,
       captchaEnabled: true
-    };
+    }
   },
   created() {
-    this.getCode();
+    this.getCode()
   },
   methods: {
     getCode() {
       getCodeImg().then(res => {
-        this.captchaEnabled = res.captchaEnabled === undefined ? true : res.captchaEnabled;
+        this.captchaEnabled = res.captchaEnabled === undefined ? true : res.captchaEnabled
         if (this.captchaEnabled) {
-          this.codeUrl = "data:image/gif;base64," + res.img;
-          this.registerForm.uuid = res.uuid;
+          this.codeUrl = "data:image/gif;base64," + res.img
+          this.registerForm.uuid = res.uuid
         }
-      });
+      })
     },
     handleRegister() {
       this.$refs.registerForm.validate(valid => {
         if (valid) {
-          this.loading = true;
+          this.loading = true
           register(this.registerForm).then(res => {
-            const username = this.registerForm.username;
+            const username = this.registerForm.username
             this.$alert("<font color='red'>恭喜你，您的账号 " + username + " 注册成功！</font>", '系统提示', {
               dangerouslyUseHTMLString: true,
               type: 'success'
             }).then(() => {
-              this.$router.push("/login");
-            }).catch(() => {});
+              this.$router.push("/login")
+            }).catch(() => {})
           }).catch(() => {
-            this.loading = false;
+            this.loading = false
             if (this.captchaEnabled) {
-              this.getCode();
+              this.getCode()
             }
           })
         }
-      });
+      })
     }
   }
-};
+}
 </script>
 
 <style rel="stylesheet/scss" lang="scss">

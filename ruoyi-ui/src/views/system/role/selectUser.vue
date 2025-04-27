@@ -57,7 +57,7 @@
 </template>
 
 <script>
-import { unallocatedUserList, authUserSelectAll } from "@/api/system/role";
+import { unallocatedUserList, authUserSelectAll } from "@/api/system/role"
 export default {
   dicts: ['sys_normal_disable'],
   props: {
@@ -84,53 +84,53 @@ export default {
         userName: undefined,
         phonenumber: undefined
       }
-    };
+    }
   },
   methods: {
     // 显示弹框
     show() {
-      this.queryParams.roleId = this.roleId;
-      this.getList();
-      this.visible = true;
+      this.queryParams.roleId = this.roleId
+      this.getList()
+      this.visible = true
     },
     clickRow(row) {
-      this.$refs.table.toggleRowSelection(row);
+      this.$refs.table.toggleRowSelection(row)
     },
     // 多选框选中数据
     handleSelectionChange(selection) {
-      this.userIds = selection.map(item => item.userId);
+      this.userIds = selection.map(item => item.userId)
     },
     // 查询表数据
     getList() {
       unallocatedUserList(this.queryParams).then(res => {
-        this.userList = res.rows;
-        this.total = res.total;
-      });
+        this.userList = res.rows
+        this.total = res.total
+      })
     },
     /** 搜索按钮操作 */
     handleQuery() {
-      this.queryParams.pageNum = 1;
-      this.getList();
+      this.queryParams.pageNum = 1
+      this.getList()
     },
     /** 重置按钮操作 */
     resetQuery() {
-      this.resetForm("queryForm");
-      this.handleQuery();
+      this.resetForm("queryForm")
+      this.handleQuery()
     },
     /** 选择授权用户操作 */
     handleSelectUser() {
-      const roleId = this.queryParams.roleId;
-      const userIds = this.userIds.join(",");
+      const roleId = this.queryParams.roleId
+      const userIds = this.userIds.join(",")
       if (userIds == "") {
-        this.$modal.msgError("请选择要分配的用户");
-        return;
+        this.$modal.msgError("请选择要分配的用户")
+        return
       }
       authUserSelectAll({ roleId: roleId, userIds: userIds }).then(res => {
-        this.$modal.msgSuccess(res.msg);
-        this.visible = false;
-        this.$emit("ok");
-      }); 
+        this.$modal.msgSuccess(res.msg)
+        this.visible = false
+        this.$emit("ok")
+      }) 
     }
   }
-};
+}
 </script>

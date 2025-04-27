@@ -11,7 +11,7 @@
 </template>
 
 <script>
-import { createTable } from "@/api/tool/gen";
+import { createTable } from "@/api/tool/gen"
 export default {
   data() {
     return {
@@ -19,27 +19,27 @@ export default {
       visible: false,
       // 文本内容
       content: ""
-    };
+    }
   },
   methods: {
     // 显示弹框
     show() {
-      this.visible = true;
+      this.visible = true
     },
     /** 创建按钮操作 */
     handleCreateTable() {
       if (this.content === "") {
-        this.$modal.msgError("请输入建表语句");
-        return;
+        this.$modal.msgError("请输入建表语句")
+        return
       }
       createTable({ sql: this.content }).then(res => {
-        this.$modal.msgSuccess(res.msg);
+        this.$modal.msgSuccess(res.msg)
         if (res.code === 200) {
-          this.visible = false;
-          this.$emit("ok");
+          this.visible = false
+          this.$emit("ok")
         }
-      });
+      })
     }
   }
-};
+}
 </script>

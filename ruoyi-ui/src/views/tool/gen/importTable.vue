@@ -47,7 +47,7 @@
 </template>
 
 <script>
-import { listDbTable, importTable } from "@/api/tool/gen";
+import { listDbTable, importTable } from "@/api/tool/gen"
 export default {
   data() {
     return {
@@ -66,55 +66,55 @@ export default {
         tableName: undefined,
         tableComment: undefined
       }
-    };
+    }
   },
   methods: {
     // 显示弹框
     show() {
-      this.getList();
-      this.visible = true;
+      this.getList()
+      this.visible = true
     },
     clickRow(row) {
-      this.$refs.table.toggleRowSelection(row);
+      this.$refs.table.toggleRowSelection(row)
     },
     // 多选框选中数据
     handleSelectionChange(selection) {
-      this.tables = selection.map(item => item.tableName);
+      this.tables = selection.map(item => item.tableName)
     },
     // 查询表数据
     getList() {
       listDbTable(this.queryParams).then(res => {
         if (res.code === 200) {
-          this.dbTableList = res.rows;
-          this.total = res.total;
+          this.dbTableList = res.rows
+          this.total = res.total
         }
-      });
+      })
     },
     /** 搜索按钮操作 */
     handleQuery() {
-      this.queryParams.pageNum = 1;
-      this.getList();
+      this.queryParams.pageNum = 1
+      this.getList()
     },
     /** 重置按钮操作 */
     resetQuery() {
-      this.resetForm("queryForm");
-      this.handleQuery();
+      this.resetForm("queryForm")
+      this.handleQuery()
     },
     /** 导入按钮操作 */
     handleImportTable() {
-      const tableNames = this.tables.join(",");
+      const tableNames = this.tables.join(",")
       if (tableNames == "") {
-        this.$modal.msgError("请选择要导入的表");
-        return;
+        this.$modal.msgError("请选择要导入的表")
+        return
       }
       importTable({ tables: tableNames }).then(res => {
-        this.$modal.msgSuccess(res.msg);
+        this.$modal.msgSuccess(res.msg)
         if (res.code === 200) {
-          this.visible = false;
-          this.$emit("ok");
+          this.visible = false
+          this.$emit("ok")
         }
-      });
+      })
     }
   }
-};
+}
 </script>

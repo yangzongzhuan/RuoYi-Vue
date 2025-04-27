@@ -47,7 +47,7 @@ export default {
       title: "显示/隐藏",
       // 是否显示弹出层
       open: false
-    };
+    }
   },
   props: {
     /* 是否显示检索条件 */
@@ -77,20 +77,20 @@ export default {
   },
   computed: {
     style() {
-      const ret = {};
+      const ret = {}
       if (this.gutter) {
-        ret.marginRight = `${this.gutter / 2}px`;
+        ret.marginRight = `${this.gutter / 2}px`
       }
-      return ret;
+      return ret
     },
     isChecked: {
       get() {
-        return this.columns.every((col) => col.visible);
+        return this.columns.every((col) => col.visible)
       },
       set() {}
     },
     isIndeterminate() {
-      return this.columns.some((col) => col.visible) && !this.isChecked;
+      return this.columns.some((col) => col.visible) && !this.isChecked
     }
   },
   created() {
@@ -98,7 +98,7 @@ export default {
       // 显隐列初始默认隐藏列
       for (let item in this.columns) {
         if (this.columns[item].visible === false) {
-          this.value.push(parseInt(item));
+          this.value.push(parseInt(item))
         }
       }
     }
@@ -106,34 +106,34 @@ export default {
   methods: {
     // 搜索
     toggleSearch() {
-      this.$emit("update:showSearch", !this.showSearch);
+      this.$emit("update:showSearch", !this.showSearch)
     },
     // 刷新
     refresh() {
-      this.$emit("queryTable");
+      this.$emit("queryTable")
     },
     // 右侧列表元素变化
     dataChange(data) {
       for (let item in this.columns) {
-        const key = this.columns[item].key;
-        this.columns[item].visible = !data.includes(key);
+        const key = this.columns[item].key
+        this.columns[item].visible = !data.includes(key)
       }
     },
     // 打开显隐列dialog
     showColumn() {
-      this.open = true;
+      this.open = true
     },
     // 单勾选
     checkboxChange(event, label) {
-      this.columns.filter(item => item.label == label)[0].visible = event;
+      this.columns.filter(item => item.label == label)[0].visible = event
     },
     // 切换全选/反选
     toggleCheckAll() {
-      const newValue = !this.isChecked;
+      const newValue = !this.isChecked
       this.columns.forEach((col) => (col.visible = newValue))
     }
   },
-};
+}
 </script>
 <style lang="scss" scoped>
 ::v-deep .el-transfer__button {

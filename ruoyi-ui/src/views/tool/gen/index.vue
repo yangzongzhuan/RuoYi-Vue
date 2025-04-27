@@ -170,17 +170,17 @@
 </template>
 
 <script>
-import { listTable, previewTable, delTable, genCode, synchDb } from "@/api/tool/gen";
-import importTable from "./importTable";
-import createTable from "./createTable";
-import hljs from "highlight.js/lib/highlight";
-import "highlight.js/styles/github-gist.css";
-hljs.registerLanguage("java", require("highlight.js/lib/languages/java"));
-hljs.registerLanguage("xml", require("highlight.js/lib/languages/xml"));
-hljs.registerLanguage("html", require("highlight.js/lib/languages/xml"));
-hljs.registerLanguage("vue", require("highlight.js/lib/languages/xml"));
-hljs.registerLanguage("javascript", require("highlight.js/lib/languages/javascript"));
-hljs.registerLanguage("sql", require("highlight.js/lib/languages/sql"));
+import { listTable, previewTable, delTable, genCode, synchDb } from "@/api/tool/gen"
+import importTable from "./importTable"
+import createTable from "./createTable"
+import hljs from "highlight.js/lib/highlight"
+import "highlight.js/styles/github-gist.css"
+hljs.registerLanguage("java", require("highlight.js/lib/languages/java"))
+hljs.registerLanguage("xml", require("highlight.js/lib/languages/xml"))
+hljs.registerLanguage("html", require("highlight.js/lib/languages/xml"))
+hljs.registerLanguage("vue", require("highlight.js/lib/languages/xml"))
+hljs.registerLanguage("javascript", require("highlight.js/lib/languages/javascript"))
+hljs.registerLanguage("sql", require("highlight.js/lib/languages/sql"))
 
 export default {
   name: "Gen",
@@ -223,125 +223,125 @@ export default {
         data: {},
         activeName: "domain.java"
       }
-    };
+    }
   },
   created() {
-    this.queryParams.orderByColumn = this.defaultSort.prop;
-    this.queryParams.isAsc = this.defaultSort.order;
-    this.getList();
+    this.queryParams.orderByColumn = this.defaultSort.prop
+    this.queryParams.isAsc = this.defaultSort.order
+    this.getList()
   },
   activated() {
-    const time = this.$route.query.t;
+    const time = this.$route.query.t
     if (time != null && time != this.uniqueId) {
-      this.uniqueId = time;
-      this.queryParams.pageNum = Number(this.$route.query.pageNum);
-      this.getList();
+      this.uniqueId = time
+      this.queryParams.pageNum = Number(this.$route.query.pageNum)
+      this.getList()
     }
   },
   methods: {
     /** 查询表集合 */
     getList() {
-      this.loading = true;
+      this.loading = true
       listTable(this.addDateRange(this.queryParams, this.dateRange)).then(response => {
-          this.tableList = response.rows;
-          this.total = response.total;
-          this.loading = false;
+          this.tableList = response.rows
+          this.total = response.total
+          this.loading = false
         }
-      );
+      )
     },
     /** 搜索按钮操作 */
     handleQuery() {
-      this.queryParams.pageNum = 1;
-      this.getList();
+      this.queryParams.pageNum = 1
+      this.getList()
     },
     /** 生成代码操作 */
     handleGenTable(row) {
-      const tableNames = row.tableName || this.tableNames;
+      const tableNames = row.tableName || this.tableNames
       if (tableNames == "") {
-        this.$modal.msgError("请选择要生成的数据");
-        return;
+        this.$modal.msgError("请选择要生成的数据")
+        return
       }
       if(row.genType === "1") {
         genCode(row.tableName).then(response => {
-          this.$modal.msgSuccess("成功生成到自定义路径：" + row.genPath);
-        });
+          this.$modal.msgSuccess("成功生成到自定义路径：" + row.genPath)
+        })
       } else {
-        this.$download.zip("/tool/gen/batchGenCode?tables=" + tableNames, "ruoyi.zip");
+        this.$download.zip("/tool/gen/batchGenCode?tables=" + tableNames, "ruoyi.zip")
       }
     },
     /** 同步数据库操作 */
     handleSynchDb(row) {
-      const tableName = row.tableName;
+      const tableName = row.tableName
       this.$modal.confirm('确认要强制同步"' + tableName + '"表结构吗？').then(function() {
-        return synchDb(tableName);
+        return synchDb(tableName)
       }).then(() => {
-        this.$modal.msgSuccess("同步成功");
-      }).catch(() => {});
+        this.$modal.msgSuccess("同步成功")
+      }).catch(() => {})
     },
     /** 打开导入表弹窗 */
     openImportTable() {
-      this.$refs.import.show();
+      this.$refs.import.show()
     },
     /** 打开创建表弹窗 */
     openCreateTable() {
-      this.$refs.create.show();
+      this.$refs.create.show()
     },
     /** 重置按钮操作 */
     resetQuery() {
-      this.dateRange = [];
-      this.resetForm("queryForm");
-      this.queryParams.pageNum = 1;
+      this.dateRange = []
+      this.resetForm("queryForm")
+      this.queryParams.pageNum = 1
       this.$refs.tables.sort(this.defaultSort.prop, this.defaultSort.order)
     },
     /** 预览按钮 */
     handlePreview(row) {
       previewTable(row.tableId).then(response => {
-        this.preview.data = response.data;
-        this.preview.open = true;
-        this.preview.activeName = "domain.java";
-      });
+        this.preview.data = response.data
+        this.preview.open = true
+        this.preview.activeName = "domain.java"
+      })
     },
     /** 高亮显示 */
     highlightedCode(code, key) {
-      const vmName = key.substring(key.lastIndexOf("/") + 1, key.indexOf(".vm"));
-      var language = vmName.substring(vmName.indexOf(".") + 1, vmName.length);
-      const result = hljs.highlight(language, code || "", true);
-      return result.value || '&nbsp;';
+      const vmName = key.substring(key.lastIndexOf("/") + 1, key.indexOf(".vm"))
+      var language = vmName.substring(vmName.indexOf(".") + 1, vmName.length)
+      const result = hljs.highlight(language, code || "", true)
+      return result.value || '&nbsp;'
     },
     /** 复制代码成功 */
     clipboardSuccess() {
-      this.$modal.msgSuccess("复制成功");
+      this.$modal.msgSuccess("复制成功")
     },
     // 多选框选中数据
     handleSelectionChange(selection) {
-      this.ids = selection.map(item => item.tableId);
-      this.tableNames = selection.map(item => item.tableName);
-      this.single = selection.length != 1;
-      this.multiple = !selection.length;
+      this.ids = selection.map(item => item.tableId)
+      this.tableNames = selection.map(item => item.tableName)
+      this.single = selection.length != 1
+      this.multiple = !selection.length
     },
     /** 排序触发事件 */
     handleSortChange(column, prop, order) {
-      this.queryParams.orderByColumn = column.prop;
-      this.queryParams.isAsc = column.order;
-      this.getList();
+      this.queryParams.orderByColumn = column.prop
+      this.queryParams.isAsc = column.order
+      this.getList()
     },
     /** 修改按钮操作 */
     handleEditTable(row) {
-      const tableId = row.tableId || this.ids[0];
-      const tableName = row.tableName || this.tableNames[0];
-      const params = { pageNum: this.queryParams.pageNum };
-      this.$tab.openPage("修改[" + tableName + "]生成配置", '/tool/gen-edit/index/' + tableId, params);
+      const tableId = row.tableId || this.ids[0]
+      const tableName = row.tableName || this.tableNames[0]
+      const params = { pageNum: this.queryParams.pageNum }
+      this.$tab.openPage("修改[" + tableName + "]生成配置", '/tool/gen-edit/index/' + tableId, params)
     },
     /** 删除按钮操作 */
     handleDelete(row) {
-      const tableIds = row.tableId || this.ids;
+      const tableIds = row.tableId || this.ids
       this.$modal.confirm('是否确认删除表编号为"' + tableIds + '"的数据项？').then(function() {
-        return delTable(tableIds);
+        return delTable(tableIds)
       }).then(() => {
-        this.getList();
-        this.$modal.msgSuccess("删除成功");
-      }).catch(() => {});
+        this.getList()
+        this.$modal.msgSuccess("删除成功")
+      }).catch(() => {})
     }
   }
-};
+}
 </script>
