@@ -283,9 +283,9 @@
 </template>
 
 <script>
-import { list${BusinessName}, get${BusinessName}, del${BusinessName}, add${BusinessName}, update${BusinessName} } from "@/api/${moduleName}/${businessName}";
-import Treeselect from "@riophae/vue-treeselect";
-import "@riophae/vue-treeselect/dist/vue-treeselect.css";
+import { list${BusinessName}, get${BusinessName}, del${BusinessName}, add${BusinessName}, update${BusinessName} } from "@/api/${moduleName}/${businessName}"
+import Treeselect from "@riophae/vue-treeselect"
+import "@riophae/vue-treeselect/dist/vue-treeselect.css"
 
 export default {
   name: "${BusinessName}",
@@ -346,18 +346,18 @@ export default {
 #end
 #end
       }
-    };
+    }
   },
   created() {
-    this.getList();
+    this.getList()
   },
   methods: {
     /** 查询${functionName}列表 */
     getList() {
-      this.loading = true;
+      this.loading = true
 #foreach ($column in $columns)
 #if($column.htmlType == "datetime" && $column.queryType == "BETWEEN")
-      this.queryParams.params = {};
+      this.queryParams.params = {}
 #break
 #end
 #end
@@ -365,40 +365,40 @@ export default {
 #if($column.htmlType == "datetime" && $column.queryType == "BETWEEN")
 #set($AttrName=$column.javaField.substring(0,1).toUpperCase() + ${column.javaField.substring(1)})
       if (null != this.daterange${AttrName} && '' != this.daterange${AttrName}) {
-        this.queryParams.params["begin${AttrName}"] = this.daterange${AttrName}[0];
-        this.queryParams.params["end${AttrName}"] = this.daterange${AttrName}[1];
+        this.queryParams.params["begin${AttrName}"] = this.daterange${AttrName}[0]
+        this.queryParams.params["end${AttrName}"] = this.daterange${AttrName}[1]
       }
 #end
 #end
       list${BusinessName}(this.queryParams).then(response => {
-        this.${businessName}List = this.handleTree(response.data, "${treeCode}", "${treeParentCode}");
-        this.loading = false;
-      });
+        this.${businessName}List = this.handleTree(response.data, "${treeCode}", "${treeParentCode}")
+        this.loading = false
+      })
     },
     /** 转换${functionName}数据结构 */
     normalizer(node) {
       if (node.children && !node.children.length) {
-        delete node.children;
+        delete node.children
       }
       return {
         id: node.${treeCode},
         label: node.${treeName},
         children: node.children
-      };
+      }
     },
 	/** 查询${functionName}下拉树结构 */
     getTreeselect() {
       list${BusinessName}().then(response => {
-        this.${businessName}Options = [];
-        const data = { ${treeCode}: 0, ${treeName}: '顶级节点', children: [] };
-        data.children = this.handleTree(response.data, "${treeCode}", "${treeParentCode}");
-        this.${businessName}Options.push(data);
-      });
+        this.${businessName}Options = []
+        const data = { ${treeCode}: 0, ${treeName}: '顶级节点', children: [] }
+        data.children = this.handleTree(response.data, "${treeCode}", "${treeParentCode}")
+        this.${businessName}Options.push(data)
+      })
     },
     // 取消按钮
     cancel() {
-      this.open = false;
-      this.reset();
+      this.open = false
+      this.reset()
     },
     // 表单重置
     reset() {
@@ -410,61 +410,61 @@ export default {
         $column.javaField: null#if($foreach.count != $columns.size()),#end
 #end
 #end
-      };
-      this.resetForm("form");
+      }
+      this.resetForm("form")
     },
     /** 搜索按钮操作 */
     handleQuery() {
-      this.getList();
+      this.getList()
     },
     /** 重置按钮操作 */
     resetQuery() {
 #foreach ($column in $columns)
 #if($column.htmlType == "datetime" && $column.queryType == "BETWEEN")
 #set($AttrName=$column.javaField.substring(0,1).toUpperCase() + ${column.javaField.substring(1)})
-      this.daterange${AttrName} = [];
+      this.daterange${AttrName} = []
 #end
 #end
-      this.resetForm("queryForm");
-      this.handleQuery();
+      this.resetForm("queryForm")
+      this.handleQuery()
     },
     /** 新增按钮操作 */
     handleAdd(row) {
-      this.reset();
-      this.getTreeselect();
+      this.reset()
+      this.getTreeselect()
       if (row != null && row.${treeCode}) {
-        this.form.${treeParentCode} = row.${treeCode};
+        this.form.${treeParentCode} = row.${treeCode}
       } else {
-        this.form.${treeParentCode} = 0;
+        this.form.${treeParentCode} = 0
       }
-      this.open = true;
-      this.title = "添加${functionName}";
+      this.open = true
+      this.title = "添加${functionName}"
     },
     /** 展开/折叠操作 */
     toggleExpandAll() {
-      this.refreshTable = false;
-      this.isExpandAll = !this.isExpandAll;
+      this.refreshTable = false
+      this.isExpandAll = !this.isExpandAll
       this.$nextTick(() => {
-        this.refreshTable = true;
-      });
+        this.refreshTable = true
+      })
     },
     /** 修改按钮操作 */
     handleUpdate(row) {
-      this.reset();
-      this.getTreeselect();
+      this.reset()
+      this.getTreeselect()
       if (row != null) {
-        this.form.${treeParentCode} = row.${treeParentCode};
+        this.form.${treeParentCode} = row.${treeParentCode}
       }
       get${BusinessName}(row.${pkColumn.javaField}).then(response => {
-        this.form = response.data;
+        this.form = response.data
 #foreach ($column in $columns)
 #if($column.htmlType == "checkbox")
-        this.form.$column.javaField = this.form.${column.javaField}.split(",");
+        this.form.$column.javaField = this.form.${column.javaField}.split(",")
 #end
 #end
-        this.open = true;
-        this.title = "修改${functionName}";
-      });
+        this.open = true
+        this.title = "修改${functionName}"
+      })
     },
     /** 提交按钮 */
     submitForm() {
@@ -472,34 +472,34 @@ export default {
         if (valid) {
 #foreach ($column in $columns)
 #if($column.htmlType == "checkbox")
-          this.form.$column.javaField = this.form.${column.javaField}.join(",");
+          this.form.$column.javaField = this.form.${column.javaField}.join(",")
 #end
 #end
           if (this.form.${pkColumn.javaField} != null) {
             update${BusinessName}(this.form).then(response => {
-              this.#[[$modal]]#.msgSuccess("修改成功");
-              this.open = false;
-              this.getList();
-            });
+              this.#[[$modal]]#.msgSuccess("修改成功")
+              this.open = false
+              this.getList()
+            })
           } else {
             add${BusinessName}(this.form).then(response => {
-              this.#[[$modal]]#.msgSuccess("新增成功");
-              this.open = false;
-              this.getList();
-            });
+              this.#[[$modal]]#.msgSuccess("新增成功")
+              this.open = false
+              this.getList()
+            })
           }
         }
-      });
+      })
     },
     /** 删除按钮操作 */
     handleDelete(row) {
       this.#[[$modal]]#.confirm('是否确认删除${functionName}编号为"' + row.${pkColumn.javaField} + '"的数据项？').then(function() {
-        return del${BusinessName}(row.${pkColumn.javaField});
+        return del${BusinessName}(row.${pkColumn.javaField})
       }).then(() => {
-        this.getList();
-        this.#[[$modal]]#.msgSuccess("删除成功");
-      }).catch(() => {});
+        this.getList()
+        this.#[[$modal]]#.msgSuccess("删除成功")
+      }).catch(() => {})
     }
   }
-};
+}
 </script>

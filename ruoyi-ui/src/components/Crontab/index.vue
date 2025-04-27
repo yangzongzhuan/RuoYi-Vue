@@ -113,14 +113,14 @@
 </template>
 
 <script>
-import CrontabSecond from "./second.vue";
-import CrontabMin from "./min.vue";
-import CrontabHour from "./hour.vue";
-import CrontabDay from "./day.vue";
-import CrontabMonth from "./month.vue";
-import CrontabWeek from "./week.vue";
-import CrontabYear from "./year.vue";
-import CrontabResult from "./result.vue";
+import CrontabSecond from "./second.vue"
+import CrontabMin from "./min.vue"
+import CrontabHour from "./hour.vue"
+import CrontabDay from "./day.vue"
+import CrontabMonth from "./month.vue"
+import CrontabWeek from "./week.vue"
+import CrontabYear from "./year.vue"
+import CrontabResult from "./result.vue"
 
 export default {
   data() {
@@ -137,19 +137,19 @@ export default {
         week: "?",
         year: "",
       },
-    };
+    }
   },
   name: "vcrontab",
   props: ["expression", "hideComponent"],
   methods: {
     shouldHide(key) {
-      if (this.hideComponent && this.hideComponent.includes(key)) return false;
-      return true;
+      if (this.hideComponent && this.hideComponent.includes(key)) return false
+      return true
     },
     resolveExp() {
       // 反解析 表达式
       if (this.expression) {
-        let arr = this.expression.split(" ");
+        let arr = this.expression.split(" ")
         if (arr.length >= 6) {
           //6 位以上是合法表达式
           let obj = {
@@ -160,160 +160,160 @@ export default {
             month: arr[4],
             week: arr[5],
             year: arr[6] ? arr[6] : "",
-          };
+          }
           this.crontabValueObj = {
             ...obj,
-          };
+          }
           for (let i in obj) {
-            if (obj[i]) this.changeRadio(i, obj[i]);
+            if (obj[i]) this.changeRadio(i, obj[i])
           }
         }
       } else {
         // 没有传入的表达式 则还原
-        this.clearCron();
+        this.clearCron()
       }
     },
     // tab切换值
     tabCheck(index) {
-      this.tabActive = index;
+      this.tabActive = index
     },
     // 由子组件触发，更改表达式组成的字段值
     updateCrontabValue(name, value, from) {
-      "updateCrontabValue", name, value, from;
-      this.crontabValueObj[name] = value;
+      "updateCrontabValue", name, value, from
+      this.crontabValueObj[name] = value
       if (from && from !== name) {
-        console.log(`来自组件 ${from} 改变了 ${name} ${value}`);
-        this.changeRadio(name, value);
+        console.log(`来自组件 ${from} 改变了 ${name} ${value}`)
+        this.changeRadio(name, value)
       }
     },
     // 赋值到组件
     changeRadio(name, value) {
       let arr = ["second", "min", "hour", "month"],
         refName = "cron" + name,
-        insValue;
+        insValue
 
-      if (!this.$refs[refName]) return;
+      if (!this.$refs[refName]) return
 
       if (arr.includes(name)) {
         if (value === "*") {
-          insValue = 1;
+          insValue = 1
         } else if (value.indexOf("-") > -1) {
-          let indexArr = value.split("-");
+          let indexArr = value.split("-")
           isNaN(indexArr[0])
             ? (this.$refs[refName].cycle01 = 0)
-            : (this.$refs[refName].cycle01 = indexArr[0]);
-          this.$refs[refName].cycle02 = indexArr[1];
-          insValue = 2;
+            : (this.$refs[refName].cycle01 = indexArr[0])
+          this.$refs[refName].cycle02 = indexArr[1]
+          insValue = 2
         } else if (value.indexOf("/") > -1) {
-          let indexArr = value.split("/");
+          let indexArr = value.split("/")
           isNaN(indexArr[0])
             ? (this.$refs[refName].average01 = 0)
-            : (this.$refs[refName].average01 = indexArr[0]);
-          this.$refs[refName].average02 = indexArr[1];
-          insValue = 3;
+            : (this.$refs[refName].average01 = indexArr[0])
+          this.$refs[refName].average02 = indexArr[1]
+          insValue = 3
         } else {
-          insValue = 4;
-          this.$refs[refName].checkboxList = value.split(",");
+          insValue = 4
+          this.$refs[refName].checkboxList = value.split(",")
         }
       } else if (name == "day") {
         if (value === "*") {
-          insValue = 1;
+          insValue = 1
         } else if (value == "?") {
-          insValue = 2;
+          insValue = 2
         } else if (value.indexOf("-") > -1) {
-          let indexArr = value.split("-");
+          let indexArr = value.split("-")
           isNaN(indexArr[0])
             ? (this.$refs[refName].cycle01 = 0)
-            : (this.$refs[refName].cycle01 = indexArr[0]);
-          this.$refs[refName].cycle02 = indexArr[1];
-          insValue = 3;
+            : (this.$refs[refName].cycle01 = indexArr[0])
+          this.$refs[refName].cycle02 = indexArr[1]
+          insValue = 3
         } else if (value.indexOf("/") > -1) {
-          let indexArr = value.split("/");
+          let indexArr = value.split("/")
           isNaN(indexArr[0])
             ? (this.$refs[refName].average01 = 0)
-            : (this.$refs[refName].average01 = indexArr[0]);
-          this.$refs[refName].average02 = indexArr[1];
-          insValue = 4;
+            : (this.$refs[refName].average01 = indexArr[0])
+          this.$refs[refName].average02 = indexArr[1]
+          insValue = 4
         } else if (value.indexOf("W") > -1) {
-          let indexArr = value.split("W");
+          let indexArr = value.split("W")
           isNaN(indexArr[0])
             ? (this.$refs[refName].workday = 0)
-            : (this.$refs[refName].workday = indexArr[0]);
-          insValue = 5;
+            : (this.$refs[refName].workday = indexArr[0])
+          insValue = 5
         } else if (value === "L") {
-          insValue = 6;
+          insValue = 6
         } else {
-          this.$refs[refName].checkboxList = value.split(",");
-          insValue = 7;
+          this.$refs[refName].checkboxList = value.split(",")
+          insValue = 7
         }
       } else if (name == "week") {
         if (value === "*") {
-          insValue = 1;
+          insValue = 1
         } else if (value == "?") {
-          insValue = 2;
+          insValue = 2
         } else if (value.indexOf("-") > -1) {
-          let indexArr = value.split("-");
+          let indexArr = value.split("-")
           isNaN(indexArr[0])
             ? (this.$refs[refName].cycle01 = 0)
-            : (this.$refs[refName].cycle01 = indexArr[0]);
-          this.$refs[refName].cycle02 = indexArr[1];
-          insValue = 3;
+            : (this.$refs[refName].cycle01 = indexArr[0])
+          this.$refs[refName].cycle02 = indexArr[1]
+          insValue = 3
         } else if (value.indexOf("#") > -1) {
-          let indexArr = value.split("#");
+          let indexArr = value.split("#")
           isNaN(indexArr[0])
             ? (this.$refs[refName].average01 = 1)
-            : (this.$refs[refName].average01 = indexArr[0]);
-          this.$refs[refName].average02 = indexArr[1];
-          insValue = 4;
+            : (this.$refs[refName].average01 = indexArr[0])
+          this.$refs[refName].average02 = indexArr[1]
+          insValue = 4
         } else if (value.indexOf("L") > -1) {
-          let indexArr = value.split("L");
+          let indexArr = value.split("L")
           isNaN(indexArr[0])
             ? (this.$refs[refName].weekday = 1)
-            : (this.$refs[refName].weekday = indexArr[0]);
-          insValue = 5;
+            : (this.$refs[refName].weekday = indexArr[0])
+          insValue = 5
         } else {
-          this.$refs[refName].checkboxList = value.split(",");
-          insValue = 6;
+          this.$refs[refName].checkboxList = value.split(",")
+          insValue = 6
         }
       } else if (name == "year") {
         if (value == "") {
-          insValue = 1;
+          insValue = 1
         } else if (value == "*") {
-          insValue = 2;
+          insValue = 2
         } else if (value.indexOf("-") > -1) {
-          insValue = 3;
+          insValue = 3
         } else if (value.indexOf("/") > -1) {
-          insValue = 4;
+          insValue = 4
         } else {
-          this.$refs[refName].checkboxList = value.split(",");
-          insValue = 5;
+          this.$refs[refName].checkboxList = value.split(",")
+          insValue = 5
         }
       }
-      this.$refs[refName].radioValue = insValue;
+      this.$refs[refName].radioValue = insValue
     },
     // 表单选项的子组件校验数字格式（通过-props传递）
     checkNumber(value, minLimit, maxLimit) {
       // 检查必须为整数
-      value = Math.floor(value);
+      value = Math.floor(value)
       if (value < minLimit) {
-        value = minLimit;
+        value = minLimit
       } else if (value > maxLimit) {
-        value = maxLimit;
+        value = maxLimit
       }
-      return value;
+      return value
     },
     // 隐藏弹窗
     hidePopup() {
-      this.$emit("hide");
+      this.$emit("hide")
     },
     // 填充表达式
     submitFill() {
-      this.$emit("fill", this.crontabValueString);
-      this.hidePopup();
+      this.$emit("fill", this.crontabValueString)
+      this.hidePopup()
     },
     clearCron() {
       // 还原选择项
-      ("准备还原");
+      ("准备还原")
       this.crontabValueObj = {
         second: "*",
         min: "*",
@@ -322,15 +322,15 @@ export default {
         month: "*",
         week: "?",
         year: "",
-      };
+      }
       for (let j in this.crontabValueObj) {
-        this.changeRadio(j, this.crontabValueObj[j]);
+        this.changeRadio(j, this.crontabValueObj[j])
       }
     },
   },
   computed: {
     crontabValueString: function() {
-      let obj = this.crontabValueObj;
+      let obj = this.crontabValueObj
       let str =
         obj.second +
         " " +
@@ -343,8 +343,8 @@ export default {
         obj.month +
         " " +
         obj.week +
-        (obj.year == "" ? "" : " " + obj.year);
-      return str;
+        (obj.year == "" ? "" : " " + obj.year)
+      return str
     },
   },
   components: {
@@ -364,9 +364,9 @@ export default {
     },
   },
   mounted: function() {
-    this.resolveExp();
+    this.resolveExp()
   },
-};
+}
 </script>
 <style scoped>
 .pop_btn {

@@ -181,7 +181,7 @@
 </template>
 
 <script>
-import { listConfig, getConfig, delConfig, addConfig, updateConfig, refreshCache } from "@/api/system/config";
+import { listConfig, getConfig, delConfig, addConfig, updateConfig, refreshCache } from "@/api/system/config"
 
 export default {
   name: "Config",
@@ -230,26 +230,26 @@ export default {
           { required: true, message: "参数键值不能为空", trigger: "blur" }
         ]
       }
-    };
+    }
   },
   created() {
-    this.getList();
+    this.getList()
   },
   methods: {
     /** 查询参数列表 */
     getList() {
-      this.loading = true;
+      this.loading = true
       listConfig(this.addDateRange(this.queryParams, this.dateRange)).then(response => {
-          this.configList = response.rows;
-          this.total = response.total;
-          this.loading = false;
+          this.configList = response.rows
+          this.total = response.total
+          this.loading = false
         }
-      );
+      )
     },
     // 取消按钮
     cancel() {
-      this.open = false;
-      this.reset();
+      this.open = false
+      this.reset()
     },
     // 表单重置
     reset() {
@@ -260,25 +260,25 @@ export default {
         configValue: undefined,
         configType: "Y",
         remark: undefined
-      };
-      this.resetForm("form");
+      }
+      this.resetForm("form")
     },
     /** 搜索按钮操作 */
     handleQuery() {
-      this.queryParams.pageNum = 1;
-      this.getList();
+      this.queryParams.pageNum = 1
+      this.getList()
     },
     /** 重置按钮操作 */
     resetQuery() {
-      this.dateRange = [];
-      this.resetForm("queryForm");
-      this.handleQuery();
+      this.dateRange = []
+      this.resetForm("queryForm")
+      this.handleQuery()
     },
     /** 新增按钮操作 */
     handleAdd() {
-      this.reset();
-      this.open = true;
-      this.title = "添加参数";
+      this.reset()
+      this.open = true
+      this.title = "添加参数"
     },
     // 多选框选中数据
     handleSelectionChange(selection) {
@@ -288,13 +288,13 @@ export default {
     },
     /** 修改按钮操作 */
     handleUpdate(row) {
-      this.reset();
+      this.reset()
       const configId = row.configId || this.ids
       getConfig(configId).then(response => {
-        this.form = response.data;
-        this.open = true;
-        this.title = "修改参数";
-      });
+        this.form = response.data
+        this.open = true
+        this.title = "修改参数"
+      })
     },
     /** 提交按钮 */
     submitForm: function() {
@@ -302,29 +302,29 @@ export default {
         if (valid) {
           if (this.form.configId != undefined) {
             updateConfig(this.form).then(response => {
-              this.$modal.msgSuccess("修改成功");
-              this.open = false;
-              this.getList();
-            });
+              this.$modal.msgSuccess("修改成功")
+              this.open = false
+              this.getList()
+            })
           } else {
             addConfig(this.form).then(response => {
-              this.$modal.msgSuccess("新增成功");
-              this.open = false;
-              this.getList();
-            });
+              this.$modal.msgSuccess("新增成功")
+              this.open = false
+              this.getList()
+            })
           }
         }
-      });
+      })
     },
     /** 删除按钮操作 */
     handleDelete(row) {
-      const configIds = row.configId || this.ids;
+      const configIds = row.configId || this.ids
       this.$modal.confirm('是否确认删除参数编号为"' + configIds + '"的数据项？').then(function() {
-          return delConfig(configIds);
-        }).then(() => {
-          this.getList();
-          this.$modal.msgSuccess("删除成功");
-        }).catch(() => {});
+        return delConfig(configIds)
+      }).then(() => {
+        this.getList()
+        this.$modal.msgSuccess("删除成功")
+      }).catch(() => {})
     },
     /** 导出按钮操作 */
     handleExport() {
@@ -335,9 +335,9 @@ export default {
     /** 刷新缓存按钮操作 */
     handleRefreshCache() {
       refreshCache().then(() => {
-        this.$modal.msgSuccess("刷新成功");
-      });
+        this.$modal.msgSuccess("刷新成功")
+      })
     }
   }
-};
+}
 </script>

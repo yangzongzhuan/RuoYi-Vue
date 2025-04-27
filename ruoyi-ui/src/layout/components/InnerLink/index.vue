@@ -24,24 +24,24 @@ export default {
     return {
       loading: false,
       height: document.documentElement.clientHeight - 94.5 + "px;"
-    };
+    }
   },
   mounted() {
-    var _this = this;
-    const iframeId = ("#" + this.iframeId).replace(/\//g, "\\/");
-    const iframe = document.querySelector(iframeId);
+    var _this = this
+    const iframeId = ("#" + this.iframeId).replace(/\//g, "\\/")
+    const iframe = document.querySelector(iframeId)
     // iframe页面loading控制
     if (iframe.attachEvent) {
-      this.loading = true;
+      this.loading = true
       iframe.attachEvent("onload", function () {
-        _this.loading = false;
-      });
+        _this.loading = false
+      })
     } else {
-      this.loading = true;
+      this.loading = true
       iframe.onload = function () {
-        _this.loading = false;
-      };
+        _this.loading = false
+      }
     }
   }
-};
+}
 </script>

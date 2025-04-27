@@ -158,9 +158,9 @@
 </template>
 
 <script>
-import { listDept, getDept, delDept, addDept, updateDept, listDeptExcludeChild } from "@/api/system/dept";
-import Treeselect from "@riophae/vue-treeselect";
-import "@riophae/vue-treeselect/dist/vue-treeselect.css";
+import { listDept, getDept, delDept, addDept, updateDept, listDeptExcludeChild } from "@/api/system/dept"
+import Treeselect from "@riophae/vue-treeselect"
+import "@riophae/vue-treeselect/dist/vue-treeselect.css"
 
 export default {
   name: "Dept",
@@ -217,35 +217,35 @@ export default {
           }
         ]
       }
-    };
+    }
   },
   created() {
-    this.getList();
+    this.getList()
   },
   methods: {
     /** 查询部门列表 */
     getList() {
-      this.loading = true;
+      this.loading = true
       listDept(this.queryParams).then(response => {
-        this.deptList = this.handleTree(response.data, "deptId");
-        this.loading = false;
-      });
+        this.deptList = this.handleTree(response.data, "deptId")
+        this.loading = false
+      })
     },
     /** 转换部门数据结构 */
     normalizer(node) {
       if (node.children && !node.children.length) {
-        delete node.children;
+        delete node.children
       }
       return {
         id: node.deptId,
         label: node.deptName,
         children: node.children
-      };
+      }
     },
     // 取消按钮
     cancel() {
-      this.open = false;
-      this.reset();
+      this.open = false
+      this.reset()
     },
     // 表单重置
     reset() {
@@ -258,53 +258,53 @@ export default {
         phone: undefined,
         email: undefined,
         status: "0"
-      };
-      this.resetForm("form");
+      }
+      this.resetForm("form")
     },
     /** 搜索按钮操作 */
     handleQuery() {
-      this.getList();
+      this.getList()
     },
     /** 重置按钮操作 */
     resetQuery() {
-      this.resetForm("queryForm");
-      this.handleQuery();
+      this.resetForm("queryForm")
+      this.handleQuery()
     },
     /** 新增按钮操作 */
     handleAdd(row) {
-      this.reset();
+      this.reset()
       if (row != undefined) {
-        this.form.parentId = row.deptId;
+        this.form.parentId = row.deptId
       }
-      this.open = true;
-      this.title = "添加部门";
+      this.open = true
+      this.title = "添加部门"
       listDept().then(response => {
-        this.deptOptions = this.handleTree(response.data, "deptId");
-      });
+        this.deptOptions = this.handleTree(response.data, "deptId")
+      })
     },
     /** 展开/折叠操作 */
     toggleExpandAll() {
-      this.refreshTable = false;
-      this.isExpandAll = !this.isExpandAll;
+      this.refreshTable = false
+      this.isExpandAll = !this.isExpandAll
       this.$nextTick(() => {
-        this.refreshTable = true;
-      });
+        this.refreshTable = true
+      })
     },
     /** 修改按钮操作 */
     handleUpdate(row) {
-      this.reset();
+      this.reset()
       getDept(row.deptId).then(response => {
-        this.form = response.data;
-        this.open = true;
-        this.title = "修改部门";
+        this.form = response.data
+        this.open = true
+        this.title = "修改部门"
         listDeptExcludeChild(row.deptId).then(response => {
-          this.deptOptions = this.handleTree(response.data, "deptId");
+          this.deptOptions = this.handleTree(response.data, "deptId")
           if (this.deptOptions.length == 0) {
-            const noResultsOptions = { deptId: this.form.parentId, deptName: this.form.parentName, children: [] };
-            this.deptOptions.push(noResultsOptions);
+            const noResultsOptions = { deptId: this.form.parentId, deptName: this.form.parentName, children: [] }
+            this.deptOptions.push(noResultsOptions)
           }
-        });
-      });
+        })
+      })
     },
     /** 提交按钮 */
     submitForm: function() {
@@ -312,29 +312,29 @@ export default {
         if (valid) {
           if (this.form.deptId != undefined) {
             updateDept(this.form).then(response => {
-              this.$modal.msgSuccess("修改成功");
-              this.open = false;
-              this.getList();
-            });
+              this.$modal.msgSuccess("修改成功")
+              this.open = false
+              this.getList()
+            })
           } else {
             addDept(this.form).then(response => {
-              this.$modal.msgSuccess("新增成功");
-              this.open = false;
-              this.getList();
-            });
+              this.$modal.msgSuccess("新增成功")
+              this.open = false
+              this.getList()
+            })
           }
         }
-      });
+      })
     },
     /** 删除按钮操作 */
     handleDelete(row) {
       this.$modal.confirm('是否确认删除名称为"' + row.deptName + '"的数据项？').then(function() {
-        return delDept(row.deptId);
+        return delDept(row.deptId)
       }).then(() => {
-        this.getList();
-        this.$modal.msgSuccess("删除成功");
-      }).catch(() => {});
+        this.getList()
+        this.$modal.msgSuccess("删除成功")
+      }).catch(() => {})
     }
   }
-};
+}
 </script>

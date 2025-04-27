@@ -74,13 +74,13 @@ export default {
   },
   filters: {
     handleArray(array) {
-      if (array.length === 0) return '';
+      if (array.length === 0) return ''
       return array.reduce((pre, cur) => {
-        return pre + ' ' + cur;
+        return pre + ' ' + cur
       })
     },
   }
-};
+}
 </script>
 <style scoped>
 .el-tag + .el-tag {

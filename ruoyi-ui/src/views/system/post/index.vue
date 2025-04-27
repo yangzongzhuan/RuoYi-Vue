@@ -157,7 +157,7 @@
 </template>
 
 <script>
-import { listPost, getPost, delPost, addPost, updatePost } from "@/api/system/post";
+import { listPost, getPost, delPost, addPost, updatePost } from "@/api/system/post"
 
 export default {
   name: "Post",
@@ -204,25 +204,25 @@ export default {
           { required: true, message: "岗位顺序不能为空", trigger: "blur" }
         ]
       }
-    };
+    }
   },
   created() {
-    this.getList();
+    this.getList()
   },
   methods: {
     /** 查询岗位列表 */
     getList() {
-      this.loading = true;
+      this.loading = true
       listPost(this.queryParams).then(response => {
-        this.postList = response.rows;
-        this.total = response.total;
-        this.loading = false;
-      });
+        this.postList = response.rows
+        this.total = response.total
+        this.loading = false
+      })
     },
     // 取消按钮
     cancel() {
-      this.open = false;
-      this.reset();
+      this.open = false
+      this.reset()
     },
     // 表单重置
     reset() {
@@ -233,18 +233,18 @@ export default {
         postSort: 0,
         status: "0",
         remark: undefined
-      };
-      this.resetForm("form");
+      }
+      this.resetForm("form")
     },
     /** 搜索按钮操作 */
     handleQuery() {
-      this.queryParams.pageNum = 1;
-      this.getList();
+      this.queryParams.pageNum = 1
+      this.getList()
     },
     /** 重置按钮操作 */
     resetQuery() {
-      this.resetForm("queryForm");
-      this.handleQuery();
+      this.resetForm("queryForm")
+      this.handleQuery()
     },
     // 多选框选中数据
     handleSelectionChange(selection) {
@@ -254,19 +254,19 @@ export default {
     },
     /** 新增按钮操作 */
     handleAdd() {
-      this.reset();
-      this.open = true;
-      this.title = "添加岗位";
+      this.reset()
+      this.open = true
+      this.title = "添加岗位"
     },
     /** 修改按钮操作 */
     handleUpdate(row) {
-      this.reset();
+      this.reset()
       const postId = row.postId || this.ids
       getPost(postId).then(response => {
-        this.form = response.data;
-        this.open = true;
-        this.title = "修改岗位";
-      });
+        this.form = response.data
+        this.open = true
+        this.title = "修改岗位"
+      })
     },
     /** 提交按钮 */
     submitForm: function() {
@@ -274,29 +274,29 @@ export default {
         if (valid) {
           if (this.form.postId != undefined) {
             updatePost(this.form).then(response => {
-              this.$modal.msgSuccess("修改成功");
-              this.open = false;
-              this.getList();
-            });
+              this.$modal.msgSuccess("修改成功")
+              this.open = false
+              this.getList()
+            })
           } else {
             addPost(this.form).then(response => {
-              this.$modal.msgSuccess("新增成功");
-              this.open = false;
-              this.getList();
-            });
+              this.$modal.msgSuccess("新增成功")
+              this.open = false
+              this.getList()
+            })
           }
         }
-      });
+      })
     },
     /** 删除按钮操作 */
     handleDelete(row) {
-      const postIds = row.postId || this.ids;
+      const postIds = row.postId || this.ids
       this.$modal.confirm('是否确认删除岗位编号为"' + postIds + '"的数据项？').then(function() {
-        return delPost(postIds);
+        return delPost(postIds)
       }).then(() => {
-        this.getList();
-        this.$modal.msgSuccess("删除成功");
-      }).catch(() => {});
+        this.getList()
+        this.$modal.msgSuccess("删除成功")
+      }).catch(() => {})
     },
     /** 导出按钮操作 */
     handleExport() {
@@ -305,5 +305,5 @@ export default {
       }, `post_${new Date().getTime()}.xlsx`)
     }
   }
-};
+}
 </script>

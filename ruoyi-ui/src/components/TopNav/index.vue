@@ -32,11 +32,11 @@
 </template>
 
 <script>
-import { constantRoutes } from "@/router";
-import { isHttp } from "@/utils/validate";
+import { constantRoutes } from "@/router"
+import { isHttp } from "@/utils/validate"
 
 // 隐藏侧边栏路由
-const hideList = ['/index', '/user/profile'];
+const hideList = ['/index', '/user/profile']
 
 export default {
   data() {
@@ -45,67 +45,67 @@ export default {
       visibleNumber: 5,
       // 当前激活菜单的 index
       currentIndex: undefined
-    };
+    }
   },
   computed: {
     theme() {
-      return this.$store.state.settings.theme;
+      return this.$store.state.settings.theme
     },
     // 顶部显示菜单
     topMenus() {
-      let topMenus = [];
+      let topMenus = []
       this.routers.map((menu) => {
         if (menu.hidden !== true) {
           // 兼容顶部栏一级菜单内部跳转
           if (menu.path === '/' && menu.children) {
-            topMenus.push(menu.children[0]);
+            topMenus.push(menu.children[0])
           } else {
-            topMenus.push(menu);
+            topMenus.push(menu)
           }
         }
-      });
-      return topMenus;
+      })
+      return topMenus
     },
     // 所有的路由信息
     routers() {
-      return this.$store.state.permission.topbarRouters;
+      return this.$store.state.permission.topbarRouters
     },
     // 设置子路由
     childrenMenus() {
-      var childrenMenus = [];
+      var childrenMenus = []
       this.routers.map((router) => {
         for (var item in router.children) {
           if (router.children[item].parentPath === undefined) {
             if(router.path === "/") {
-              router.children[item].path = "/" + router.children[item].path;
+              router.children[item].path = "/" + router.children[item].path
             } else {
               if(!isHttp(router.children[item].path)) {
-                router.children[item].path = router.path + "/" + router.children[item].path;
+                router.children[item].path = router.path + "/" + router.children[item].path
               }
             }
-            router.children[item].parentPath = router.path;
+            router.children[item].parentPath = router.path
           }
-          childrenMenus.push(router.children[item]);
+          childrenMenus.push(router.children[item])
         }
-      });
-      return constantRoutes.concat(childrenMenus);
+      })
+      return constantRoutes.concat(childrenMenus)
     },
     // 默认激活的菜单
     activeMenu() {
-      const path = this.$route.path;
-      let activePath = path;
+      const path = this.$route.path
+      let activePath = path
       if (path !== undefined && path.lastIndexOf("/") > 0 && hideList.indexOf(path) === -1) {
-        const tmpPath = path.substring(1, path.length);
+        const tmpPath = path.substring(1, path.length)
         if (!this.$route.meta.link) {
-          activePath = "/" + tmpPath.substring(0, tmpPath.indexOf("/"));
-          this.$store.dispatch('app/toggleSideBarHide', false);
+          activePath = "/" + tmpPath.substring(0, tmpPath.indexOf("/"))
+          this.$store.dispatch('app/toggleSideBarHide', false)
         }
       } else if(!this.$route.children) {
-        activePath = path;
-        this.$store.dispatch('app/toggleSideBarHide', true);
+        activePath = path
+        this.$store.dispatch('app/toggleSideBarHide', true)
       }
-      this.activeRoutes(activePath);
-      return activePath;
+      this.activeRoutes(activePath)
+      return activePath
     },
   },
   beforeMount() {
@@ -115,55 +115,55 @@ export default {
     window.removeEventListener('resize', this.setVisibleNumber)
   },
   mounted() {
-    this.setVisibleNumber();
+    this.setVisibleNumber()
   },
   methods: {
     // 根据宽度计算设置显示栏数
     setVisibleNumber() {
-      const width = document.body.getBoundingClientRect().width / 3;
-      this.visibleNumber = parseInt(width / 85);
+      const width = document.body.getBoundingClientRect().width / 3
+      this.visibleNumber = parseInt(width / 85)
     },
     // 菜单选择事件
     handleSelect(key, keyPath) {
-      this.currentIndex = key;
-      const route = this.routers.find(item => item.path === key);
+      this.currentIndex = key
+      const route = this.routers.find(item => item.path === key)
       if (isHttp(key)) {
         // http(s):// 路径新窗口打开
-        window.open(key, "_blank");
+        window.open(key, "_blank")
       } else if (!route || !route.children) {
         // 没有子路由路径内部打开
-        const routeMenu = this.childrenMenus.find(item => item.path === key);
+        const routeMenu = this.childrenMenus.find(item => item.path === key)
         if (routeMenu && routeMenu.query) {
-          let query = JSON.parse(routeMenu.query);
-          this.$router.push({ path: key, query: query });
+          let query = JSON.parse(routeMenu.query)
+          this.$router.push({ path: key, query: query })
         } else {
-          this.$router.push({ path: key });
+          this.$router.push({ path: key })
         }
-        this.$store.dispatch('app/toggleSideBarHide', true);
+        this.$store.dispatch('app/toggleSideBarHide', true)
       } else {
         // 显示左侧联动菜单
-        this.activeRoutes(key);
-        this.$store.dispatch('app/toggleSideBarHide', false);
+        this.activeRoutes(key)
+        this.$store.dispatch('app/toggleSideBarHide', false)
       }
     },
     // 当前激活的路由
     activeRoutes(key) {
-      var routes = [];
+      var routes = []
       if (this.childrenMenus && this.childrenMenus.length > 0) {
         this.childrenMenus.map((item) => {
           if (key == item.parentPath || (key == "index" && "" == item.path)) {
-            routes.push(item);
+            routes.push(item)
           }
-        });
+        })
       }
       if(routes.length > 0) {
-        this.$store.commit("SET_SIDEBAR_ROUTERS", routes);
+        this.$store.commit("SET_SIDEBAR_ROUTERS", routes)
       } else {
-        this.$store.dispatch('app/toggleSideBarHide', true);
+        this.$store.dispatch('app/toggleSideBarHide', true)
       }
     }
   },
-};
+}
 </script>
 
 <style lang="scss">

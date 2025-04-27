@@ -65,8 +65,8 @@
 </template>
 
 <script>
-import { getCache } from "@/api/monitor/cache";
-import * as echarts from "echarts";
+import { getCache } from "@/api/monitor/cache"
+import * as echarts from "echarts"
 
 export default {
   name: "Cache",
@@ -81,17 +81,17 @@ export default {
     }
   },
   created() {
-    this.getList();
-    this.openLoading();
+    this.getList()
+    this.openLoading()
   },
   methods: {
     /** 查缓存询信息 */
     getList() {
       getCache().then((response) => {
-        this.cache = response.data;
-        this.$modal.closeLoading();
+        this.cache = response.data
+        this.$modal.closeLoading()
 
-        this.commandstats = echarts.init(this.$refs.commandstats, "macarons");
+        this.commandstats = echarts.init(this.$refs.commandstats, "macarons")
         this.commandstats.setOption({
           tooltip: {
             trigger: "item",
@@ -109,8 +109,8 @@ export default {
               animationDuration: 1000,
             }
           ]
-        });
-        this.usedmemory = echarts.init(this.$refs.usedmemory, "macarons");
+        })
+        this.usedmemory = echarts.init(this.$refs.usedmemory, "macarons")
         this.usedmemory.setOption({
           tooltip: {
             formatter: "{b} <br/>{a} : " + this.cache.info.used_memory_human,
@@ -132,17 +132,17 @@ export default {
               ]
             }
           ]
-        });
+        })
         window.addEventListener("resize", () => {
-          this.commandstats.resize();
-          this.usedmemory.resize();
-        });
-      });
+          this.commandstats.resize()
+          this.usedmemory.resize()
+        })
+      })
     },
     // 打开加载层
     openLoading() {
-      this.$modal.loading("正在加载缓存监控数据，请稍候！");
+      this.$modal.loading("正在加载缓存监控数据，请稍候！")
     }
   }
-};
+}
 </script>

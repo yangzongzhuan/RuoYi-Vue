@@ -54,7 +54,7 @@ export default {
           { required: true, message: "请输入作者", trigger: "blur" }
         ]
       }
-    };
+    }
   }
-};
+}
 </script>

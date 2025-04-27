@@ -271,26 +271,26 @@
 </template>
 
 <script setup name="${BusinessName}">
-import { list${BusinessName}, get${BusinessName}, del${BusinessName}, add${BusinessName}, update${BusinessName} } from "@/api/${moduleName}/${businessName}";
+import { list${BusinessName}, get${BusinessName}, del${BusinessName}, add${BusinessName}, update${BusinessName} } from "@/api/${moduleName}/${businessName}"
 
-const { proxy } = getCurrentInstance();
+const { proxy } = getCurrentInstance()
 #if(${dicts} != '')
 #set($dictsNoSymbol=$dicts.replace("'", ""))
-const { ${dictsNoSymbol} } = proxy.useDict(${dicts});
+const { ${dictsNoSymbol} } = proxy.useDict(${dicts})
 #end
 
-const ${businessName}List = ref([]);
-const ${businessName}Options = ref([]);
-const open = ref(false);
-const loading = ref(true);
-const showSearch = ref(true);
-const title = ref("");
-const isExpandAll = ref(true);
-const refreshTable = ref(true);
+const ${businessName}List = ref([])
+const ${businessName}Options = ref([])
+const open = ref(false)
+const loading = ref(true)
+const showSearch = ref(true)
+const title = ref("")
+const isExpandAll = ref(true)
+const refreshTable = ref(true)
 #foreach ($column in $columns)
 #if($column.htmlType == "datetime" && $column.queryType == "BETWEEN")
 #set($AttrName=$column.javaField.substring(0,1).toUpperCase() + ${column.javaField.substring(1)})
-const daterange${AttrName} = ref([]);
+const daterange${AttrName} = ref([])
 #end
 #end
 
@@ -318,16 +318,16 @@ const data = reactive({
 #end
 #end
   }
-});
+})
 
-const { queryParams, form, rules } = toRefs(data);
+const { queryParams, form, rules } = toRefs(data)
 
 /** 查询${functionName}列表 */
 function getList() {
-  loading.value = true;
+  loading.value = true
 #foreach ($column in $columns)
 #if($column.htmlType == "datetime" && $column.queryType == "BETWEEN")
-  queryParams.value.params = {};
+  queryParams.value.params = {}
 #break
 #end
 #end
@@ -335,31 +335,31 @@ function getList() {
 #if($column.htmlType == "datetime" && $column.queryType == "BETWEEN")
 #set($AttrName=$column.javaField.substring(0,1).toUpperCase() + ${column.javaField.substring(1)})
   if (null != daterange${AttrName} && '' != daterange${AttrName}) {
-    queryParams.value.params["begin${AttrName}"] = daterange${AttrName}.value[0];
-    queryParams.value.params["end${AttrName}"] = daterange${AttrName}.value[1];
+    queryParams.value.params["begin${AttrName}"] = daterange${AttrName}.value[0]
+    queryParams.value.params["end${AttrName}"] = daterange${AttrName}.value[1]
   }
 #end
 #end
   list${BusinessName}(queryParams.value).then(response => {
-    ${businessName}List.value = proxy.handleTree(response.data, "${treeCode}", "${treeParentCode}");
-    loading.value = false;
-  });
+    ${businessName}List.value = proxy.handleTree(response.data, "${treeCode}", "${treeParentCode}")
+    loading.value = false
+  })
 }
 
 /** 查询${functionName}下拉树结构 */
 function getTreeselect() {
   list${BusinessName}().then(response => {
-    ${businessName}Options.value = [];
-    const data = { ${treeCode}: 0, ${treeName}: '顶级节点', children: [] };
-    data.children = proxy.handleTree(response.data, "${treeCode}", "${treeParentCode}");
-    ${businessName}Options.value.push(data);
-  });
+    ${businessName}Options.value = []
+    const data = { ${treeCode}: 0, ${treeName}: '顶级节点', children: [] }
+    data.children = proxy.handleTree(response.data, "${treeCode}", "${treeParentCode}")
+    ${businessName}Options.value.push(data)
+  })
 }
 	
 // 取消按钮
 function cancel() {
-  open.value = false;
-  reset();
+  open.value = false
+  reset()
 }
 
 // 表单重置
@@ -372,13 +372,13 @@ function reset() {
     $column.javaField: null#if($foreach.count != $columns.size()),#end
 #end
 #end
-  };
-  proxy.resetForm("${businessName}Ref");
+  }
+  proxy.resetForm("${businessName}Ref")
 }
 
 /** 搜索按钮操作 */
 function handleQuery() {
-  getList();
+  getList()
 }
 
 /** 重置按钮操作 */
@@ -386,52 +386,52 @@ function resetQuery() {
 #foreach ($column in $columns)
 #if($column.htmlType == "datetime" && $column.queryType == "BETWEEN")
 #set($AttrName=$column.javaField.substring(0,1).toUpperCase() + ${column.javaField.substring(1)})
-  daterange${AttrName}.value = [];
+  daterange${AttrName}.value = []
 #end
 #end
-  proxy.resetForm("queryRef");
-  handleQuery();
+  proxy.resetForm("queryRef")
+  handleQuery()
 }
 
 /** 新增按钮操作 */
 function handleAdd(row) {
-  reset();
-  getTreeselect();
+  reset()
+  getTreeselect()
   if (row != null && row.${treeCode}) {
-    form.value.${treeParentCode} = row.${treeCode};
+    form.value.${treeParentCode} = row.${treeCode}
   } else {
-    form.value.${treeParentCode} = 0;
+    form.value.${treeParentCode} = 0
   }
-  open.value = true;
-  title.value = "添加${functionName}";
+  open.value = true
+  title.value = "添加${functionName}"
 }
 
 /** 展开/折叠操作 */
 function toggleExpandAll() {
-  refreshTable.value = false;
-  isExpandAll.value = !isExpandAll.value;
+  refreshTable.value = false
+  isExpandAll.value = !isExpandAll.value
   nextTick(() => {
-    refreshTable.value = true;
-  });
+    refreshTable.value = true
+  })
 }
 
 /** 修改按钮操作 */
 async function handleUpdate(row) {
-  reset();
-  await getTreeselect();
+  reset()
+  await getTreeselect()
   if (row != null) {
-    form.value.${treeParentCode} = row.${treeParentCode};
+    form.value.${treeParentCode} = row.${treeParentCode}
   }
   get${BusinessName}(row.${pkColumn.javaField}).then(response => {
-    form.value = response.data;
+    form.value = response.data
 #foreach ($column in $columns)
 #if($column.htmlType == "checkbox")
-    form.value.$column.javaField = form.value.${column.javaField}.split(",");
+    form.value.$column.javaField = form.value.${column.javaField}.split(",")
 #end
 #end
-    open.value = true;
-    title.value = "修改${functionName}";
-  });
+    open.value = true
+    title.value = "修改${functionName}"
+  })
 }
 
 /** 提交按钮 */
@@ -440,35 +440,35 @@ function submitForm() {
     if (valid) {
 #foreach ($column in $columns)
 #if($column.htmlType == "checkbox")
-      form.value.$column.javaField = form.value.${column.javaField}.join(",");
+      form.value.$column.javaField = form.value.${column.javaField}.join(",")
 #end
 #end
       if (form.value.${pkColumn.javaField} != null) {
         update${BusinessName}(form.value).then(response => {
-          proxy.#[[$modal]]#.msgSuccess("修改成功");
-          open.value = false;
-          getList();
-        });
+          proxy.#[[$modal]]#.msgSuccess("修改成功")
+          open.value = false
+          getList()
+        })
       } else {
         add${BusinessName}(form.value).then(response => {
-          proxy.#[[$modal]]#.msgSuccess("新增成功");
-          open.value = false;
-          getList();
-        });
+          proxy.#[[$modal]]#.msgSuccess("新增成功")
+          open.value = false
+          getList()
+        })
       }
     }
-  });
+  })
 }
 
 /** 删除按钮操作 */
 function handleDelete(row) {
   proxy.#[[$modal]]#.confirm('是否确认删除${functionName}编号为"' + row.${pkColumn.javaField} + '"的数据项？').then(function() {
-    return del${BusinessName}(row.${pkColumn.javaField});
+    return del${BusinessName}(row.${pkColumn.javaField})
   }).then(() => {
-    getList();
-    proxy.#[[$modal]]#.msgSuccess("删除成功");
-  }).catch(() => {});
+    getList()
+    proxy.#[[$modal]]#.msgSuccess("删除成功")
+  }).catch(() => {})
 }
 
-getList();
+getList()
 </script>

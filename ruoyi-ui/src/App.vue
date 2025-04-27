@@ -6,7 +6,7 @@
 </template>
 
 <script>
-import ThemePicker from "@/components/ThemePicker";
+import ThemePicker from "@/components/ThemePicker"
 
 export default {
   name: "App",
@@ -19,7 +19,7 @@ export default {
       }
     }
   }
-};
+}
 </script>
 <style scoped>
 #app .theme-picker {

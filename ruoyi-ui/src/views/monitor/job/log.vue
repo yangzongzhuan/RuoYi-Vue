@@ -180,8 +180,8 @@
 </template>
 
 <script>
-import { getJob} from "@/api/monitor/job";
-import { listJobLog, delJobLog, cleanJobLog } from "@/api/monitor/jobLog";
+import { getJob} from "@/api/monitor/job"
+import { listJobLog, delJobLog, cleanJobLog } from "@/api/monitor/jobLog"
 
 export default {
   name: "JobLog",
@@ -214,75 +214,75 @@ export default {
         jobGroup: undefined,
         status: undefined
       }
-    };
+    }
   },
   created() {
-    const jobId = this.$route.params && this.$route.params.jobId;
+    const jobId = this.$route.params && this.$route.params.jobId
     if (jobId !== undefined && jobId != 0) {
       getJob(jobId).then(response => {
-        this.queryParams.jobName = response.data.jobName;
-        this.queryParams.jobGroup = response.data.jobGroup;
-        this.getList();
-      });
+        this.queryParams.jobName = response.data.jobName
+        this.queryParams.jobGroup = response.data.jobGroup
+        this.getList()
+      })
     } else {
-      this.getList();
+      this.getList()
     }
   },
   methods: {
     /** 查询调度日志列表 */
     getList() {
-      this.loading = true;
+      this.loading = true
       listJobLog(this.addDateRange(this.queryParams, this.dateRange)).then(response => {
-          this.jobLogList = response.rows;
-          this.total = response.total;
-          this.loading = false;
+          this.jobLogList = response.rows
+          this.total = response.total
+          this.loading = false
         }
-      );
+      )
     },
     // 返回按钮
     handleClose() {
-      const obj = { path: "/monitor/job" };
-      this.$tab.closeOpenPage(obj);
+      const obj = { path: "/monitor/job" }
+      this.$tab.closeOpenPage(obj)
     },
     /** 搜索按钮操作 */
     handleQuery() {
-      this.queryParams.pageNum = 1;
-      this.getList();
+      this.queryParams.pageNum = 1
+      this.getList()
     },
     /** 重置按钮操作 */
     resetQuery() {
-      this.dateRange = [];
-      this.resetForm("queryForm");
-      this.handleQuery();
+      this.dateRange = []
+      this.resetForm("queryForm")
+      this.handleQuery()
     },
     // 多选框选中数据
     handleSelectionChange(selection) {
-      this.ids = selection.map(item => item.jobLogId);
-      this.multiple = !selection.length;
+      this.ids = selection.map(item => item.jobLogId)
+      this.multiple = !selection.length
     },
     /** 详细按钮操作 */
     handleView(row) {
-      this.open = true;
-      this.form = row;
+      this.open = true
+      this.form = row
     },
     /** 删除按钮操作 */
     handleDelete(row) {
-      const jobLogIds = this.ids;
+      const jobLogIds = this.ids
       this.$modal.confirm('是否确认删除调度日志编号为"' + jobLogIds + '"的数据项？').then(function() {
-        return delJobLog(jobLogIds);
+        return delJobLog(jobLogIds)
       }).then(() => {
-        this.getList();
-        this.$modal.msgSuccess("删除成功");
-      }).catch(() => {});
+        this.getList()
+        this.$modal.msgSuccess("删除成功")
+      }).catch(() => {})
     },
     /** 清空按钮操作 */
     handleClean() {
       this.$modal.confirm('是否确认清空所有调度日志数据项？').then(function() {
-        return cleanJobLog();
+        return cleanJobLog()
       }).then(() => {
-        this.getList();
-        this.$modal.msgSuccess("清空成功");
-      }).catch(() => {});
+        this.getList()
+        this.$modal.msgSuccess("清空成功")
+      }).catch(() => {})
     },
     /** 导出按钮操作 */
     handleExport() {
@@ -291,5 +291,5 @@ export default {
       }, `log_${new Date().getTime()}.xlsx`)
     }
   }
-};
+}
 </script>

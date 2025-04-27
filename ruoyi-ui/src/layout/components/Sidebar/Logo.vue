@@ -27,7 +27,7 @@ export default {
   },
   computed: {
     variables() {
-      return variables;
+      return variables
     },
     sideTheme() {
       return this.$store.state.settings.sideTheme

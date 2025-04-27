@@ -63,7 +63,7 @@
 </template>
 
 <script>
-import { list, forceLogout } from "@/api/monitor/online";
+import { list, forceLogout } from "@/api/monitor/online"
 
 export default {
   name: "Online",
@@ -82,41 +82,41 @@ export default {
         ipaddr: undefined,
         userName: undefined
       }
-    };
+    }
   },
   created() {
-    this.getList();
+    this.getList()
   },
   methods: {
     /** 查询登录日志列表 */
     getList() {
-      this.loading = true;
+      this.loading = true
       list(this.queryParams).then(response => {
-        this.list = response.rows;
-        this.total = response.total;
-        this.loading = false;
-      });
+        this.list = response.rows
+        this.total = response.total
+        this.loading = false
+      })
     },
     /** 搜索按钮操作 */
     handleQuery() {
-      this.pageNum = 1;
-      this.getList();
+      this.pageNum = 1
+      this.getList()
     },
     /** 重置按钮操作 */
     resetQuery() {
-      this.resetForm("queryForm");
-      this.handleQuery();
+      this.resetForm("queryForm")
+      this.handleQuery()
     },
     /** 强退按钮操作 */
     handleForceLogout(row) {
       this.$modal.confirm('是否确认强退名称为"' + row.userName + '"的用户？').then(function() {
-        return forceLogout(row.tokenId);
+        return forceLogout(row.tokenId)
       }).then(() => {
-        this.getList();
-        this.$modal.msgSuccess("强退成功");
-      }).catch(() => {});
+        this.getList()
+        this.$modal.msgSuccess("强退成功")
+      }).catch(() => {})
     }
   }
-};
+}
 </script>
 

@@ -1024,14 +1024,14 @@ export default {
     return {
       // 版本号
       version: "3.8.9"
-    };
+    }
   },
   methods: {
     goTarget(href) {
-      window.open(href, "_blank");
+      window.open(href, "_blank")
     }
   }
-};
+}
 </script>
 
 <style scoped lang="scss">
