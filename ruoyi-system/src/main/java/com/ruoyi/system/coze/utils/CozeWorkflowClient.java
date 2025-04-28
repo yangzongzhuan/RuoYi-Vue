@@ -32,14 +32,14 @@ public class CozeWorkflowClient {
      * @return 成功时解析后的输出 JSON 数据
      * @throws Exception 超过重试次数或最终失败时抛出异常
      */
-    public static JsonNode executeWithRetry(JsonNode parameters) throws Exception {
+    public static JsonNode executeWithRetry(JsonNode parameters, String token) throws Exception {
         int asyncRetryCount = 0;
         Exception lastException = null;
 
         while (asyncRetryCount < MAX_RETRIES) {
             try {
                 // 提交异步请求，获取初始响应和 execute_id
-                JsonResponse initResponse = submitAsyncRequest(parameters);
+                JsonResponse initResponse = submitAsyncRequest(parameters, token);
                 System.err.println("提交异步请求成功：" + initResponse);
                 validateResponse(initResponse);
                 String executeId = initResponse.getExecuteId();
@@ -60,13 +60,13 @@ public class CozeWorkflowClient {
     }
 
     // 提交异步请求，返回包含 execute_id 的响应
-    private static JsonResponse submitAsyncRequest(JsonNode parameters) throws IOException {
+    private static JsonResponse submitAsyncRequest(JsonNode parameters, String token) throws IOException {
         HttpURLConnection conn = null;
         try {
             URL url = new URL("https://api.coze.cn/v1/workflow/run");
             conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("POST");
-            conn.setRequestProperty("Authorization", "Bearer pat_veu2EX4VFvFtDM6hdpIIlGpoqHQOCptF564G4QDmaVvTt6U0onU6Qc8CuYU0Do02");
+            conn.setRequestProperty("Authorization", token);
             conn.setRequestProperty("Content-Type", "application/json");
             conn.setConnectTimeout(60_000);
             conn.setReadTimeout(60_000);

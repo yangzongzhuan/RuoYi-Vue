@@ -12,6 +12,7 @@ import com.ruoyi.common.utils.JYFileUploadUtil;
 import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.system.coze.CozeRequestJsonUtils;
 import com.ruoyi.system.coze.utils.CozeWorkflowClient;
+import com.ruoyi.system.domain.AutoCheck;
 import com.ruoyi.system.domain.PsdTask;
 import com.ruoyi.system.mapper.PSDMapper;
 import com.ruoyi.system.service.IPsdTaskService;
@@ -119,12 +120,13 @@ public class PhotoshopTaskQueue {
 
             ObjectNode config = (ObjectNode) configNode;  // [3](@ref)
             List<String> nameList = psdMapper.selectAccountByName(task.getAccountName());
+            AutoCheck checkInfo = psdMapper.getCheckInfo();
             ArrayNode historyArray = mapper.createArrayNode();
             nameList.forEach(historyArray::add);
             config.set("historyName", historyArray);  // [3,5](@ref)
 
             // 请求数据
-            JsonNode jsonResponse = CozeWorkflowClient.executeWithRetry(config);
+            JsonNode jsonResponse = CozeWorkflowClient.executeWithRetry(config, checkInfo.getToken());
 
             // 将 answer 转换为 JSONObject 对象
             JsonNode rootNode = jsonResponse;
@@ -169,8 +171,8 @@ public class PhotoshopTaskQueue {
                 System.err.println("替换后的 JSX:\n" + modifiedJsx);
 
                 // 调用 Photoshop
-//                ActiveXComponent ps = new ActiveXComponent("Photoshop.Application");
-//                Dispatch.invoke(ps, "DoJavaScript", Dispatch.Method, new Object[]{modifiedJsx}, new int[1]);
+                ActiveXComponent ps = new ActiveXComponent("Photoshop.Application");
+                Dispatch.invoke(ps, "DoJavaScript", Dispatch.Method, new Object[]{modifiedJsx}, new int[1]);
 
                 LocalDate today = LocalDate.now();
                 DateTimeFormatter formatter1 = DateTimeFormatter.ofPattern("yyyy-MM-dd");

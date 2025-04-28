@@ -58,10 +58,10 @@
 	</select>
 
 	<select id="getCheckInfo" resultType="com.ruoyi.system.domain.AutoCheck">
-		select status, extranet_ip extranetIp from auto_check
+		select  status, extranet_ip extranetIp, token from auto_check
 	</select>
 
 	<update id="updateCheck">
-		update auto_check set status = #{status}, extranet_ip = #{extranetIp}
+		update auto_check set status = #{status}, extranet_ip = #{extranetIp},  token = #{token}
 	</update>
 </mapper>

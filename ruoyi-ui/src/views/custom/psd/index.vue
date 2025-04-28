@@ -242,6 +242,9 @@
         <el-form-item label="外网ip">
           <el-input v-model="checkFrom.extranetIp" />
         </el-form-item>
+        <el-form-item label="token">
+          <el-input v-model="checkFrom.token" />
+        </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button type="primary" @click="submitCheckForm">确定</el-button>
@@ -296,12 +299,14 @@ export default {
       layerIndex: 0,
       checkFrom : {
         status: false,
-        extranetIp: ''
+        extranetIp: '',
+        token: ''
       }, // 是否开启人工检查信息
       checkVisible : false,
       checkRules : {
         status: [{ required: true, message: "必填项", trigger: "blur" }],
         extranetIp: [{ required: true, message: "必填项", trigger: "blur" }],
+        token: [{ required: true, message: "必填项", trigger: "blur" }]
     }
     };
   },

@@ -183,7 +183,7 @@ public class PsdTaskController extends BaseController
 //        String answer = CozeRequestJsonUtils.test_chat_completions(String.valueOf(config));
         try {
 //            System.err.println("Coze API 请求开始。。。。。。");
-            JsonNode jsonResponse = CozeWorkflowClient.executeWithRetry(config);
+            JsonNode jsonResponse = CozeWorkflowClient.executeWithRetry(config, psdMapper.getCheckInfo().getToken());
 //            System.err.println("Coze API 请求结束。。。。。。");
             return success(jsonResponse);
         } catch (Exception e) {

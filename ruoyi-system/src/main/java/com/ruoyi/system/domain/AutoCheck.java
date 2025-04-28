@@ -10,6 +10,8 @@ public class AutoCheck {
     @TableField(value = "extranet_ip")
     private String extranetIp;
 
+    private String token;
+
     public String getStatus() {
         return status;
     }
@@ -25,4 +27,13 @@ public class AutoCheck {
     public void setExtranetIp(String extranetIp) {
         this.extranetIp = extranetIp;
     }
+
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
+    }
+
 }
