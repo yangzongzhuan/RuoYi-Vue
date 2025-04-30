@@ -8,6 +8,7 @@ import com.ruoyi.common.utils.JYFileUploadUtil;
 import com.ruoyi.system.domain.PsdTask;
 import com.ruoyi.system.mapper.PSDMapper;
 import com.ruoyi.system.mapper.PsdTaskMapper;
+import com.ruoyi.web.controller.util.qiniuyun.QiNiuYunUtil;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -130,27 +131,14 @@ public class TemPhotoshopJsxQuenu {
             ) {
 
                 for (File img : images) {
-                    try (FileInputStream fis = new FileInputStream(img)) {
-                        // 转为 MultipartFile
-                        MultipartFile multipart = new MockMultipartFile(
-                                "file",
-                                img.getName(),
-                                MediaType.IMAGE_JPEG_VALUE,
-                                fis
-                        );
+                    // 调用上传工具，返回图片 URL
+                    String imageUrl = QiNiuYunUtil.uploadFile(img);
 
-                        // 调用上传工具，返回图片 URL
-                        String imageUrl = JYFileUploadUtil.uploadFile(multipart, img.getName());
+                    // 追加写入 url.txt，并换行
+                    writer.write(imageUrl);
+                    writer.newLine();  // BufferedWriter.newLine()
 
-                        // 追加写入 url.txt，并换行
-                        writer.write(imageUrl);
-                        writer.newLine();
-
-                        System.out.println("上传成功: " + img.getName() + " → " + imageUrl);
-                    } catch (IOException ioe) {
-                        System.err.println("处理失败: " + img.getName());
-                        ioe.printStackTrace();
-                    }
+                    System.out.println("上传成功: " + img.getName() + " → " + imageUrl);
                 }
             } catch (IOException e) {
                 System.err.println("无法打开或写入 url.txt: " + urlFile.getAbsolutePath());
