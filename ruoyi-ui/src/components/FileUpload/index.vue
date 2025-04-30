@@ -43,6 +43,7 @@
 
 <script>
 import { getToken } from "@/utils/auth"
+import Sortable from 'sortablejs'
 
 export default {
   name: "FileUpload",
@@ -82,6 +83,11 @@ export default {
     disabled: {
       type: Boolean,
       default: false
+    },
+      // 拖动排序
+    drag: {
+      type: Boolean,
+      default: true
     }
   },
   data() {
@@ -93,7 +99,22 @@ export default {
       headers: {
         Authorization: "Bearer " + getToken(),
       },
-      fileList: [],
+      fileList: []
+    }
+  },
+  mounted() {
+    if (this.drag) {
+      this.$nextTick(() => {
+        const element = document.querySelector('.upload-file-list')
+        Sortable.create(element, {
+          ghostClass: 'file-upload-darg',
+          onEnd: (evt) => {
+            const movedItem = this.fileList.splice(evt.oldIndex, 1)[0]
+            this.fileList.splice(evt.newIndex, 0, movedItem)
+            this.$emit("input", this.listToString(this.fileList))
+          }
+        })
+      })
     }
   },
   watch: {
@@ -216,6 +237,10 @@ export default {
 </script>
 
 <style scoped lang="scss">
+.file-upload-darg {
+  opacity: 0.5;
+  background: #c8ebfb;
+}
 .upload-file-uploader {
   margin-bottom: 5px;
 }
