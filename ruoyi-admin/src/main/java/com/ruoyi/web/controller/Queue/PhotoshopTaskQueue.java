@@ -198,7 +198,7 @@ public class PhotoshopTaskQueue {
                 ) {
 
                     for (File img : images) {
-                        if (img.getName().contains("标题")) {
+                        if (img.getName().contains("封面")) {
                             // 不上传标题
                             continue;
                         }

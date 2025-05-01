@@ -132,6 +132,10 @@ public class TemPhotoshopJsxQuenu {
             ) {
 
                 for (File img : images) {
+                    if (img.getName().contains("封面")) {
+                        // 不上传标题
+                        continue;
+                    }
                     // 调用上传工具，返回图片 URL
                     String imageUrl = QiNiuYunUtil.uploadFile(img);
 
