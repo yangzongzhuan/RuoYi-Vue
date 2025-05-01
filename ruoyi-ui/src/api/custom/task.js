@@ -69,3 +69,12 @@ export function checkTask(data) {
     timeout: 999999
   })
 }
+
+
+export function pushOfficialAccount(data) {
+  return request({
+    url: '/psd/task/pushOfficialAccount',
+    method: 'post',
+    data: data,
+  })
+}

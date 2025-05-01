@@ -12,6 +12,12 @@ public class AutoCheck {
 
     private String token;
 
+    @TableField(value = "qr_code")
+    private String qrCode;
+
+    @TableField(value = "auto_push_official_account")
+    private String autoPushOfficialAccount;
+
     public String getStatus() {
         return status;
     }
@@ -36,4 +42,19 @@ public class AutoCheck {
         this.token = token;
     }
 
+    public String getQrCode() {
+        return qrCode;
+    }
+
+    public void setQrCode(String qrCode) {
+        this.qrCode = qrCode;
+    }
+
+    public String getAutoPushOfficialAccount() {
+        return autoPushOfficialAccount;
+    }
+
+    public void setAutoPushOfficialAccount(String autoPushOfficialAccount) {
+        this.autoPushOfficialAccount = autoPushOfficialAccount;
+    }
 }

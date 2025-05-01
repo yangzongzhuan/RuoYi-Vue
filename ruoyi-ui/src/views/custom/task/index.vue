@@ -115,6 +115,13 @@
             @click="handleDelete(scope.row)"
             v-hasPermi="['psd:task:remove']"
           >删除</el-button>
+          <el-button
+            size="mini"
+            type="text"
+            icon="el-icon-s-promotion"
+            :disabled="scope.row.status !== '0'"
+            @click="openOfficialAccount(scope.row)"
+          >发布公众号</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -324,11 +331,23 @@
         <el-button @click="cancel">取 消</el-button>
       </div>
     </el-dialog>
+
+    <el-dialog
+      title="发布公众号"
+      :visible.sync="accountOptionsVisible"
+      custom-class="publish-dialog"
+      width="30%">
+      <el-input  v-model="gzhmc" placeholder="请输入公众号名称" autocomplete="off"></el-input>
+      <div slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="pushConfirm">确 定</el-button>
+        <el-button @click="accountOptionsVisible = false">取 消</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
 <script>
-import {listTask, getTask, delTask, addTask, updateTask, getCoze} from "@/api/custom/task";
+import {listTask, getTask, delTask, addTask, updateTask, getCoze, pushOfficialAccount} from "@/api/custom/task";
 import {getImage, getListPSDConfigAll, listPSDConfig} from "@/api/custom/psd";
 import {isEmpty} from "@/utils/validate";
 
@@ -384,7 +403,10 @@ export default {
       templateOptions: [], // 模板下拉选项
       templateOptionsFilter: [], // 模板下拉选项过滤后的数据
       accountOptions: [],   // 账号下拉选项
-      imageList: ''
+      imageList: '',
+      gzhmc: '',
+      accountOptionsVisible: false,
+      currentRow: {}
     };
   },
   created() {
@@ -673,6 +695,37 @@ export default {
     //   } catch(e) {
     //   }
     // },
+    openOfficialAccount(row) {
+      this.currentRow = row
+      console.log(this.currentRow
+      )
+      this.gzhmc = ''
+      this.accountOptionsVisible = true
+    },
+    pushConfirm() {
+      this.$modal.confirm('确认要发布吗？')
+        .then(() => {
+          // 箭头函数内的 this 仍指向 Vue 组件
+          this.currentRow.gzhmc = this.gzhmc
+          pushOfficialAccount(this.currentRow)
+            .then(res => {
+              if (res.code === 200) {
+                this.$modal.msgSuccess("发布成功")
+              } else {
+                this.$modal.msgError("发布失败")
+              }
+            })
+            .catch(() => {
+              this.$modal.msgError("发布失败")
+            })
+            .finally(() => {
+              this.accountOptionsVisible = false
+            })
+        })
+        .catch(() => {
+          // 用户点了取消
+        })
+    }
   }
 };
 </script>
@@ -806,8 +859,4 @@ export default {
   word-wrap: break-word;
 }
 
-::v-deep .el-dialog {
-  height: 90%;
-  overflow: auto;
-}
 </style>

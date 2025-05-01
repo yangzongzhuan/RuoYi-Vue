@@ -15,10 +15,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="imageCount"    column="image_count"    />
         <result property="status"    column="status"    />
         <result property="createDate"    column="create_date"    />
+        <result property="realPath"    column="real_path"    />
     </resultMap>
 
     <sql id="selectPsdTaskVo">
-        select id, uuid, task_name, account_name, template_name, create_by, image_count, status, create_date, config from psd_task
+        select * from psd_task
     </sql>
 
     <select id="selectPsdTaskList" parameterType="PsdTask" resultMap="PsdTaskResult">
@@ -79,6 +80,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="templateName != null">template_name = #{templateName},</if>
             <if test="imageCount != null">image_count = #{imageCount},</if>
             <if test="status != null">status = #{status},</if>
+            <if test="realPath != null">real_path = #{realPath},</if>
             <if test="createDate != null">create_date = #{createDate},</if>
         </trim>
         where uuid = #{uuid}

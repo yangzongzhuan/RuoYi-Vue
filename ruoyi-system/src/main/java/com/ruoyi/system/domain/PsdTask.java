@@ -48,7 +48,12 @@ public class PsdTask extends BaseEntity
 
     private LocalDateTime createDate;
 
+    private String realPath;
+
     private String createBy;
+
+    @TableField(exist = false)
+    private String gzhmc; // 草稿箱名称
 
     public PsdTask() {
     }
@@ -144,7 +149,21 @@ public class PsdTask extends BaseEntity
         this.uuid = uuid;
     }
 
+    public String getRealPath() {
+        return realPath;
+    }
 
+    public void setRealPath(String realPath) {
+        this.realPath = realPath;
+    }
+
+    public String getGzhmc() {
+        return gzhmc;
+    }
+
+    public void setGzhmc(String gzhmc) {
+        this.gzhmc = gzhmc;
+    }
 
     @Override
     public String toString() {

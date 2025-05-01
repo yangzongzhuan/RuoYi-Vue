@@ -226,4 +226,9 @@ public class PsdTaskController extends BaseController
         return toAjax(1);
     }
 
+    @PostMapping("/pushOfficialAccount")
+    public AjaxResult pushOfficialAccount(@RequestBody PsdTask psdTask){
+        psdTaskService.pushOfficialAccount(psdTask);
+        return toAjax(1);
+    }
 }

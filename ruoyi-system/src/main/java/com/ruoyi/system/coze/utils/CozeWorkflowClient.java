@@ -45,7 +45,7 @@ public class CozeWorkflowClient {
                 String executeId = initResponse.getExecuteId();
 
                 // 使用 execute_id 轮询结果（超时 4 分钟，每 2 秒轮询一次）
-                JsonNode output = pollResultWithTimeout(executeId);
+                JsonNode output = pollResultWithTimeout(executeId, token);
                 return output;
             } catch (Exception e) {
                 asyncRetryCount++;
@@ -92,11 +92,11 @@ public class CozeWorkflowClient {
      * 若在 TOTAL_TIMEOUT_MS（10 分钟）内获取到 "Success" 状态，则返回解析后的输出；
      * 若任务返回 "Failed" 或轮询超时，则抛出异常。
      */
-    private static JsonNode pollResultWithTimeout(String executeId) throws Exception {
+    private static JsonNode pollResultWithTimeout(String executeId, String token) throws Exception {
         long pollStartTime = System.currentTimeMillis();
         while ((System.currentTimeMillis() - pollStartTime) < TOTAL_TIMEOUT_MS) {
             try {
-                JsonResponse pollResponse = pollWorkflowResult(executeId);
+                JsonResponse pollResponse = pollWorkflowResult(executeId, token);
                 validateResponse(pollResponse);
 
                 // 轮询返回的数据 data 为数组，取第一个元素
@@ -147,12 +147,12 @@ public class CozeWorkflowClient {
     }
 
     // 轮询请求，调用 GET 接口，传入 executeId
-    private static JsonResponse pollWorkflowResult(String executeId) throws IOException {
+    private static JsonResponse pollWorkflowResult(String executeId, String token) throws IOException {
         String url = String.format("https://api.coze.cn/v1/workflows/%s/run_histories/%s",
                 "7487134037049835583", executeId);
         HttpURLConnection conn = (HttpURLConnection) new URL(url).openConnection();
         conn.setRequestMethod("GET");
-        conn.setRequestProperty("Authorization", "Bearer pat_veu2EX4VFvFtDM6hdpIIlGpoqHQOCptF564G4QDmaVvTt6U0onU6Qc8CuYU0Do02");
+        conn.setRequestProperty("Authorization", token);
         conn.setConnectTimeout(30_000);
         conn.setReadTimeout(30_000);
         return parseResponse(conn);

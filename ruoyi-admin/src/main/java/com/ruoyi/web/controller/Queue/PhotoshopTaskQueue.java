@@ -180,6 +180,7 @@ public class PhotoshopTaskQueue {
                 String datePath = today.format(formatter1);
                 String path = config.path("baseConfig").path("imageSavePath").asText();
                 String realPath = path + "\\" + datePath + "\\" + task.getCreateBy() + "\\" + foldersName;
+                task.setRealPath(realPath);
                 System.out.println(realPath);
                 File outputDir = new File(realPath);
                 File[] images = outputDir.listFiles((dir, name) -> name.toLowerCase().endsWith(".jpg"));
@@ -197,6 +198,10 @@ public class PhotoshopTaskQueue {
                 ) {
 
                     for (File img : images) {
+                        if (img.getName().contains("标题")) {
+                            // 不上传标题
+                            continue;
+                        }
                         // 调用上传工具，返回图片 URL
                         String imageUrl = QiNiuYunUtil.uploadFile(img);
 

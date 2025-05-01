@@ -63,4 +63,6 @@ public interface IPsdTaskService
     public int deletePsdTaskById(Long id);
 
     PsdTask selectPsdTaskByUuid(String uuid);
+
+    void pushOfficialAccount(PsdTask psdTask);
 }

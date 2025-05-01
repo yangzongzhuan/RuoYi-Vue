@@ -231,7 +231,7 @@
     </el-dialog>
 
     <el-dialog title="配置信息" :visible.sync="checkVisible" width="30%" :close-on-click-modal="false">
-      <el-form :model="checkFrom" label-width="70px" ref="checkForm" :rules="checkRules" >
+      <el-form :model="checkFrom" label-width="110px" ref="checkForm" :rules="checkRules" >
         <el-form-item label="人工检测">
           <el-switch
             v-model="checkFrom.status"
@@ -244,6 +244,16 @@
         </el-form-item>
         <el-form-item label="token">
           <el-input v-model="checkFrom.token" />
+        </el-form-item>
+        <el-form-item label="二维码url">
+          <el-input v-model="checkFrom.qrCode" />
+        </el-form-item>
+        <el-form-item label="自动发布公众号">
+          <el-switch
+            v-model="checkFrom.autoPushOfficialAccount"
+            active-value="0"
+            inactive-value="1"
+          />
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -300,13 +310,17 @@ export default {
       checkFrom : {
         status: false,
         extranetIp: '',
-        token: ''
+        token: '',
+        qrCode: '',
+        autoPushOfficialAccount: true
       }, // 是否开启人工检查信息
       checkVisible : false,
       checkRules : {
         status: [{ required: true, message: "必填项", trigger: "blur" }],
         extranetIp: [{ required: true, message: "必填项", trigger: "blur" }],
-        token: [{ required: true, message: "必填项", trigger: "blur" }]
+        token: [{ required: true, message: "必填项", trigger: "blur" }],
+        qrCode: [{ required: true, message: "必填项", trigger: "blur" }],
+        autoPushOfficialAccount: [{ required: true, message: "必填项", trigger: "blur" }]
     }
     };
   },

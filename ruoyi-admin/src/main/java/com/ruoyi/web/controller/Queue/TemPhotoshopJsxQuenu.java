@@ -115,6 +115,7 @@ public class TemPhotoshopJsxQuenu {
             ObjectNode config = (ObjectNode) mapper.readTree(task.getConfig());
             String path = config.path("baseConfig").path("imageSavePath").asText();
             String realPath = path + "\\" + datePath + "\\" + task.getCreateBy() + "\\" + foldersName;
+            task.setRealPath(realPath);
             File outputDir = new File(realPath);
             File[] images = outputDir.listFiles((dir, name) -> name.toLowerCase().endsWith(".jpg"));
 

@@ -4,6 +4,16 @@
 		"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ruoyi.system.mapper.PSDMapper">
 
+	<resultMap id="autoCheckMap" type="com.ruoyi.system.domain.AutoCheck">
+		<id   column="status"         property="status"               />
+		<result column="extranet_ip"   property="extranetIp"           />
+		<result column="token"         property="token"                />
+		<result column="qr_code"       property="qrCode"               />
+		<result column="auto_push_official_account"
+				property="autoPushOfficialAccount"/>
+	</resultMap>
+
+
 	<!-- 插入 PSDTemplate -->
 	<insert id="insert" parameterType="com.ruoyi.system.domain.PSDTemplate" useGeneratedKeys="true" keyProperty="id">
 		INSERT INTO psd_template(config)
@@ -57,11 +67,11 @@
 		select status from auto_check limit 1
 	</select>
 
-	<select id="getCheckInfo" resultType="com.ruoyi.system.domain.AutoCheck">
-		select  status, extranet_ip extranetIp, token from auto_check
+	<select id="getCheckInfo" resultMap="autoCheckMap">
+		select * from auto_check
 	</select>
 
 	<update id="updateCheck">
-		update auto_check set status = #{status}, extranet_ip = #{extranetIp},  token = #{token}
+		update auto_check set status = #{status}, extranet_ip = #{extranetIp},  token = #{token}, qr_code = #{qrCode}, auto_push_official_account = #{autoPushOfficialAccount}
 	</update>
 </mapper>
