@@ -13,7 +13,7 @@
         ref="headerSearchSelectRef"
         size="large"
         @input="querySearch"
-        prefix-icon="Search"
+        prefix-icon="el-icon-search"
         placeholder="菜单搜索，支持标题、URL模糊查询"
         clearable
       >
