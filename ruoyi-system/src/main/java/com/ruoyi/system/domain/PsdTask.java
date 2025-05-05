@@ -2,6 +2,7 @@ package com.ruoyi.system.domain;
 
 import com.alibaba.fastjson2.JSONObject;
 import com.baomidou.mybatisplus.annotation.TableField;
+import lombok.Getter;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import com.ruoyi.common.annotation.Excel;
@@ -46,14 +47,16 @@ public class PsdTask extends BaseEntity
     private String status;
     private String uuid;
 
+    @Getter
     private LocalDateTime createDate;
 
     private String realPath;
 
     private String createBy;
 
-    @TableField(exist = false)
-    private String gzhmc; // 草稿箱名称
+    private String gzhmc;
+
+    private String gzhStatus;
 
     public PsdTask() {
     }
@@ -163,6 +166,14 @@ public class PsdTask extends BaseEntity
 
     public void setGzhmc(String gzhmc) {
         this.gzhmc = gzhmc;
+    }
+
+    public void setGzhStatus(String gzhStatus) {
+        this.gzhStatus = gzhStatus;
+    }
+
+    public String getGzhStatus() {
+        return gzhStatus;
     }
 
     @Override

@@ -33,6 +33,7 @@ import com.ruoyi.system.mapper.PSDMapper;
 import com.ruoyi.system.service.IPsdTaskService;
 import com.ruoyi.system.service.impl.DeepSeekService;
 import com.ruoyi.web.controller.Queue.PhotoshopTaskQueue;
+import com.ruoyi.web.controller.Queue.PushGZHTaskQueue;
 import com.ruoyi.web.controller.Queue.TemPhotoshopJsxQuenu;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -71,10 +72,7 @@ public class PsdTaskController extends BaseController
     private PSDMapper psdMapper;
 
     @Autowired
-    private DeepSeekService deepSeekService;
-
-    // 创建一个 TransmittableThreadLocal 对象
-    private static ThreadLocal<PsdTask> myThreadLocal = new TransmittableThreadLocal<>();
+    private PushGZHTaskQueue pushGZHTaskQueue;
 
     /**
      * 查询psd任务列表
@@ -228,7 +226,11 @@ public class PsdTaskController extends BaseController
 
     @PostMapping("/pushOfficialAccount")
     public AjaxResult pushOfficialAccount(@RequestBody PsdTask psdTask){
-        psdTaskService.pushOfficialAccount(psdTask);
+        String executeId = psdTaskService.pushOfficialAccount(psdTask);
+        psdTaskService.updatePsdTask(psdTask);
+        if (executeId != null && !executeId.isEmpty()) {
+            pushGZHTaskQueue.addTask(executeId, psdTask);
+        }
         return toAjax(1);
     }
 }

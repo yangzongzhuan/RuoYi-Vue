@@ -29,7 +29,7 @@ public class CozeGZHWorkFlow {
      * @return 成功时解析后的输出 JSON 数据
      * @throws Exception 超过重试次数或最终失败时抛出异常
      */
-    public static boolean executeWithRetry(JsonNode parameters, String token) throws Exception {
+    public static String executeWithRetry(JsonNode parameters, String token) throws Exception {
         int asyncRetryCount = 0;
         Exception lastException = null;
 
@@ -39,7 +39,7 @@ public class CozeGZHWorkFlow {
                 CozeWorkflowClient.JsonResponse initResponse = submitAsyncRequest(parameters, token);
                 System.err.println("提交异步请求成功：" + initResponse);
                 validateResponse(initResponse);
-                return true;
+                return initResponse.getExecuteId();
             } catch (Exception e) {
                 asyncRetryCount++;
                 lastException = e;

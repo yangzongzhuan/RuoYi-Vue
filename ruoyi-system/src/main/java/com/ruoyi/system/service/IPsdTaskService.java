@@ -64,5 +64,5 @@ public interface IPsdTaskService
 
     PsdTask selectPsdTaskByUuid(String uuid);
 
-    void pushOfficialAccount(PsdTask psdTask);
+    String pushOfficialAccount(PsdTask psdTask);
 }

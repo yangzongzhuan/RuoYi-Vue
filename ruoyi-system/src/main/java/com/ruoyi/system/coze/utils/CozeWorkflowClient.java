@@ -92,7 +92,7 @@ public class CozeWorkflowClient {
      * 若在 TOTAL_TIMEOUT_MS（10 分钟）内获取到 "Success" 状态，则返回解析后的输出；
      * 若任务返回 "Failed" 或轮询超时，则抛出异常。
      */
-    private static JsonNode pollResultWithTimeout(String executeId, String token) throws Exception {
+    public static JsonNode pollResultWithTimeout(String executeId, String token) throws Exception {
         long pollStartTime = System.currentTimeMillis();
         while ((System.currentTimeMillis() - pollStartTime) < TOTAL_TIMEOUT_MS) {
             try {

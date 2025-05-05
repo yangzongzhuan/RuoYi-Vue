@@ -116,7 +116,7 @@ public class PsdTaskServiceImpl implements IPsdTaskService
     }
 
     @Override
-    public void pushOfficialAccount(PsdTask psdTask) {
+    public String pushOfficialAccount(PsdTask psdTask) {
         AutoCheck checkInfo = psdMapper.getCheckInfo();
         String token = checkInfo.getToken();
         String realPath = psdTask.getRealPath();
@@ -163,9 +163,7 @@ public class PsdTaskServiceImpl implements IPsdTaskService
             }
 
             // 6. 调用工作流
-            boolean success = CozeGZHWorkFlow.executeWithRetry(params, token);
-            System.out.println("调用 CozeGZHWorkFlow 执行结果: " + (success ? "成功" : "失败"));
-
+            return CozeGZHWorkFlow.executeWithRetry(params, token);
         } catch (IOException e) {
             // 打印并继续抛出，让调用方感知到失败
             System.err.println("文件读取失败：" + e.getMessage());
