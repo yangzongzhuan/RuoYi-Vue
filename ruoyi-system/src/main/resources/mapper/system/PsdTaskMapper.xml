@@ -25,7 +25,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </sql>
 
     <select id="selectPsdTaskList" parameterType="PsdTask" resultMap="PsdTaskResult">
-        <include refid="selectPsdTaskVo"/>
+        select * from psd_task
         <where>
             <if test="taskName != null  and taskName != ''"> and task_name like concat('%', #{taskName}, '%')</if>
             <if test="accountName != null  and accountName != ''"> and account_name like concat('%', #{accountName}, '%')</if>

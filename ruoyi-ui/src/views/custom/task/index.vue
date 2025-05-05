@@ -98,6 +98,7 @@
         </template>
       </el-table-column>
       <el-table-column label="创建时间" align="center" prop="createDate" />
+      <el-table-column label="发布公众号名称" align="center" prop="gzhName" />
 <!--      <el-table-column label="图片生产数量，[1,2,3] 表示图一1张，图二两张" align="center" prop="imageCount" />-->
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
@@ -117,6 +118,21 @@
           >删除</el-button>
           <el-button
             size="mini"
+            type="text"
+            icon="el-icon-s-promotion"
+            disabled
+            v-if="scope.row.gzhStatus == 1"
+          >公众号发布成功</el-button>
+          <el-button
+            size="mini"
+            type="text"
+            icon="el-icon-s-promotion"
+            disabled
+            v-else-if="scope.row.gzhStatus == 2"
+          >公众号发布中</el-button>
+          <el-button
+            size="mini"
+            v-else
             type="text"
             icon="el-icon-s-promotion"
             :disabled="scope.row.status !== '0'"
@@ -337,7 +353,7 @@
       :visible.sync="accountOptionsVisible"
       custom-class="publish-dialog"
       width="30%">
-      <el-input  v-model="gzhmc" placeholder="请输入公众号名称" autocomplete="off"></el-input>
+      <el-input  v-model="gzhName" placeholder="请输入公众号名称" autocomplete="off"></el-input>
       <div slot="footer" class="dialog-footer">
         <el-button type="primary" @click="pushConfirm">确 定</el-button>
         <el-button @click="accountOptionsVisible = false">取 消</el-button>
@@ -404,7 +420,7 @@ export default {
       templateOptionsFilter: [], // 模板下拉选项过滤后的数据
       accountOptions: [],   // 账号下拉选项
       imageList: '',
-      gzhmc: '',
+      gzhName: '',
       accountOptionsVisible: false,
       currentRow: {}
     };
@@ -699,14 +715,14 @@ export default {
       this.currentRow = row
       console.log(this.currentRow
       )
-      this.gzhmc = ''
+      this.gzhName = ''
       this.accountOptionsVisible = true
     },
     pushConfirm() {
       this.$modal.confirm('确认要发布吗？')
         .then(() => {
           // 箭头函数内的 this 仍指向 Vue 组件
-          this.currentRow.gzhmc = this.gzhmc
+          this.currentRow.gzhName = this.gzhName
           pushOfficialAccount(this.currentRow)
             .then(res => {
               if (res.code === 200) {
@@ -720,6 +736,7 @@ export default {
             })
             .finally(() => {
               this.accountOptionsVisible = false
+              this.getList();
             })
         })
         .catch(() => {

@@ -54,7 +54,7 @@ public class PsdTask extends BaseEntity
 
     private String createBy;
 
-    private String gzhmc;
+    private String gzhName;
 
     private String gzhStatus;
 
@@ -160,12 +160,12 @@ public class PsdTask extends BaseEntity
         this.realPath = realPath;
     }
 
-    public String getGzhmc() {
-        return gzhmc;
+    public String getGzhName() {
+        return gzhName;
     }
 
-    public void setGzhmc(String gzhmc) {
-        this.gzhmc = gzhmc;
+    public void setGzhName(String gzhName) {
+        this.gzhName = gzhName;
     }
 
     public void setGzhStatus(String gzhStatus) {

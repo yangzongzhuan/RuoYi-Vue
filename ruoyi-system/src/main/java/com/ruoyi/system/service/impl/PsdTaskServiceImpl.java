@@ -140,7 +140,7 @@ public class PsdTaskServiceImpl implements IPsdTaskService
             ObjectNode params = mapper.createObjectNode();
 
             // 2. 公公众号名称与作者
-            params.put("gzhmc", psdTask.getGzhmc());
+            params.put("gzhmc", psdTask.getGzhName());
             params.put("zuozhe", psdTask.getCreateBy());
 
             // 3. 读取 copywriter.txt

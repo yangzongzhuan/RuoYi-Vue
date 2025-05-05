@@ -17,6 +17,11 @@ public class CozeGZHWorkFlow {
     // 全局控制参数
     private static final int MAX_RETRIES = 3;           // 最大异步请求重试次数（每次包含 10 分钟轮询）
 
+    private static final long TOTAL_TIMEOUT_MS = 600_000; // 单次异步请求轮询总超时 10 分钟
+
+    private static final long POLL_INTERVAL_MS = 2_000;   // 轮询间隔 2 秒
+
+
     /**
      * 全链路请求入口：
      * 1. 提交异步请求，获取 execute_id
@@ -94,6 +99,71 @@ public class CozeGZHWorkFlow {
             String executeId = root.has("execute_id") ? root.path("execute_id").asText() : "";
             return new CozeWorkflowClient.JsonResponse(root.path("code").asInt(), root.path("data"), executeId);
         }
+    }
+
+    /**
+     * 轮询请求：
+     * 在单次异步请求中，使用 execute_id 轮询任务状态，每 POLL_INTERVAL_MS 轮询一次，
+     * 若在 TOTAL_TIMEOUT_MS（10 分钟）内获取到 "Success" 状态，则返回解析后的输出；
+     * 若任务返回 "Failed" 或轮询超时，则抛出异常。
+     */
+    public static JsonNode pollResultWithTimeout(String executeId, String token) throws Exception {
+        long pollStartTime = System.currentTimeMillis();
+        while ((System.currentTimeMillis() - pollStartTime) < TOTAL_TIMEOUT_MS) {
+            try {
+                CozeWorkflowClient.JsonResponse pollResponse = pollWorkflowResult(executeId, token);
+                validateResponse(pollResponse);
+
+                // 轮询返回的数据 data 为数组，取第一个元素
+                JsonNode item = pollResponse.getData().get(0);
+                String status = item.path("execute_status").asText();
+                System.out.println("轮询中。。。。：" + status);
+
+                if ("Success".equals(status)) {
+                    return parseNestedOutput(item);
+                } else if ("Failed".equals(status)) {
+                    throw new Exception("任务执行失败: " + item.path("error_message").asText());
+                }
+                // 状态为 Running 或其他，则继续轮询
+            } catch (Exception e) {
+                // 若轮询过程中出现异常，则直接抛出，由外层重试异步请求
+                throw new Exception("轮询异常: " + e.getMessage(), e);
+            }
+            Thread.sleep(POLL_INTERVAL_MS);
+        }
+        throw new Exception("轮询超时，未在10分钟内获得结果");
+    }
+
+    /**
+     * 解析嵌套 JSON 数据：
+     * 从轮询返回的 item 中提取 output 字段，先处理转义字符，再解析其中 "Output" 字段，并返回其解析结果。
+     */
+    private static JsonNode parseNestedOutput(JsonNode item) throws IOException {
+        System.err.println("轮询成功返回的 item：" + item);
+
+        ObjectMapper mapper = new ObjectMapper();
+
+        // 第一步：解析 output 字符串为 JsonNode
+        String outerOutputStr = item.get("output").asText();
+        JsonNode outerOutputNode = mapper.readTree(outerOutputStr);
+
+        // 第二步：获取 "Output" 字段（它是字符串），再继续解析
+        String innerOutputStr = outerOutputNode.get("Output").asText();
+        JsonNode innerOutputNode = mapper.readTree(innerOutputStr);
+
+        return innerOutputNode;
+    }
+
+    // 轮询请求，调用 GET 接口，传入 executeId
+    private static CozeWorkflowClient.JsonResponse pollWorkflowResult(String executeId, String token) throws IOException {
+        String url = String.format("https://api.coze.cn/v1/workflows/%s/run_histories/%s",
+                "7496867429113905179", executeId);
+        HttpURLConnection conn = (HttpURLConnection) new URL(url).openConnection();
+        conn.setRequestMethod("GET");
+        conn.setRequestProperty("Authorization", token);
+        conn.setConnectTimeout(30_000);
+        conn.setReadTimeout(30_000);
+        return parseResponse(conn);
     }
 
 }

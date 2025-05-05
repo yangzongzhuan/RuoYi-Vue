@@ -1,8 +1,7 @@
 package com.ruoyi.web.controller.Queue;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.ruoyi.system.coze.utils.CozeWorkflowClient;
-import com.ruoyi.system.domain.AutoCheck;
+import com.ruoyi.system.coze.utils.CozeGZHWorkFlow;
 import com.ruoyi.system.domain.PsdTask;
 import com.ruoyi.system.mapper.PSDMapper;
 import com.ruoyi.system.service.IPsdTaskService;
@@ -11,7 +10,6 @@ import org.springframework.stereotype.Component;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 
 /**
  * 并行异步执行公众号推送任务队列示例
@@ -44,7 +42,7 @@ public class PushGZHTaskQueue {
         executor.submit(() -> {
             try {
                 // 调用带超时的轮询方法，内部已每隔 POLL_INTERVAL_MS 轮询一次
-                JsonNode result = CozeWorkflowClient.pollResultWithTimeout(
+                JsonNode result = CozeGZHWorkFlow.pollResultWithTimeout(
                         executeId,
                         psdMapper.getCheckInfo().getToken()
                 );

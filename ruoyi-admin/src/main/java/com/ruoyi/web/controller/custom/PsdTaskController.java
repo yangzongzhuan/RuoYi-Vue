@@ -227,6 +227,7 @@ public class PsdTaskController extends BaseController
     @PostMapping("/pushOfficialAccount")
     public AjaxResult pushOfficialAccount(@RequestBody PsdTask psdTask){
         String executeId = psdTaskService.pushOfficialAccount(psdTask);
+        psdTask.setGzhStatus("2");
         psdTaskService.updatePsdTask(psdTask);
         if (executeId != null && !executeId.isEmpty()) {
             pushGZHTaskQueue.addTask(executeId, psdTask);
