@@ -2,6 +2,7 @@
   <div class="component-upload-image">
     <el-upload
       multiple
+      :disabled="disabled"
       :action="uploadImgUrl"
       list-type="picture-card"
       :on-success="handleUploadSuccess"
@@ -22,7 +23,7 @@
     </el-upload>
 
     <!-- 上传提示 -->
-    <div class="el-upload__tip" slot="tip" v-if="showTip">
+    <div class="el-upload__tip" slot="tip" v-if="showTip && !disabled">
       请上传
       <template v-if="fileSize"> 大小不超过 <b style="color: #f56c6c">{{ fileSize }}MB</b> </template>
       <template v-if="fileType"> 格式为 <b style="color: #f56c6c">{{ fileType.join("/") }}</b> </template>
@@ -80,7 +81,12 @@ export default {
       type: Boolean,
       default: true
     },
-      // 拖动排序
+    // 禁用组件（仅查看图片）
+    disabled: {
+      type: Boolean,
+      default: false
+    },
+    // 拖动排序
     drag: {
       type: Boolean,
       default: true
@@ -102,7 +108,7 @@ export default {
     }
   },
   mounted() {
-    if (this.drag) {
+    if (this.drag && !this.disabled) {
       this.$nextTick(() => {
         const element = this.$refs.imageUpload?.$el?.querySelector('.el-upload-list')
         Sortable.create(element, {
@@ -245,12 +251,17 @@ export default {
 <style scoped lang="scss">
 // .el-upload--picture-card 控制加号部分
 ::v-deep.hide .el-upload--picture-card {
-    display: none;
+  display: none;
 }
+
+::v-deep .el-upload-list--picture-card.is-disabled + .el-upload--picture-card {
+  display: none !important;
+} 
+
 // 去掉动画效果
 ::v-deep .el-list-enter-active,
 ::v-deep .el-list-leave-active {
-    transition: all 0s;
+  transition: all 0s;
 }
 
 ::v-deep .el-list-enter, .el-list-leave-active {
