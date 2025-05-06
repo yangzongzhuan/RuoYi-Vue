@@ -1,6 +1,8 @@
 package com.ruoyi.web.controller.custom;
 
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -35,6 +37,7 @@ import com.ruoyi.system.service.impl.DeepSeekService;
 import com.ruoyi.web.controller.Queue.PhotoshopTaskQueue;
 import com.ruoyi.web.controller.Queue.PushGZHTaskQueue;
 import com.ruoyi.web.controller.Queue.TemPhotoshopJsxQuenu;
+import com.ruoyi.web.controller.util.qiniuyun.QiNiuYunUtil;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -226,6 +229,43 @@ public class PsdTaskController extends BaseController
 
     @PostMapping("/pushOfficialAccount")
     public AjaxResult pushOfficialAccount(@RequestBody PsdTask psdTask){
+        String realPath = psdTask.getRealPath();
+        File outputDir = new File(realPath);
+        File[] images = outputDir.listFiles((dir, name) -> name.toLowerCase().endsWith(".jpg"));
+
+        if (images == null || images.length == 0) {
+            System.out.println("目录中无 JPG 文件，跳过上传。");
+            throw new RuntimeException("目录中无 JPG 文件");
+        }
+
+        File urlFile = new File(outputDir, "url.txt");
+
+        try (
+                FileWriter fw = new FileWriter(urlFile, true);
+                BufferedWriter writer = new BufferedWriter(fw)
+        ) {
+
+            for (File img : images) {
+                if (img.getName().contains("封面")) {
+                    // 不上传标题
+                    continue;
+                }
+                // 调用上传工具，返回图片 URL
+                String imageUrl = QiNiuYunUtil.uploadFile(img);
+
+                // 追加写入 url.txt，并换行
+                writer.write(imageUrl);
+                writer.newLine();  // BufferedWriter.newLine()
+
+                System.out.println("上传成功: " + img.getName() + " → " + imageUrl);
+            }
+        } catch (IOException e) {
+            System.err.println("无法打开或写入 url.txt: " + urlFile.getAbsolutePath());
+            e.printStackTrace();
+        }
+
+        System.out.println("所有图片处理完成，URL 已追加到：" + urlFile.getAbsolutePath());
+
         String executeId = psdTaskService.pushOfficialAccount(psdTask);
         psdTask.setGzhStatus("2");
         psdTaskService.updatePsdTask(psdTask);
