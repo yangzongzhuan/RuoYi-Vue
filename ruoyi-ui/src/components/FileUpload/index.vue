@@ -28,7 +28,7 @@
     </el-upload>
 
     <!-- 文件列表 -->
-    <transition-group class="upload-file-list el-upload-list el-upload-list--text" name="el-fade-in-linear" tag="ul">
+    <transition-group ref="uploadFileList" class="upload-file-list el-upload-list el-upload-list--text" name="el-fade-in-linear" tag="ul">
       <li :key="file.url" class="el-upload-list__item ele-upload-list__item-content" v-for="(file, index) in fileList">
         <el-link :href="`${baseUrl}${file.url}`" :underline="false" target="_blank">
           <span class="el-icon-document"> {{ getFileName(file.name) }} </span>
@@ -105,7 +105,7 @@ export default {
   mounted() {
     if (this.drag) {
       this.$nextTick(() => {
-        const element = document.querySelector('.upload-file-list')
+        const element = this.$refs.uploadFileList?.$el || this.$refs.uploadFileList
         Sortable.create(element, {
           ghostClass: 'file-upload-darg',
           onEnd: (evt) => {
