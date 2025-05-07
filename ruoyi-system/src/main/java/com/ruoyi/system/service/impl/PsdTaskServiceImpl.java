@@ -116,25 +116,30 @@ public class PsdTaskServiceImpl implements IPsdTaskService
     }
 
     @Override
-    public String pushOfficialAccount(PsdTask psdTask) {
+    public String pushOfficialAccount(PsdTask psdTask, List<String> imageUrls ) {
         AutoCheck checkInfo = psdMapper.getCheckInfo();
         String token = checkInfo.getToken();
         String realPath = psdTask.getRealPath();
         Path copywriterFile = Paths.get(realPath, "copywriter.txt");
-        Path urlFile = Paths.get(realPath, "url.txt");
+//        Path urlFile = Paths.get(realPath, "url.txt");
 
         try {
+            if (imageUrls.isEmpty()) {
+                System.err.println("上传的图片为空");
+                throw new IOException("上传的图片为空, 请重试");
+            }
+
             // 1. 校验文件存在
             if (!Files.exists(copywriterFile)) {
                 String msg = "缺少文件: " + copywriterFile;
                 System.err.println(msg);
                 throw new IOException(msg);
             }
-            if (!Files.exists(urlFile)) {
-                String msg = "缺少文件: " + urlFile;
-                System.err.println(msg);
-                throw new IOException(msg);
-            }
+//            if (!Files.exists(urlFile)) {
+//                String msg = "缺少文件: " + urlFile;
+//                System.err.println(msg);
+//                throw new IOException(msg);
+//            }
 
             ObjectMapper mapper = new ObjectMapper();
             ObjectNode params = mapper.createObjectNode();
@@ -154,12 +159,13 @@ public class PsdTaskServiceImpl implements IPsdTaskService
             params.put("erweima", checkInfo.getQrCode());
 
             // 5. 读取 url.txt 并填充 tu1～tu5
-            List<String> urls = Files.readAllLines(urlFile, StandardCharsets.UTF_8)
-                    .stream()
-                    .filter(s -> !s.trim().isEmpty())
-                    .collect(Collectors.toList());
-            for (int i = 0; i < urls.size() && i < 5; i++) {
-                params.put("tu" + (i + 1), urls.get(i));
+//            List<String> urls = Files.readAllLines(urlFile, StandardCharsets.UTF_8)
+//                    .stream()
+//                    .filter(s -> !s.trim().isEmpty())
+//                    .collect(Collectors.toList());
+
+            for (int i = 0; i < imageUrls.size() && i < 5; i++) {
+                params.put("tu" + (i + 1), imageUrls.get(i));
             }
 
             // 6. 调用工作流

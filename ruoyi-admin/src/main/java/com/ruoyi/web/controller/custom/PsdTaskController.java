@@ -27,6 +27,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.qiniu.common.QiniuException;
 import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.system.coze.CozeRequestJsonUtils;
 import com.ruoyi.system.coze.utils.CozeWorkflowClient;
@@ -238,35 +239,50 @@ public class PsdTaskController extends BaseController
             throw new RuntimeException("目录中无 JPG 文件");
         }
 
-        File urlFile = new File(outputDir, "url.txt");
+//        File urlFile = new File(outputDir, "url.txt");
+//
+//        try (
+//                FileWriter fw = new FileWriter(urlFile, true);
+//                BufferedWriter writer = new BufferedWriter(fw)
+//        ) {
+//
+//            for (File img : images) {
+//                if (img.getName().contains("封面")) {
+//                    // 不上传标题
+//                    continue;
+//                }
+//                // 调用上传工具，返回图片 URL
+//                String imageUrl = QiNiuYunUtil.uploadFile(img);
+//
+//                // 追加写入 url.txt，并换行
+//                writer.write(imageUrl);
+//                writer.newLine();  // BufferedWriter.newLine()
+//
+//                System.out.println("上传成功: " + img.getName() + " → " + imageUrl);
+//            }
+//        } catch (IOException e) {
+//            System.err.println("无法打开或写入 url.txt: " + urlFile.getAbsolutePath());
+//            e.printStackTrace();
+//        }
+//
+//        System.out.println("所有图片处理完成，URL 已追加到：" + urlFile.getAbsolutePath());
 
-        try (
-                FileWriter fw = new FileWriter(urlFile, true);
-                BufferedWriter writer = new BufferedWriter(fw)
-        ) {
+        List<String> imageUrls = new ArrayList<>();
 
-            for (File img : images) {
-                if (img.getName().contains("封面")) {
-                    // 不上传标题
-                    continue;
-                }
-                // 调用上传工具，返回图片 URL
-                String imageUrl = QiNiuYunUtil.uploadFile(img);
-
-                // 追加写入 url.txt，并换行
-                writer.write(imageUrl);
-                writer.newLine();  // BufferedWriter.newLine()
-
-                System.out.println("上传成功: " + img.getName() + " → " + imageUrl);
+        for (File img : images) {
+            if (img.getName().contains("封面")) {
+                // 不上传标题
+                continue;
             }
-        } catch (IOException e) {
-            System.err.println("无法打开或写入 url.txt: " + urlFile.getAbsolutePath());
-            e.printStackTrace();
+            try {
+                imageUrls.add(QiNiuYunUtil.uploadFile(img));
+            } catch (QiniuException e) {
+                throw new RuntimeException(e);
+            }
+            System.out.println("上传成功: " + img.getName());
         }
 
-        System.out.println("所有图片处理完成，URL 已追加到：" + urlFile.getAbsolutePath());
-
-        String executeId = psdTaskService.pushOfficialAccount(psdTask);
+        String executeId = psdTaskService.pushOfficialAccount(psdTask, imageUrls);
         psdTask.setGzhStatus("2");
         psdTaskService.updatePsdTask(psdTask);
         if (executeId != null && !executeId.isEmpty()) {

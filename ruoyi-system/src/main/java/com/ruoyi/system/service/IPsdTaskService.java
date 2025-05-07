@@ -64,5 +64,5 @@ public interface IPsdTaskService
 
     PsdTask selectPsdTaskByUuid(String uuid);
 
-    String pushOfficialAccount(PsdTask psdTask);
+    String pushOfficialAccount(PsdTask psdTask, List<String> imageUrls );
 }

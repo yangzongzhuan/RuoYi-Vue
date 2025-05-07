@@ -352,6 +352,7 @@
       title="发布公众号"
       :visible.sync="accountOptionsVisible"
       custom-class="publish-dialog"
+      v-loading="loading"
       width="30%">
       <el-input  v-model="gzhName" placeholder="请输入公众号名称" autocomplete="off"></el-input>
       <div slot="footer" class="dialog-footer">
@@ -721,6 +722,7 @@ export default {
     pushConfirm() {
       this.$modal.confirm('确认要发布吗？')
         .then(() => {
+          this.loading = true;
           // 箭头函数内的 this 仍指向 Vue 组件
           this.currentRow.gzhName = this.gzhName
           pushOfficialAccount(this.currentRow)
@@ -736,6 +738,7 @@ export default {
             })
             .finally(() => {
               this.accountOptionsVisible = false
+              this.loading = false;
               this.getList();
             })
         })
