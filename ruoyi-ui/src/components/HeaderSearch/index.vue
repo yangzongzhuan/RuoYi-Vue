@@ -16,11 +16,14 @@
         prefix-icon="el-icon-search"
         placeholder="菜单搜索，支持标题、URL模糊查询"
         clearable
+        @keyup.enter.native="selectActiveResult"
+        @keydown.up.native="navigateResult('up')"
+        @keydown.down.native="navigateResult('down')"
       >
       </el-input>
       <el-scrollbar wrap-class="right-scrollbar-wrapper">
         <div class="result-wrap">
-          <div class="search-item" v-for="item in options" :key="item.path">
+          <div class="search-item" v-for="(item, index) in options" :key="item.path" :style="activeStyle(index)" @mouseenter="activeIndex = index" @mouseleave="activeIndex = -1">
             <div class="left">
               <svg-icon class="menu-icon" :icon-class="item.icon" />
             </div>
@@ -32,6 +35,7 @@
                 {{ item.path }}
               </div>
             </div>
+            <svg-icon icon-class="enter" v-show="index === activeIndex"/>
           </div>
        </div>
       </el-scrollbar>
@@ -51,11 +55,15 @@ export default {
       search: '',
       options: [],
       searchPool: [],
+      activeIndex: -1,
       show: false,
       fuse: undefined
     }
   },
   computed: {
+    theme() {
+      return this.$store.state.settings.theme
+    },
     routes() {
       return this.$store.getters.defaultRoutes
     }
@@ -84,6 +92,7 @@ export default {
       this.search = ''
       this.options = []
       this.show = false
+      this.activeIndex = -1
     },
     change(val) {
       const path = val.path
@@ -162,10 +171,30 @@ export default {
       return res
     },
     querySearch(query) {
+      this.activeIndex = -1
       if (query !== '') {
         this.options = this.fuse.search(query).map((item) => item.item) ?? this.searchPool
       } else {
         this.options = this.searchPool
+      }
+    },
+    activeStyle(index) {
+      if (index !== this.activeIndex) return {}
+      return {
+        "background-color": this.theme,
+        "color": "#fff"
+      }
+    },
+    navigateResult(direction) {
+      if (direction === "up") {
+        this.activeIndex = this.activeIndex <= 0 ? this.options.length - 1 : this.activeIndex - 1
+      } else if (direction === "down") {
+        this.activeIndex = this.activeIndex >= this.options.length - 1 ? 0 : this.activeIndex + 1
+      }
+    },
+    selectActiveResult() {
+      if (this.options.length > 0 && this.activeIndex >= 0) {
+        this.change(this.options[this.activeIndex])
       }
     }
   }
@@ -189,11 +218,13 @@ export default {
 
 .result-wrap {
   height: 280px;
-  margin: 12px 0;
+  margin: 6px 0;
 
   .search-item {
     display: flex;
     height: 48px;
+    align-items: center;
+    padding-right: 10px;
 
     .left {
       width: 60px;
@@ -202,16 +233,17 @@ export default {
       .menu-icon {
         width: 18px;
         height: 18px;
-        margin-top: 5px;
       }
     }
 
     .search-info {
       padding-left: 5px;
+      margin-top: 10px;
       width: 100%;
       display: flex;
       flex-direction: column;
       justify-content: flex-start;
+      flex: 1;
 
       .menu-title,
       .menu-path {
