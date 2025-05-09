@@ -1,5 +1,5 @@
 <template>
-  <el-drawer size="280px" :visible="visible" :with-header="false" :append-to-body="true" :show-close="false">
+  <el-drawer size="280px" :visible="showSettings" :with-header="false" :append-to-body="true" :before-close="closeSetting">
     <div class="drawer-container">
       <div>
         <div class="setting-drawer-content">
@@ -78,18 +78,15 @@ import ThemePicker from '@/components/ThemePicker'
 
 export default {
   components: { ThemePicker },
+  expose: ['openSetting'],
   data() {
     return {
       theme: this.$store.state.settings.theme,
-      sideTheme: this.$store.state.settings.sideTheme
+      sideTheme: this.$store.state.settings.sideTheme,
+      showSettings: false
     }
   },
   computed: {
-    visible: {
-      get() {
-        return this.$store.state.settings.showSettings
-      }
-    },
     fixedHeader: {
       get() {
         return this.$store.state.settings.fixedHeader
@@ -164,6 +161,12 @@ export default {
         value: val
       })
       this.sideTheme = val
+    },
+    openSetting() {
+      this.showSettings = true
+    },
+    closeSetting(){
+      this.showSettings = false
     },
     saveSetting() {
       this.$modal.loading("正在保存到本地，请稍候...")
