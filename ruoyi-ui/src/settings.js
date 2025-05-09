@@ -7,7 +7,7 @@ module.exports = {
   /**
    * 是否系统布局配置
    */
-  showSettings: false,
+  showSettings: true,
 
   /**
    * 是否显示顶部导航
