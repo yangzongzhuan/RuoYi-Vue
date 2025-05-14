@@ -105,13 +105,17 @@ try {
         var fileName = baseConfig.templateName + "_" + cfg.folderName.replace(/ /g, "") + "_" + Date.now() + ".jpg";
 
         // 2.6 创建JPG保存选项
-        var saveOptions = new JPEGSaveOptions();
-        saveOptions.quality = 12;  // 质量等级1-12（12为最高质量）[6](@ref)
-        saveOptions.formatOptions = FormatOptions.OPTIMIZEDBASELINE; // 基线优化[6](@ref)
+        var exportOpts = new ExportOptionsSaveForWeb();
+        exportOpts.format = SaveDocumentType.JPEG;
+        exportOpts.includeProfile = false;    // 不嵌入 ICC 配置
+        exportOpts.interlaced = true;         // 渐进式 JPEG
+        exportOpts.optimized = true;          // 优化基线
+        exportOpts.quality = 100;              // 0–100, 60 为示例值，可根据需求调整
+
 
         // 2.6 导出为JPG
         var saveFile = new File(taskDir.fsName + "/" + fileName);
-        workingDoc.saveAs(saveFile, saveOptions, true);
+        workingDoc.exportDocument(saveFile, ExportType.SAVEFORWEB, exportOpts);
 
         // 2.7 关闭工作文档，不保存更改
         workingDoc.close(SaveOptions.DONOTSAVECHANGES);

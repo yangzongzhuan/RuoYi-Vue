@@ -19,7 +19,7 @@ public class CozeGZHWorkFlow {
 
     private static final long TOTAL_TIMEOUT_MS = 600_000; // 单次异步请求轮询总超时 10 分钟
 
-    private static final long POLL_INTERVAL_MS = 2_000;   // 轮询间隔 2 秒
+    private static final long POLL_INTERVAL_MS = 6_000;   // 轮询间隔 2 秒
 
 
     /**
@@ -117,7 +117,7 @@ public class CozeGZHWorkFlow {
                 // 轮询返回的数据 data 为数组，取第一个元素
                 JsonNode item = pollResponse.getData().get(0);
                 String status = item.path("execute_status").asText();
-                System.out.println("轮询中。。。。：" + status);
+//                System.out.println("轮询中。。。。：" + status);
 
                 if ("Success".equals(status)) {
                     return parseNestedOutput(item);
