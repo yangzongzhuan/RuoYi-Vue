@@ -45,6 +45,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.stream.Collectors;
 
 @Component
 public class PhotoshopTaskQueue {
@@ -121,6 +122,8 @@ public class PhotoshopTaskQueue {
 
             ObjectNode config = (ObjectNode) configNode;  // [3](@ref)
             List<String> nameList = psdMapper.selectAccountByName(task.getAccountName());
+            // 去重nameList
+            nameList = nameList.stream().distinct().collect(Collectors.toList());
             AutoCheck checkInfo = psdMapper.getCheckInfo();
             ArrayNode historyArray = mapper.createArrayNode();
             nameList.forEach(historyArray::add);

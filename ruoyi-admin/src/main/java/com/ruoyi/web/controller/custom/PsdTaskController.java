@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletResponse;
 
 import cn.hutool.core.lang.UUID;
@@ -176,7 +177,8 @@ public class PsdTaskController extends BaseController
         String accountName = config.get("baseConfig").get("accountName").asText();
         System.out.println(accountName);
         List<String> nameList = psdMapper.selectAccountByName(accountName);
-
+        // 去重nameList
+        nameList = nameList.stream().distinct().collect(Collectors.toList());
         ArrayNode historyArray = mapper.createArrayNode();
         nameList.forEach(historyArray::add);
         config.set("historyName", historyArray);
