@@ -5,7 +5,6 @@
         <slot />
       </div>
     </div>
-    <!-- eslint-disable-next-line -->
     <div :style="{backgroundImage: `url(${image})`}" class="pan-thumb"></div>
   </div>
 </template>

@@ -190,7 +190,6 @@ export default {
     }
   },
   watch: {
-    // eslint-disable-next-line func-names
     'activeData.label': function (val, oldVal) {
       if (
         this.activeData.placeholder === undefined
