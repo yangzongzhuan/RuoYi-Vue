@@ -1,4 +1,3 @@
-/* eslint-disable max-len */
 import { trigger } from './config'
 
 let confGlobal
