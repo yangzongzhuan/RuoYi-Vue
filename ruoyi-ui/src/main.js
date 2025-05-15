@@ -33,8 +33,6 @@ import ImageUpload from "@/components/ImageUpload"
 import ImagePreview from "@/components/ImagePreview"
 // 字典标签组件
 import DictTag from '@/components/DictTag'
-// 头部标签组件
-import VueMeta from 'vue-meta'
 // 字典数据组件
 import DictData from '@/components/DictData'
 
@@ -60,7 +58,6 @@ Vue.component('ImagePreview', ImagePreview)
 
 Vue.use(directive)
 Vue.use(plugins)
-Vue.use(VueMeta)
 DictData.install()
 
 /**

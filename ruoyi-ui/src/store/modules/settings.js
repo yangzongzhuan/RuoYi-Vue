@@ -1,4 +1,5 @@
 import defaultSettings from '@/settings'
+import { useDynamicTitle } from '@/utils/dynamicTitle'
 
 const { sideTheme, showSettings, topNav, tagsView, fixedHeader, sidebarLogo, dynamicTitle } = defaultSettings
 
@@ -30,6 +31,7 @@ const actions = {
   // 设置网页标题
   setTitle({ commit }, title) {
     state.title = title
+    useDynamicTitle()
   }
 }
 
