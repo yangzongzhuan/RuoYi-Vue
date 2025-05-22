@@ -5,24 +5,25 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 <mapper namespace="com.ruoyi.system.mapper.SysUserMapper">
 
     <resultMap type="SysUser" id="SysUserResult">
-        <id     property="userId"       column="user_id"      />
-        <result property="deptId"       column="dept_id"      />
-        <result property="userName"     column="user_name"    />
-        <result property="nickName"     column="nick_name"    />
-        <result property="email"        column="email"        />
-        <result property="phonenumber"  column="phonenumber"  />
-        <result property="sex"          column="sex"          />
-        <result property="avatar"       column="avatar"       />
-        <result property="password"     column="password"     />
-        <result property="status"       column="status"       />
-        <result property="delFlag"      column="del_flag"     />
-        <result property="loginIp"      column="login_ip"     />
-        <result property="loginDate"    column="login_date"   />
-        <result property="createBy"     column="create_by"    />
-        <result property="createTime"   column="create_time"  />
-        <result property="updateBy"     column="update_by"    />
-        <result property="updateTime"   column="update_time"  />
-        <result property="remark"       column="remark"       />
+        <id     property="userId"        column="user_id"         />
+        <result property="deptId"        column="dept_id"         />
+        <result property="userName"      column="user_name"       />
+        <result property="nickName"      column="nick_name"       />
+        <result property="email"         column="email"           />
+        <result property="phonenumber"   column="phonenumber"     />
+        <result property="sex"           column="sex"             />
+        <result property="avatar"        column="avatar"          />
+        <result property="password"      column="password"        />
+        <result property="status"        column="status"          />
+        <result property="delFlag"       column="del_flag"        />
+        <result property="loginIp"       column="login_ip"        />
+        <result property="loginDate"     column="login_date"      />
+        <result property="pwdUpdateDate" column="pwd_update_date" />
+        <result property="createBy"     column="create_by"        />
+        <result property="createTime"   column="create_time"      />
+        <result property="updateBy"     column="update_by"        />
+        <result property="updateTime"   column="update_time"      />
+        <result property="remark"       column="remark"           />
         <association property="dept"    javaType="SysDept"         resultMap="deptResult" />
         <collection  property="roles"   javaType="java.util.List"  resultMap="RoleResult" />
     </resultMap>
@@ -47,7 +48,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </resultMap>
 	
 	<sql id="selectUserVo">
-        select u.user_id, u.dept_id, u.user_name, u.nick_name, u.email, u.avatar, u.phonenumber, u.password, u.sex, u.status, u.del_flag, u.login_ip, u.login_date, u.create_by, u.create_time, u.remark, 
+        select u.user_id, u.dept_id, u.user_name, u.nick_name, u.email, u.avatar, u.phonenumber, u.password, u.sex, u.status, u.del_flag, u.login_ip, u.login_date, u.pwd_update_date, u.create_by, u.create_time, u.remark, 
         d.dept_id, d.parent_id, d.ancestors, d.dept_name, d.order_num, d.leader, d.status as dept_status,
         r.role_id, r.role_name, r.role_key, r.role_sort, r.data_scope, r.status as role_status
         from sys_user u
@@ -203,7 +204,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	</update>
 	
 	<update id="resetUserPwd" parameterType="SysUser">
- 		update sys_user set password = #{password} where user_name = #{userName}
+ 		update sys_user set pwd_update_date = sysdate(), password = #{password} where user_name = #{userName}
 	</update>
 	
 	<delete id="deleteUserById" parameterType="Long">

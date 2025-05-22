@@ -44,7 +44,7 @@
           <div slot="header" class="clearfix">
             <span>基本资料</span>
           </div>
-          <el-tabs v-model="activeTab">
+          <el-tabs v-model="selectedTab">
             <el-tab-pane label="基本资料" name="userinfo">
               <userInfo :user="user" />
             </el-tab-pane>
@@ -72,10 +72,14 @@ export default {
       user: {},
       roleGroup: {},
       postGroup: {},
-      activeTab: "userinfo"
+      selectedTab: "userinfo"
     }
   },
   created() {
+    const activeTab = this.$route.params && this.$route.params.activeTab
+    if (activeTab) {
+      this.selectedTab = activeTab
+    }
     this.getUser()
   },
   methods: {
