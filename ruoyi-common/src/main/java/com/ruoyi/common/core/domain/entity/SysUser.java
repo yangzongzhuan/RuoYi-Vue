@@ -70,6 +70,9 @@ public class SysUser extends BaseEntity
     @Excel(name = "最后登录时间", width = 30, dateFormat = "yyyy-MM-dd HH:mm:ss", type = Type.EXPORT)
     private Date loginDate;
 
+    /** 密码最后更新时间 */
+    private Date pwdUpdateDate;
+
     /** 部门对象 */
     @Excels({
         @Excel(name = "部门名称", targetAttr = "deptName", type = Type.EXPORT),
@@ -247,6 +250,16 @@ public class SysUser extends BaseEntity
         this.loginDate = loginDate;
     }
 
+    public Date getPwdUpdateDate()
+    {
+        return pwdUpdateDate;
+    }
+
+    public void setPwdUpdateDate(Date pwdUpdateDate)
+    {
+        this.pwdUpdateDate = pwdUpdateDate;
+    }
+
     public SysDept getDept()
     {
         return dept;
@@ -313,6 +326,7 @@ public class SysUser extends BaseEntity
             .append("delFlag", getDelFlag())
             .append("loginIp", getLoginIp())
             .append("loginDate", getLoginDate())
+            .append("pwdUpdateDate", getPwdUpdateDate())
             .append("createBy", getCreateBy())
             .append("createTime", getCreateTime())
             .append("updateBy", getUpdateBy())
