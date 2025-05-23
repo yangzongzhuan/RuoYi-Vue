@@ -50,6 +50,11 @@
         </div>
 
         <div class="drawer-item">
+          <span>显示页签图标</span>
+          <el-switch v-model="tagsIcon" :disabled="!tagsView" class="drawer-switch" />
+        </div>
+
+        <div class="drawer-item">
           <span>固定 Header</span>
           <el-switch v-model="fixedHeader" class="drawer-switch" />
         </div>
@@ -124,6 +129,17 @@ export default {
         })
       }
     },
+    tagsIcon: {
+      get() {
+        return this.$store.state.settings.tagsIcon
+      },
+      set(val) {
+        this.$store.dispatch('settings/changeSetting', {
+          key: 'tagsIcon',
+          value: val
+        })
+      }
+    },
     sidebarLogo: {
       get() {
         return this.$store.state.settings.sidebarLogo
@@ -176,6 +192,7 @@ export default {
         `{
             "topNav":${this.topNav},
             "tagsView":${this.tagsView},
+            "tagsIcon":${this.tagsIcon},
             "fixedHeader":${this.fixedHeader},
             "sidebarLogo":${this.sidebarLogo},
             "dynamicTitle":${this.dynamicTitle},
