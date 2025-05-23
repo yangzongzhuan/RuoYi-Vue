@@ -5,7 +5,7 @@
         v-for="tag in visitedViews"
         ref="tag"
         :key="tag.path"
-        :class="isActive(tag)?'active':''"
+        :class="{ 'active': isActive(tag), 'has-icon': tagsIcon }"
         :to="{ path: tag.path, query: tag.query, fullPath: tag.fullPath }"
         tag="span"
         class="tags-view-item"
@@ -13,6 +13,7 @@
         @click.middle.native="!isAffix(tag)?closeSelectedTag(tag):''"
         @contextmenu.prevent.native="openMenu(tag,$event)"
       >
+        <svg-icon v-if="tagsIcon && tag.meta && tag.meta.icon && tag.meta.icon !== '#'" :icon-class="tag.meta.icon" />
         {{ tag.title }}
         <span v-if="!isAffix(tag)" class="el-icon-close" @click.prevent.stop="closeSelectedTag(tag)" />
       </router-link>
@@ -52,6 +53,9 @@ export default {
     },
     theme() {
       return this.$store.state.settings.theme
+    },
+    tagsIcon() {
+      return this.$store.state.settings.tagsIcon
     }
   },
   watch: {
@@ -277,6 +281,11 @@ export default {
       }
     }
   }
+
+  .tags-view-item.active.has-icon::before {
+    content: none !important;
+  }
+
   .contextmenu {
     margin: 0;
     background: #fff;
