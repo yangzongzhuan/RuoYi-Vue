@@ -1,5 +1,5 @@
 <template>
-  <el-drawer size="280px" :visible="showSettings" :with-header="false" :append-to-body="true" :before-close="closeSetting">
+  <el-drawer size="280px" :visible="showSettings" :with-header="false" :append-to-body="true" :before-close="closeSetting" :lock-scroll="false">
     <div class="drawer-container">
       <div>
         <div class="setting-drawer-content">
@@ -67,6 +67,11 @@
         <div class="drawer-item">
           <span>动态标题</span>
           <el-switch v-model="dynamicTitle" class="drawer-switch" />
+        </div>
+
+        <div class="drawer-item">
+          <span>底部版权</span>
+          <el-switch v-model="footerVisible" class="drawer-switch" />
         </div>
 
         <el-divider/>
@@ -163,6 +168,17 @@ export default {
         this.$store.dispatch('settings/setTitle', this.$store.state.settings.title)
       }
     },
+    footerVisible: {
+      get() {
+        return this.$store.state.settings.footerVisible
+      },
+      set(val) {
+        this.$store.dispatch('settings/changeSetting', {
+          key: 'footerVisible',
+          value: val
+        })
+      }
+    }
   },
   methods: {
     themeChange(val) {
@@ -196,6 +212,7 @@ export default {
             "fixedHeader":${this.fixedHeader},
             "sidebarLogo":${this.sidebarLogo},
             "dynamicTitle":${this.dynamicTitle},
+            "footerVisible":${this.footerVisible},
             "sideTheme":"${this.sideTheme}",
             "theme":"${this.theme}"
           }`
