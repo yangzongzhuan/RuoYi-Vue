@@ -6,15 +6,17 @@
       </keep-alive>
     </transition>
     <iframe-toggle />
+    <copyright />
   </section>
 </template>
 
 <script>
+import copyright from "./Copyright/index"
 import iframeToggle from "./IframeToggle/index"
 
 export default {
   name: 'AppMain',
-  components: { iframeToggle },
+  components: { iframeToggle, copyright },
   computed: {
     cachedViews() {
       return this.$store.state.tagsView.cachedViews
@@ -33,7 +35,7 @@ export default {
   },
   methods: {
     addIframe() {
-      const {name} = this.$route
+      const { name } = this.$route
       if (name && this.$route.meta.link) {
         this.$store.dispatch('tagsView/addIframeView', this.$route)
       }
@@ -49,6 +51,10 @@ export default {
   width: 100%;
   position: relative;
   overflow: hidden;
+}
+
+.app-main:has(.copyright) {
+  padding-bottom: 36px;
 }
 
 .fixed-header + .app-main {
