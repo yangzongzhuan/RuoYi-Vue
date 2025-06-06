@@ -19,13 +19,13 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="loginIp"       column="login_ip"        />
         <result property="loginDate"     column="login_date"      />
         <result property="pwdUpdateDate" column="pwd_update_date" />
-        <result property="createBy"     column="create_by"        />
-        <result property="createTime"   column="create_time"      />
-        <result property="updateBy"     column="update_by"        />
-        <result property="updateTime"   column="update_time"      />
-        <result property="remark"       column="remark"           />
-        <association property="dept"    javaType="SysDept"         resultMap="deptResult" />
-        <collection  property="roles"   javaType="java.util.List"  resultMap="RoleResult" />
+        <result property="createBy"      column="create_by"       />
+        <result property="createTime"    column="create_time"     />
+        <result property="updateBy"      column="update_by"       />
+        <result property="updateTime"    column="update_time"     />
+        <result property="remark"        column="remark"          />
+        <association property="dept"     javaType="SysDept"         resultMap="deptResult" />
+        <collection  property="roles"    javaType="java.util.List"  resultMap="RoleResult" />
     </resultMap>
 	
     <resultMap id="deptResult" type="SysDept">
@@ -202,11 +202,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	</update>
 	
 	<update id="updateUserAvatar" parameterType="SysUser">
- 		update sys_user set avatar = #{avatar} where user_name = #{userName}
+ 		update sys_user set avatar = #{avatar} where user_id = #{userId}
 	</update>
 	
 	<update id="resetUserPwd" parameterType="SysUser">
- 		update sys_user set pwd_update_date = sysdate(), password = #{password} where user_name = #{userName}
+ 		update sys_user set pwd_update_date = sysdate(), password = #{password} where user_id = #{userId}
 	</update>
 	
 	<delete id="deleteUserById" parameterType="Long">
