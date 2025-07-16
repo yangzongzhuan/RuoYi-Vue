@@ -55,9 +55,7 @@
       </el-form-item>
     </el-form>
     <!--  底部  -->
-    <div class="el-login-footer">
-      <span>Copyright © 2018-2025 ruoyi.vip All Rights Reserved.</span>
-    </div>
+    <copyright class="el-login-footer" />
   </div>
 </template>
 
@@ -65,9 +63,13 @@
 import { getCodeImg } from "@/api/login"
 import Cookies from "js-cookie"
 import { encrypt, decrypt } from '@/utils/jsencrypt'
+import copyright from "@/layout/components/Copyright"
 
 export default {
   name: "Login",
+  components: {
+    copyright
+  },
   data() {
     return {
       title: process.env.VUE_APP_TITLE,

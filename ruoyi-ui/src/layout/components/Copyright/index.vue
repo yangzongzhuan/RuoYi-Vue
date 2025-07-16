@@ -18,7 +18,7 @@ export default {
 </script>
 
 <style scoped>
-.copyright {
+.copyright:not(.el-login-footer) {
   position: fixed;
   bottom: 0;
   left: 0;
