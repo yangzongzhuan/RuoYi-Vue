@@ -33,7 +33,7 @@
         <mysql.version>8.2.0</mysql.version>
         <jaxb-api.version>2.3.1</jaxb-api.version>
         <jakarta.version>6.0.0</jakarta.version>
-        <springdoc.version>2.6.0</springdoc.version>
+        <springdoc.version>2.8.9</springdoc.version>
     </properties>
 
     <!-- 依赖声明 -->
@@ -44,7 +44,7 @@
             <dependency>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-dependencies</artifactId>
-                <version>3.3.5</version>
+                <version>3.5.4</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
