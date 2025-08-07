@@ -147,7 +147,7 @@ export default {
 }
 </script>
 
-<style rel="stylesheet/scss" lang="scss">
+<style rel="stylesheet/scss" lang="scss" scoped>
 .register {
   display: flex;
   justify-content: center;
@@ -169,7 +169,7 @@ export default {
   padding: 25px 25px 5px 25px;
   .el-input {
     height: 38px;
-    input {
+    ::v-deep input {
       height: 38px;
     }
   }
