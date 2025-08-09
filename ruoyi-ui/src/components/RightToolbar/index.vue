@@ -17,9 +17,9 @@
               <el-checkbox :indeterminate="isIndeterminate" v-model="isChecked" @change="toggleCheckAll"> 列展示 </el-checkbox>
             </el-dropdown-item>
             <div class="check-line"></div>
-            <template v-for="item in columns">
-              <el-dropdown-item :key="item.key">
-                <el-checkbox v-model="item.visible" @change="checkboxChange($event, item.label)" :label="item.label" />
+            <template v-for="(item, key) in columns">
+              <el-dropdown-item :key="key">
+                <el-checkbox v-model="item.visible" @change="checkboxChange($event, key)" :label="item.label" />
               </el-dropdown-item>
             </template>
           </el-dropdown-menu>
@@ -30,12 +30,13 @@
       <el-transfer
         :titles="['显示', '隐藏']"
         v-model="value"
-        :data="columns"
+        :data="transferData"
         @change="dataChange"
       ></el-transfer>
     </el-dialog>
   </div>
 </template>
+
 <script>
 export default {
   name: "RightToolbar",
@@ -55,9 +56,9 @@ export default {
       type: Boolean,
       default: true
     },
-    /* 显隐列信息 */
+    /* 显隐列信息（数组格式、对象格式） */
     columns: {
-      type: Array
+      type: [Array, Object]
     },
     /* 是否显示检索图标 */
     search: {
@@ -85,21 +86,36 @@ export default {
     },
     isChecked: {
       get() {
-        return this.columns.every((col) => col.visible)
+        return Array.isArray(this.columns) ? this.columns.every((col) => col.visible) : Object.values(this.columns).every((col) => col.visible)
       },
       set() {}
     },
     isIndeterminate() {
-      return this.columns.some((col) => col.visible) && !this.isChecked
+      return Array.isArray(this.columns) ? this.columns.some((col) => col.visible) && !this.isChecked : Object.values(this.columns).some((col) => col.visible) && !this.isChecked
+    },
+    transferData() {
+      if (Array.isArray(this.columns)) {
+        return this.columns.map((item, index) => ({ key: index, label: item.label }))
+      } else {
+        return Object.keys(this.columns).map((key, index) => ({ key: index, label: this.columns[key].label }))
+      }
     }
   },
   created() {
     if (this.showColumnsType == 'transfer') {
-      // 显隐列初始默认隐藏列
-      for (let item in this.columns) {
-        if (this.columns[item].visible === false) {
-          this.value.push(parseInt(item))
+      // transfer穿梭显隐列初始默认隐藏列
+      if (Array.isArray(this.columns)) {
+        for (let item in this.columns) {
+          if (this.columns[item].visible === false) {
+            this.value.push(parseInt(item))
+          }
         }
+      } else {
+        Object.keys(this.columns).forEach((key, index) => {
+          if (this.columns[key].visible === false) {
+            this.value.push(index)
+          }
+        })
       }
     }
   },
@@ -114,9 +130,15 @@ export default {
     },
     // 右侧列表元素变化
     dataChange(data) {
-      for (let item in this.columns) {
-        const key = this.columns[item].key
-        this.columns[item].visible = !data.includes(key)
+      if (Array.isArray(this.columns)) {
+        for (let item in this.columns) {
+          const key = this.columns[item].key
+          this.columns[item].visible = !data.includes(key)
+        }
+      } else {
+        Object.keys(this.columns).forEach((key, index) => {
+          this.columns[key].visible = !data.includes(index)
+        })
       }
     },
     // 打开显隐列dialog
@@ -124,17 +146,26 @@ export default {
       this.open = true
     },
     // 单勾选
-    checkboxChange(event, label) {
-      this.columns.filter(item => item.label == label)[0].visible = event
+    checkboxChange(event, key) {
+      if (Array.isArray(this.columns)) {
+        this.columns.filter(item => item.key == key)[0].visible = event
+      } else {
+        this.columns[key].visible = event
+      }
     },
     // 切换全选/反选
     toggleCheckAll() {
       const newValue = !this.isChecked
-      this.columns.forEach((col) => (col.visible = newValue))
+      if (Array.isArray(this.columns)) {
+        this.columns.forEach((col) => (col.visible = newValue))
+      } else {
+        Object.values(this.columns).forEach((col) => (col.visible = newValue))
+      }
     }
   },
 }
 </script>
+
 <style lang="scss" scoped>
 ::v-deep .el-transfer__button {
   border-radius: 50%;
