@@ -158,7 +158,7 @@ public class Constants
     /**
      * 自动识别json对象白名单配置（仅允许解析的包名，范围越小越安全）
      */
-    public static final String[] JSON_WHITELIST_STR = { "org.springframework", "com.ruoyi" };
+    public static final String[] JSON_WHITELIST_STR = { "com.ruoyi" };
 
     /**
      * 定时任务白名单配置（仅允许访问的包名，如其他需要可以自行添加）
