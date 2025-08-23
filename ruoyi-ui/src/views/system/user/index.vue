@@ -546,6 +546,11 @@ export default {
     },
     // 提交上传文件
     submitFileForm() {
+      const file = this.$refs.upload.uploadFiles
+      if (!file || file.length === 0 || !file[0].name.toLowerCase().endsWith('.xls') && !file[0].name.toLowerCase().endsWith('.xlsx')) {
+        this.$modal.msgError("请选择后缀为 “xls”或“xlsx”的文件。")
+        return
+      }
       this.$refs.upload.submit()
     }
   }
