@@ -34,15 +34,14 @@
           <router-link to="/user/profile">
             <el-dropdown-item>个人中心</el-dropdown-item>
           </router-link>
+          <el-dropdown-item @click.native="setLayout" v-if="setting">
+            <span>布局设置</span>
+          </el-dropdown-item>
           <el-dropdown-item divided @click.native="logout">
             <span>退出登录</span>
           </el-dropdown-item>
         </el-dropdown-menu>
       </el-dropdown>
-
-      <div class="right-menu-item hover-effect setting" @click="setLayout" v-if="setting">
-        <svg-icon icon-class="more-up" />
-      </div>
     </div>
   </div>
 </template>
@@ -178,6 +177,7 @@ export default {
 
       .avatar-wrapper {
         margin-top: 10px;
+        right: 8px;
         position: relative;
 
         .user-avatar {
@@ -190,6 +190,7 @@ export default {
         .user-nickname{
           position: relative;
           bottom: 10px;
+          left: 2px;
           font-size: 14px;
           font-weight: bold;
         }
