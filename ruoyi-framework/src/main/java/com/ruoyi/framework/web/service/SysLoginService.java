@@ -10,7 +10,6 @@ import org.springframework.stereotype.Component;
 import com.ruoyi.common.constant.CacheConstants;
 import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.constant.UserConstants;
-import com.ruoyi.common.core.domain.entity.SysUser;
 import com.ruoyi.common.core.domain.model.LoginUser;
 import com.ruoyi.common.core.redis.RedisCache;
 import com.ruoyi.common.exception.ServiceException;
@@ -172,12 +171,6 @@ public class SysLoginService
      */
     public void recordLoginInfo(Long userId)
     {
-        SysUser sysUser = new SysUser();
-        sysUser.setUserId(userId);
-        //避免每次登录把部门id更新为null
-        sysUser.setDeptId(0L);
-        sysUser.setLoginIp(IpUtils.getIpAddr());
-        sysUser.setLoginDate(DateUtils.getNowDate());
-        userService.updateUserProfile(sysUser);
+        userService.updateLoginInfo(userId, IpUtils.getIpAddr(), DateUtils.getNowDate());
     }
 }
