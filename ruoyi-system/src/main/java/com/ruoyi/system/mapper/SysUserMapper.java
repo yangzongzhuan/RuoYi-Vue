@@ -78,6 +78,15 @@ public interface SysUserMapper
     public int updateUserAvatar(@Param("userId") Long userId, @Param("avatar") String avatar);
 
     /**
+     * 修改用户状态
+     * 
+     * @param userId 用户ID
+     * @param status 状态
+     * @return 结果
+     */
+    public int updateUserStatus(@Param("userId") Long userId, @Param("status") String status);
+
+    /**
      * 更新用户登录信息（IP和登录时间）
      * 
      * @param userId 用户ID
