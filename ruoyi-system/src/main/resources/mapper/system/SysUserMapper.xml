@@ -198,11 +198,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	</update>
 	
 	<update id="updateUserStatus" parameterType="SysUser">
- 		update sys_user set status = #{status} where user_id = #{userId}
+ 		update sys_user set status = #{status}, update_time = sysdate() where user_id = #{userId}
 	</update>
 	
 	<update id="updateUserAvatar" parameterType="SysUser">
- 		update sys_user set avatar = #{avatar} where user_id = #{userId}
+ 		update sys_user set avatar = #{avatar}, update_time = sysdate() where user_id = #{userId}
 	</update>
 	
   	<update id="updateLoginInfo" parameterType="SysUser">
@@ -210,7 +210,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	</update>
 	
 	<update id="resetUserPwd" parameterType="SysUser">
- 		update sys_user set pwd_update_date = sysdate(), password = #{password} where user_id = #{userId}
+ 		update sys_user set pwd_update_date = sysdate(), password = #{password}, update_time = sysdate() where user_id = #{userId}
 	</update>
 	
 	<delete id="deleteUserById" parameterType="Long">
