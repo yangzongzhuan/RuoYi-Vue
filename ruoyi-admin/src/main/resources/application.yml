@@ -127,6 +127,13 @@ springdoc:
       paths-to-match: '/**'
       packages-to-scan: com.ruoyi.web.controller.tool
 
+# 防盗链配置
+referer:
+  # 防盗链开关
+  enabled: false
+  # 允许的域名列表
+  allowed-domains: localhost,127.0.0.1,ruoyi.vip,www.ruoyi.vip
+
 # 防止XSS攻击
 xss:
   # 过滤开关
