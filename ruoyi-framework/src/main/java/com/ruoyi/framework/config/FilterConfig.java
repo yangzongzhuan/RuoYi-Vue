@@ -8,6 +8,8 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import com.ruoyi.common.constant.Constants;
+import com.ruoyi.common.filter.RefererFilter;
 import com.ruoyi.common.filter.RepeatableFilter;
 import com.ruoyi.common.filter.XssFilter;
 import com.ruoyi.common.utils.StringUtils;
@@ -26,6 +28,9 @@ public class FilterConfig
     @Value("${xss.urlPatterns}")
     private String urlPatterns;
 
+    @Value("${referer.allowed-domains}")
+    private String allowedDomains;
+
     @SuppressWarnings({ "rawtypes", "unchecked" })
     @Bean
     @ConditionalOnProperty(value = "xss.enabled", havingValue = "true")
@@ -39,6 +44,23 @@ public class FilterConfig
         registration.setOrder(FilterRegistrationBean.HIGHEST_PRECEDENCE);
         Map<String, String> initParameters = new HashMap<String, String>();
         initParameters.put("excludes", excludes);
+        registration.setInitParameters(initParameters);
+        return registration;
+    }
+
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    @Bean
+    @ConditionalOnProperty(value = "referer.enabled", havingValue = "true")
+    public FilterRegistrationBean refererFilterRegistration()
+    {
+        FilterRegistrationBean registration = new FilterRegistrationBean();
+        registration.setDispatcherTypes(DispatcherType.REQUEST);
+        registration.setFilter(new RefererFilter());
+        registration.addUrlPatterns(Constants.RESOURCE_PREFIX + "/*");
+        registration.setName("refererFilter");
+        registration.setOrder(FilterRegistrationBean.HIGHEST_PRECEDENCE);
+        Map<String, String> initParameters = new HashMap<String, String>();
+        initParameters.put("allowedDomains", allowedDomains);
         registration.setInitParameters(initParameters);
         return registration;
     }
