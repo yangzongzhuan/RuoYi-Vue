@@ -29,6 +29,20 @@ public class GenUtils
         genTable.setCreateBy(operName);
     }
 
+    public static String processColumnName(String columnName) {
+        String[] ognlField = {"xor","bor","and","band","eq","neq","lt","gt","lte","gte","shl","shr","ushr"};
+        String colName = StringUtils.toCamelCase(columnName);
+
+        for (String field : ognlField) {
+            if (field.equals(colName)) {
+                colName += "Col";
+                break;
+            }
+        }
+
+        return colName;
+    }
+
     /**
      * 初始化列属性字段
      */
@@ -39,7 +53,8 @@ public class GenUtils
         column.setTableId(table.getTableId());
         column.setCreateBy(table.getCreateBy());
         // 设置java字段名
-        column.setJavaField(StringUtils.toCamelCase(columnName));
+        column.setJavaField(processColumnName(columnName));
+
         // 设置默认类型
         column.setJavaType(GenConstants.TYPE_STRING);
         column.setQueryType(GenConstants.QUERY_EQ);
