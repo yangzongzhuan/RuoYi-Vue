@@ -156,7 +156,7 @@ export default {
 }
 </script>
 
-<style rel="stylesheet/scss" lang="scss">
+<style rel="stylesheet/scss" lang="scss" scoped>
 .login {
   display: flex;
   justify-content: center;
@@ -179,7 +179,7 @@ export default {
   z-index: 1;
   .el-input {
     height: 38px;
-    input {
+    ::v-deep input {
       height: 38px;
     }
   }
