@@ -78,3 +78,13 @@ export function pushOfficialAccount(data) {
     data: data,
   })
 }
+
+// 手动创建任务（跳过大模型）
+export function addManualTask(data) {
+  return request({
+    url: '/psd/task/manual',
+    method: 'post',
+    data: data,
+    timeout: 999999
+  })
+}

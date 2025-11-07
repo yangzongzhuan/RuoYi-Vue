@@ -1,14 +1,6 @@
 <template>
   <div class="app-container" v-loading="loading">
     <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="100px">
-<!--      <el-form-item label="任务名称" prop="taskName">-->
-<!--        <el-input-->
-<!--          v-model="queryParams.taskName"-->
-<!--          placeholder="请输入任务名称"-->
-<!--          clearable-->
-<!--          @keyup.enter.native="handleQuery"-->
-<!--        />-->
-<!--      </el-form-item>-->
       <el-form-item label="作图账号名称" prop="accountName">
         <el-input
           v-model="queryParams.accountName"
@@ -54,6 +46,16 @@
       </el-col>
       <el-col :span="1.5">
         <el-button
+          type="info"
+          plain
+          icon="el-icon-edit-outline"
+          size="mini"
+          @click="handleManualAdd"
+          v-hasPermi="['psd:task:add']"
+        >手动创建</el-button>
+      </el-col>
+      <el-col :span="1.5">
+        <el-button
           type="success"
           plain
           icon="el-icon-edit"
@@ -89,7 +91,6 @@
 
     <el-table v-loading="loading" :data="taskList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
-<!--      <el-table-column label="任务名称" align="center" prop="taskName" />-->
       <el-table-column label="作图账号名称" align="center" prop="accountName" />
       <el-table-column label="模板名称" align="center" prop="templateName" />
       <el-table-column prop="status" label="任务状态" width="80">
@@ -99,16 +100,8 @@
       </el-table-column>
       <el-table-column label="创建时间" align="center" prop="createDate" />
       <el-table-column label="发布公众号名称" align="center" prop="gzhName" />
-<!--      <el-table-column label="图片生产数量，[1,2,3] 表示图一1张，图二两张" align="center" prop="imageCount" />-->
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
-<!--          <el-button-->
-<!--            size="mini"-->
-<!--            type="text"-->
-<!--            icon="el-icon-edit"-->
-<!--            @click="handleUpdate(scope.row)"-->
-<!--            v-hasPermi="['psd:task:edit']"-->
-<!--          >修改</el-button>-->
           <el-button
             size="mini"
             type="text"
@@ -151,11 +144,9 @@
     />
 
     <!-- 添加或修改任务对话框 -->
-    <el-dialog :title="title" :visible.sync="open" width="70%" append-to-body v-loading="loading" :close-on-click-modal="false">
+    <el-dialog :title="title" :visible.sync="open" width="70%" append-to-body :close-on-click-modal="false" class="auto-task-dialog">
+      <div v-loading="loading" class="dialog-loading-wrapper">
       <el-form ref="form" :model="form" :rules="rules" label-width="100px">
-<!--        <el-form-item label="任务名称" prop="taskName">-->
-<!--          <el-input v-model="form.taskName" placeholder="请输入任务名称" />-->
-<!--        </el-form-item>-->
         <el-form-item label="作图账号名称" prop="accountName">
           <el-select
             v-model="form.accountName"
@@ -182,6 +173,7 @@
             filterable
             clearable
             style="width: 100%"
+            @change="templateNameChange"
             :popper-append-to-body="false"
           >
             <el-option
@@ -192,7 +184,6 @@
             />
           </el-select>
         </el-form-item>
-        <el-button @click="getTemplateInfo" :disabled="isEmpty(form.accountName) || isEmpty(form.templateName)">获取模板信息</el-button>
         <div v-if="!isEmpty(templateInfo.imageConfigs)" class="template-container">
           <div class="config-item">
             <span class="label">文章提示词：</span>
@@ -203,7 +194,6 @@
             <el-input type="textarea" :rows="7" v-model="templateInfo.prompt" />
           </div>
           <el-row>
-            <!-- 模板信息展示区 -->
             <el-col :span="16">
               <el-card class="config-section">
                 <div class="section-header">
@@ -235,15 +225,11 @@
                     <i class="el-icon-info"></i>
                   </el-tooltip>
                 </div>
-
-                <!-- 图片预览组件 -->
                 <image-preview :src="imageList" :width="100" :height="100"></image-preview>
-
               </el-card>
             </el-col>
           </el-row>
 
-          <!-- 图片配置展示 -->
           <el-card
             v-for="(imgConfig, index) in templateInfo.imageConfigs"
             :key="index"
@@ -260,17 +246,13 @@
                 placeholder="生成数量">
               </el-input-number>
             </div>
-
-            <!-- 文件夹配置 -->
             <div class="config-item">
               <span class="label">目标文件夹：</span>
               <el-tag>{{ imgConfig.folderName }}</el-tag>
               <span v-if="imgConfig.hasSubfolder" class="subfolder">
-            / {{ imgConfig.subfolderName }}
-          </span>
+                / {{ imgConfig.subfolderName }}
+              </span>
             </div>
-
-            <!-- 文字图层配置 -->
             <div
               v-for="(layer, key) in imgConfig.textLayerConfigs"
               :key="key"
@@ -290,58 +272,27 @@
                 </el-input>
               </div>
             </div>
-<!--            <div class="config-item">-->
-<!--              <span class="label">名字提示词：</span>-->
-<!--              <el-input-->
-<!--                type="textarea"-->
-<!--                :rows="7"-->
-<!--                :value="imgConfig.namePrompt"-->
-<!--                readonly-->
-<!--                class="sample-text">-->
-<!--              </el-input>-->
-<!--            </div>-->
-<!--            <div class="config-item">-->
-<!--              <span class="label">其他提示词：</span>-->
-<!--              <el-input-->
-<!--                type="textarea"-->
-<!--                :rows="7"-->
-<!--                :value="imgConfig.otherPrompt"-->
-<!--                readonly-->
-<!--                class="sample-text">-->
-<!--              </el-input>-->
-<!--            </div>-->
           </el-card>
-<!--          <el-button type="primary" @click="getCozeInfo">请求coze</el-button>-->
         </div>
-        <!-- 在点击按钮后添加 JSON 展示区域 -->
         <div v-if="form.jsonInfo" class="json-preview-container">
           <el-card class="json-card">
             <div slot="header" class="json-header">
               <span>JSON 响应数据</span>
-              <el-button
-                type="text"
-                @click="toggleJsonView"
-                class="toggle-btn">
+              <el-button type="text" @click="toggleJsonView" class="toggle-btn">
                 {{ showRawJson ? '展开结构' : '原始数据' }}
               </el-button>
             </div>
-
-            <!-- 结构化展示 -->
             <div v-if="!showRawJson" class="formatted-json">
-              <div
-                v-for="(value, key) in parsedJson"
-                :key="key"
-                class="json-item">
+              <div v-for="(value, key) in parsedJson" :key="key" class="json-item">
                 <span class="json-key">{{ key }}:</span>
                 <span class="json-value">{{ value }}</span>
               </div>
             </div>
-
-            <!-- 原始 JSON 展示 -->
             <pre v-else class="raw-json">{{ formatJson(form.jsonInfo) }}</pre>
           </el-card>
         </div>
       </el-form>
+      </div>
       <div slot="footer" class="dialog-footer">
         <el-button type="primary" @click="submitForm" :disabled="loading || isEmpty(templateInfo.imageConfigs)">确 定</el-button>
         <el-button @click="cancel">取 消</el-button>
@@ -360,11 +311,159 @@
         <el-button @click="accountOptionsVisible = false">取 消</el-button>
       </div>
     </el-dialog>
+
+    <!-- 手动创建任务弹窗 -->
+    <el-dialog 
+      title="手动创建任务" 
+      :visible.sync="manualDialogVisible" 
+      width="80%" 
+      append-to-body 
+      :close-on-click-modal="false"
+      class="manual-task-dialog">
+      <div v-loading="loading" class="dialog-loading-wrapper">
+      <el-form ref="manualForm" label-width="120px">
+        <el-form-item label="作图账号名称" prop="accountName">
+          <el-select
+            v-model="manualForm.accountName"
+            placeholder="请选择账号"
+            filterable
+            clearable
+            style="width: 100%"
+            @change="manualFilterTemplate"
+            :popper-append-to-body="false"
+          >
+            <el-option
+              v-for="item in accountOptions"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            />
+          </el-select>
+        </el-form-item>
+
+        <el-form-item label="模板名称" prop="templateName">
+          <el-select
+            v-model="manualForm.templateName"
+            placeholder="请选择模板"
+            filterable
+            clearable
+            style="width: 100%"
+            @change="manualTemplateNameChange"
+            :popper-append-to-body="false"
+          >
+            <el-option
+              v-for="item in manualTemplateOptionsFilter"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            />
+          </el-select>
+        </el-form-item>
+
+        <!-- 模板信息展示 -->
+        <div v-if="manualTemplateInfo.baseConfig.psdLocalPath" class="manual-template-container">
+          <el-card class="manual-config-section">
+            <div class="section-header">
+              <h3>基础配置</h3>
+            </div>
+            <div class="config-item">
+              <span class="label">账号名称：</span>
+              <el-tag type="info">{{ manualTemplateInfo.baseConfig.accountName }}</el-tag>
+            </div>
+            <div class="config-item">
+              <span class="label">PSD路径：</span>
+              <el-tooltip :content="manualTemplateInfo.baseConfig.psdLocalPath">
+                <span class="path">{{ manualTemplateInfo.baseConfig.psdLocalPath }}</span>
+              </el-tooltip>
+            </div>
+            <div class="config-item">
+              <span class="label">输出路径：</span>
+              <el-tooltip :content="manualTemplateInfo.baseConfig.imageSavePath">
+                <span class="path">{{ manualTemplateInfo.baseConfig.imageSavePath }}</span>
+              </el-tooltip>
+            </div>
+          </el-card>
+
+          <div v-for="(templateImgConfig, templateIndex) in manualTemplateInfo.imageConfigs" :key="templateIndex" class="manual-image-config-wrapper">
+            <el-card class="manual-image-config-card">
+              <div class="section-header">
+                <h3>{{ templateImgConfig.folderName }}</h3>
+              </div>
+              <div v-for="(manualConfig, configIndex) in manualImageConfigs[templateIndex]" :key="configIndex" class="manual-config-item">
+                <el-card shadow="hover" class="config-item-card">
+                  <div slot="header" class="config-item-header">
+                    <span>配置项 {{ configIndex + 1 }}</span>
+                    <el-button type="text" icon="el-icon-delete" @click="removeManualImageConfig(templateIndex, configIndex)">删除</el-button>
+                  </div>
+                  <div v-for="(layer, layerKey) in templateImgConfig.textLayerConfigs" :key="layerKey" class="text-layer-config">
+                    <el-card shadow="never" class="layer-config-card">
+                      <div slot="header" class="layer-header">
+                        <span>{{ layerKey }}</span>
+                      </div>
+                      <el-form-item label="名称">
+                        <el-input v-model="manualConfig.textLayerConfigs[layerKey].name" placeholder="图层名称" />
+                      </el-form-item>
+                      <el-form-item label="每行最大字符数">
+                        <el-input-number
+                          v-model="manualConfig.textLayerConfigs[layerKey].maxCharsPerLine"
+                          :min="1"
+                          :max="100"
+                          controls-position="right"
+                        />
+                      </el-form-item>
+                      <el-form-item label="示例文本">
+                        <el-input
+                          v-model="manualConfig.textLayerConfigs[layerKey].sampleText"
+                          type="textarea"
+                          :rows="3"
+                          placeholder="请输入文本内容"
+                        />
+                      </el-form-item>
+                    </el-card>
+                  </div>
+                  <!-- 在每个配置项底部添加"添加配置项"按钮 -->
+                  <div class="add-config-btn-wrapper">
+                    <el-button type="primary" size="small" icon="el-icon-plus" @click="addManualImageConfig(templateIndex)">
+                      添加配置项
+                    </el-button>
+                  </div>
+                </el-card>
+              </div>
+              <!-- 如果没有配置项，显示添加按钮 -->
+              <div v-if="!manualImageConfigs[templateIndex] || manualImageConfigs[templateIndex].length === 0" class="empty-config-wrapper">
+                <el-button type="primary" size="small" icon="el-icon-plus" @click="addManualImageConfig(templateIndex)">
+                  添加配置项
+                </el-button>
+              </div>
+            </el-card>
+          </div>
+
+          <el-card class="manual-config-section">
+            <div class="section-header">
+              <h3>文案（可选）</h3>
+            </div>
+            <el-form-item label="文案内容">
+              <el-input
+                v-model="manualForm.copywriter"
+                type="textarea"
+                :rows="10"
+                placeholder="请输入文案内容，可选"
+              />
+            </el-form-item>
+          </el-card>
+        </div>
+      </el-form>
+      </div>
+      <div slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="submitManualForm" :disabled="loading || !canSubmitManual">确 定</el-button>
+        <el-button @click="cancelManual">取 消</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
 <script>
-import {listTask, getTask, delTask, addTask, updateTask, getCoze, pushOfficialAccount} from "@/api/custom/task";
+import {listTask, getTask, delTask, addTask, updateTask, getCoze, pushOfficialAccount, addManualTask} from "@/api/custom/task";
 import {getImage, getListPSDConfigAll, listPSDConfig} from "@/api/custom/psd";
 import {isEmpty} from "@/utils/validate";
 
@@ -423,7 +522,26 @@ export default {
       imageList: '',
       gzhName: '',
       accountOptionsVisible: false,
-      currentRow: {}
+      currentRow: {},
+      // 手动创建相关
+      manualDialogVisible: false,
+      manualForm: {
+        accountName: '',
+        templateName: '',
+        copywriter: ''
+      },
+      manualTemplateInfo: {
+        baseConfig: {
+          accountName: '',
+          psdLocalPath: '',
+          imageSavePath: '',
+        },
+        imageConfigs: []
+      },
+      manualTemplateOptionsFilter: [],
+      // manualImageConfigs 是一个对象，key是模板图片配置的索引，value是该配置的所有手动配置项数组
+      // 例如: { 0: [{textLayerConfigs: {...}}, {textLayerConfigs: {...}}], 1: [...] }
+      manualImageConfigs: {}
     };
   },
   created() {
@@ -439,6 +557,17 @@ export default {
       } catch {
         return { error: 'Invalid JSON format' };
       }
+    },
+    // 是否可以提交手动创建表单
+    canSubmitManual() {
+      if (!this.manualTemplateInfo.baseConfig.psdLocalPath) {
+        return false;
+      }
+      // 检查是否至少有一个图片配置有配置项
+      const hasConfigs = Object.values(this.manualImageConfigs).some(configs => 
+        Array.isArray(configs) && configs.length > 0
+      );
+      return hasConfigs;
     }
   },
   methods: {
@@ -488,63 +617,19 @@ export default {
     },
     /** 新增按钮操作 */
     handleAdd() {
-      this.templateInfo = {
-        copywriterPrompt: '',
-        prompt: '',
-        baseConfig: {
-          accountName: '',
-          psdLocalPath: '',
-          imageSavePath: '',
-        }
-      }
-      getListPSDConfigAll().then(response => {
-        this.psdList = response.rows
-        this.psdList.forEach(item => {
-          try {
-            const config = JSON.parse(item.config)
-            const { templateName, accountName } = config.baseConfig
-
-            // 去重后添加到选项
-            if (!this.templateOptions.find(opt => opt.value === templateName)) {
-              this.templateOptions.push({
-                value: templateName,
-                label: templateName
-              })
-            }
-
-            // 初始化时显示全部模板
-            this.templateOptionsFilter = [...this.templateOptions];
-
-            if (!this.accountOptions.find(opt => opt.value === accountName)) {
-              this.accountOptions.push({
-                value: accountName,
-                label: accountName
-              })
-            }
-          } catch (e) {
-            console.error('JSON 解析错误:', e)
-          }
-        })
-        console.log(this.psdList)
+      this.resetTemplateInfo();
+      this.loadAccountAndTemplateOptions().then(() => {
         this.reset();
         this.open = true;
         this.title = "添加任务";
-      })
+      });
     },
     /** 修改按钮操作 */
     handleUpdate(row) {
       this.reset();
-      const id = row.id || this.ids
+      const id = row.id || this.ids;
       getTask(id).then(response => {
-        this.templateInfo = {
-          copywriterPrompt: '',
-          prompt: '',
-          baseConfig: {
-            accountName: '',
-            psdLocalPath: '',
-            imageSavePath: '',
-          }
-        }
+        this.resetTemplateInfo();
         this.form = response.data;
         this.open = true;
         this.title = "修改任务";
@@ -552,7 +637,6 @@ export default {
     },
     /** 提交按钮 */
     submitForm() {
-      console.log(this.templateInfo)
       this.$refs["form"].validate(valid => {
         if (valid) {
           this.loading = true;
@@ -562,32 +646,14 @@ export default {
               this.$modal.msgSuccess("修改成功");
               this.open = false;
               this.getList();
-              this.templateInfo = {
-                copywriterPrompt: '',
-                prompt: '',
-                baseConfig: {
-                accountName: '',
-                psdLocalPath: '',
-                imageSavePath: '',
-                },
-                imageConfigs: [] // 每个元素需要包含 generateCount 字段
-              }
+              this.resetTemplateInfo();
             }).finally(() => {this.loading = false;});
           } else {
             addTask(this.form).then(response => {
               this.$modal.msgSuccess("新增成功");
               this.open = false;
               this.getList();
-              this.templateInfo = {
-                copywriterPrompt: '',
-                prompt: '',
-                baseConfig: {
-                  accountName: '',
-                  psdLocalPath: '',
-                  imageSavePath: '',
-                },
-                imageConfigs: [] // 每个元素需要包含 generateCount 字段
-              }
+              this.resetTemplateInfo();
             }).finally(() => {this.loading = false;});
           }
         }
@@ -628,9 +694,8 @@ export default {
           // 替换图片配置数组（确保响应式更新）
           this.templateInfo.imageConfigs = parsedConfig.imageConfigs.map(config => ({
             ...config,
-            generateCount: config.generateCount || 1 // 初始化生成数量
+            generateCount: config.generateCount || 1
           }));
-          // this.loadImage(this.templateInfo.baseConfig.psdLocalPath)
           this.$modal.msgSuccess("模板信息获取成功");
         } else {
           this.$modal.msgError("模板配置数据不存在");
@@ -639,6 +704,14 @@ export default {
       }).catch(() => {
         this.loading = false;
       });
+    },
+    /** 自动创建 - 模板名称改变时自动获取模板信息 */
+    templateNameChange() {
+      if (!this.isEmpty(this.form.accountName) && !this.isEmpty(this.form.templateName)) {
+        this.getTemplateInfo();
+      } else {
+        this.resetTemplateInfo();
+      }
     },
     getCozeInfo() {
       this.loading = true;
@@ -666,19 +739,57 @@ export default {
     },
     // 修改过滤方法
     filterTemplate() {
-      this.form.templateName = ''
+      this.form.templateName = '';
       if (!this.form.accountName) {
-        // 如果未选择账号，显示全部模板
         this.templateOptionsFilter = [...this.templateOptions];
+        this.resetTemplateInfo();
         return;
       }
+      this.templateOptionsFilter = this.getFilteredTemplates(this.form.accountName);
+    },
 
-      // 根据账号名称过滤模板
+    /** 打开公众号发布对话框 */
+    openOfficialAccount(row) {
+      this.currentRow = row;
+      this.gzhName = '';
+      this.accountOptionsVisible = true;
+    },
+    /** 加载账号和模板选项 */
+    loadAccountAndTemplateOptions() {
+      return getListPSDConfigAll().then(response => {
+        this.psdList = response.rows;
+        this.psdList.forEach(item => {
+          try {
+            const config = JSON.parse(item.config);
+            const { templateName, accountName } = config.baseConfig;
+
+            if (!this.templateOptions.find(opt => opt.value === templateName)) {
+              this.templateOptions.push({
+                value: templateName,
+                label: templateName
+              });
+            }
+
+            if (!this.accountOptions.find(opt => opt.value === accountName)) {
+              this.accountOptions.push({
+                value: accountName,
+                label: accountName
+              });
+            }
+          } catch (e) {
+            // JSON解析失败，跳过该项
+          }
+        });
+        this.templateOptionsFilter = [...this.templateOptions];
+      });
+    },
+    /** 根据账号名称过滤模板 */
+    getFilteredTemplates(accountName) {
       const relatedTemplates = this.psdList
         .filter(item => {
           try {
             const config = JSON.parse(item.config);
-            return config.baseConfig?.accountName === this.form.accountName;
+            return config.baseConfig?.accountName === accountName;
           } catch(e) {
             return false;
           }
@@ -691,33 +802,38 @@ export default {
             return null;
           }
         })
-        .filter(Boolean); // 过滤空值
+        .filter(Boolean);
 
-      // 去重并转换为选项格式
-      this.templateOptionsFilter = [...new Set(relatedTemplates)].map(name => ({
+      return [...new Set(relatedTemplates)].map(name => ({
         value: name,
         label: name
       }));
     },
-
-    // // 异步加载方法（在created/mounted中调用）
-    // async loadImage(path) {
-    //   if (!path || this.imageCache[path]) return
-    //
-    //   try {
-    //     const blob = await getImage(encodeURIComponent(path))
-    //     console.log(blob)
-    //     this.$set(this.imageCache, path, URL.createObjectURL(blob));
-    //     this.$forceUpdate(); // 强制更新视图
-    //   } catch(e) {
-    //   }
-    // },
-    openOfficialAccount(row) {
-      this.currentRow = row
-      console.log(this.currentRow
-      )
-      this.gzhName = ''
-      this.accountOptionsVisible = true
+    /** 重置自动创建模板信息 */
+    resetTemplateInfo() {
+      this.templateInfo = {
+        copywriterPrompt: '',
+        prompt: '',
+        baseConfig: {
+          accountName: '',
+          psdLocalPath: '',
+          imageSavePath: '',
+        },
+        imageConfigs: []
+      };
+      this.imageList = '';
+    },
+    /** 重置手动创建模板信息 */
+    resetManualTemplateInfo() {
+      this.manualTemplateInfo = {
+        baseConfig: {
+          accountName: '',
+          psdLocalPath: '',
+          imageSavePath: '',
+        },
+        imageConfigs: []
+      };
+      this.manualImageConfigs = {};
     },
     pushConfirm() {
       this.$modal.confirm('确认要发布吗？')
@@ -745,6 +861,187 @@ export default {
         .catch(() => {
           // 用户点了取消
         })
+    },
+    /** 手动创建按钮操作 */
+    handleManualAdd() {
+      this.manualForm = {
+        accountName: '',
+        templateName: '',
+        copywriter: ''
+      };
+      this.resetManualTemplateInfo();
+      this.loadAccountAndTemplateOptions().then(() => {
+        this.manualTemplateOptionsFilter = [...this.templateOptions];
+        this.manualDialogVisible = true;
+      });
+    },
+    /** 手动创建 - 过滤模板 */
+    manualFilterTemplate() {
+      this.manualForm.templateName = '';
+      if (!this.manualForm.accountName) {
+        this.manualTemplateOptionsFilter = [...this.templateOptions];
+        this.resetManualTemplateInfo();
+        return;
+      }
+      this.manualTemplateOptionsFilter = this.getFilteredTemplates(this.manualForm.accountName);
+    },
+    /** 手动创建 - 获取模板信息 */
+    manualGetTemplateInfo() {
+      this.loading = true;
+      listPSDConfig({
+        accountName: this.manualForm.accountName,
+        templateName: this.manualForm.templateName
+      }).then(res => {
+        if (res.rows[0]?.config) {
+          const parsedConfig = JSON.parse(res.rows[0].config);
+          // 合并基础配置
+          Object.assign(this.manualTemplateInfo.baseConfig, parsedConfig.baseConfig);
+          // 设置图片配置数组
+          this.manualTemplateInfo.imageConfigs = parsedConfig.imageConfigs || [];
+          // 初始化手动配置项对象
+          this.manualImageConfigs = {};
+          // 为每个图片配置自动添加第一个配置项
+          if (this.manualTemplateInfo.imageConfigs.length > 0) {
+            this.manualTemplateInfo.imageConfigs.forEach((templateImgConfig, index) => {
+              this.addManualImageConfig(index);
+            });
+          }
+          this.$modal.msgSuccess("模板信息获取成功");
+        } else {
+          this.$modal.msgError("模板配置数据不存在");
+        }
+        this.loading = false;
+      }).catch(() => {
+        this.loading = false;
+      });
+    },
+    /** 手动创建 - 模板名称改变时自动获取模板信息 */
+    manualTemplateNameChange() {
+      if (!this.isEmpty(this.manualForm.accountName) && !this.isEmpty(this.manualForm.templateName)) {
+        this.manualGetTemplateInfo();
+      } else {
+        this.resetManualTemplateInfo();
+      }
+    },
+    /** 手动创建 - 添加图片配置项 */
+    addManualImageConfig(templateIndex) {
+      if (!this.manualImageConfigs[templateIndex]) {
+        this.$set(this.manualImageConfigs, templateIndex, []);
+      }
+      
+      const templateImgConfig = this.manualTemplateInfo.imageConfigs[templateIndex];
+      if (!templateImgConfig) {
+        return;
+      }
+
+      // 创建一个新的配置项，基于模板的textLayerConfigs结构
+      const newConfig = {
+        textLayerConfigs: {}
+      };
+
+      // 复制模板的textLayerConfigs结构，默认使用模板的所有值
+      Object.keys(templateImgConfig.textLayerConfigs).forEach(layerKey => {
+        const layer = templateImgConfig.textLayerConfigs[layerKey];
+        newConfig.textLayerConfigs[layerKey] = {
+          maxCharsPerLine: layer.maxCharsPerLine || 10,
+          name: layer.name || '',
+          sampleText: layer.sampleText || ''
+        };
+      });
+
+      this.manualImageConfigs[templateIndex].push(newConfig);
+    },
+    /** 手动创建 - 删除图片配置项 */
+    removeManualImageConfig(templateIndex, configIndex) {
+      if (this.manualImageConfigs[templateIndex] && this.manualImageConfigs[templateIndex][configIndex]) {
+        this.manualImageConfigs[templateIndex].splice(configIndex, 1);
+      }
+    },
+    /** 手动创建 - 取消 */
+    cancelManual() {
+      this.manualDialogVisible = false;
+      this.manualForm = {
+        accountName: '',
+        templateName: '',
+        copywriter: ''
+      };
+      this.manualTemplateInfo = {
+        baseConfig: {
+          accountName: '',
+          psdLocalPath: '',
+          imageSavePath: '',
+        },
+        imageConfigs: []
+      };
+      this.manualImageConfigs = {};
+    },
+    /** 手动创建 - 提交表单 */
+    submitManualForm() {
+      if (!this.canSubmitManual) {
+        this.$modal.msgWarning("请至少为一个图片配置添加配置项");
+        return;
+      }
+
+      // 构建最终的imageConfigs数组
+      const finalImageConfigs = [];
+      
+      // 遍历每个模板图片配置
+      this.manualTemplateInfo.imageConfigs.forEach((templateImgConfig, templateIndex) => {
+        const manualConfigs = this.manualImageConfigs[templateIndex] || [];
+        
+        // 为每个手动配置项创建一个完整的imageConfig
+        manualConfigs.forEach(manualConfig => {
+          const imageConfig = {
+            folderName: templateImgConfig.folderName,
+            generateCount: "1", // 每个配置项生成1张
+            hasSubfolder: templateImgConfig.hasSubfolder || false,
+            subfolderName: templateImgConfig.subfolderName || "",
+            textLayerConfigs: {}
+          };
+
+          // 复制textLayerConfigs，保留maxCharsPerLine和name，使用手动填写的sampleText
+          Object.keys(manualConfig.textLayerConfigs).forEach(layerKey => {
+            const manualLayer = manualConfig.textLayerConfigs[layerKey];
+            const templateLayer = templateImgConfig.textLayerConfigs[layerKey];
+            
+            imageConfig.textLayerConfigs[layerKey] = {
+              maxCharsPerLine: String(manualLayer.maxCharsPerLine || templateLayer.maxCharsPerLine || '10'),
+              name: manualLayer.name || templateLayer.name || '',
+              sampleText: manualLayer.sampleText || ''
+            };
+          });
+
+          finalImageConfigs.push(imageConfig);
+        });
+      });
+
+      if (finalImageConfigs.length === 0) {
+        this.$modal.msgWarning("请至少添加一个配置项");
+        return;
+      }
+
+      // 构建最终提交的数据
+      const submitData = {
+        accountName: this.manualTemplateInfo.baseConfig.accountName,
+        templateName: this.manualTemplateInfo.baseConfig.templateName,
+        config: JSON.stringify({
+          baseConfig: this.manualTemplateInfo.baseConfig,
+          imageConfigs: finalImageConfigs,
+          copywriter: this.manualForm.copywriter || undefined
+        })
+      };
+
+      this.loading = true;
+      addManualTask(submitData).then(response => {
+        this.$modal.msgSuccess("手动创建任务成功");
+        this.manualDialogVisible = false;
+        this.getList();
+        this.cancelManual();
+      }).catch(error => {
+        this.$modal.msgError("手动创建任务失败：" + (error.msg || error.message || "未知错误"));
+      }).finally(() => {
+        this.loading = false;
+      });
     }
   }
 };
@@ -877,6 +1174,83 @@ export default {
   border-radius: 4px;
   white-space: pre-wrap;
   word-wrap: break-word;
+}
+
+/* 手动创建相关样式 */
+.manual-template-container {
+  margin-top: 20px;
+}
+
+.manual-config-section {
+  margin-bottom: 20px;
+}
+
+.manual-image-config-wrapper {
+  margin-bottom: 20px;
+}
+
+.manual-image-config-card {
+  margin-bottom: 15px;
+}
+
+.config-item-card {
+  margin-bottom: 15px;
+  border: 1px solid #e4e7ed;
+}
+
+.config-item-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.text-layer-config {
+  margin-bottom: 15px;
+}
+
+.layer-config-card {
+  margin-bottom: 10px;
+  border: 1px solid #e4e7ed;
+}
+
+.layer-header {
+  font-weight: bold;
+  color: #409EFF;
+}
+
+.layer-info {
+  margin-top: 5px;
+}
+
+/* 对话框loading优化 */
+.dialog-loading-wrapper {
+  min-height: 200px;
+  position: relative;
+}
+
+.manual-task-dialog .el-loading-mask,
+.auto-task-dialog .el-loading-mask {
+  position: absolute !important;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100% !important;
+  height: 100% !important;
+  z-index: 2000;
+}
+
+/* 添加配置项按钮样式 */
+.add-config-btn-wrapper {
+  margin-top: 15px;
+  padding-top: 15px;
+  border-top: 1px dashed #e4e7ed;
+  text-align: center;
+}
+
+.empty-config-wrapper {
+  padding: 30px 0;
+  text-align: center;
 }
 
 </style>
