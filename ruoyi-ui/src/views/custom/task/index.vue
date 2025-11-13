@@ -105,6 +105,13 @@
           <el-button
             size="mini"
             type="text"
+            icon="el-icon-edit"
+            @click="handleEditTask(scope.row)"
+            v-hasPermi="['psd:task:edit']"
+          >编辑</el-button>
+          <el-button
+            size="mini"
+            type="text"
             icon="el-icon-delete"
             @click="handleDelete(scope.row)"
             v-hasPermi="['psd:task:remove']"
@@ -314,7 +321,7 @@
 
     <!-- 手动创建任务弹窗 -->
     <el-dialog 
-      title="手动创建任务" 
+      :title="isEditMode ? '编辑任务' : '手动创建任务'" 
       :visible.sync="manualDialogVisible" 
       width="80%" 
       append-to-body 
@@ -455,10 +462,13 @@
       </el-form>
       </div>
       <div slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="submitManualForm" :disabled="loading || !canSubmitManual">确 定</el-button>
+        <el-button type="primary" @click="submitManualForm" :disabled="loading || !canSubmitManual">
+          {{ isEditMode ? '再次创建任务' : '确 定' }}
+        </el-button>
         <el-button @click="cancelManual">取 消</el-button>
       </div>
     </el-dialog>
+
   </div>
 </template>
 
@@ -541,7 +551,10 @@ export default {
       manualTemplateOptionsFilter: [],
       // manualImageConfigs 是一个对象，key是模板图片配置的索引，value是该配置的所有手动配置项数组
       // 例如: { 0: [{textLayerConfigs: {...}}, {textLayerConfigs: {...}}], 1: [...] }
-      manualImageConfigs: {}
+      manualImageConfigs: {},
+      // 编辑模式标识
+      isEditMode: false,
+      currentEditTask: null
     };
   },
   created() {
@@ -864,6 +877,8 @@ export default {
     },
     /** 手动创建按钮操作 */
     handleManualAdd() {
+      this.isEditMode = false;
+      this.currentEditTask = null;
       this.manualForm = {
         accountName: '',
         templateName: '',
@@ -888,7 +903,7 @@ export default {
     /** 手动创建 - 获取模板信息 */
     manualGetTemplateInfo() {
       this.loading = true;
-      listPSDConfig({
+      return listPSDConfig({
         accountName: this.manualForm.accountName,
         templateName: this.manualForm.templateName
       }).then(res => {
@@ -900,8 +915,8 @@ export default {
           this.manualTemplateInfo.imageConfigs = parsedConfig.imageConfigs || [];
           // 初始化手动配置项对象
           this.manualImageConfigs = {};
-          // 为每个图片配置自动添加第一个配置项
-          if (this.manualTemplateInfo.imageConfigs.length > 0) {
+          // 只有在非编辑模式下才为每个图片配置自动添加第一个配置项
+          if (!this.isEditMode && this.manualTemplateInfo.imageConfigs.length > 0) {
             this.manualTemplateInfo.imageConfigs.forEach((templateImgConfig, index) => {
               this.addManualImageConfig(index);
             });
@@ -974,6 +989,9 @@ export default {
         imageConfigs: []
       };
       this.manualImageConfigs = {};
+      // 重置编辑模式
+      this.isEditMode = false;
+      this.currentEditTask = null;
     },
     /** 手动创建 - 提交表单 */
     submitManualForm() {
@@ -1033,15 +1051,96 @@ export default {
 
       this.loading = true;
       addManualTask(submitData).then(response => {
-        this.$modal.msgSuccess("手动创建任务成功");
+        this.$modal.msgSuccess(this.isEditMode ? "任务重新创建成功" : "手动创建任务成功");
         this.manualDialogVisible = false;
         this.getList();
         this.cancelManual();
       }).catch(error => {
-        this.$modal.msgError("手动创建任务失败：" + (error.msg || error.message || "未知错误"));
+        this.$modal.msgError((this.isEditMode ? "任务重新创建失败：" : "手动创建任务失败：") + (error.msg || error.message || "未知错误"));
       }).finally(() => {
         this.loading = false;
       });
+    },
+    /** 编辑任务按钮操作 */
+    handleEditTask(row) {
+      this.isEditMode = true;
+      this.currentEditTask = row;
+      this.manualForm = {
+        accountName: row.accountName,
+        templateName: row.templateName,
+        copywriter: ''
+      };
+      this.resetManualTemplateInfo();
+      this.loadAccountAndTemplateOptions().then(() => {
+        this.manualTemplateOptionsFilter = this.getFilteredTemplates(row.accountName);
+        // 先获取模板信息，然后在获取成功后填充配置
+        this.manualGetTemplateInfo().then(() => {
+          // 解析任务的config JSON并填充到手动创建表单
+          this.populateManualFormFromConfig(row.config);
+        });
+        this.manualDialogVisible = true;
+      });
+    },
+    /** 从config JSON填充手动创建表单 */
+    populateManualFormFromConfig(configJson) {
+      try {
+        const config = JSON.parse(configJson);
+        
+        // 设置文案
+        this.manualForm.copywriter = config.copywriter || '';
+        
+        // 重新初始化手动配置项对象
+        this.manualImageConfigs = {};
+        
+        // 根据config中的imageConfigs创建手动配置项
+        if (config.imageConfigs && config.imageConfigs.length > 0) {
+          // 按照模板的imageConfigs顺序来映射
+          this.manualTemplateInfo.imageConfigs.forEach((templateImgConfig, templateIndex) => {
+            this.$set(this.manualImageConfigs, templateIndex, []);
+            
+            // 找到与当前模板配置匹配的config配置项
+            const matchingConfigs = config.imageConfigs.filter(imgConfig => 
+              imgConfig.folderName === templateImgConfig.folderName && 
+              imgConfig.subfolderName === templateImgConfig.subfolderName
+            );
+            
+            // 为每个匹配的配置项创建手动配置
+            matchingConfigs.forEach(imgConfig => {
+              const manualConfig = {
+                textLayerConfigs: {}
+              };
+              
+              // 复制textLayerConfigs
+              Object.keys(templateImgConfig.textLayerConfigs).forEach(layerKey => {
+                const configLayer = imgConfig.textLayerConfigs[layerKey];
+                const templateLayer = templateImgConfig.textLayerConfigs[layerKey];
+                
+                if (configLayer) {
+                  manualConfig.textLayerConfigs[layerKey] = {
+                    maxCharsPerLine: parseInt(configLayer.maxCharsPerLine) || parseInt(templateLayer.maxCharsPerLine) || 10,
+                    name: configLayer.name || templateLayer.name || '',
+                    sampleText: configLayer.sampleText || ''
+                  };
+                } else {
+                  // 如果config中没有这个层，使用模板默认值
+                  manualConfig.textLayerConfigs[layerKey] = {
+                    maxCharsPerLine: parseInt(templateLayer.maxCharsPerLine) || 10,
+                    name: templateLayer.name || '',
+                    sampleText: templateLayer.sampleText || ''
+                  };
+                }
+              });
+              
+              this.manualImageConfigs[templateIndex].push(manualConfig);
+            });
+          });
+        }
+        
+        this.$modal.msgSuccess("任务配置加载成功");
+      } catch (error) {
+        console.error('解析config JSON失败:', error);
+        this.$modal.msgError("解析任务配置失败");
+      }
     }
   }
 };
@@ -1252,5 +1351,6 @@ export default {
   padding: 30px 0;
   text-align: center;
 }
+
 
 </style>
