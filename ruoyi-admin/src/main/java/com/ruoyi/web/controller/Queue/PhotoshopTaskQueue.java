@@ -155,7 +155,7 @@ public class PhotoshopTaskQueue {
                 answer = answer.replaceAll("\\\\", "\\\\\\\\");
 
                 // 替换 JSX 模板
-                LocalDateTime time = task.getcreateDate();
+                LocalDateTime time = task.getCreateDate();
                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH-mm-ss");
                 String formattedDate = time.format(formatter); // 输出示例：25-03-19
                 // 安全转义

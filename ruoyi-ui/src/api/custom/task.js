@@ -88,3 +88,21 @@ export function addManualTask(data) {
     timeout: 999999
   })
 }
+
+// 获取抖音账号列表
+export function getDouyinAccounts() {
+  return request({
+    url: '/psd/task/getDouyinAccounts',
+    method: 'get',
+    timeout: 999999
+  })
+}
+
+// 发布到抖音
+export function publishToDouyin(data) {
+  return request({
+    url: '/psd/task/publishToDouyin',
+    method: 'post',
+    data: data
+  })
+}

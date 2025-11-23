@@ -100,6 +100,14 @@
       </el-table-column>
       <el-table-column label="创建时间" align="center" prop="createDate" />
       <el-table-column label="发布公众号名称" align="center" prop="gzhName" />
+      <el-table-column label="抖音发布状态" align="center" prop="dyStatus" width="120">
+        <template slot-scope="scope">
+          <el-tag v-if="scope.row.dyStatus == '1'" type="success">发布成功</el-tag>
+          <el-tag v-else-if="scope.row.dyStatus == '0'" type="warning">发布中</el-tag>
+          <el-tag v-else-if="scope.row.dyStatus == '2'" type="danger">发布失败</el-tag>
+          <el-tag v-else type="info">未发布</el-tag>
+        </template>
+      </el-table-column>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button
@@ -138,6 +146,15 @@
             :disabled="scope.row.status !== '0'"
             @click="openOfficialAccount(scope.row)"
           >发布公众号</el-button>
+
+          <!-- 抖音发布按钮 -->
+          <el-button
+            size="mini"
+            type="text"
+            icon="el-icon-video-camera"
+            :disabled="scope.row.status !== '0' || scope.row.dyStatus === '1'"
+            @click="openDouyinPublish(scope.row)"
+          >发布抖音</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -319,12 +336,19 @@
       </div>
     </el-dialog>
 
+    <!-- 抖音发布对话框 -->
+    <douyin-publish-dialog
+      :visible.sync="douyinDialogVisible"
+      :task-row="currentRow"
+      @success="handleDouyinPublishSuccess"
+    />
+
     <!-- 手动创建任务弹窗 -->
-    <el-dialog 
-      :title="isEditMode ? '编辑任务' : '手动创建任务'" 
-      :visible.sync="manualDialogVisible" 
-      width="80%" 
-      append-to-body 
+    <el-dialog
+      :title="isEditMode ? '编辑任务' : '手动创建任务'"
+      :visible.sync="manualDialogVisible"
+      width="80%"
+      append-to-body
       :close-on-click-modal="false"
       class="manual-task-dialog">
       <div v-loading="loading" class="dialog-loading-wrapper">
@@ -474,12 +498,16 @@
 
 <script>
 import {listTask, getTask, delTask, addTask, updateTask, getCoze, pushOfficialAccount, addManualTask} from "@/api/custom/task";
-import {getImage, getListPSDConfigAll, listPSDConfig} from "@/api/custom/psd";
+import DouyinPublishDialog from '@/components/DouyinPublishDialog.vue';
+ import {getImage, getListPSDConfigAll} from "@/api/custom/psd";
 import {isEmpty} from "@/utils/validate";
 
 export default {
   name: "Task",
   dicts: ['psd_task_status'],
+  components: {
+    DouyinPublishDialog
+  },
   data() {
     return {
       // 遮罩层
@@ -525,7 +553,7 @@ export default {
         imageConfigs: [] // 每个元素需要包含 generateCount 字段
       },
       showRawJson: false, // 切换显示模式
-      psdList: {},
+      psdList: [],
       templateOptions: [], // 模板下拉选项
       templateOptionsFilter: [], // 模板下拉选项过滤后的数据
       accountOptions: [],   // 账号下拉选项
@@ -533,6 +561,8 @@ export default {
       gzhName: '',
       accountOptionsVisible: false,
       currentRow: {},
+      // 抖音发布相关
+      douyinDialogVisible: false,
       // 手动创建相关
       manualDialogVisible: false,
       manualForm: {
@@ -577,7 +607,7 @@ export default {
         return false;
       }
       // 检查是否至少有一个图片配置有配置项
-      const hasConfigs = Object.values(this.manualImageConfigs).some(configs => 
+      const hasConfigs = Object.values(this.manualImageConfigs).some(configs =>
         Array.isArray(configs) && configs.length > 0
       );
       return hasConfigs;
@@ -688,35 +718,40 @@ export default {
         ...this.queryParams
       }, `task_${new Date().getTime()}.xlsx`)
     },
-    // 修改后代码
+    // 修改后代码：从本地缓存 psdList 精确匹配获取模板信息
     getTemplateInfo() {
       this.loading = true;
-      listPSDConfig({
-        accountName: this.form.accountName,
-        templateName: this.form.templateName
-      }).then(res => {
-        if (res.rows[0]?.images) {
-          this.imageList = res.rows[0].images
-        }
-        if (res.rows[0]?.config) {
-          const parsedConfig = JSON.parse(res.rows[0].config);
-          // 合并基础配置（保留响应式）
+      try {
+        const match = this.psdList.find(item => {
+          try {
+            const cfg = JSON.parse(item.config);
+            const bc = cfg && cfg.baseConfig ? cfg.baseConfig : {};
+            return bc.accountName === this.form.accountName && bc.templateName === this.form.templateName;
+          } catch (e) {
+            return false;
+          }
+        });
+
+        if (match) {
+          if (match.images) {
+            this.imageList = match.images;
+          }
+          const parsedConfig = JSON.parse(match.config);
           Object.assign(this.templateInfo.baseConfig, parsedConfig.baseConfig);
           this.templateInfo.copywriterPrompt = parsedConfig.copywriterPrompt;
           this.templateInfo.prompt = parsedConfig.prompt;
-          // 替换图片配置数组（确保响应式更新）
-          this.templateInfo.imageConfigs = parsedConfig.imageConfigs.map(config => ({
+          this.templateInfo.imageConfigs = (parsedConfig.imageConfigs || []).map(config => ({
             ...config,
             generateCount: config.generateCount || 1
           }));
           this.$modal.msgSuccess("模板信息获取成功");
         } else {
-          this.$modal.msgError("模板配置数据不存在");
+          this.$modal.msgError("未找到匹配的模板配置");
+          this.resetTemplateInfo();
         }
+      } finally {
         this.loading = false;
-      }).catch(() => {
-        this.loading = false;
-      });
+      }
     },
     /** 自动创建 - 模板名称改变时自动获取模板信息 */
     templateNameChange() {
@@ -875,6 +910,17 @@ export default {
           // 用户点了取消
         })
     },
+
+    /** 打开抖音发布对话框 */
+    openDouyinPublish(row) {
+      this.currentRow = row;
+      this.douyinDialogVisible = true;
+    },
+
+    /** 抖音发布成功回调 */
+    handleDouyinPublishSuccess() {
+      this.getList();
+    },
     /** 手动创建按钮操作 */
     handleManualAdd() {
       this.isEditMode = false;
@@ -901,14 +947,21 @@ export default {
       this.manualTemplateOptionsFilter = this.getFilteredTemplates(this.manualForm.accountName);
     },
     /** 手动创建 - 获取模板信息 */
-    manualGetTemplateInfo() {
+    async manualGetTemplateInfo() {
       this.loading = true;
-      return listPSDConfig({
-        accountName: this.manualForm.accountName,
-        templateName: this.manualForm.templateName
-      }).then(res => {
-        if (res.rows[0]?.config) {
-          const parsedConfig = JSON.parse(res.rows[0].config);
+      try {
+        const match = this.psdList.find(item => {
+          try {
+            const cfg = JSON.parse(item.config);
+            const bc = cfg && cfg.baseConfig ? cfg.baseConfig : {};
+            return bc.accountName === this.manualForm.accountName && bc.templateName === this.manualForm.templateName;
+          } catch (e) {
+            return false;
+          }
+        });
+
+        if (match && match.config) {
+          const parsedConfig = JSON.parse(match.config);
           // 合并基础配置
           Object.assign(this.manualTemplateInfo.baseConfig, parsedConfig.baseConfig);
           // 设置图片配置数组
@@ -923,12 +976,11 @@ export default {
           }
           this.$modal.msgSuccess("模板信息获取成功");
         } else {
-          this.$modal.msgError("模板配置数据不存在");
+          this.$modal.msgError("未找到匹配的模板配置");
         }
+      } finally {
         this.loading = false;
-      }).catch(() => {
-        this.loading = false;
-      });
+      }
     },
     /** 手动创建 - 模板名称改变时自动获取模板信息 */
     manualTemplateNameChange() {
@@ -943,7 +995,7 @@ export default {
       if (!this.manualImageConfigs[templateIndex]) {
         this.$set(this.manualImageConfigs, templateIndex, []);
       }
-      
+
       const templateImgConfig = this.manualTemplateInfo.imageConfigs[templateIndex];
       if (!templateImgConfig) {
         return;
@@ -1002,11 +1054,11 @@ export default {
 
       // 构建最终的imageConfigs数组
       const finalImageConfigs = [];
-      
+
       // 遍历每个模板图片配置
       this.manualTemplateInfo.imageConfigs.forEach((templateImgConfig, templateIndex) => {
         const manualConfigs = this.manualImageConfigs[templateIndex] || [];
-        
+
         // 为每个手动配置项创建一个完整的imageConfig
         manualConfigs.forEach(manualConfig => {
           const imageConfig = {
@@ -1021,7 +1073,7 @@ export default {
           Object.keys(manualConfig.textLayerConfigs).forEach(layerKey => {
             const manualLayer = manualConfig.textLayerConfigs[layerKey];
             const templateLayer = templateImgConfig.textLayerConfigs[layerKey];
-            
+
             imageConfig.textLayerConfigs[layerKey] = {
               maxCharsPerLine: String(manualLayer.maxCharsPerLine || templateLayer.maxCharsPerLine || '10'),
               name: manualLayer.name || templateLayer.name || '',
@@ -1085,36 +1137,36 @@ export default {
     populateManualFormFromConfig(configJson) {
       try {
         const config = JSON.parse(configJson);
-        
+
         // 设置文案
         this.manualForm.copywriter = config.copywriter || '';
-        
+
         // 重新初始化手动配置项对象
         this.manualImageConfigs = {};
-        
+
         // 根据config中的imageConfigs创建手动配置项
         if (config.imageConfigs && config.imageConfigs.length > 0) {
-          // 按照模板的imageConfigs顺序来映射
+          // 按照模板的imageConfigs顺序来映射-ui
           this.manualTemplateInfo.imageConfigs.forEach((templateImgConfig, templateIndex) => {
             this.$set(this.manualImageConfigs, templateIndex, []);
-            
+
             // 找到与当前模板配置匹配的config配置项
-            const matchingConfigs = config.imageConfigs.filter(imgConfig => 
-              imgConfig.folderName === templateImgConfig.folderName && 
+            const matchingConfigs = config.imageConfigs.filter(imgConfig =>
+              imgConfig.folderName === templateImgConfig.folderName &&
               imgConfig.subfolderName === templateImgConfig.subfolderName
             );
-            
+
             // 为每个匹配的配置项创建手动配置
             matchingConfigs.forEach(imgConfig => {
               const manualConfig = {
                 textLayerConfigs: {}
               };
-              
+
               // 复制textLayerConfigs
               Object.keys(templateImgConfig.textLayerConfigs).forEach(layerKey => {
                 const configLayer = imgConfig.textLayerConfigs[layerKey];
                 const templateLayer = templateImgConfig.textLayerConfigs[layerKey];
-                
+
                 if (configLayer) {
                   manualConfig.textLayerConfigs[layerKey] = {
                     maxCharsPerLine: parseInt(configLayer.maxCharsPerLine) || parseInt(templateLayer.maxCharsPerLine) || 10,
@@ -1130,12 +1182,12 @@ export default {
                   };
                 }
               });
-              
+
               this.manualImageConfigs[templateIndex].push(manualConfig);
             });
           });
         }
-        
+
         this.$modal.msgSuccess("任务配置加载成功");
       } catch (error) {
         console.error('解析config JSON失败:', error);

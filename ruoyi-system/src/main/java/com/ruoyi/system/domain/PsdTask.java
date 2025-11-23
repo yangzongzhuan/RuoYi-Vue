@@ -2,6 +2,7 @@ package com.ruoyi.system.domain;
 
 import com.alibaba.fastjson2.JSONObject;
 import com.baomidou.mybatisplus.annotation.TableField;
+import lombok.Data;
 import lombok.Getter;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
@@ -16,6 +17,7 @@ import java.time.LocalDateTime;
  * @author ruoyi
  * @date 2025-03-12
  */
+@Data
 public class PsdTask extends BaseEntity
 {
     private static final long serialVersionUID = 1L;
@@ -47,7 +49,6 @@ public class PsdTask extends BaseEntity
     private String status;
     private String uuid;
 
-    @Getter
     private LocalDateTime createDate;
 
     private String realPath;
@@ -58,145 +59,5 @@ public class PsdTask extends BaseEntity
 
     private String gzhStatus;
 
-    public PsdTask() {
-    }
-
-    public void setId(Long id)
-    {
-        this.id = id;
-    }
-
-    public Long getId()
-    {
-        return id;
-    }
-
-    public void setTaskName(String taskName)
-    {
-        this.taskName = taskName;
-    }
-
-    public String getTaskName()
-    {
-        return taskName;
-    }
-
-    public void setAccountName(String accountName)
-    {
-        this.accountName = accountName;
-    }
-
-    public String getAccountName()
-    {
-        return accountName;
-    }
-
-    public void setTemplateName(String templateName)
-    {
-        this.templateName = templateName;
-    }
-
-    public String getTemplateName()
-    {
-        return templateName;
-    }
-
-    public void setImageCount(String imageCount)
-    {
-        this.imageCount = imageCount;
-    }
-
-    public String getImageCount()
-    {
-        return imageCount;
-    }
-
-    public String getConfig() {
-        return config;
-    }
-
-    public void setConfig(String config) {
-        this.config = config;
-    }
-
-    public LocalDateTime getcreateDate() {
-        return createDate;
-    }
-
-    public void setCreateDate(LocalDateTime createDate) {
-        this.createDate = createDate;
-    }
-
-    public String getJsonInfo() {
-        return jsonInfo;
-    }
-
-    public void setJsonInfo(String jsonInfo) {
-        this.jsonInfo = jsonInfo;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
-
-    public String getUuid() {
-        return uuid;
-    }
-
-    public void setUuid(String uuid) {
-        this.uuid = uuid;
-    }
-
-    public String getRealPath() {
-        return realPath;
-    }
-
-    public void setRealPath(String realPath) {
-        this.realPath = realPath;
-    }
-
-    public String getGzhName() {
-        return gzhName;
-    }
-
-    public void setGzhName(String gzhName) {
-        this.gzhName = gzhName;
-    }
-
-    public void setGzhStatus(String gzhStatus) {
-        this.gzhStatus = gzhStatus;
-    }
-
-    public String getGzhStatus() {
-        return gzhStatus;
-    }
-
-    @Override
-    public String toString() {
-        return new ToStringBuilder(this,ToStringStyle.MULTI_LINE_STYLE)
-            .append("id", getId())
-            .append("taskName", getTaskName())
-            .append("accountName", getAccountName())
-            .append("templateName", getTemplateName())
-            .append("imageCount", getImageCount())
-            .append("createDate", getcreateDate())
-            .append("jsonInfo", getJsonInfo())
-            .append("status", getStatus())
-            .toString();
-    }
-
-    @Override
-    public String getCreateBy() {
-        return createBy;
-    }
-
-    @Override
-    public void setCreateBy(String createBy) {
-        this.createBy = createBy;
-    }
+    private String dyStatus; //抖音发布状态
 }
