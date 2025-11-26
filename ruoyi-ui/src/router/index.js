@@ -92,6 +92,43 @@ export const constantRoutes = [
 
 // 动态路由，基于用户权限动态去加载
 export const dynamicRoutes = [
+  // PDF管理
+  {
+    path: '/system/pdf',
+    component: Layout,
+    alwaysShow: true,
+    permissions: ['system:pdf:list'],
+    meta: { title: 'PDF管理', icon: 'documentation' },
+    children: [
+      {
+        path: '',
+        component: () => import('@/views/system/pdf/index'),
+        name: 'Pdf',
+        meta: { title: 'PDF列表', icon: 'documentation', noCache: true }
+      },
+      {
+        path: 'add',
+        component: () => import('@/views/system/pdf/add'),
+        name: 'PdfAdd',
+        hidden: true,
+        meta: { title: '新增PDF', activeMenu: '/system/pdf' }
+      },
+      {
+        path: 'edit/:pdfId(\d+)',
+        component: () => import('@/views/system/pdf/edit'),
+        name: 'PdfEdit',
+        hidden: true,
+        meta: { title: '修改PDF', activeMenu: '/system/pdf' }
+      },
+      {
+        path: 'viewImages/:pdfId(\d+)',
+        component: () => import('@/views/system/pdf/viewImages'),
+        name: 'PdfViewImages',
+        hidden: true,
+        meta: { title: '查看PDF图片', activeMenu: '/system/pdf' }
+      }
+    ]
+  },
   {
     path: '/system/user-auth',
     component: Layout,

@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.SysPdfImageMapper">
+    <resultMap type="SysPdfImage" id="SysPdfImageResult">
+        <id     property="imageId"        column="image_id"         />
+        <result property="pdfId"          column="pdf_id"           />
+        <result property="pageNum"        column="page_num"         />
+        <result property="imagePath"      column="image_path"       />
+        <result property="imageSize"      column="image_size"       />
+        <result property="createTime"     column="create_time"      />
+    </resultMap>
+
+    <sql id="selectPdfImageVo">
+        select image_id, pdf_id, page_num, image_path, image_size, create_time 
+        from sys_pdf_image
+    </sql>
+
+    <select id="selectPdfImageById" parameterType="Long" resultMap="SysPdfImageResult">
+        <include refid="selectPdfImageVo" />
+        where image_id = #{imageId}
+    </select>
+
+    <select id="selectPdfImagesByPdfId" parameterType="Long" resultMap="SysPdfImageResult">
+        <include refid="selectPdfImageVo" />
+        where pdf_id = #{pdfId}
+        order by page_num asc
+    </select>
+
+    <insert id="insertPdfImage" parameterType="SysPdfImage" useGeneratedKeys="true" keyProperty="imageId">
+        insert into sys_pdf_image
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="pdfId != null">pdf_id,</if>
+            <if test="pageNum != null">page_num,</if>
+            <if test="imagePath != null and imagePath != ''">image_path,</if>
+            <if test="imageSize != null">image_size,</if>
+            <if test="createTime != null">create_time,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="pdfId != null">#{pdfId},</if>
+            <if test="pageNum != null">#{pageNum},</if>
+            <if test="imagePath != null and imagePath != ''">#{imagePath},</if>
+            <if test="imageSize != null">#{imageSize},</if>
+            <if test="createTime != null">#{createTime},</if>
+        </trim>
+    </insert>
+
+    <insert id="batchInsertPdfImages" parameterType="java.util.List">
+        insert into sys_pdf_image(pdf_id, page_num, image_path, image_size, create_time)
+        values
+        <foreach collection="list" item="item" separator=",">
+            (#{item.pdfId}, #{item.pageNum}, #{item.imagePath}, #{item.imageSize}, #{item.createTime})
+        </foreach>
+    </insert>
+
+    <update id="updatePdfImage" parameterType="SysPdfImage">
+        update sys_pdf_image
+        <set>
+            <if test="pdfId != null">pdf_id = #{pdfId},</if>
+            <if test="pageNum != null">page_num = #{pageNum},</if>
+            <if test="imagePath != null and imagePath != ''">image_path = #{imagePath},</if>
+            <if test="imageSize != null">image_size = #{imageSize},</if>
+        </set>
+        where image_id = #{imageId}
+    </update>
+
+    <delete id="deletePdfImageById" parameterType="Long">
+        delete from sys_pdf_image where image_id = #{imageId}
+    </delete>
+
+    <delete id="deletePdfImagesByPdfId" parameterType="Long">
+        delete from sys_pdf_image where pdf_id = #{pdfId}
+    </delete>
+</mapper>
