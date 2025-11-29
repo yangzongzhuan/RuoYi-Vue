@@ -471,6 +471,20 @@
 
           <el-card class="manual-config-section">
             <div class="section-header">
+              <h3>标题（可选）</h3>
+            </div>
+            <el-form-item label="标题内容">
+              <el-input
+                v-model="manualForm.title"
+                placeholder="请输入标题内容，可选，最多30字"
+                maxlength="20"
+                show-word-limit
+              />
+            </el-form-item>
+          </el-card>
+
+          <el-card class="manual-config-section">
+            <div class="section-header">
               <h3>文案（可选）</h3>
             </div>
             <el-form-item label="文案内容">
@@ -568,6 +582,7 @@ export default {
       manualForm: {
         accountName: '',
         templateName: '',
+        title: '',
         copywriter: ''
       },
       manualTemplateInfo: {
@@ -928,6 +943,7 @@ export default {
       this.manualForm = {
         accountName: '',
         templateName: '',
+        title: '',
         copywriter: ''
       };
       this.resetManualTemplateInfo();
@@ -1030,6 +1046,7 @@ export default {
       this.manualForm = {
         accountName: '',
         templateName: '',
+        title: '',
         copywriter: ''
       };
       this.manualTemplateInfo = {
@@ -1097,6 +1114,7 @@ export default {
         config: JSON.stringify({
           baseConfig: this.manualTemplateInfo.baseConfig,
           imageConfigs: finalImageConfigs,
+          title: this.manualForm.title || undefined,
           copywriter: this.manualForm.copywriter || undefined
         })
       };
@@ -1138,7 +1156,8 @@ export default {
       try {
         const config = JSON.parse(configJson);
 
-        // 设置文案
+        // 设置标题和文案
+        this.manualForm.title = config.title || '';
         this.manualForm.copywriter = config.copywriter || '';
 
         // 重新初始化手动配置项对象

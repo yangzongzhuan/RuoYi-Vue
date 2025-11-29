@@ -34,6 +34,14 @@ try {
     var taskDir = new Folder(userNameDir.fsName + "/" + foldersName);
     if (!taskDir.exists) taskDir.create();
 
+    if (CONFIG.title) {
+        var titleFile = new File(taskDir.fsName + "/title.txt");
+        titleFile.encoding = "UTF-8";  // 确保中文编码正确
+        titleFile.open("w");
+        titleFile.writeln(CONFIG.title);
+        titleFile.close();
+    }
+
     if (CONFIG.copywriter) {
         var copywriterFile = new File(taskDir.fsName + "/copywriter.txt");
         copywriterFile.encoding = "UTF-8";  // 确保中文编码正确

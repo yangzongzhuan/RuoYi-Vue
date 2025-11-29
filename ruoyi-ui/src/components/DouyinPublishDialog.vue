@@ -21,35 +21,59 @@
           未保存对应账号信息，请先保存
         </div>
       </el-form-item>
-      
+
       <el-form-item label="文件夹路径">
         <el-input v-model="form.folderPath" placeholder="可选，留空则使用任务默认路径"></el-input>
         <div style="color: #909399; font-size: 12px; margin-top: 5px;">
           提示：如果任务已完成，留空即可；否则请输入完整的文件夹绝对路径（如：D:\images\task001）
         </div>
       </el-form-item>
-      
+
+      <el-form-item label="标题（可选）">
+        <el-input
+          v-model="form.title"
+          placeholder="请输入标题，可选，留空则从文件夹读取title.txt"
+          maxlength="20"
+          show-word-limit>
+        </el-input>
+        <div style="color: #909399; font-size: 12px; margin-top: 5px;">
+          提示：留空将从文件夹中读取title.txt文件
+        </div>
+      </el-form-item>
+
+      <el-form-item label="文案（可选）">
+        <el-input
+          v-model="form.copywriter"
+          type="textarea"
+          :rows="4"
+          placeholder="请输入文案描述，可选，留空则从文件夹读取copywriter.txt">
+        </el-input>
+        <div style="color: #909399; font-size: 12px; margin-top: 5px;">
+          提示：留空将从文件夹中读取copywriter.txt文件
+        </div>
+      </el-form-item>
+
       <el-form-item label="背景音乐类型">
         <el-radio-group v-model="form.musicType">
           <el-radio label="search">搜索热门</el-radio>
           <el-radio label="fav">收藏音乐</el-radio>
         </el-radio-group>
       </el-form-item>
-      
+
       <el-form-item :label="form.musicType === 'search' ? '音乐名称' : '收藏序号'">
-        <el-input 
-          v-model="form.musicName" 
+        <el-input
+          v-model="form.musicName"
           :placeholder="form.musicType === 'search' ? '请输入背景音乐名称（可选）' : '请输入收藏音乐序号（如：1）'">
         </el-input>
       </el-form-item>
-      
+
       <el-form-item label="发布方式" prop="publishType">
         <el-radio-group v-model="form.publishType">
           <el-radio label="immediate">立即发布</el-radio>
           <el-radio label="scheduled">定时发布</el-radio>
         </el-radio-group>
       </el-form-item>
-      
+
       <el-form-item label="发布时间" v-if="form.publishType === 'scheduled'" prop="publishTime">
         <el-date-picker
           v-model="form.publishTime"
@@ -61,7 +85,7 @@
         </el-date-picker>
       </el-form-item>
     </el-form>
-    
+
     <div slot="footer" class="dialog-footer">
       <el-button type="primary" @click="handleConfirm">确 定</el-button>
       <el-button @click="handleClose">取 消</el-button>
@@ -94,6 +118,8 @@ export default {
         taskId: null,
         accountFile: '',
         folderPath: '',
+        title: '',
+        copywriter: '',
         musicName: '',
         musicType: 'search',
         publishType: 'immediate',
@@ -128,32 +154,34 @@ export default {
   methods: {
     async initDialog() {
       this.accountNotFound = false;
-      
+
       // 重置表单
       this.form = {
         taskId: this.taskRow.id,
         accountFile: '',
         folderPath: this.taskRow.realPath || '',
+        title: '',
+        copywriter: '',
         musicName: '',
         musicType: 'search',
         publishType: 'immediate',
         publishTime: ''
       };
-      
+
       // 加载抖音账号列表
       this.loading = true;
       this.douyinAccounts = [];
-      
+
       try {
         const response = await getDouyinAccounts();
         if (response.code === 200) {
           this.douyinAccounts = response.data;
-          
+
           // 智能匹配账号
           const matchedAccount = this.douyinAccounts.find(
             account => account.name === this.taskRow.accountName
           );
-          
+
           if (matchedAccount) {
             this.form.accountFile = matchedAccount.filePath;
           } else {
@@ -172,14 +200,14 @@ export default {
         this.loading = false;
       }
     },
-    
+
     handleConfirm() {
       this.$refs.douyinForm.validate(valid => {
         if (valid) {
           this.$modal.confirm('确认要发布到抖音吗？')
             .then(() => {
               this.loading = true;
-              
+
               publishToDouyin(this.form)
                 .then(response => {
                   if (response.code === 200) {
@@ -204,7 +232,7 @@ export default {
         }
       });
     },
-    
+
     handleClose() {
       this.$emit('update:visible', false);
     }

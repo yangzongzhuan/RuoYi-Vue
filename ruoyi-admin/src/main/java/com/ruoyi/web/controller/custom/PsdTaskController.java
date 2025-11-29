@@ -350,6 +350,8 @@ public class PsdTaskController extends BaseController
             Long taskId = Long.valueOf(params.get("taskId").toString());
             String accountFile = params.get("accountFile").toString();
             String folderPath = params.get("folderPath").toString();
+            String title = params.getOrDefault("title", "").toString();
+            String copywriter = params.getOrDefault("copywriter", "").toString();
             String musicName = params.getOrDefault("musicName", "").toString();
             String musicType = params.getOrDefault("musicType", "search").toString();
             String publishType = params.get("publishType").toString();
@@ -390,6 +392,8 @@ public class PsdTaskController extends BaseController
             Map<String, Object> requestBody = new HashMap<>();
             requestBody.put("account_file", accountFile);
             requestBody.put("folder_path", folderPath);
+            requestBody.put("title", title);
+            requestBody.put("copywriter", copywriter);
             requestBody.put("music_name", musicName);
             requestBody.put("music_type", musicType);
             requestBody.put("publish_type", publishType);
