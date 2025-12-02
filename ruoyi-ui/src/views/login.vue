@@ -56,7 +56,7 @@
     </el-form>
     <!--  底部  -->
     <div class="el-login-footer">
-      <span>Copyright © 2018-2025 ruoyi.vip All Rights Reserved.</span>
+      <span>{{ footerContent }}</span>
     </div>
   </div>
 </template>
@@ -65,12 +65,14 @@
 import { getCodeImg } from "@/api/login"
 import Cookies from "js-cookie"
 import { encrypt, decrypt } from '@/utils/jsencrypt'
+import defaultSettings from '@/settings'
 
 export default {
   name: "Login",
   data() {
     return {
       title: process.env.VUE_APP_TITLE,
+      footerContent: defaultSettings.footerContent,
       codeUrl: "",
       loginForm: {
         username: "admin",
@@ -156,7 +158,7 @@ export default {
 }
 </script>
 
-<style rel="stylesheet/scss" lang="scss">
+<style rel="stylesheet/scss" lang="scss" scoped>
 .login {
   display: flex;
   justify-content: center;

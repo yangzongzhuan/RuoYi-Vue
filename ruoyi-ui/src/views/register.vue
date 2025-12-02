@@ -61,13 +61,14 @@
     </el-form>
     <!--  底部  -->
     <div class="el-register-footer">
-      <span>Copyright © 2018-2025 ruoyi.vip All Rights Reserved.</span>
+      <span>{{ footerContent }}</span>
     </div>
   </div>
 </template>
 
 <script>
 import { getCodeImg, register } from "@/api/login"
+import defaultSettings from '@/settings'
 
 export default {
   name: "Register",
@@ -81,6 +82,7 @@ export default {
     }
     return {
       title: process.env.VUE_APP_TITLE,
+      footerContent: defaultSettings.footerContent,
       codeUrl: "",
       registerForm: {
         username: "",
@@ -147,7 +149,7 @@ export default {
 }
 </script>
 
-<style rel="stylesheet/scss" lang="scss">
+<style rel="stylesheet/scss" lang="scss" scoped>
 .register {
   display: flex;
   justify-content: center;
