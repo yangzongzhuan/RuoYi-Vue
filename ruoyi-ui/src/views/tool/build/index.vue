@@ -146,7 +146,7 @@ import { beautifierConf, titleCase } from '@/utils/index'
 import { makeUpHtml, vueTemplate, vueScript, cssStyle } from '@/utils/generator/html'
 import { makeUpJs } from '@/utils/generator/js'
 import { makeUpCss } from '@/utils/generator/css'
-import drawingDefault from '@/utils/generator/drawingDefault'
+import { drawingDefaultValue, initDrawingDefaultValue, cleanDrawingDefaultValue } from '@/utils/generator/drawingDefault'
 import logo from '@/assets/logo/logo.png'
 import CodeTypeDialog from './CodeTypeDialog'
 import DraggableItem from './DraggableItem'
@@ -171,16 +171,19 @@ export default {
       selectComponents,
       layoutComponents,
       labelWidth: 100,
-      drawingList: drawingDefault,
+      drawingList: drawingDefaultValue,
       drawingData: {},
-      activeId: drawingDefault[0].formId,
+      activeId: drawingDefaultValue[0].formId,
       drawerVisible: false,
       formData: {},
       dialogVisible: false,
       generateConf: null,
       showFileName: false,
-      activeData: drawingDefault[0]
+      activeData: drawingDefaultValue[0]
     }
+  },
+  beforeCreate() {
+    initDrawingDefaultValue()
   },
   created() {
     // 防止 firefox 下 拖拽 会新打卡一个选项卡
@@ -284,6 +287,7 @@ export default {
       this.$confirm('确定要清空所有组件吗？', '提示', { type: 'warning' }).then(
         () => {
           this.drawingList = []
+          cleanDrawingDefaultValue()
         }
       )
     },
