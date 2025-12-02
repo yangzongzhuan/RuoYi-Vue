@@ -23,6 +23,9 @@ const mutations = {
     if (state.hasOwnProperty(key)) {
       state[key] = value
     }
+  },
+  SET_TITLE: (state, title) => {
+    state.title = title
   }
 }
 
@@ -33,7 +36,7 @@ const actions = {
   },
   // 设置网页标题
   setTitle({ commit }, title) {
-    state.title = title
+    commit('SET_TITLE', title)
     useDynamicTitle()
   }
 }
