@@ -266,7 +266,8 @@ export default {
           this.$modal.msgSuccess("成功生成到自定义路径：" + row.genPath)
         })
       } else {
-        this.$download.zip("/tool/gen/batchGenCode?tables=" + tableNames, "ruoyi.zip")
+        const zipName = Array.isArray(tableNames) ? "ruoyi.zip" : tableNames + ".zip"
+        this.$download.zip("/tool/gen/batchGenCode?tables=" + tableNames, zipName)
       }
     },
     /** 同步数据库操作 */
