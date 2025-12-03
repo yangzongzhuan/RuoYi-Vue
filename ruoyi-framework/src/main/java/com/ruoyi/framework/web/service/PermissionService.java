@@ -53,7 +53,7 @@ public class PermissionService
     /**
      * 验证用户是否具有以下任意一个权限
      *
-     * @param permissions 以 PERMISSION_DELIMETER 为分隔符的权限列表
+     * @param permissions 以 PERMISSION_DELIMITER 为分隔符的权限列表
      * @return 用户是否具有以下任意一个权限
      */
     public boolean hasAnyPermi(String permissions)
@@ -69,7 +69,7 @@ public class PermissionService
         }
         PermissionContextHolder.setContext(permissions);
         Set<String> authorities = loginUser.getPermissions();
-        for (String permission : permissions.split(Constants.PERMISSION_DELIMETER))
+        for (String permission : permissions.split(Constants.PERMISSION_DELIMITER))
         {
             if (permission != null && hasPermissions(authorities, permission))
             {
@@ -121,7 +121,7 @@ public class PermissionService
     /**
      * 验证用户是否具有以下任意一个角色
      *
-     * @param roles 以 ROLE_NAMES_DELIMETER 为分隔符的角色列表
+     * @param roles 以 ROLE_DELIMITER 为分隔符的角色列表
      * @return 用户是否具有以下任意一个角色
      */
     public boolean hasAnyRoles(String roles)
@@ -135,7 +135,7 @@ public class PermissionService
         {
             return false;
         }
-        for (String role : roles.split(Constants.ROLE_DELIMETER))
+        for (String role : roles.split(Constants.ROLE_DELIMITER))
         {
             if (hasRole(role))
             {
