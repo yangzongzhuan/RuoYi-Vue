@@ -112,7 +112,7 @@ public class LogAspect
             if (e != null)
             {
                 operLog.setStatus(BusinessStatus.FAIL.ordinal());
-                operLog.setErrorMsg(StringUtils.substring(Convert.toStr(e.getMessage(), ExceptionUtil.getExceptionMessage(e)), 0, PARAM_MAX_LENGTH));
+                operLog.setErrorMsg(StringUtils.substring(Convert.toStr(e.getMessage(), ExceptionUtil.getExceptionMessage(e)), 0, 2000));
             }
             // 设置方法名称
             String className = joinPoint.getTarget().getClass().getName();
@@ -163,7 +163,7 @@ public class LogAspect
         // 是否需要保存response，参数和值
         if (log.isSaveResponseData() && StringUtils.isNotNull(jsonResult))
         {
-            operLog.setJsonResult(StringUtils.substring(JSON.toJSONString(jsonResult), 0, PARAM_MAX_LENGTH));
+            operLog.setJsonResult(StringUtils.substring(JSON.toJSONString(jsonResult), 0, 2000));
         }
     }
 
