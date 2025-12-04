@@ -153,6 +153,7 @@ import DraggableItem from './DraggableItem'
 
 let oldActiveId
 let tempActiveData
+let clipboard = null
 
 export default {
   components: {
@@ -211,7 +212,7 @@ export default {
     }
   },
   mounted() {
-    const clipboard = new ClipboardJS('#copyNode', {
+    clipboard = new ClipboardJS('#copyNode', {
       text: trigger => {
         const codeStr = this.generateCode()
         this.$notify({
@@ -225,6 +226,9 @@ export default {
     clipboard.on('error', e => {
       this.$message.error('代码复制失败')
     })
+  },
+  beforeDestroy() {
+    clipboard.destroy()
   },
   methods: {
     activeFormItem(element) {
