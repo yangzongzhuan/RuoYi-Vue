@@ -142,7 +142,57 @@ public class SysDictTypeServiceImpl implements ISysDictTypeService
         Map<String, List<SysDictData>> dictDataMap = dictDataMapper.selectDictDataList(dictData).stream().collect(Collectors.groupingBy(SysDictData::getDictType));
         for (Map.Entry<String, List<SysDictData>> entry : dictDataMap.entrySet())
         {
-            DictUtils.setDictCache(entry.getKey(), entry.getValue().stream().sorted(Comparator.comparing(SysDictData::getDictSort)).collect(Collectors.toList()));
+            // 获取字典类型信息
+            SysDictType sysDictType = selectDictTypeByType(entry.getKey());
+            if (sysDictType != null && StringUtils.isNotEmpty(sysDictType.getValueType()))
+            {
+                // 根据字典类型的valueType转换字典值的类型
+                List<SysDictData> convertedDictDatas = entry.getValue().stream().map(data -> {
+                    SysDictData newData = new SysDictData();
+                    newData.setDictCode(data.getDictCode());
+                    newData.setDictSort(data.getDictSort());
+                    newData.setDictLabel(data.getDictLabel());
+                    newData.setDictValue(data.getDictValue());
+                    newData.setDictType(data.getDictType());
+                    newData.setCssClass(data.getCssClass());
+                    newData.setListClass(data.getListClass());
+                    newData.setIsDefault(data.getIsDefault());
+                    newData.setStatus(data.getStatus());
+                    newData.setCreateBy(data.getCreateBy());
+                    newData.setCreateTime(data.getCreateTime());
+                    newData.setUpdateBy(data.getUpdateBy());
+                    newData.setUpdateTime(data.getUpdateTime());
+                    newData.setRemark(data.getRemark());
+                    // 根据valueType转换字典值
+                    String valueType = sysDictType.getValueType();
+                    if (StringUtils.isNotEmpty(valueType)) {
+                        try {
+                            if ("int".equalsIgnoreCase(valueType)) {
+                                newData.setValue(Integer.parseInt(data.getDictValue()));
+                            } else if ("long".equalsIgnoreCase(valueType)) {
+                                newData.setValue(Long.parseLong(data.getDictValue()));
+                            } else if ("double".equalsIgnoreCase(valueType)) {
+                                newData.setValue(Double.parseDouble(data.getDictValue()));
+                            } else if ("boolean".equalsIgnoreCase(valueType)) {
+                                newData.setValue(Boolean.parseBoolean(data.getDictValue()));
+                            } else {
+                                newData.setValue(data.getDictValue());
+                            }
+                        } catch (NumberFormatException e) {
+                            // 转换失败时保留原始字符串
+                            newData.setValue(data.getDictValue());
+                        }
+                    } else {
+                        newData.setValue(data.getDictValue());
+                    }
+                    return newData;
+                }).collect(Collectors.toList());
+                DictUtils.setDictCache(entry.getKey(), convertedDictDatas.stream().sorted(Comparator.comparing(SysDictData::getDictSort)).collect(Collectors.toList()));
+            }
+            else
+            {
+                DictUtils.setDictCache(entry.getKey(), entry.getValue().stream().sorted(Comparator.comparing(SysDictData::getDictSort)).collect(Collectors.toList()));
+            }
         }
     }
 

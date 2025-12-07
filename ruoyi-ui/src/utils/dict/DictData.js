@@ -10,4 +10,28 @@ export default class DictData {
     this.value = value
     this.raw = raw
   }
+
+  /**
+   * 根据字典类型的valueType转换字典值的类型
+   * @param {String} valueType 数据类型
+   */
+  convertValueType(valueType) {
+    if (!valueType) {
+      return this.value
+    }
+
+    const value = this.value
+    switch (valueType.toLowerCase()) {
+      case 'int':
+        return parseInt(value)
+      case 'long':
+        return parseInt(value)
+      case 'double':
+        return parseFloat(value)
+      case 'boolean':
+        return value === 'true' || value === '1'
+      default:
+        return value
+    }
+  }
 }
