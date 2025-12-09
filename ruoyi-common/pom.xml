@@ -77,12 +77,6 @@
             <artifactId>poi-ooxml</artifactId>
         </dependency>
 
-        <!-- yml解析器 -->
-        <dependency>
-            <groupId>org.yaml</groupId>
-            <artifactId>snakeyaml</artifactId>
-        </dependency>
-
         <!-- Token生成与解析-->
         <dependency>
             <groupId>io.jsonwebtoken</groupId>
@@ -109,8 +103,8 @@
 
         <!-- 解析客户端操作系统、浏览器等 -->
         <dependency>
-            <groupId>eu.bitwalker</groupId>
-            <artifactId>UserAgentUtils</artifactId>
+            <groupId>nl.basjes.parse.useragent</groupId>
+            <artifactId>yauaa</artifactId>
         </dependency>
 
         <!-- servlet包 -->
