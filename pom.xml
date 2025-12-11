@@ -26,7 +26,7 @@
         <pagehelper.boot.version>2.1.1</pagehelper.boot.version>
         <fastjson.version>2.0.60</fastjson.version>
         <oshi.version>6.8.3</oshi.version>
-        <commons.io.version>2.19.0</commons.io.version>
+        <commons.io.version>2.21.0</commons.io.version>
         <poi.version>4.1.2</poi.version>
         <velocity.version>2.3</velocity.version>
         <jwt.version>0.9.1</jwt.version>
