@@ -130,6 +130,18 @@
   border-radius: 4px;
 }
 
+/* el menu */
+.el-menu-item,
+.el-sub-menu {
+  .svg-icon + span {
+    margin-left: 5px;
+  }
+}
+
+.el-menu--horizontal .el-menu--popup {
+  min-width: 120px !important;
+}
+
 @media (max-width: 768px) {
   .pagination-container .el-pagination > .el-pagination__jump {
     display: none !important;
