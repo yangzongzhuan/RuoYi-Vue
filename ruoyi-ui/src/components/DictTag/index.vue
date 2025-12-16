@@ -1,7 +1,7 @@
 <template>
   <div>
     <template v-for="(item, index) in options">
-      <template v-if="values.includes(item.value)">
+      <template v-if="isValueMatch(item.value)">
         <span
           v-if="(item.raw.listClass == 'default' || item.raw.listClass == '') && (item.raw.cssClass == '' || item.raw.cssClass == null)"
           :key="item.value"
@@ -36,7 +36,6 @@ export default {
       default: null,
     },
     value: [Number, String, Array],
-    // 当未找到匹配的数据时，显示value
     showValue: {
       type: Boolean,
       default: true,
@@ -54,6 +53,7 @@ export default {
   computed: {
     values() {
       if (this.value === null || typeof this.value === 'undefined' || this.value === '') return []
+      if (typeof this.value === 'number' || typeof this.value === 'boolean') return [this.value]
       return Array.isArray(this.value) ? this.value.map(item => '' + item) : String(this.value).split(this.separator)
     },
     unmatch() {
@@ -63,14 +63,18 @@ export default {
       // 传入值为数组
       let unmatch = false // 添加一个标志来判断是否有未匹配项
       this.values.forEach(item => {
-        if (!this.options.some(v => v.value === item)) {
+        if (!this.options.some(v => v.value == item)) {
           this.unmatchArray.push(item)
           unmatch = true // 如果有未匹配项，将标志设置为true
         }
       })
       return unmatch // 返回标志的值
     },
-
+  },
+  methods: {
+    isValueMatch(itemValue) {
+      return this.values.some(val => val == itemValue)
+    }
   },
   filters: {
     handleArray(array) {
