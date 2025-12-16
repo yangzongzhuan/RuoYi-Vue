@@ -162,7 +162,7 @@ export default {
         this.$store.dispatch('app/toggleSideBarHide', true)
       }
     }
-  },
+  }
 }
 </script>
 
@@ -171,7 +171,7 @@ export default {
   float: left;
   height: 50px !important;
   line-height: 50px !important;
-  color: #999093 !important;
+  color: #303133 !important;
   padding: 0 5px !important;
   margin: 0 10px !important;
 }
@@ -186,7 +186,7 @@ export default {
   float: left;
   height: 50px !important;
   line-height: 50px !important;
-  color: #999093 !important;
+  color: #303133 !important;
   padding: 0 5px !important;
   margin: 0 10px !important;
 }

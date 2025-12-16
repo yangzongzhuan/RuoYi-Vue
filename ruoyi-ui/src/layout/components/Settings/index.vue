@@ -4,6 +4,27 @@
       <div>
         <div class="setting-drawer-content">
           <div class="setting-drawer-title">
+            <h3 class="drawer-title">菜单导航设置</h3>
+          </div>
+          <div class="nav-wrap">
+            <el-tooltip content="左侧菜单" placement="bottom">
+              <div class="item left" @click="handleNavType(1)" :style="{'--theme': theme}" :class="{ activeItem: navType == 1 }">
+                <b></b><b></b>
+              </div>
+            </el-tooltip>
+
+            <el-tooltip content="混合菜单" placement="bottom">
+              <div class="item mix" @click="handleNavType(2)" :style="{'--theme': theme}" :class="{ activeItem: navType == 2 }">
+                <b></b><b></b>
+              </div>
+            </el-tooltip>
+            <el-tooltip content="顶部菜单" placement="bottom">
+              <div class="item top" @click="handleNavType(3)" :style="{'--theme': theme}" :class="{ activeItem: navType == 3 }">
+                <b></b><b></b>
+              </div>
+            </el-tooltip>
+          </div>
+          <div class="setting-drawer-title">
             <h3 class="drawer-title">主题风格设置</h3>
           </div>
           <div class="setting-drawer-block-checbox">
@@ -38,11 +59,6 @@
         <el-divider/>
 
         <h3 class="drawer-title">系统布局配置</h3>
-
-        <div class="drawer-item">
-          <span>开启 TopNav</span>
-          <el-switch v-model="topNav" class="drawer-switch" />
-        </div>
 
         <div class="drawer-item">
           <span>开启 Tags-Views</span>
@@ -93,6 +109,7 @@ export default {
     return {
       theme: this.$store.state.settings.theme,
       sideTheme: this.$store.state.settings.sideTheme,
+      navType: this.$store.state.settings.navType,
       showSettings: false
     }
   },
@@ -106,21 +123,6 @@ export default {
           key: 'fixedHeader',
           value: val
         })
-      }
-    },
-    topNav: {
-      get() {
-        return this.$store.state.settings.topNav
-      },
-      set(val) {
-        this.$store.dispatch('settings/changeSetting', {
-          key: 'topNav',
-          value: val
-        })
-        if (!val) {
-          this.$store.dispatch('app/toggleSideBarHide', false)
-          this.$store.commit("SET_SIDEBAR_ROUTERS", this.$store.state.permission.defaultRoutes)
-        }
       }
     },
     tagsView: {
@@ -180,6 +182,25 @@ export default {
       }
     }
   },
+  watch: {
+    navType: {
+      handler(val) {
+        if (val == 1) {
+          this.$store.dispatch("app/toggleSideBarHide", false)
+        }
+        if (val == 2) {
+        }
+        if (val == 3) {
+          this.$store.dispatch("app/toggleSideBarHide", true)
+        }
+        if ([1, 3].includes(val)) {
+          this.$store.commit("SET_SIDEBAR_ROUTERS",this.$store.state.permission.defaultRoutes)
+        }
+      },
+      immediate: true,
+      deep: true
+    }
+  },
   methods: {
     themeChange(val) {
       this.$store.dispatch('settings/changeSetting', {
@@ -195,6 +216,13 @@ export default {
       })
       this.sideTheme = val
     },
+    handleNavType(val) {
+      this.$store.dispatch('settings/changeSetting', {
+        key: 'navType',
+        value: val
+      })
+      this.navType = val
+    },
     openSetting() {
       this.showSettings = true
     },
@@ -206,7 +234,7 @@ export default {
       this.$cache.local.set(
         "layout-setting",
         `{
-            "topNav":${this.topNav},
+            "navType":${this.navType},
             "tagsView":${this.tagsView},
             "tagsIcon":${this.tagsIcon},
             "fixedHeader":${this.fixedHeader},
@@ -229,70 +257,133 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-  .setting-drawer-content {
-    .setting-drawer-title {
-      margin-bottom: 12px;
-      color: rgba(0, 0, 0, .85);
-      font-size: 14px;
-      line-height: 22px;
-      font-weight: bold;
-    }
+.setting-drawer-content {
+  .setting-drawer-title {
+    margin-bottom: 12px;
+    color: rgba(0, 0, 0, .85);
+    font-size: 14px;
+    line-height: 22px;
+    font-weight: bold;
+  }
 
-    .setting-drawer-block-checbox {
-      display: flex;
-      justify-content: flex-start;
-      align-items: center;
-      margin-top: 10px;
-      margin-bottom: 20px;
+  .setting-drawer-block-checbox {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    margin-top: 10px;
+    margin-bottom: 20px;
 
-      .setting-drawer-block-checbox-item {
-        position: relative;
-        margin-right: 16px;
-        border-radius: 2px;
-        cursor: pointer;
+    .setting-drawer-block-checbox-item {
+      position: relative;
+      margin-right: 16px;
+      border-radius: 2px;
+      cursor: pointer;
 
-        img {
-          width: 48px;
-          height: 48px;
-        }
+      img {
+        width: 48px;
+        height: 48px;
+      }
 
-        .setting-drawer-block-checbox-selectIcon {
-          position: absolute;
-          top: 0;
-          right: 0;
-          width: 100%;
-          height: 100%;
-          padding-top: 15px;
-          padding-left: 24px;
-          color: #1890ff;
-          font-weight: 700;
-          font-size: 14px;
-        }
+      .setting-drawer-block-checbox-selectIcon {
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 100%;
+        height: 100%;
+        padding-top: 15px;
+        padding-left: 24px;
+        color: #1890ff;
+        font-weight: 700;
+        font-size: 14px;
       }
     }
   }
+}
 
-  .drawer-container {
-    padding: 20px;
+.drawer-container {
+  padding: 20px;
+  font-size: 14px;
+  line-height: 1.5;
+  word-wrap: break-word;
+
+  .drawer-title {
+    margin-bottom: 12px;
+    color: rgba(0, 0, 0, .85);
     font-size: 14px;
-    line-height: 1.5;
-    word-wrap: break-word;
+    line-height: 22px;
+  }
 
-    .drawer-title {
-      margin-bottom: 12px;
-      color: rgba(0, 0, 0, .85);
-      font-size: 14px;
-      line-height: 22px;
+  .drawer-item {
+    color: rgba(0, 0, 0, .65);
+    font-size: 14px;
+    padding: 12px 0;
+  }
+
+  .drawer-switch {
+    float: right
+  }
+}
+
+// 导航模式
+.nav-wrap {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  margin-top: 10px;
+  margin-bottom: 20px;
+
+  .activeItem {
+    border: 2px solid #{'var(--theme)'} !important;
+  }
+
+  .item {
+    position: relative;
+    margin-right: 16px;
+    cursor: pointer;
+    width: 56px;
+    height: 48px;
+    border-radius: 4px;
+    background: #f0f2f5;
+    border: 2px solid transparent;
+  }
+
+  .left {
+    b:first-child {
+      display: block;
+      height: 30%;
+      background: #fff;
     }
-
-    .drawer-item {
-      color: rgba(0, 0, 0, .65);
-      font-size: 14px;
-      padding: 12px 0;
-    }
-
-    .drawer-switch {
-      float: right
+    b:last-child {
+      width: 30%;
+      background: #1b2a47;
+      position: absolute;
+      height: 100%;
+      top: 0;
+      border-radius: 4px 0 0 4px;
     }
   }
+  .mix {
+    b:first-child {
+      border-radius: 4px 4px 0 0;
+      display: block;
+      height: 30%;
+      background: #1b2a47;
+    }
+    b:last-child {
+      width: 30%;
+      background: #1b2a47;
+      position: absolute;
+      height: 70%;
+      border-radius: 0 0 0 4px;
+    }
+  }
+  .top {
+    b:first-child {
+      display: block;
+      height: 30%;
+      background: #1b2a47;
+      border-radius: 4px 4px 0 0;
+    }
+  }
+}
 </style>
