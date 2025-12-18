@@ -60,36 +60,22 @@ export default {
 </script>
 
 <style lang="scss">
-.topbar-menu.el-menu--horizontal > .el-menu-item {
-  float: left;
-  height: 50px !important;
-  line-height: 50px !important;
-  color: #303133 !important;
-  padding: 0 5px !important;
-  margin: 0 10px !important;
+/* menu item */
+.topbar-menu.el-menu--horizontal .el-submenu__title, .topbar-menu.el-menu--horizontal .el-menu-item {
+  padding: 0 10px !important;
 }
 
-.el-menu-item.is-active .svg-icon + span, .el-submenu.is-active .svg-icon + span{
-  color: v-bind(theme);
-}
-
-.el-menu--horizontal .el-menu .el-menu-item, .el-menu--horizontal .el-menu .el-submenu__title {
-  color: #303133 !important;
+.el-menu--horizontal .el-menu--popup .el-menu-item:hover {
+  background-color: #f5f7fa !important;
 }
 
 /* submenu item */
 .topbar-menu.el-menu--horizontal > .el-submenu .el-submenu__title {
   float: left;
-  height: 50px !important;
+  height: 47px !important;
   line-height: 50px !important;
-  color: #303133 !important;
-  padding: 0 5px !important;
-  margin: 0 10px !important;
-}
-
-/* 图标右间距 */
-.topbar-menu .svg-icon {
-  margin-right: 4px;
+  color: #303133;
+  margin: 0 15px !important;
 }
 
 /* topbar more arrow */ 
@@ -103,6 +89,10 @@ export default {
 /* menu__title el-menu-item */
 .topbar-menu.el-menu--horizontal .el-submenu__title, .topbar-menu.el-menu--horizontal .el-menu-item {
   height: 55px;
-  padding: 0 15px;
+}
+
+.el-menu--horizontal .el-menu .el-menu-item, .el-menu--horizontal .el-menu .el-submenu__title{
+  color: #303133;
 }
 </style>
+
