@@ -116,18 +116,20 @@
       margin-left: 54px;
     }
 
-    .submenu-title-noDropdown {
-      padding: 0 !important;
-      position: relative;
-
-      .el-tooltip {
+    .el-menu:not(.el-menu--horizontal) {
+      .submenu-title-noDropdown {
         padding: 0 !important;
+        position: relative;
 
-        .svg-icon {
-          margin-left: 20px;
+        .el-tooltip {
+          padding: 0 !important;
+
+          .svg-icon {
+            margin-left: 20px;
+          }
         }
       }
-    }
+	}
 
     .el-submenu {
       overflow: hidden;
