@@ -7,7 +7,9 @@ import java.util.Map;
 import com.alibaba.fastjson2.JSONArray;
 import com.ruoyi.common.constant.CacheConstants;
 import com.ruoyi.common.core.domain.entity.SysDictData;
+import com.ruoyi.common.core.domain.entity.SysDictType;
 import com.ruoyi.common.core.redis.RedisCache;
+import com.ruoyi.common.system.service.ISysDictTypeService;
 import com.ruoyi.common.utils.spring.SpringUtils;
 
 /**
@@ -183,6 +185,53 @@ public class DictUtils
             propertyString.append(dict.getDictLabel()).append(SEPARATOR);
         }
         return StringUtils.stripEnd(propertyString.toString(), SEPARATOR);
+    }
+
+    /**
+     * 根据字典类型获取字典类型信息
+     *
+     * @param dictType 字典类型
+     * @return 字典类型信息
+     */
+    public static SysDictType getDictType(String dictType)
+    {
+        return SpringUtils.getBean(ISysDictTypeService.class).selectDictTypeByType(dictType);
+    }
+
+    /**
+     * 根据字典类型和字典值获取转换后的字典值
+     *
+     * @param dictType 字典类型
+     * @param dictValue 字典值
+     * @return 转换后的字典值
+     */
+    public static Object getConvertDictValue(String dictType, String dictValue)
+    {
+        SysDictType sysDictType = getDictType(dictType);
+        if (sysDictType == null || StringUtils.isEmpty(sysDictType.getValueType()))
+        {
+            return dictValue;
+        }
+
+        String valueType = sysDictType.getValueType();
+        if ("int".equals(valueType))
+        {
+            return Integer.parseInt(dictValue);
+        }
+        else if ("long".equals(valueType))
+        {
+            return Long.parseLong(dictValue);
+        }
+        else if ("double".equals(valueType))
+        {
+            return Double.parseDouble(dictValue);
+        }
+        else if ("boolean".equals(valueType))
+        {
+            return Boolean.parseBoolean(dictValue);
+        }
+        // 默认返回字符串类型
+        return dictValue;
     }
 
     /**
