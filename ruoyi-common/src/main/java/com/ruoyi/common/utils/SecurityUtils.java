@@ -117,6 +117,16 @@ public class SecurityUtils
     /**
      * 是否为管理员
      * 
+     * @return 结果
+     */
+    public static boolean isAdmin()
+    {
+        return isAdmin(getUserId());
+    }
+
+    /**
+     * 是否为管理员
+     * 
      * @param userId 用户ID
      * @return 结果
      */
