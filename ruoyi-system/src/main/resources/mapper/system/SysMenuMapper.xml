@@ -130,7 +130,12 @@
 	
 	<select id="checkMenuNameUnique" parameterType="SysMenu" resultMap="SysMenuResult">
 		<include refid="selectMenuVo"/>
-		where menu_name=#{menuName} and parent_id = #{parentId} limit 1
+		where menu_name= #{menuName} and parent_id = #{parentId} limit 1
+	</select>
+	
+	<select id="selectMenusByPathOrRouteName" parameterType="SysMenu" resultMap="SysMenuResult">
+		<include refid="selectMenuVo"/>
+		where menu_type in ('M', 'C') and (path = #{path} or path = #{routeName} or route_name = #{path} or route_name = #{routeName})
 	</select>
 	
 	<update id="updateMenu" parameterType="SysMenu">
