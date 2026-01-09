@@ -8,6 +8,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.ruoyi.common.constant.Constants;
@@ -32,7 +34,11 @@ import com.ruoyi.system.service.ISysMenuService;
 @Service
 public class SysMenuServiceImpl implements ISysMenuService
 {
+    private static final Logger log = LoggerFactory.getLogger(SysMenuServiceImpl.class);
+
     public static final String PREMISSION_STRING = "perms[\"{0}\"]";
+
+    public static final Long MENU_ROOT_ID = 0L;
 
     @Autowired
     private SysMenuMapper menuMapper;
@@ -138,7 +144,7 @@ public class SysMenuServiceImpl implements ISysMenuService
         {
             menus = menuMapper.selectMenuTreeByUserId(userId);
         }
-        return getChildPerms(menus, 0);
+        return getChildPerms(menus, MENU_ROOT_ID);
     }
 
     /**
@@ -193,7 +199,7 @@ public class SysMenuServiceImpl implements ISysMenuService
                 childrenList.add(children);
                 router.setChildren(childrenList);
             }
-            else if (menu.getParentId().intValue() == 0 && isInnerLink(menu))
+            else if (menu.getParentId().intValue() == MENU_ROOT_ID && isInnerLink(menu))
             {
                 router.setMeta(new MetaVo(menu.getMenuName(), menu.getIcon()));
                 router.setPath("/");
@@ -346,6 +352,47 @@ public class SysMenuServiceImpl implements ISysMenuService
     }
 
     /**
+     * 校验路由名称是否唯一
+     *
+     * @param menu 菜单信息
+     * @return 结果
+     */
+    @Override
+    public boolean checkRouteConfigUnique(SysMenu menu)
+    {
+        Long menuId = StringUtils.isNull(menu.getMenuId()) ? -1L : menu.getMenuId();
+        Long parentId = menu.getParentId();
+        String path = menu.getPath();
+        String routeName = StringUtils.isEmpty(menu.getRouteName()) ? path : menu.getRouteName();
+        List<SysMenu> sysMenuList = menuMapper.selectMenusByPathOrRouteName(path, routeName);
+        for (SysMenu sysMenu : sysMenuList)
+        {
+            if (sysMenu.getMenuId().longValue() != menuId.longValue())
+            {
+                Long dbParentId = sysMenu.getParentId();
+                String dbPath = sysMenu.getPath();
+                String dbRouteName = StringUtils.isEmpty(sysMenu.getRouteName()) ? dbPath : sysMenu.getRouteName();
+                if (StringUtils.equalsAnyIgnoreCase(path, dbPath) && parentId.longValue() == dbParentId.longValue())
+                {
+                    log.warn("[同级路由冲突] 同级下已存在相同路由路径 '{}'，冲突菜单：{}", dbPath, sysMenu.getMenuName());
+                    return UserConstants.NOT_UNIQUE;
+                }
+                else if (StringUtils.equalsAnyIgnoreCase(path, dbPath) && parentId.longValue() == MENU_ROOT_ID)
+                {
+                    log.warn("[根目录路由冲突] 根目录下路由 '{}' 必须唯一，已被菜单 '{}' 占用", path, sysMenu.getMenuName());
+                    return UserConstants.NOT_UNIQUE;
+                }
+                else if (StringUtils.equalsAnyIgnoreCase(routeName, dbRouteName))
+                {
+                    log.warn("[路由名称冲突] 路由名称 '{}' 需全局唯一，已被菜单 '{}' 使用", routeName, sysMenu.getMenuName());
+                    return UserConstants.NOT_UNIQUE;
+                }
+            }
+        }
+        return UserConstants.UNIQUE;
+    }
+
+    /**
      * 获取路由名称
      * 
      * @param menu 菜单信息
@@ -384,12 +431,12 @@ public class SysMenuServiceImpl implements ISysMenuService
     {
         String routerPath = menu.getPath();
         // 内链打开外网方式
-        if (menu.getParentId().intValue() != 0 && isInnerLink(menu))
+        if (menu.getParentId().intValue() != MENU_ROOT_ID && isInnerLink(menu))
         {
             routerPath = innerLinkReplaceEach(routerPath);
         }
         // 非外链并且是一级目录（类型为目录）
-        if (0 == menu.getParentId().intValue() && UserConstants.TYPE_DIR.equals(menu.getMenuType())
+        if (MENU_ROOT_ID == menu.getParentId().intValue() && UserConstants.TYPE_DIR.equals(menu.getMenuType())
                 && UserConstants.NO_FRAME.equals(menu.getIsFrame()))
         {
             routerPath = "/" + menu.getPath();
@@ -415,7 +462,7 @@ public class SysMenuServiceImpl implements ISysMenuService
         {
             component = menu.getComponent();
         }
-        else if (StringUtils.isEmpty(menu.getComponent()) && menu.getParentId().intValue() != 0 && isInnerLink(menu))
+        else if (StringUtils.isEmpty(menu.getComponent()) && menu.getParentId().intValue() != MENU_ROOT_ID && isInnerLink(menu))
         {
             component = UserConstants.INNER_LINK;
         }
@@ -434,8 +481,19 @@ public class SysMenuServiceImpl implements ISysMenuService
      */
     public boolean isMenuFrame(SysMenu menu)
     {
-        return menu.getParentId().intValue() == 0 && UserConstants.TYPE_MENU.equals(menu.getMenuType())
+        return menu.getParentId().intValue() == MENU_ROOT_ID && UserConstants.TYPE_MENU.equals(menu.getMenuType())
                 && menu.getIsFrame().equals(UserConstants.NO_FRAME);
+    }
+
+    /**
+     * 是否为parent_view组件
+     * 
+     * @param menu 菜单信息
+     * @return 结果
+     */
+    public boolean isParentView(SysMenu menu)
+    {
+        return menu.getParentId().intValue() != MENU_ROOT_ID && UserConstants.TYPE_DIR.equals(menu.getMenuType());
     }
 
     /**
@@ -450,24 +508,13 @@ public class SysMenuServiceImpl implements ISysMenuService
     }
 
     /**
-     * 是否为parent_view组件
-     * 
-     * @param menu 菜单信息
-     * @return 结果
-     */
-    public boolean isParentView(SysMenu menu)
-    {
-        return menu.getParentId().intValue() != 0 && UserConstants.TYPE_DIR.equals(menu.getMenuType());
-    }
-
-    /**
      * 根据父节点的ID获取所有子节点
      * 
      * @param list 分类表
      * @param parentId 传入的父节点ID
      * @return String
      */
-    public List<SysMenu> getChildPerms(List<SysMenu> list, int parentId)
+    public List<SysMenu> getChildPerms(List<SysMenu> list, long parentId)
     {
         List<SysMenu> returnList = new ArrayList<SysMenu>();
         for (Iterator<SysMenu> iterator = list.iterator(); iterator.hasNext();)
