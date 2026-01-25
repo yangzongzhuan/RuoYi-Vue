@@ -152,7 +152,6 @@
             size="mini"
             type="text"
             icon="el-icon-video-camera"
-            :disabled="scope.row.status !== '0' || scope.row.dyStatus === '1'"
             @click="openDouyinPublish(scope.row)"
           >发布抖音</el-button>
         </template>
@@ -1080,7 +1079,7 @@ export default {
         manualConfigs.forEach(manualConfig => {
           const imageConfig = {
             folderName: templateImgConfig.folderName,
-            generateCount: "1", // 每个配置项生成1张
+            generateCount: String(templateImgConfig.generateCount || 1), // 使用模板保存的生成数量，默认为1
             hasSubfolder: templateImgConfig.hasSubfolder || false,
             subfolderName: templateImgConfig.subfolderName || "",
             textLayerConfigs: {}

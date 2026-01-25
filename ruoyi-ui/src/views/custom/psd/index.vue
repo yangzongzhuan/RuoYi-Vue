@@ -416,7 +416,7 @@ export default {
           textLayerConfigs: cfg.textLayerConfigs,
           // namePrompt: cfg.namePrompt,
           // otherPrompt: cfg.otherPrompt,
-          generateCount: 1
+          generateCount: cfg.generateCount || 1
         })) || [],
         images: row.images || '',
       };
@@ -444,6 +444,7 @@ export default {
                 hasSubfolder: cfg.hasSubfolder,
                 subfolderName: cfg.subfolderName,
                 textLayerConfigs: cfg.textLayerConfigs,
+                generateCount: cfg.generateCount || 1
                 // namePrompt: cfg.namePrompt,
                 // otherPrompt: cfg.otherPrompt,
               }))
