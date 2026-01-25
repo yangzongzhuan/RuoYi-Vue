@@ -192,12 +192,61 @@ export default {
           this.$message.error('获取账号列表失败');
           this.handleClose();
         }
+
+        // 从任务配置中解析标题和文案
+        this.parseCopywriterFromConfig();
       } catch (error) {
         console.error('获取抖音账号列表失败:', error);
         this.$message.error('获取账号列表失败: ' + (error.message || ''));
         this.handleClose();
       } finally {
         this.loading = false;
+      }
+    },
+
+    parseCopywriterFromConfig() {
+      try {
+        // 解析任务配置中的copywriter字段
+        const config = JSON.parse(this.taskRow.config);
+        const copywriterContent = config.copywriter;
+        
+        if (!copywriterContent) {
+          console.log('任务配置中没有copywriter字段');
+          return;
+        }
+
+        // 处理转义的换行符 \n 和实际的换行符
+        const lines = copywriterContent
+          .replace(/\\n/g, '\n')  // 将 \n 转换为实际换行符
+          .split(/\r?\n/)
+          .map(line => line.trim())
+          .filter(line => line);
+        
+        console.log('解析内容，总行数:', lines.length);
+
+        // 提取第一段：第一个#后的内容作为标题
+        for (let i = 0; i < lines.length; i++) {
+          const line = lines[i];
+          if (line.startsWith('#')) {
+            const title = line.replace(/^#+\s*/, '').trim();
+            this.form.title = title;
+            console.log('自动填充标题:', title);
+            break;
+          }
+        }
+
+        // 提取最后一段：最后一行包含多个#的内容作为文案
+        for (let i = lines.length - 1; i >= 0; i--) {
+          const line = lines[i];
+          const hashCount = (line.match(/#/g) || []).length;
+          if (hashCount >= 2) {
+            this.form.copywriter = line;
+            console.log('自动填充文案:', line);
+            break;
+          }
+        }
+      } catch (error) {
+        console.error('解析copywriter失败:', error);
       }
     },
 
