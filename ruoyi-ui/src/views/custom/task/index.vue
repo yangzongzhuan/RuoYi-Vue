@@ -969,15 +969,15 @@ export default {
       }
 
       // 检查是否已经添加过相同的账号-模板组合
-      const exists = this.batchTasks.some(task => 
-        task.accountName === this.batchSelection.accountName && 
-        task.templateName === this.batchSelection.templateName
-      );
+      // const exists = this.batchTasks.some(task => 
+      //   task.accountName === this.batchSelection.accountName && 
+      //   task.templateName === this.batchSelection.templateName
+      // );
       
-      if (exists) {
-        this.$modal.msgWarning('该账号-模板组合已添加');
-        return;
-      }
+      // if (exists) {
+      //   this.$modal.msgWarning('该账号-模板组合已添加');
+      //   return;
+      // }
 
       this.loading = true;
       try {
