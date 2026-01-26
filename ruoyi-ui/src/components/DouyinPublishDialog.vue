@@ -224,26 +224,20 @@ export default {
         
         console.log('解析内容，总行数:', lines.length);
 
-        // 提取第一段：第一个#后的内容作为标题
-        for (let i = 0; i < lines.length; i++) {
-          const line = lines[i];
-          if (line.startsWith('#')) {
-            const title = line.replace(/^#+\s*/, '').trim();
-            this.form.title = title;
-            console.log('自动填充标题:', title);
-            break;
-          }
+        // 第一行作为标题，去掉前缀的#或# + 空格
+        if (lines.length > 0) {
+          const rawTitle = lines[0];
+          const title = rawTitle.replace(/^#+\s*/, '').trim();
+          this.form.title = title;
+          console.log('自动填充标题:', title);
         }
 
-        // 提取最后一段：最后一行包含多个#的内容作为文案
-        for (let i = lines.length - 1; i >= 0; i--) {
-          const line = lines[i];
-          const hashCount = (line.match(/#/g) || []).length;
-          if (hashCount >= 2) {
-            this.form.copywriter = line;
-            console.log('自动填充文案:', line);
-            break;
-          }
+        // 提取文案：除去第一行以外的所有内容
+        const copywriterLines = lines.slice(1);
+        if (copywriterLines.length > 0) {
+          const copywriter = copywriterLines.join('\n');
+          this.form.copywriter = copywriter;
+          console.log('自动填充文案:', copywriter);
         }
       } catch (error) {
         console.error('解析copywriter失败:', error);

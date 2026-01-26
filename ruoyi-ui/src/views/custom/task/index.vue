@@ -170,133 +170,166 @@
     <el-dialog :title="title" :visible.sync="open" width="70%" append-to-body :close-on-click-modal="false" class="auto-task-dialog">
       <div v-loading="loading" class="dialog-loading-wrapper">
       <el-form ref="form" :model="form" :rules="rules" label-width="100px">
-        <el-form-item label="作图账号名称" prop="accountName">
-          <el-select
-            v-model="form.accountName"
-            placeholder="请选择账号"
-            filterable
-            clearable
-            style="width: 100%"
-            @change="filterTemplate"
-            :popper-append-to-body="false"
-          >
-            <el-option
-              v-for="item in accountOptions"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value"
-            />
-          </el-select>
-        </el-form-item>
-
-        <el-form-item label="模板名称" prop="templateName">
-          <el-select
-            v-model="form.templateName"
-            placeholder="请选择模板"
-            filterable
-            clearable
-            style="width: 100%"
-            @change="templateNameChange"
-            :popper-append-to-body="false"
-          >
-            <el-option
-              v-for="item in templateOptionsFilter"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value"
-            />
-          </el-select>
-        </el-form-item>
-        <div v-if="!isEmpty(templateInfo.imageConfigs)" class="template-container">
-          <div class="config-item">
-            <span class="label">文章提示词：</span>
-            <el-input type="textarea" :rows="7" v-model="templateInfo.copywriterPrompt" />
+        <!-- 批量选择区域 -->
+        <el-card class="batch-selection-card" shadow="never">
+          <div slot="header" class="clearfix">
+            <span>选择任务配置</span>
           </div>
-          <div class="config-item">
-            <span class="label">提示词：</span>
-            <el-input type="textarea" :rows="7" v-model="templateInfo.prompt" />
-          </div>
-          <el-row>
-            <el-col :span="16">
-              <el-card class="config-section">
-                <div class="section-header">
-                  <h3>基础配置</h3>
-                </div>
-                <div class="config-item">
-                  <span class="label">账号名称：</span>
-                  <el-tag type="info">{{ templateInfo.baseConfig.accountName }}</el-tag>
-                </div>
-                <div class="config-item">
-                  <span class="label">PSD路径：</span>
-                  <el-tooltip :content="templateInfo.baseConfig.psdLocalPath">
-                    <span class="path">{{ templateInfo.baseConfig.psdLocalPath }}</span>
-                  </el-tooltip>
-                </div>
-                <div class="config-item">
-                  <span class="label">输出路径：</span>
-                  <el-tooltip :content="templateInfo.baseConfig.imageSavePath">
-                    <span class="path">{{ templateInfo.baseConfig.imageSavePath }}</span>
-                  </el-tooltip>
-                </div>
-              </el-card>
+          <el-row :gutter="20">
+            <el-col :span="10">
+              <el-form-item label="作图账号" label-width="80px">
+                <el-select
+                  v-model="batchSelection.accountName"
+                  placeholder="请选择账号"
+                  filterable
+                  clearable
+                  style="width: 100%"
+                  @change="batchFilterTemplate"
+                  :popper-append-to-body="false"
+                >
+                  <el-option
+                    v-for="item in accountOptions"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value"
+                  />
+                </el-select>
+              </el-form-item>
             </el-col>
-            <el-col :span="8">
-              <el-card class="config-section right-panel">
-                <div class="section-header">
-                  <h3>模板预览</h3>
-                  <el-tooltip content="点击可放大查看" placement="top">
-                    <i class="el-icon-info"></i>
-                  </el-tooltip>
-                </div>
-                <image-preview :src="imageList" :width="100" :height="100"></image-preview>
-              </el-card>
+            <el-col :span="10">
+              <el-form-item label="模板名称" label-width="80px">
+                <el-select
+                  v-model="batchSelection.templateName"
+                  placeholder="请选择模板"
+                  filterable
+                  clearable
+                  style="width: 100%"
+                  :popper-append-to-body="false"
+                >
+                  <el-option
+                    v-for="item in batchTemplateOptionsFilter"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value"
+                  />
+                </el-select>
+              </el-form-item>
+            </el-col>
+            <el-col :span="4">
+              <el-button 
+                type="primary" 
+                icon="el-icon-plus" 
+                @click="addBatchTask"
+                :disabled="!batchSelection.accountName || !batchSelection.templateName"
+              >添加</el-button>
             </el-col>
           </el-row>
+        </el-card>
 
-          <el-card
-            v-for="(imgConfig, index) in templateInfo.imageConfigs"
-            :key="index"
-            class="config-section image-config">
-            <div class="section-header">
-              <h3>图片配置 {{ index + 1 }}</h3>
-              <el-input-number
-                v-model="imgConfig.generateCount"
-                :min="0"
-                :max="Infinity"
-                :precision="0"
-                controls-position="right"
-                class="generate-count"
-                placeholder="生成数量">
-              </el-input-number>
-            </div>
-            <div class="config-item">
-              <span class="label">目标文件夹：</span>
-              <el-tag>{{ imgConfig.folderName }}</el-tag>
-              <span v-if="imgConfig.hasSubfolder" class="subfolder">
-                / {{ imgConfig.subfolderName }}
-              </span>
-            </div>
-            <div
-              v-for="(layer, key) in imgConfig.textLayerConfigs"
-              :key="key"
-              class="text-layer">
-              <div class="layer-header">
-                <el-tag type="success">{{ key }}: {{layer.name}}</el-tag>
+        <!-- 已选择的任务列表 - 使用 el-tabs 展示 -->
+        <el-card v-if="batchTasks.length > 0" class="batch-tasks-card" shadow="never">
+          <div slot="header" class="clearfix">
+            <span>已选择的任务 ({{ batchTasks.length }})</span>
+          </div>
+          <el-tabs v-model="activeTabName" type="card" closable @tab-remove="removeBatchTask">
+            <el-tab-pane 
+              v-for="(task, index) in batchTasks" 
+              :key="task.id"
+              :label="`${task.accountName} - ${task.templateName}`"
+              :name="task.id">
+              <div class="template-container">
+                <div class="config-item">
+                  <span class="label">文章提示词：</span>
+                  <el-input type="textarea" :rows="7" v-model="task.templateInfo.copywriterPrompt" />
+                </div>
+                <div class="config-item">
+                  <span class="label">提示词：</span>
+                  <el-input type="textarea" :rows="7" v-model="task.templateInfo.prompt" />
+                </div>
+                <el-row>
+                  <el-col :span="16">
+                    <el-card class="config-section">
+                      <div class="section-header">
+                        <h3>基础配置</h3>
+                      </div>
+                      <div class="config-item">
+                        <span class="label">账号名称：</span>
+                        <el-tag type="info">{{ task.templateInfo.baseConfig.accountName }}</el-tag>
+                      </div>
+                      <div class="config-item">
+                        <span class="label">PSD路径：</span>
+                        <el-tooltip :content="task.templateInfo.baseConfig.psdLocalPath">
+                          <span class="path">{{ task.templateInfo.baseConfig.psdLocalPath }}</span>
+                        </el-tooltip>
+                      </div>
+                      <div class="config-item">
+                        <span class="label">输出路径：</span>
+                        <el-tooltip :content="task.templateInfo.baseConfig.imageSavePath">
+                          <span class="path">{{ task.templateInfo.baseConfig.imageSavePath }}</span>
+                        </el-tooltip>
+                      </div>
+                    </el-card>
+                  </el-col>
+                  <el-col :span="8">
+                    <el-card class="config-section right-panel">
+                      <div class="section-header">
+                        <h3>模板预览</h3>
+                        <el-tooltip content="点击可放大查看" placement="top">
+                          <i class="el-icon-info"></i>
+                        </el-tooltip>
+                      </div>
+                      <image-preview :src="task.imageList" :width="100" :height="100"></image-preview>
+                    </el-card>
+                  </el-col>
+                </el-row>
+
+                <el-card
+                  v-for="(imgConfig, imgIndex) in task.templateInfo.imageConfigs"
+                  :key="imgIndex"
+                  class="config-section image-config">
+                  <div class="section-header">
+                    <h3>图片配置 {{ imgIndex + 1 }}</h3>
+                    <el-input-number
+                      v-model="imgConfig.generateCount"
+                      :min="0"
+                      :max="Infinity"
+                      :precision="0"
+                      controls-position="right"
+                      class="generate-count"
+                      placeholder="生成数量">
+                    </el-input-number>
+                  </div>
+                  <div class="config-item">
+                    <span class="label">目标文件夹：</span>
+                    <el-tag>{{ imgConfig.folderName }}</el-tag>
+                    <span v-if="imgConfig.hasSubfolder" class="subfolder">
+                      / {{ imgConfig.subfolderName }}
+                    </span>
+                  </div>
+                  <div
+                    v-for="(layer, key) in imgConfig.textLayerConfigs"
+                    :key="key"
+                    class="text-layer">
+                    <div class="layer-header">
+                      <el-tag type="success">{{ key }}: {{layer.name}}</el-tag>
+                    </div>
+                    <div class="config-item">
+                      <span class="label">示例文本：</span>
+                      <el-input
+                        :value="layer.sampleText"
+                        readonly
+                        class="sample-text">
+                        <template slot="append">
+                          <span class="char-limit">{{ layer.maxCharsPerLine }}字/行</span>
+                        </template>
+                      </el-input>
+                    </div>
+                  </div>
+                </el-card>
               </div>
-              <div class="config-item">
-                <span class="label">示例文本：</span>
-                <el-input
-                  :value="layer.sampleText"
-                  readonly
-                  class="sample-text">
-                  <template slot="append">
-                    <span class="char-limit">{{ layer.maxCharsPerLine }}字/行</span>
-                  </template>
-                </el-input>
-              </div>
-            </div>
-          </el-card>
-        </div>
+            </el-tab-pane>
+          </el-tabs>
+        </el-card>
         <div v-if="form.jsonInfo" class="json-preview-container">
           <el-card class="json-card">
             <div slot="header" class="json-header">
@@ -317,7 +350,7 @@
       </el-form>
       </div>
       <div slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="submitForm" :disabled="loading || isEmpty(templateInfo.imageConfigs)">确 定</el-button>
+        <el-button type="primary" @click="submitBatchForm" :disabled="loading || batchTasks.length === 0">确 定</el-button>
         <el-button @click="cancel">取 消</el-button>
       </div>
     </el-dialog>
@@ -598,7 +631,16 @@ export default {
       manualImageConfigs: {},
       // 编辑模式标识
       isEditMode: false,
-      currentEditTask: null
+      currentEditTask: null,
+      // 批量任务创建相关
+      batchSelection: {
+        accountName: '',
+        templateName: ''
+      },
+      batchTemplateOptionsFilter: [],
+      batchTasks: [],
+      activeTabName: '',
+      batchTaskIdCounter: 0
     };
   },
   created() {
@@ -642,6 +684,7 @@ export default {
     cancel() {
       this.open = false;
       this.reset();
+      this.resetBatchTasks();
     },
     // 表单重置
     reset() {
@@ -675,10 +718,12 @@ export default {
     /** 新增按钮操作 */
     handleAdd() {
       this.resetTemplateInfo();
+      this.resetBatchTasks();
       this.loadAccountAndTemplateOptions().then(() => {
         this.reset();
+        this.batchTemplateOptionsFilter = [...this.templateOptions];
         this.open = true;
-        this.title = "添加任务";
+        this.title = "批量添加任务";
       });
     },
     /** 修改按钮操作 */
@@ -896,6 +941,150 @@ export default {
         imageConfigs: []
       };
       this.manualImageConfigs = {};
+    },
+    /** 重置批量任务 */
+    resetBatchTasks() {
+      this.batchTasks = [];
+      this.batchSelection = {
+        accountName: '',
+        templateName: ''
+      };
+      this.activeTabName = '';
+      this.batchTaskIdCounter = 0;
+    },
+    /** 批量选择 - 过滤模板 */
+    batchFilterTemplate() {
+      this.batchSelection.templateName = '';
+      if (!this.batchSelection.accountName) {
+        this.batchTemplateOptionsFilter = [...this.templateOptions];
+        return;
+      }
+      this.batchTemplateOptionsFilter = this.getFilteredTemplates(this.batchSelection.accountName);
+    },
+    /** 批量选择 - 添加任务 */
+    async addBatchTask() {
+      if (!this.batchSelection.accountName || !this.batchSelection.templateName) {
+        this.$modal.msgWarning('请选择账号和模板');
+        return;
+      }
+
+      // 检查是否已经添加过相同的账号-模板组合
+      const exists = this.batchTasks.some(task => 
+        task.accountName === this.batchSelection.accountName && 
+        task.templateName === this.batchSelection.templateName
+      );
+      
+      if (exists) {
+        this.$modal.msgWarning('该账号-模板组合已添加');
+        return;
+      }
+
+      this.loading = true;
+      try {
+        // 从 psdList 中获取模板信息
+        const match = this.psdList.find(item => {
+          try {
+            const cfg = JSON.parse(item.config);
+            const bc = cfg && cfg.baseConfig ? cfg.baseConfig : {};
+            return bc.accountName === this.batchSelection.accountName && 
+                   bc.templateName === this.batchSelection.templateName;
+          } catch (e) {
+            return false;
+          }
+        });
+
+        if (match) {
+          const parsedConfig = JSON.parse(match.config);
+          const taskId = `task_${this.batchTaskIdCounter++}`;
+          
+          const newTask = {
+            id: taskId,
+            accountName: this.batchSelection.accountName,
+            templateName: this.batchSelection.templateName,
+            imageList: match.images || '',
+            templateInfo: {
+              copywriterPrompt: parsedConfig.copywriterPrompt || '',
+              prompt: parsedConfig.prompt || '',
+              baseConfig: { ...parsedConfig.baseConfig },
+              imageConfigs: (parsedConfig.imageConfigs || []).map(config => ({
+                ...config,
+                generateCount: config.generateCount || 1
+              }))
+            }
+          };
+
+          this.batchTasks.push(newTask);
+          this.activeTabName = taskId;
+          
+          // 清空选择
+          this.batchSelection.accountName = '';
+          this.batchSelection.templateName = '';
+          this.batchTemplateOptionsFilter = [...this.templateOptions];
+          
+          this.$modal.msgSuccess('添加成功');
+        } else {
+          this.$modal.msgError('未找到匹配的模板配置');
+        }
+      } finally {
+        this.loading = false;
+      }
+    },
+    /** 批量选择 - 移除任务 */
+    removeBatchTask(taskId) {
+      const index = this.batchTasks.findIndex(task => task.id === taskId);
+      if (index !== -1) {
+        this.batchTasks.splice(index, 1);
+        if (this.batchTasks.length > 0) {
+          this.activeTabName = this.batchTasks[0].id;
+        } else {
+          this.activeTabName = '';
+        }
+      }
+    },
+    /** 批量提交表单 */
+    async submitBatchForm() {
+      if (this.batchTasks.length === 0) {
+        this.$modal.msgWarning('请至少添加一个任务');
+        return;
+      }
+
+      this.$modal.confirm(`确认要创建 ${this.batchTasks.length} 个任务吗？`)
+        .then(async () => {
+          this.loading = true;
+          let successCount = 0;
+          let failCount = 0;
+
+          for (const task of this.batchTasks) {
+            try {
+              const formData = {
+                accountName: task.accountName,
+                templateName: task.templateName,
+                config: JSON.stringify(task.templateInfo)
+              };
+              
+              await addTask(formData);
+              successCount++;
+            } catch (error) {
+              failCount++;
+              console.error(`创建任务失败 [${task.accountName} - ${task.templateName}]:`, error);
+            }
+          }
+
+          this.loading = false;
+          
+          if (failCount === 0) {
+            this.$modal.msgSuccess(`成功创建 ${successCount} 个任务`);
+          } else {
+            this.$modal.msgWarning(`成功创建 ${successCount} 个任务，失败 ${failCount} 个`);
+          }
+          
+          this.open = false;
+          this.resetBatchTasks();
+          this.getList();
+        })
+        .catch(() => {
+          // 用户取消
+        });
     },
     pushConfirm() {
       this.$modal.confirm('确认要发布吗？')
@@ -1217,6 +1406,25 @@ export default {
 </script>
 
 <style scoped>
+.batch-selection-card {
+  margin-bottom: 20px;
+}
+
+.batch-selection-card >>> .el-card__header {
+  background: #f5f7fa;
+  font-weight: 600;
+}
+
+.batch-tasks-card {
+  margin-top: 20px;
+}
+
+.batch-tasks-card >>> .el-card__header {
+  background: #ecf5ff;
+  font-weight: 600;
+  color: #409EFF;
+}
+
 .template-container {
   margin-top: 20px;
   background: #f5f7fa;
