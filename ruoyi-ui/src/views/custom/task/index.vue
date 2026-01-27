@@ -170,73 +170,71 @@
     <el-dialog :title="title" :visible.sync="open" width="70%" append-to-body :close-on-click-modal="false" class="auto-task-dialog">
       <div v-loading="loading" class="dialog-loading-wrapper">
       <el-form ref="form" :model="form" :rules="rules" label-width="100px">
-        <!-- 批量选择区域 -->
+        <!-- 批量选择区域 - 左右布局 -->
         <el-card class="batch-selection-card" shadow="never">
           <div slot="header" class="clearfix">
-            <span>选择任务配置</span>
+            <span>批量任务配置</span>
           </div>
-          <el-row :gutter="20">
-            <el-col :span="10">
-              <el-form-item label="作图账号" label-width="80px">
-                <el-select
-                  v-model="batchSelection.accountName"
-                  placeholder="请选择账号"
-                  filterable
+          <el-row :gutter="20" class="batch-layout">
+            <!-- 左侧：树形选择 -->
+            <el-col :span="8" class="tree-column">
+              <div class="tree-section">
+                <div class="section-title">选择任务配置（勾选模板自动添加）</div>
+                <el-input
+                  v-model="treeSearchText"
+                  placeholder="搜索账号名称"
+                  prefix-icon="el-icon-search"
                   clearable
-                  style="width: 100%"
-                  @change="batchFilterTemplate"
-                  :popper-append-to-body="false"
-                >
-                  <el-option
-                    v-for="item in accountOptions"
-                    :key="item.value"
-                    :label="item.label"
-                    :value="item.value"
-                  />
-                </el-select>
-              </el-form-item>
+                  size="small"
+                  style="margin-bottom: 10px;">
+                </el-input>
+                <el-tree
+                  ref="batchTree"
+                  :data="treeData"
+                  show-checkbox
+                  node-key="id"
+                  :props="treeProps"
+                  :default-expand-all="false"
+                  :filter-node-method="filterTreeNode"
+                  @check="handleTreeCheck"
+                  class="batch-tree">
+                  <span class="custom-tree-node" slot-scope="{ node, data }">
+                    <span class="node-label">
+                      <i :class="data.isTemplate ? 'el-icon-document' : 'el-icon-user'" class="node-icon"></i>
+                      {{ node.label }}
+                    </span>
+                    <span v-if="data.isTemplate" class="node-actions">
+                      <el-input-number
+                        v-model="data.quantity"
+                        :min="1"
+                        :max="100"
+                        size="mini"
+                        controls-position="right"
+                        @click.native.stop
+                        style="width: 120px;">
+                      </el-input-number>
+                      <span class="quantity-label">个任务</span>
+                    </span>
+                  </span>
+                </el-tree>
+              </div>
             </el-col>
-            <el-col :span="10">
-              <el-form-item label="模板名称" label-width="80px">
-                <el-select
-                  v-model="batchSelection.templateName"
-                  placeholder="请选择模板"
-                  filterable
-                  clearable
-                  style="width: 100%"
-                  :popper-append-to-body="false"
-                >
-                  <el-option
-                    v-for="item in batchTemplateOptionsFilter"
-                    :key="item.value"
-                    :label="item.label"
-                    :value="item.value"
-                  />
-                </el-select>
-              </el-form-item>
-            </el-col>
-            <el-col :span="4">
-              <el-button 
-                type="primary" 
-                icon="el-icon-plus" 
-                @click="addBatchTask"
-                :disabled="!batchSelection.accountName || !batchSelection.templateName"
-              >添加</el-button>
-            </el-col>
-          </el-row>
-        </el-card>
 
-        <!-- 已选择的任务列表 - 使用 el-tabs 展示 -->
-        <el-card v-if="batchTasks.length > 0" class="batch-tasks-card" shadow="never">
-          <div slot="header" class="clearfix">
-            <span>已选择的任务 ({{ batchTasks.length }})</span>
-          </div>
-          <el-tabs v-model="activeTabName" type="card" closable @tab-remove="removeBatchTask">
+            <!-- 右侧：已选择的任务列表 -->
+            <el-col :span="16" class="tabs-column">
+              <div class="tabs-section">
+                <div class="section-title">已选择的任务 ({{ batchTasks.length }})</div>
+                <div v-if="batchTasks.length === 0" class="empty-tasks">
+                  <i class="el-icon-info"></i>
+                  <p>请在左侧勾选模板以添加任务</p>
+                </div>
+                <el-tabs v-else v-model="activeTabName" type="card" closable @tab-remove="removeBatchTask" class="batch-tabs">
             <el-tab-pane 
               v-for="(task, index) in batchTasks" 
               :key="task.id"
-              :label="`${task.accountName} - ${task.templateName}`"
+              :label="`${task.accountName} - ${task.templateName} (${task.quantity || 1}个)`"
               :name="task.id">
+              <div class="tab-content-wrapper">
               <div class="template-container">
                 <div class="config-item">
                   <span class="label">文章提示词：</span>
@@ -327,8 +325,12 @@
                   </div>
                 </el-card>
               </div>
+              </div>
             </el-tab-pane>
           </el-tabs>
+              </div>
+            </el-col>
+          </el-row>
         </el-card>
         <div v-if="form.jsonInfo" class="json-preview-container">
           <el-card class="json-card">
@@ -640,11 +642,27 @@ export default {
       batchTemplateOptionsFilter: [],
       batchTasks: [],
       activeTabName: '',
-      batchTaskIdCounter: 0
+      batchTaskIdCounter: 0,
+      // 树形结构数据
+      treeData: [],
+      treeProps: {
+        children: 'children',
+        label: 'label'
+      },
+      treeSearchText: ''
     };
   },
   created() {
     this.getList();
+  },
+  watch: {
+    treeSearchText(val) {
+      this.$nextTick(() => {
+        if (this.$refs.batchTree) {
+          this.$refs.batchTree.filter(val);
+        }
+      });
+    }
   },
   computed: {
     // 自动解析 JSON 为对象
@@ -721,7 +739,7 @@ export default {
       this.resetBatchTasks();
       this.loadAccountAndTemplateOptions().then(() => {
         this.reset();
-        this.batchTemplateOptionsFilter = [...this.templateOptions];
+        this.buildTreeData();
         this.open = true;
         this.title = "批量添加任务";
       });
@@ -951,6 +969,164 @@ export default {
       };
       this.activeTabName = '';
       this.batchTaskIdCounter = 0;
+      this.treeData = [];
+    },
+    /** 构建树形数据 */
+    buildTreeData() {
+      const accountMap = new Map();
+      
+      // 遍历 psdList 构建账号-模板树形结构
+      this.psdList.forEach(item => {
+        try {
+          const config = JSON.parse(item.config);
+          const { accountName, templateName } = config.baseConfig;
+          
+          if (!accountName || !templateName) return;
+          
+          // 如果账号节点不存在，创建它
+          if (!accountMap.has(accountName)) {
+            accountMap.set(accountName, {
+              id: `account_${accountName}`,
+              label: accountName,
+              isTemplate: false,
+              children: []
+            });
+          }
+          
+          // 添加模板节点到账号下
+          const accountNode = accountMap.get(accountName);
+          const templateExists = accountNode.children.some(child => child.label === templateName);
+          
+          if (!templateExists) {
+            accountNode.children.push({
+              id: `template_${accountName}_${templateName}`,
+              label: templateName,
+              isTemplate: true,
+              accountName: accountName,
+              templateName: templateName,
+              quantity: 1,
+              psdItem: item
+            });
+          }
+        } catch (e) {
+          // JSON解析失败，跳过
+        }
+      });
+      
+      // 转换为数组
+      this.treeData = Array.from(accountMap.values());
+    },
+    /** 处理树节点勾选 */
+    handleTreeCheck(data, checkedInfo) {
+      const isChecked = checkedInfo.checkedKeys.includes(data.id);
+      
+      if (data.isTemplate) {
+        // 处理模板节点的勾选
+        if (isChecked) {
+          // 勾选时添加任务
+          this.addBatchTaskFromTree(data);
+        } else {
+          // 取消勾选时移除任务
+          this.removeBatchTaskByTemplate(data.accountName, data.templateName);
+        }
+      } else {
+        // 处理账号节点（父节点）的勾选
+        if (data.children && data.children.length > 0) {
+          if (isChecked) {
+            // 勾选父节点时，添加所有子模板
+            data.children.forEach(childTemplate => {
+              if (childTemplate.isTemplate) {
+                this.addBatchTaskFromTree(childTemplate);
+              }
+            });
+          } else {
+            // 取消勾选父节点时，移除所有子模板
+            data.children.forEach(childTemplate => {
+              if (childTemplate.isTemplate) {
+                this.removeBatchTaskByTemplate(childTemplate.accountName, childTemplate.templateName);
+              }
+            });
+          }
+        }
+      }
+    },
+    /** 树节点过滤方法 - 只过滤父节点（账号），保留所有子节点 */
+    filterTreeNode(value, data, node) {
+      if (!value) return true;
+      
+      // 如果是账号节点（父节点），根据搜索文本过滤
+      if (!data.isTemplate) {
+        return data.label.toLowerCase().indexOf(value.toLowerCase()) !== -1;
+      }
+      
+      // 如果是模板节点（子节点），检查其父节点是否匹配
+      if (node.parent && node.parent.data) {
+        const parentData = node.parent.data;
+        // 如果父节点不是根节点且匹配搜索条件，则显示该子节点
+        if (!parentData.isTemplate) {
+          return parentData.label.toLowerCase().indexOf(value.toLowerCase()) !== -1;
+        }
+      }
+      
+      return false;
+    },
+    /** 从树节点添加批量任务 */
+    async addBatchTaskFromTree(treeNode) {
+      const { accountName, templateName, quantity, psdItem } = treeNode;
+      
+      // 检查是否已经添加过
+      const existingTaskIndex = this.batchTasks.findIndex(task => 
+        task.accountName === accountName && task.templateName === templateName
+      );
+      
+      if (existingTaskIndex !== -1) {
+        // 如果已存在，更新数量
+        this.batchTasks[existingTaskIndex].quantity = quantity;
+        return;
+      }
+      
+      try {
+        const parsedConfig = JSON.parse(psdItem.config);
+        const taskId = `task_${this.batchTaskIdCounter++}`;
+        
+        const newTask = {
+          id: taskId,
+          accountName: accountName,
+          templateName: templateName,
+          quantity: quantity,
+          imageList: psdItem.images || '',
+          templateInfo: {
+            copywriterPrompt: parsedConfig.copywriterPrompt || '',
+            prompt: parsedConfig.prompt || '',
+            baseConfig: { ...parsedConfig.baseConfig },
+            imageConfigs: (parsedConfig.imageConfigs || []).map(config => ({
+              ...config,
+              generateCount: config.generateCount || 1
+            }))
+          }
+        };
+        
+        this.batchTasks.push(newTask);
+        this.activeTabName = taskId;
+      } catch (error) {
+        console.error('添加任务失败:', error);
+        this.$modal.msgError('添加任务失败');
+      }
+    },
+    /** 根据账号和模板名称移除批量任务 */
+    removeBatchTaskByTemplate(accountName, templateName) {
+      const index = this.batchTasks.findIndex(task => 
+        task.accountName === accountName && task.templateName === templateName
+      );
+      
+      if (index !== -1) {
+        this.batchTasks.splice(index, 1);
+        if (this.batchTasks.length > 0) {
+          this.activeTabName = this.batchTasks[0].id;
+        } else {
+          this.activeTabName = '';
+        }
+      }
     },
     /** 批量选择 - 过滤模板 */
     batchFilterTemplate() {
@@ -1048,25 +1224,33 @@ export default {
         return;
       }
 
-      this.$modal.confirm(`确认要创建 ${this.batchTasks.length} 个任务吗？`)
+      // 计算总任务数
+      const totalTasks = this.batchTasks.reduce((sum, task) => sum + (task.quantity || 1), 0);
+
+      this.$modal.confirm(`确认要创建 ${totalTasks} 个任务吗？`)
         .then(async () => {
           this.loading = true;
           let successCount = 0;
           let failCount = 0;
 
           for (const task of this.batchTasks) {
-            try {
-              const formData = {
-                accountName: task.accountName,
-                templateName: task.templateName,
-                config: JSON.stringify(task.templateInfo)
-              };
-              
-              await addTask(formData);
-              successCount++;
-            } catch (error) {
-              failCount++;
-              console.error(`创建任务失败 [${task.accountName} - ${task.templateName}]:`, error);
+            const quantity = task.quantity || 1;
+            
+            // 根据数量创建多个任务
+            for (let i = 0; i < quantity; i++) {
+              try {
+                const formData = {
+                  accountName: task.accountName,
+                  templateName: task.templateName,
+                  config: JSON.stringify(task.templateInfo)
+                };
+                
+                await addTask(formData);
+                successCount++;
+              } catch (error) {
+                failCount++;
+                console.error(`创建任务失败 [${task.accountName} - ${task.templateName}] 第${i+1}个:`, error);
+              }
             }
           }
 
@@ -1415,14 +1599,110 @@ export default {
   font-weight: 600;
 }
 
-.batch-tasks-card {
-  margin-top: 20px;
+.batch-layout {
+  min-height: 500px;
 }
 
-.batch-tasks-card >>> .el-card__header {
-  background: #ecf5ff;
+.tree-column {
+  border-right: 1px solid #EBEEF5;
+  padding-right: 20px;
+}
+
+.tabs-column {
+  padding-left: 20px;
+}
+
+.tree-section,
+.tabs-section {
+  height: 100%;
+}
+
+.section-title {
+  font-size: 14px;
   font-weight: 600;
+  color: #303133;
+  margin-bottom: 15px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid #409EFF;
+}
+
+.batch-tree {
+  margin-top: 10px;
+  max-height: 600px;
+  overflow-y: auto;
+}
+
+.empty-tasks {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 400px;
+  color: #909399;
+}
+
+.empty-tasks i {
+  font-size: 48px;
+  margin-bottom: 16px;
+}
+
+.empty-tasks p {
+  font-size: 14px;
+  margin: 0;
+}
+
+.batch-tabs {
+  height: 100%;
+}
+
+.tab-content-wrapper {
+  max-height: 600px;
+  overflow-y: auto;
+  padding-right: 10px;
+}
+
+.batch-tree >>> .el-tree-node__content {
+  height: 40px;
+  line-height: 40px;
+}
+
+.custom-tree-node {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 14px;
+  padding-right: 10px;
+}
+
+.node-label {
+  display: flex;
+  align-items: center;
+}
+
+.node-icon {
+  margin-right: 8px;
+  font-size: 16px;
+}
+
+.node-icon.el-icon-user {
   color: #409EFF;
+}
+
+.node-icon.el-icon-document {
+  color: #67C23A;
+}
+
+.node-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.quantity-label {
+  color: #909399;
+  font-size: 13px;
+  white-space: nowrap;
 }
 
 .template-container {
