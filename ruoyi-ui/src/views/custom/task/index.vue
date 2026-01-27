@@ -1246,6 +1246,8 @@ export default {
                 };
                 
                 await addTask(formData);
+                // 睡眠1s
+                await new Promise(resolve => setTimeout(resolve, 1000));
                 successCount++;
               } catch (error) {
                 failCount++;
