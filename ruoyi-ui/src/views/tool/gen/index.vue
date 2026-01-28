@@ -98,9 +98,9 @@
           <span>{{(queryParams.pageNum - 1) * queryParams.pageSize + scope.$index + 1}}</span>
         </template>
       </el-table-column>
-      <el-table-column label="表名称" align="center" prop="tableName" :show-overflow-tooltip="true" width="120" />
-      <el-table-column label="表描述" align="center" prop="tableComment" :show-overflow-tooltip="true" width="120" />
-      <el-table-column label="实体" align="center" prop="className" :show-overflow-tooltip="true" width="120" />
+      <el-table-column label="表名称" align="center" prop="tableName" :show-overflow-tooltip="true" width="140" />
+      <el-table-column label="表描述" align="center" prop="tableComment" :show-overflow-tooltip="true" width="140" />
+      <el-table-column label="实体" align="center" prop="className" :show-overflow-tooltip="true" width="140" />
       <el-table-column label="创建时间" align="center" prop="createTime" sortable="custom" :sort-orders="['descending', 'ascending']" width="160" />
       <el-table-column label="更新时间" align="center" prop="updateTime" sortable="custom" :sort-orders="['descending', 'ascending']" width="160" />
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
@@ -262,7 +262,7 @@ export default {
         return
       }
       if(row.genType === "1") {
-        genCode(row.tableName).then(response => {
+        genCode(row.tableName).then(() => {
           this.$modal.msgSuccess("成功生成到自定义路径：" + row.genPath)
         })
       } else {

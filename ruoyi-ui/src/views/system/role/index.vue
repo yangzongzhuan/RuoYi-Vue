@@ -557,14 +557,14 @@ export default {
         if (valid) {
           if (this.form.roleId != undefined) {
             this.form.menuIds = this.getMenuAllCheckedKeys()
-            updateRole(this.form).then(response => {
+            updateRole(this.form).then(() => {
               this.$modal.msgSuccess("修改成功")
               this.open = false
               this.getList()
             })
           } else {
             this.form.menuIds = this.getMenuAllCheckedKeys()
-            addRole(this.form).then(response => {
+            addRole(this.form).then(() => {
               this.$modal.msgSuccess("新增成功")
               this.open = false
               this.getList()
@@ -577,7 +577,7 @@ export default {
     submitDataScope: function() {
       if (this.form.roleId != undefined) {
         this.form.deptIds = this.getDeptAllCheckedKeys()
-        dataScope(this.form).then(response => {
+        dataScope(this.form).then(() => {
           this.$modal.msgSuccess("修改成功")
           this.openDataScope = false
           this.getList()

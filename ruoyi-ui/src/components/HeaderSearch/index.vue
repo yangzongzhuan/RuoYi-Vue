@@ -118,8 +118,6 @@ export default {
       this.fuse = new Fuse(list, {
         shouldSort: true,
         threshold: 0.4,
-        location: 0,
-        distance: 100,
         minMatchCharLength: 1,
         keys: [{
           name: 'title',

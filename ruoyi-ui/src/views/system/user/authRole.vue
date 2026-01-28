@@ -108,7 +108,7 @@ export default {
     submitForm() {
       const userId = this.form.userId
       const roleIds = this.roleIds.join(",")
-      updateAuthRole({ userId: userId, roleIds: roleIds }).then((response) => {
+      updateAuthRole({ userId: userId, roleIds: roleIds }).then(() => {
         this.$modal.msgSuccess("授权成功")
         this.close()
       })
