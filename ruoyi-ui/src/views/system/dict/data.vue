@@ -363,14 +363,14 @@ export default {
       this.$refs["form"].validate(valid => {
         if (valid) {
           if (this.form.dictCode != undefined) {
-            updateData(this.form).then(response => {
+            updateData(this.form).then(() => {
               this.$store.dispatch('dict/removeDict', this.queryParams.dictType)
               this.$modal.msgSuccess("修改成功")
               this.open = false
               this.getList()
             })
           } else {
-            addData(this.form).then(response => {
+            addData(this.form).then(() => {
               this.$store.dispatch('dict/removeDict', this.queryParams.dictType)
               this.$modal.msgSuccess("新增成功")
               this.open = false

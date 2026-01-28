@@ -184,7 +184,7 @@ export default {
       }).catch(() => {})
     },
     /** 批量取消授权按钮操作 */
-    cancelAuthUserAll(row) {
+    cancelAuthUserAll() {
       const roleId = this.queryParams.roleId
       const userIds = this.userIds.join(",")
       this.$modal.confirm('是否取消选中用户授权数据项？').then(function() {
