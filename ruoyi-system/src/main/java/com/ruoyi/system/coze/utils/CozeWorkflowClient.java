@@ -39,6 +39,7 @@ public class CozeWorkflowClient {
         while (asyncRetryCount < MAX_RETRIES) {
             try {
                 // 提交异步请求，获取初始响应和 execute_id
+                token = "Bearer " + token;
                 JsonResponse initResponse = submitAsyncRequest(parameters, token);
                 System.err.println("提交异步请求成功：" + initResponse);
                 validateResponse(initResponse);
@@ -66,6 +67,7 @@ public class CozeWorkflowClient {
             URL url = new URL("https://api.coze.cn/v1/workflow/run");
             conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("POST");
+            System.out.println(token);
             conn.setRequestProperty("Authorization", token);
             conn.setRequestProperty("Content-Type", "application/json");
             conn.setConnectTimeout(60_000);
