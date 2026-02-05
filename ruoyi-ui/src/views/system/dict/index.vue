@@ -159,12 +159,18 @@
 
     <!-- 添加或修改参数配置对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
-      <el-form ref="form" :model="form" :rules="rules" label-width="80px">
+      <el-form ref="form" :model="form" :rules="rules" label-width="100px">
         <el-form-item label="字典名称" prop="dictName">
           <el-input v-model="form.dictName" placeholder="请输入字典名称" />
         </el-form-item>
-        <el-form-item label="字典类型" prop="dictType">
-          <el-input v-model="form.dictType" placeholder="请输入字典类型" />
+        <el-form-item prop="dictType">
+          <el-input v-model="form.dictType" placeholder="请输入字典名称" maxlength="100" />
+          <span slot="label">
+            <el-tooltip content="数据存储中的Key值，如：sys_user_sex" placement="top">
+              <i class="el-icon-question"></i>
+            </el-tooltip>
+            字典类型
+          </span>
         </el-form-item>
         <el-form-item label="状态" prop="status">
           <el-radio-group v-model="form.status">
