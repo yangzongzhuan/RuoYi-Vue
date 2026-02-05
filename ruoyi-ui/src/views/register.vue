@@ -171,7 +171,7 @@ export default {
   padding: 25px 25px 5px 25px;
   .el-input {
     height: 38px;
-    input {
+    ::v-deep input {
       height: 38px;
     }
   }

@@ -181,7 +181,7 @@ export default {
   z-index: 1;
   .el-input {
     height: 38px;
-    input {
+    ::v-deep input {
       height: 38px;
     }
   }
