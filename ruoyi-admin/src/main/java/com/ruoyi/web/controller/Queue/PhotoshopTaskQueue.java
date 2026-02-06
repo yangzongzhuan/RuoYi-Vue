@@ -37,6 +37,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import com.alibaba.fastjson.JSON;
@@ -50,6 +52,8 @@ import java.util.stream.Collectors;
 @Component
 public class PhotoshopTaskQueue {
     private static final BlockingQueue<PsdTask> TASK_QUEUE = new LinkedBlockingQueue<>();
+    private static final ExecutorService PREPARE_EXECUTOR = Executors.newFixedThreadPool(4);
+    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
     private static volatile boolean running = true;
     private static ActiveXComponent ps;  // Photoshop 共享实例
 
@@ -99,7 +103,16 @@ public class PhotoshopTaskQueue {
     }
 
     public static void addTask(PsdTask task) {
-        TASK_QUEUE.offer(task); // 将任务加入队列
+        PREPARE_EXECUTOR.submit(() -> {
+            try {
+                ensureCozePrepared(task);
+                TASK_QUEUE.offer(task);
+            } catch (Exception e) {
+                System.err.println("任务预处理失败: " + e.getMessage());
+                task.setStatus("1");
+                psdTaskService.updatePsdTask(task);
+            }
+        });
     }
 
     private static synchronized ActiveXComponent getPhotoshopInstance() {
@@ -112,31 +125,17 @@ public class PhotoshopTaskQueue {
     private static void processTask(PsdTask task) {
         try {
             String configString = task.getConfig();
-            // 初始化ObjectMapper（推荐作为静态成员）
-            ObjectMapper mapper = new ObjectMapper();
+            ObjectNode config = (ObjectNode) OBJECT_MAPPER.readTree(configString);
 
-            // 配置解析改造
-            JsonNode configNode = mapper.readTree(configString);  // [5](@ref)
+            // 若尚未完成 Coze 请求，则先准备
+            if (!config.path("_cozeReady").asBoolean(false)) {
+                ensureCozePrepared(task);
+                config = (ObjectNode) OBJECT_MAPPER.readTree(task.getConfig());
+            }
 
-            // 转换为可修改的ObjectNode
-
-            ObjectNode config = (ObjectNode) configNode;  // [3](@ref)
-            List<String> nameList = psdMapper.selectAccountByName(task.getAccountName());
-            // 去重nameList
-            nameList = nameList.stream().distinct().collect(Collectors.toList());
-            AutoCheck checkInfo = psdMapper.getCheckInfo();
-            ArrayNode historyArray = mapper.createArrayNode();
-            nameList.forEach(historyArray::add);
-            config.set("historyName", historyArray);  // [3,5](@ref)
-
-            // 请求数据
-            JsonNode jsonResponse = CozeWorkflowClient.executeWithRetry(config, checkInfo.getToken());
-
-            // 将 answer 转换为 JSONObject 对象
-            JsonNode rootNode = jsonResponse;
-            ObjectNode root = (ObjectNode) rootNode;
-            root.set("baseConfig", config.get("baseConfig"));
-            String answer = root.toString();
+            ObjectNode psConfig = config.deepCopy();
+            psConfig.remove("_cozeReady");
+            String answer = psConfig.toString();
 
             if (psdMapper.getAutoCheck().equals("0")) {
                 String extranetIp = psdMapper.getCheckInfo().getExtranetIp();
@@ -181,7 +180,7 @@ public class PhotoshopTaskQueue {
                 LocalDate today = LocalDate.now();
                 DateTimeFormatter formatter1 = DateTimeFormatter.ofPattern("yyyy-MM-dd");
                 String datePath = today.format(formatter1);
-                String path = config.path("baseConfig").path("imageSavePath").asText();
+                String path = psConfig.path("baseConfig").path("imageSavePath").asText();
                 String realPath = path + "\\" + datePath + "\\" + task.getCreateBy() + "\\" + foldersName;
                 task.setRealPath(realPath);
 //                System.out.println(realPath);
@@ -232,7 +231,7 @@ public class PhotoshopTaskQueue {
             List<String> sampleTextList = new ArrayList<>();
 
             // 获取 imageConfigs 数组节点
-            JsonNode imageConfigs = root.get("imageConfigs");
+            JsonNode imageConfigs = psConfig.get("imageConfigs");
             if (imageConfigs != null && imageConfigs.isArray()) {
                 for (JsonNode imageConfig : imageConfigs) {
                     // 获取 textLayerConfigs 对象节点
@@ -273,6 +272,38 @@ public class PhotoshopTaskQueue {
                 psdTaskService.updatePsdTask(task);
             }
         }
+    }
+
+    private static void ensureCozePrepared(PsdTask task) throws Exception {
+        ObjectNode config = (ObjectNode) OBJECT_MAPPER.readTree(task.getConfig());
+        if (config.path("_cozeReady").asBoolean(false)) {
+            return;
+        }
+
+        ObjectNode requestConfig = config.deepCopy();
+        requestConfig.remove("_cozeReady");
+
+        JsonNode baseConfigNode = requestConfig.path("baseConfig");
+        if (baseConfigNode.isMissingNode()) {
+            throw new IllegalStateException("任务缺少 baseConfig，无法调用 Coze");
+        }
+
+        List<String> nameList = psdMapper.selectAccountByName(task.getAccountName());
+        nameList = nameList.stream().distinct().collect(Collectors.toList());
+
+        ArrayNode historyArray = OBJECT_MAPPER.createArrayNode();
+        nameList.forEach(historyArray::add);
+        requestConfig.set("historyName", historyArray);
+
+        AutoCheck checkInfo = psdMapper.getCheckInfo();
+        JsonNode jsonResponse = CozeWorkflowClient.executeWithRetry(requestConfig, checkInfo.getToken());
+
+        ObjectNode preparedConfig = (ObjectNode) jsonResponse;
+        preparedConfig.set("baseConfig", requestConfig.get("baseConfig"));
+        preparedConfig.put("_cozeReady", true);
+
+        task.setConfig(preparedConfig.toString());
+        psdTaskService.updatePsdTask(task);
     }
 
     private static boolean isPathNotFound(Exception e) {
