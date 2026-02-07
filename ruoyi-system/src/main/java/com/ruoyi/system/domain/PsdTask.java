@@ -60,4 +60,6 @@ public class PsdTask extends BaseEntity
     private String gzhStatus;
 
     private String dyStatus; //抖音发布状态
+
+    private String dyPushTime; //抖音发布时间
 }

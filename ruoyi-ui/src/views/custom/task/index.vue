@@ -108,6 +108,12 @@
           <el-tag v-else type="info">未发布</el-tag>
         </template>
       </el-table-column>
+      <el-table-column label="抖音发布时间" align="center" prop="dyPushTime" width="150">
+        <template slot-scope="scope">
+          <span v-if="scope.row.dyStatus == '1' && scope.row.dyPushTime">{{ scope.row.dyPushTime }}</span>
+          <span v-else>-</span>
+        </template>
+      </el-table-column>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button
@@ -332,6 +338,27 @@
             </el-col>
           </el-row>
         </el-card>
+        
+        <!-- 定时发布配置 -->
+        <el-card class="scheduled-publish-card" shadow="never" style="margin-top: -10px;">
+          <div slot="header" class="clearfix">
+            <span>定时发布配置</span>
+          </div>
+          <el-form-item label="抖音发布时间" prop="dyPushTime">
+            <el-date-picker
+              v-model="form.dyPushTime"
+              type="datetime"
+              placeholder="选择发布时间（可选）"
+              format="yyyy-MM-dd HH:mm:ss"
+              value-format="yyyy-MM-dd HH:mm:ss"
+              style="width: 300px;">
+            </el-date-picker>
+            <div style="color: #909399; font-size: 12px; margin-top: 5px;">
+              如果不选择时间，则不设置定时发布；选择时间后，该批次所有任务都将使用此发布时间
+            </div>
+          </el-form-item>
+        </el-card>
+        
         <div v-if="form.jsonInfo" class="json-preview-container">
           <el-card class="json-card">
             <div slot="header" class="json-header">
@@ -586,7 +613,9 @@ export default {
         imageCount: null
       },
       // 表单参数
-      form: {},
+      form: {
+        dyPushTime: null
+      },
       // 表单校验
       rules: {
       },
@@ -713,7 +742,8 @@ export default {
         templateName: null,
         imageCount: null,
         config: null,
-        jsonInfo: null
+        jsonInfo: null,
+        dyPushTime: null
       };
       this.resetForm("form");
     },
@@ -1242,7 +1272,8 @@ export default {
                 const formData = {
                   accountName: task.accountName,
                   templateName: task.templateName,
-                  config: JSON.stringify(task.templateInfo)
+                  config: JSON.stringify(task.templateInfo),
+                  dyPushTime: this.form.dyPushTime
                 };
                 
                 await addTask(formData);
@@ -1593,7 +1624,7 @@ export default {
 
 <style scoped>
 .batch-selection-card {
-  margin-bottom: 20px;
+  margin-bottom: -10px;
 }
 
 .batch-selection-card >>> .el-card__header {
@@ -1883,6 +1914,7 @@ export default {
 
 /* 对话框loading优化 */
 .dialog-loading-wrapper {
+  margin-top: -30px;
   min-height: 200px;
   position: relative;
 }

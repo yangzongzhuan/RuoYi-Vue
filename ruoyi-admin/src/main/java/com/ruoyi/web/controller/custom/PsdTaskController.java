@@ -456,8 +456,9 @@ public class PsdTaskController extends BaseController
             String taskIdStr = params.get("task_id").toString();
             Integer status = Integer.valueOf(params.get("status").toString());
             String message = params.getOrDefault("message", "").toString();
+            String dyPushTime = params.getOrDefault("dyPushTime", "").toString();
 
-            logger.info("解析回调参数 - taskId: {}, status: {}, message: {}", taskIdStr, status, message);
+            logger.info("解析回调参数 - taskId: {}, status: {}, message: {}, dyPushTime: {}", taskIdStr, status, message, dyPushTime);
 
             Long taskId = Long.valueOf(taskIdStr);
             PsdTask psdTask = psdTaskService.selectPsdTaskById(taskId);
@@ -467,15 +468,21 @@ public class PsdTaskController extends BaseController
                 return AjaxResult.error("任务不存在");
             }
 
-            logger.info("更新前任务状态: dyStatus={}", psdTask.getDyStatus());
+            logger.info("更新前任务状态: dyStatus={}, dyPushTime={}", psdTask.getDyStatus(), psdTask.getDyPushTime());
 
             // 更新任务状态
             // status: 1-成功, 2-失败
             psdTask.setDyStatus(status.toString());
+            
+            // 更新发布时间
+            if (dyPushTime != null && !dyPushTime.isEmpty()) {
+                psdTask.setDyPushTime(dyPushTime);
+            }
+            
             int updateResult = psdTaskService.updatePsdTask(psdTask);
 
-            logger.info("抖音发布回调成功 - taskId: {}, status: {}, message: {}, 更新结果: {}",
-                       taskId, status, message, updateResult);
+            logger.info("抖音发布回调成功 - taskId: {}, status: {}, message: {}, dyPushTime: {}, 更新结果: {}",
+                       taskId, status, message, dyPushTime, updateResult);
 
             return AjaxResult.success("回调处理成功");
 

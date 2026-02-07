@@ -168,6 +168,19 @@ export default {
         publishTime: ''
       };
 
+      // 处理定时发布逻辑
+      if (this.taskRow.dyPushTime) {
+        const currentTime = new Date().getTime();
+        const scheduledTime = new Date(this.taskRow.dyPushTime).getTime();
+
+        // 如果当前时间小于预定时间，则默认选择定时发布并设置时间
+        if (currentTime < scheduledTime) {
+          this.form.publishType = 'scheduled';
+          this.form.publishTime = this.taskRow.dyPushTime;
+        }
+        // 如果当前时间大于预定时间，则沿用现在的逻辑默认立即发布
+      }
+
       // 加载抖音账号列表
       this.loading = true;
       this.douyinAccounts = [];
@@ -209,7 +222,7 @@ export default {
         // 解析任务配置中的copywriter字段
         const config = JSON.parse(this.taskRow.config);
         const copywriterContent = config.copywriter;
-        
+
         if (!copywriterContent) {
           console.log('任务配置中没有copywriter字段');
           return;
@@ -221,7 +234,7 @@ export default {
           .split(/\r?\n/)
           .map(line => line.trim())
           .filter(line => line);
-        
+
         console.log('解析内容，总行数:', lines.length);
 
         // 第一行作为标题，去掉前缀的#或# + 空格

@@ -19,6 +19,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="gzhName"    column="gzh_name"    />
         <result property="gzhStatus"    column="gzh_status"    />
         <result property="dyStatus"    column="dy_status"    />
+        <result property="dyPushTime"    column="dy_push_time"    />
     </resultMap>
 
     <sql id="selectPsdTaskVo">
@@ -59,6 +60,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="status != null">status,</if>
             <if test="createDate != null">create_date,</if>
             <if test="uuid != null">uuid,</if>
+            <if test="dyPushTime != null">dy_push_time,</if>
          </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="id != null">#{id},</if>
@@ -71,6 +73,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="status != null">#{status},</if>
             <if test="createDate != null">#{createDate},</if>
             <if test="uuid != null">#{uuid},</if>
+            <if test="dyPushTime != null">#{dyPushTime},</if>
          </trim>
     </insert>
 
@@ -87,6 +90,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="gzhName != null">gzh_name = #{gzhName},</if>
             <if test="gzhStatus != null">gzh_status = #{gzhStatus},</if>
             <if test="dyStatus != null">dy_status = #{dyStatus},</if>
+            <if test="dyPushTime != null">dy_push_time = #{dyPushTime},</if>
             <if test="createDate != null">create_date = #{createDate},</if>
         </trim>
         where uuid = #{uuid}
