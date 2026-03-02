@@ -1,6 +1,7 @@
 package com.ruoyi.web.controller.custom;
 
 import java.io.File;
+import java.nio.file.Files;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -442,6 +443,105 @@ public class PsdTaskController extends BaseController
             }
             
             return AjaxResult.error("发布失败: " + e.getMessage());
+        }
+    }
+
+    /**
+     * 获取任务的copywriter内容
+     */
+    @GetMapping("/getCopywriter/{taskId}")
+    public AjaxResult getCopywriter(@PathVariable("taskId") Long taskId) {
+        try {
+            PsdTask psdTask = psdTaskService.selectPsdTaskById(taskId);
+            if (psdTask == null) {
+                return AjaxResult.error("任务不存在");
+            }
+
+//            // 从任务配置中获取realPath
+//            String config = psdTask.getConfig();
+//            if (config == null || config.isEmpty()) {
+//                return AjaxResult.error("任务配置为空");
+//            }
+//
+//            JsonNode configNode = OBJECT_MAPPER.readTree(config);
+            String realPath = psdTask.getRealPath();
+            
+            if (realPath.isEmpty()) {
+                return AjaxResult.error("配置中未找到realPath");
+            }
+
+            // 构建copywriter.txt文件路径
+            String copywriterFilePath = realPath + File.separator + "copywriter.txt";
+            File copywriterFile = new File(copywriterFilePath);
+            
+            if (!copywriterFile.exists()) {
+                return AjaxResult.error("copywriter.txt文件不存在: " + copywriterFilePath);
+            }
+
+            // 读取文件内容
+            String content;
+            try {
+                content = new String(Files.readAllBytes(copywriterFile.toPath()), java.nio.charset.StandardCharsets.UTF_8);
+            } catch (Exception e) {
+                // 如果readString失败，使用传统方式读取
+                logger.warn("使用readString读取文件失败，尝试使用传统方式: " + e.getMessage());
+                StringBuilder contentBuilder = new StringBuilder();
+                try (java.io.BufferedReader reader = new java.io.BufferedReader(
+                        new java.io.InputStreamReader(new java.io.FileInputStream(copywriterFile), "UTF-8"))) {
+                    String line;
+                    while ((line = reader.readLine()) != null) {
+                        if (contentBuilder.length() > 0) {
+                            contentBuilder.append("\n");
+                        }
+                        contentBuilder.append(line);
+                    }
+                    content = contentBuilder.toString();
+                }
+            }
+            
+            // 如果文件内容是 JSON，优先从 JSON 的 copywriter 字段中取数据
+            String copywriterSource = content;
+            String trimmedContent = content.trim();
+            if (!trimmedContent.isEmpty() && (trimmedContent.startsWith("{") || trimmedContent.startsWith("["))) {
+                try {
+                    JsonNode jsonNode = OBJECT_MAPPER.readTree(trimmedContent);
+                    JsonNode copywriterNode = jsonNode.path("copywriter");
+                    if (!copywriterNode.isMissingNode()) {
+                        copywriterSource = copywriterNode.asText("");
+                    }
+                } catch (Exception jsonEx) {
+                    logger.warn("copywriter.txt内容为JSON但解析失败，回退为纯文本处理: {}", jsonEx.getMessage());
+                }
+            }
+
+            // 处理内容，提取标题和文案
+            String normalizedCopywriter = copywriterSource
+                    .replace("\\r\\n", "\n")
+                    .replace("\\\\n", "\n");
+            String[] lines = normalizedCopywriter.split("\\r?\\n");
+            String title = "";
+            String copywriter = "";
+            
+            if (lines.length > 0) {
+                // 第一行作为标题，去除#号和空格
+                title = lines[0].replaceFirst("^#+\\s*", "").trim();
+                
+                // 剩余行作为文案内容
+                if (lines.length > 1) {
+                    copywriter = java.util.Arrays.stream(lines, 1, lines.length)
+                            .collect(java.util.stream.Collectors.joining("\n"));
+                }
+            }
+
+            Map<String, String> result = new HashMap<>();
+            result.put("title", title);
+            result.put("copywriter", copywriter);
+            
+            return AjaxResult.success(result);
+            
+        } catch (Exception e) {
+            logger.error("获取copywriter内容失败", e);
+            return AjaxResult.error("获取copywriter内容失败: " + e.getMessage());
         }
     }
 

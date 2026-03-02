@@ -94,7 +94,7 @@
 </template>
 
 <script>
-import { getDouyinAccounts, publishToDouyin } from "@/api/custom/task";
+import { getDouyinAccounts, getCopywriter, publishToDouyin } from "@/api/custom/task";
 
 export default {
   name: "DouyinPublishDialog",
@@ -217,43 +217,26 @@ export default {
       }
     },
 
-    parseCopywriterFromConfig() {
+    async parseCopywriterFromConfig() {
       try {
-        // 解析任务配置中的copywriter字段
-        const config = JSON.parse(this.taskRow.config);
-        const copywriterContent = config.copywriter;
-
-        if (!copywriterContent) {
-          console.log('任务配置中没有copywriter字段');
+        if (!this.taskRow || !this.taskRow.id) {
+          console.log('任务ID为空');
           return;
         }
 
-        // 处理转义的换行符 \n 和实际的换行符
-        const lines = copywriterContent
-          .replace(/\\n/g, '\n')  // 将 \n 转换为实际换行符
-          .split(/\r?\n/)
-          .map(line => line.trim())
-          .filter(line => line);
-
-        console.log('解析内容，总行数:', lines.length);
-
-        // 第一行作为标题，去掉前缀的#或# + 空格
-        if (lines.length > 0) {
-          const rawTitle = lines[0];
-          const title = rawTitle.replace(/^#+\s*/, '').trim();
-          this.form.title = title;
-          console.log('自动填充标题:', title);
+        // 调用后端API获取copywriter内容
+        const response = await getCopywriter(this.taskRow.id);
+        
+        if (response.code === 200 && response.data) {
+          this.form.title = response.data.title || '';
+          this.form.copywriter = response.data.copywriter || '';
+          console.log('成功获取copywriter内容:', response.data);
+        } else {
+          console.error('获取copywriter失败:', response.msg);
         }
 
-        // 提取文案：除去第一行以外的所有内容
-        const copywriterLines = lines.slice(1);
-        if (copywriterLines.length > 0) {
-          const copywriter = copywriterLines.join('\n');
-          this.form.copywriter = copywriter;
-          console.log('自动填充文案:', copywriter);
-        }
       } catch (error) {
-        console.error('解析copywriter失败:', error);
+        console.error('获取copywriter失败:', error);
       }
     },
 

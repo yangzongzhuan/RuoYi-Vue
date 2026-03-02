@@ -52,6 +52,29 @@ try {
         // 网页3的浏览器处理方案启发文件编码设置
     }
 
+    if (CONFIG.mingzibiaoti) {
+        var mingzibiaoTiFile = new File(taskDir.fsName + "/mingzibiaoti.txt");
+        mingzibiaoTiFile.encoding = "UTF-8";  // 确保中文编码正确
+        mingzibiaoTiFile.open("w");
+        mingzibiaoTiFile.writeln(CONFIG.mingzibiaoti);
+        mingzibiaoTiFile.close();
+    }
+
+    if (CONFIG.heisefengmian) {
+        var heisefengmianFile = new File(taskDir.fsName + "/heisefengmian.txt");
+        heisefengmianFile.encoding = "UTF-8";  // 确保中文编码正确
+        heisefengmianFile.open("w");
+        // 如果heisefengmian是数组，则逐行写入
+        if (CONFIG.heisefengmian.constructor === Array) {
+            for (var k = 0; k < CONFIG.heisefengmian.length; k++) {
+                heisefengmianFile.writeln(CONFIG.heisefengmian[k]);
+            }
+        } else {
+            heisefengmianFile.writeln(CONFIG.heisefengmian);
+        }
+        heisefengmianFile.close();
+    }
+
     // 1. 打开原始 PSD 文件（仅一次）
     // 先检查文件是否存在
     var psdFile = new File(psdPath);

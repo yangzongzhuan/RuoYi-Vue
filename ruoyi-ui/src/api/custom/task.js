@@ -98,6 +98,14 @@ export function getDouyinAccounts() {
   })
 }
 
+// 获取任务的copywriter内容
+export function getCopywriter(taskId) {
+  return request({
+    url: '/psd/task/getCopywriter/' + taskId,
+    method: 'get'
+  })
+}
+
 // 发布到抖音
 export function publishToDouyin(data) {
   return request({
