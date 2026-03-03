@@ -66,4 +66,9 @@ public interface PsdTaskMapper
      * 条件：is_auto_push=1, status=0(成功), dy_status!=1(非成功)
      */
     List<PsdTask> selectAutoPublishTasks();
+
+    /**
+     * 查询最新的 musicNum
+     */
+    Integer selectLatestMusicNum();
 }

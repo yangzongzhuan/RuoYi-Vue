@@ -21,6 +21,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="dyStatus"    column="dy_status"    />
         <result property="dyPushTime"    column="dy_push_time"    />
         <result property="isAutoPush"    column="is_auto_push"    />
+        <result property="musicNum"    column="music_num"    />
     </resultMap>
 
     <sql id="selectPsdTaskVo">
@@ -63,6 +64,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="uuid != null">uuid,</if>
             <if test="dyPushTime != null">dy_push_time,</if>
             <if test="isAutoPush != null">is_auto_push,</if>
+            <if test="musicNum != null">music_num,</if>
          </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="id != null">#{id},</if>
@@ -77,6 +79,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="uuid != null">#{uuid},</if>
             <if test="dyPushTime != null">#{dyPushTime},</if>
             <if test="isAutoPush != null">#{isAutoPush},</if>
+            <if test="musicNum != null">#{musicNum},</if>
          </trim>
     </insert>
 
@@ -96,6 +99,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="dyPushTime != null">dy_push_time = #{dyPushTime},</if>
             <if test="createDate != null">create_date = #{createDate},</if>
             <if test="isAutoPush != null">is_auto_push = #{isAutoPush},</if>
+            <if test="musicNum != null">music_num = #{musicNum},</if>
         </trim>
         where uuid = #{uuid}
     </update>
@@ -119,5 +123,13 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         AND dy_status IS NULL
         ORDER BY create_date ASC
         LIMIT 20
+    </select>
+
+    <!-- 查询最新的 musicNum -->
+    <select id="selectLatestMusicNum" resultType="java.lang.Integer">
+        SELECT music_num FROM psd_task
+        WHERE music_num IS NOT NULL
+        ORDER BY create_date DESC
+        LIMIT 1
     </select>
 </mapper>

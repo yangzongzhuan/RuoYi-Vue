@@ -232,13 +232,17 @@ public class DouyinAutoPublishTask {
 
             String callbackUrl = "http://localhost:" + serverPort + "/psd/task/douyinCallback";
 
+            // 使用收藏音乐，musicName 为 musicNum 的值
+            String musicType = "fav";
+            String musicName = task.getMusicNum() != null ? String.valueOf(task.getMusicNum()) : "1";
+
             Map<String, Object> requestBody = new HashMap<>();
             requestBody.put("account_file", accountFile);
             requestBody.put("folder_path", task.getRealPath());
             requestBody.put("title", copywriterData.get("title"));
             requestBody.put("copywriter", copywriterData.get("copywriter"));
-            requestBody.put("music_name", "");
-            requestBody.put("music_type", "search");
+            requestBody.put("music_name", musicName);
+            requestBody.put("music_type", musicType);
             requestBody.put("publish_type", publishType);
             requestBody.put("publish_time", publishTime);
             requestBody.put("task_id", task.getId().toString());
@@ -248,8 +252,8 @@ public class DouyinAutoPublishTask {
             headers.setContentType(MediaType.APPLICATION_JSON);
             HttpEntity<Map<String, Object>> entity = new HttpEntity<>(requestBody, headers);
 
-            logger.info("调用Python服务发布，任务ID: {}, publishType: {}, publishTime: {}",
-                task.getId(), publishType, publishTime);
+            logger.info("调用Python服务发布，任务ID: {}, publishType: {}, publishTime: {}, musicType: {}, musicName: {}",
+                task.getId(), publishType, publishTime, musicType, musicName);
 
             ResponseEntity<Map> response = restTemplate.postForEntity(url, entity, Map.class);
 

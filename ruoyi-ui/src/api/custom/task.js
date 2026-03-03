@@ -114,3 +114,11 @@ export function publishToDouyin(data) {
     data: data
   })
 }
+
+// 获取下一个收藏音乐序号（1-10循环）
+export function getNextMusicNum() {
+  return request({
+    url: '/psd/task/getNextMusicNum',
+    method: 'get'
+  })
+}

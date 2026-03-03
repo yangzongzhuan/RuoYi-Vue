@@ -10,6 +10,8 @@ import java.util.Map;
 import java.util.HashMap;
 import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletResponse;
+
+import com.ruoyi.system.mapper.PsdTaskMapper;
 import org.springframework.http.*;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -66,6 +68,9 @@ public class PsdTaskController extends BaseController
 
     @Autowired
     private PushGZHTaskQueue pushGZHTaskQueue;
+
+    @Autowired
+    private PsdTaskMapper psdTaskMapper;
 
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
     
@@ -589,6 +594,26 @@ public class PsdTaskController extends BaseController
         } catch (Exception e) {
             logger.error("处理抖音发布回调失败", e);
             return AjaxResult.error("回调处理失败: " + e.getMessage());
+        }
+    }
+
+    /**
+     * 获取下一个收藏音乐序号（1-10循环）
+     */
+    @GetMapping("/getNextMusicNum")
+    public AjaxResult getNextMusicNum() {
+        try {
+            Integer latestMusicNum = psdTaskMapper.selectLatestMusicNum();
+            int nextMusicNum;
+            if (latestMusicNum == null || latestMusicNum >= 10) {
+                nextMusicNum = 1;
+            } else {
+                nextMusicNum = latestMusicNum + 1;
+            }
+            return AjaxResult.success(nextMusicNum);
+        } catch (Exception e) {
+            logger.error("获取下一个音乐序号失败", e);
+            return AjaxResult.success(1); // 出错时默认返回1
         }
     }
 }

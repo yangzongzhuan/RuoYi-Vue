@@ -589,7 +589,7 @@
 </template>
 
 <script>
-import {listTask, getTask, delTask, addTask, updateTask, getCoze, pushOfficialAccount, addManualTask} from "@/api/custom/task";
+import {listTask, getTask, delTask, addTask, updateTask, getCoze, pushOfficialAccount, addManualTask, getNextMusicNum} from "@/api/custom/task";
 import DouyinPublishDialog from '@/components/DouyinPublishDialog.vue';
  import {getImage, getListPSDConfigAll} from "@/api/custom/psd";
 import {isEmpty} from "@/utils/validate";
@@ -1282,9 +1282,20 @@ export default {
           let successCount = 0;
           let failCount = 0;
 
+          // 获取下一个收藏音乐序号
+          let musicNum = 1;
+          try {
+            const res = await getNextMusicNum();
+            if (res.code === 200) {
+              musicNum = res.data;
+            }
+          } catch (e) {
+            console.warn('获取音乐序号失败，使用默认值1', e);
+          }
+
           for (const task of this.batchTasks) {
             const quantity = task.quantity || 1;
-            
+
             // 根据数量创建多个任务
             for (let i = 0; i < quantity; i++) {
               try {
@@ -1293,7 +1304,8 @@ export default {
                   templateName: task.templateName,
                   config: JSON.stringify(task.templateInfo),
                   dyPushTime: this.form.dyPushTime,
-                  isAutoPush: this.form.isAutoPush ? 1 : 0
+                  isAutoPush: this.form.isAutoPush ? 1 : 0,
+                  musicNum: musicNum
                 };
 
                 await addTask(formData);
@@ -1308,13 +1320,13 @@ export default {
           }
 
           this.loading = false;
-          
+
           if (failCount === 0) {
-            this.$modal.msgSuccess(`成功创建 ${successCount} 个任务`);
+            this.$modal.msgSuccess(`成功创建 ${successCount} 个任务，音乐序号: ${musicNum}`);
           } else {
-            this.$modal.msgWarning(`成功创建 ${successCount} 个任务，失败 ${failCount} 个`);
+            this.$modal.msgWarning(`成功创建 ${successCount} 个任务，失败 ${failCount} 个，音乐序号: ${musicNum}`);
           }
-          
+
           this.open = false;
           this.resetBatchTasks();
           this.getList();
