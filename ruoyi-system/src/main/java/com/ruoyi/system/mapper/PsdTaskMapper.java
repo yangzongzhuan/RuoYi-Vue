@@ -60,4 +60,10 @@ public interface PsdTaskMapper
     public int deletePsdTaskByIds(Long[] ids);
 
     PsdTask selectPsdTaskByUuid(String uuid);
+
+    /**
+     * 查询需要自动发布的任务
+     * 条件：is_auto_push=1, status=0(成功), dy_status!=1(非成功)
+     */
+    List<PsdTask> selectAutoPublishTasks();
 }

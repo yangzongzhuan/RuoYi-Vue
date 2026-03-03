@@ -20,6 +20,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="gzhStatus"    column="gzh_status"    />
         <result property="dyStatus"    column="dy_status"    />
         <result property="dyPushTime"    column="dy_push_time"    />
+        <result property="isAutoPush"    column="is_auto_push"    />
     </resultMap>
 
     <sql id="selectPsdTaskVo">
@@ -61,6 +62,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="createDate != null">create_date,</if>
             <if test="uuid != null">uuid,</if>
             <if test="dyPushTime != null">dy_push_time,</if>
+            <if test="isAutoPush != null">is_auto_push,</if>
          </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="id != null">#{id},</if>
@@ -74,6 +76,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="createDate != null">#{createDate},</if>
             <if test="uuid != null">#{uuid},</if>
             <if test="dyPushTime != null">#{dyPushTime},</if>
+            <if test="isAutoPush != null">#{isAutoPush},</if>
          </trim>
     </insert>
 
@@ -92,6 +95,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="dyStatus != null">dy_status = #{dyStatus},</if>
             <if test="dyPushTime != null">dy_push_time = #{dyPushTime},</if>
             <if test="createDate != null">create_date = #{createDate},</if>
+            <if test="isAutoPush != null">is_auto_push = #{isAutoPush},</if>
         </trim>
         where uuid = #{uuid}
     </update>
@@ -106,4 +110,14 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             #{id}
         </foreach>
     </delete>
+
+    <!-- 查询需要自动发布的任务：is_auto_push=1, status=0(成功), dy_status!=1(非成功) -->
+    <select id="selectAutoPublishTasks" resultMap="PsdTaskResult">
+        SELECT * FROM psd_task
+        WHERE is_auto_push = 1
+        AND status = '0'
+        AND dy_status IS NULL
+        ORDER BY create_date ASC
+        LIMIT 20
+    </select>
 </mapper>

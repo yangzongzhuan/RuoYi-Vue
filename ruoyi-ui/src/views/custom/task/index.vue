@@ -114,6 +114,13 @@
           <span v-else>-</span>
         </template>
       </el-table-column>
+      <el-table-column label="自动发布" align="center" width="100">
+        <template slot-scope="scope">
+          <el-tag v-if="scope.row.isAutoPush === 1 && scope.row.dyStatus != '1'" type="warning">待发布</el-tag>
+          <el-tag v-else-if="scope.row.isAutoPush === 1 && scope.row.dyStatus == '1'" type="success">已发布</el-tag>
+          <span v-else>-</span>
+        </template>
+      </el-table-column>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button
@@ -355,6 +362,16 @@
             </el-date-picker>
             <div style="color: #909399; font-size: 12px; margin-top: 5px;">
               如果不选择时间，则不设置定时发布；选择时间后，该批次所有任务都将使用此发布时间
+            </div>
+          </el-form-item>
+          <el-form-item label="自动发布">
+            <el-switch
+              v-model="form.isAutoPush"
+              active-text="开启"
+              inactive-text="关闭">
+            </el-switch>
+            <div style="color: #909399; font-size: 12px; margin-top: 5px;">
+              开启后，任务完成时会自动发布到抖音，无需人工确认；若账号匹配不到则终止自动发布
             </div>
           </el-form-item>
         </el-card>
@@ -614,7 +631,8 @@ export default {
       },
       // 表单参数
       form: {
-        dyPushTime: null
+        dyPushTime: null,
+        isAutoPush: false
       },
       // 表单校验
       rules: {
@@ -743,7 +761,8 @@ export default {
         imageCount: null,
         config: null,
         jsonInfo: null,
-        dyPushTime: null
+        dyPushTime: null,
+        isAutoPush: false
       };
       this.resetForm("form");
     },
@@ -1273,9 +1292,10 @@ export default {
                   accountName: task.accountName,
                   templateName: task.templateName,
                   config: JSON.stringify(task.templateInfo),
-                  dyPushTime: this.form.dyPushTime
+                  dyPushTime: this.form.dyPushTime,
+                  isAutoPush: this.form.isAutoPush ? 1 : 0
                 };
-                
+
                 await addTask(formData);
                 // 睡眠1s
                 await new Promise(resolve => setTimeout(resolve, 1000));
