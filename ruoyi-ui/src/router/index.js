@@ -75,6 +75,19 @@ export const constantRoutes = [
     ]
   },
   {
+    path: '/copywriting',
+    component: Layout,
+    redirect: '/copywriting/index',
+    children: [
+      {
+        path: 'index',
+        component: () => import('@/views/custom/copywriting/index'),
+        name: 'Copywriting',
+        meta: { title: '文案管理', icon: 'edit' }
+      }
+    ]
+  },
+  {
     path: '/user',
     component: Layout,
     hidden: true,

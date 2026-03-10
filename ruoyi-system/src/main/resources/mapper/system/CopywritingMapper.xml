@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.CopywritingMapper">
+
+    <resultMap type="Copywriting" id="CopywritingResult">
+        <result property="id"         column="id"          />
+        <result property="content"    column="content"     />
+        <result property="createTime" column="create_time" />
+    </resultMap>
+
+    <sql id="selectCopywritingVo">
+        select id, content, create_time from copywriting
+    </sql>
+
+    <select id="selectCopywritingById" parameterType="Long" resultMap="CopywritingResult">
+        <include refid="selectCopywritingVo"/>
+        where id = #{id}
+    </select>
+
+    <select id="selectCopywritingList" parameterType="Copywriting" resultMap="CopywritingResult">
+        <include refid="selectCopywritingVo"/>
+        <where>
+            <if test="content != null and content != ''">
+                AND content like concat('%', #{content}, '%')
+            </if>
+        </where>
+        order by create_time desc
+    </select>
+
+    <insert id="insertCopywriting" parameterType="Copywriting" useGeneratedKeys="true" keyProperty="id">
+        insert into copywriting
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="content != null">content,</if>
+            create_time
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="content != null">#{content},</if>
+            sysdate()
+        </trim>
+    </insert>
+
+    <update id="updateCopywriting" parameterType="Copywriting">
+        update copywriting
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="content != null">content = #{content},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteCopywritingById" parameterType="Long">
+        delete from copywriting where id = #{id}
+    </delete>
+
+    <delete id="deleteCopywritingByIds" parameterType="Long">
+        delete from copywriting where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+</mapper>
