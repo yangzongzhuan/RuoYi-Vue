@@ -29,6 +29,12 @@ public class VelocityUtils
     /** 默认上级菜单，系统工具 */
     private static final String DEFAULT_PARENT_MENU_ID = "3";
 
+    /** Vue3 Element Plus 模版 */
+    private static final String ELEMENT_PLUS = "element-plus";
+
+    /** Vue3 Element Plus TypeScript 模版 */
+    private static final String ELEMENT_PLUS_TYPESSRIPT = "element-plus-typescript";
+
     /**
      * 设置模板变量信息
      *
@@ -130,9 +136,15 @@ public class VelocityUtils
     public static List<String> getTemplateList(String tplCategory, String tplWebType)
     {
         String useWebType = "vm/vue";
-        if ("element-plus".equals(tplWebType))
+        String apiTemplate = "vm/js/api.js.vm";
+        if (StringUtils.equals(ELEMENT_PLUS, tplWebType))
         {
             useWebType = "vm/vue/v3";
+        }
+        else if (StringUtils.equals(ELEMENT_PLUS_TYPESSRIPT, tplWebType))
+        {
+            useWebType = "vm/vue/v3ts";
+            apiTemplate = "vm/ts/api.ts.vm";
         }
         List<String> templates = new ArrayList<String>();
         templates.add("vm/java/domain.java.vm");
@@ -142,7 +154,12 @@ public class VelocityUtils
         templates.add("vm/java/controller.java.vm");
         templates.add("vm/xml/mapper.xml.vm");
         templates.add("vm/sql/sql.vm");
-        templates.add("vm/js/api.js.vm");
+        templates.add(apiTemplate);
+        if (StringUtils.equals(ELEMENT_PLUS_TYPESSRIPT, tplWebType))
+        {
+            templates.add("vm/ts/type.ts.vm");
+            templates.add("vm/ts/index.ts.vm");
+        }
         if (GenConstants.TPL_CRUD.equals(tplCategory))
         {
             templates.add(useWebType + "/index.vue.vm");
@@ -214,6 +231,18 @@ public class VelocityUtils
         else if (template.contains("api.js.vm"))
         {
             fileName = StringUtils.format("{}/api/{}/{}.js", vuePath, moduleName, businessName);
+        }
+        else if (template.contains("api.ts.vm"))
+        {
+            fileName = StringUtils.format("{}/api/{}/{}.ts", vuePath, moduleName, businessName);
+        }
+        else if (template.contains("type.ts.vm"))
+        {
+            fileName = StringUtils.format("{}/types/api/{}/{}.ts", vuePath, moduleName, businessName);
+        }
+        else if (template.contains("index.ts.vm"))
+        {
+            fileName = StringUtils.format("{}/types/api/index-bak.ts", vuePath);
         }
         else if (template.contains("index.vue.vm"))
         {
