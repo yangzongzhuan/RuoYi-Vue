@@ -1,0 +1,51 @@
+import type { PageDomain, BaseEntity } from "../common";
+
+/** ${functionName}配置分页查询参数 */
+export interface ${BusinessName}QueryParams extends PageDomain {
+#foreach($column in $columns)
+#if($column.query)
+#set($type = "string")
+#if($column.javaType == "Long" || $column.javaType == "Integer")
+  #set($type = "number")
+#elseif($column.javaType == "Boolean")
+  #set($type = "boolean")
+#end
+  /** ${column.columnComment} */
+  ${column.javaField}?: ${type};
+#end
+#end
+}
+
+/** ${functionName}配置信息 */
+export interface ${ClassName} extends BaseEntity {
+#foreach($column in $columns)
+#set($type = "string")
+#if($column.javaType == "Long" || $column.javaType == "Integer")
+  #set($type = "number")
+#elseif($column.javaType == "Boolean")
+  #set($type = "boolean")
+#end
+  /** ${column.columnComment} */
+  ${column.javaField}?: ${type};
+#end
+#if($table.sub)
+  /** $table.subTable.functionName信息 */
+  ${subclassName}List?: ${subClassName}[];
+#end
+}
+#if($table.sub)
+
+/** ${subTable.functionName}配置信息 */
+export interface ${subClassName} extends BaseEntity {
+#foreach ($column in $subTable.columns)
+#set($type = "string")
+#if($column.javaType == "Long" || $column.javaType == "Integer")
+  #set($type = "number")
+#elseif($column.javaType == "Boolean")
+  #set($type = "boolean")
+#end
+  /** ${column.columnComment} */
+  ${column.javaField}?: ${type};
+#end
+}
+#end

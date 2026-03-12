@@ -168,13 +168,14 @@ public class GenTableServiceImpl implements IGenTableService
      */
     @Override
     @Transactional
-    public void importGenTable(List<GenTable> tableList, String operName)
+    public void importGenTable(List<GenTable> tableList, String tplWebType, String operName)
     {
         try
         {
             for (GenTable table : tableList)
             {
                 String tableName = table.getTableName();
+                table.setTplWebType(tplWebType);
                 GenUtils.initTable(table, operName);
                 int row = genTableMapper.insertGenTable(table);
                 if (row > 0)
