@@ -80,6 +80,16 @@ public class SysDictDataController extends BaseController
         {
             data = new ArrayList<SysDictData>();
         }
+        // 获取字典类型信息
+        SysDictType sysDictType = dictTypeService.selectDictTypeByType(dictType);
+        if (sysDictType != null)
+        {
+            // 返回包含字典类型和字典数据的响应
+            Map<String, Object> result = new HashMap<>();
+            result.put("dictType", sysDictType);
+            result.put("dictData", data);
+            return success(result);
+        }
         return success(data);
     }
 

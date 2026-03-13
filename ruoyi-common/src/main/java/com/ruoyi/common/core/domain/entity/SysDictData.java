@@ -34,6 +34,9 @@ public class SysDictData extends BaseEntity
     @Excel(name = "字典键值")
     private String dictValue;
 
+    /** 转换后的值 */
+    private Object value;
+
     /** 字典类型 */
     @Excel(name = "字典类型")
     private String dictType;
@@ -94,6 +97,16 @@ public class SysDictData extends BaseEntity
     public void setDictValue(String dictValue)
     {
         this.dictValue = dictValue;
+    }
+
+    public Object getValue()
+    {
+        return value;
+    }
+
+    public void setValue(Object value)
+    {
+        this.value = value;
     }
 
     @NotBlank(message = "字典类型不能为空")
