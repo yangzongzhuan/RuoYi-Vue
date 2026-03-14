@@ -57,4 +57,11 @@ public interface ICopywritingService
      * @return 结果
      */
     public int deleteCopywritingById(Long id);
+
+    /**
+     * 随机查询一条文案
+     *
+     * @return 文案
+     */
+    public Copywriting selectRandomCopywriting();
 }

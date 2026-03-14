@@ -22,6 +22,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="dyPushTime"    column="dy_push_time"    />
         <result property="isAutoPush"    column="is_auto_push"    />
         <result property="musicNum"    column="music_num"    />
+        <result property="dyCommentStatus"    column="dy_comment_status"    />
     </resultMap>
 
     <sql id="selectPsdTaskVo">
@@ -100,6 +101,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="createDate != null">create_date = #{createDate},</if>
             <if test="isAutoPush != null">is_auto_push = #{isAutoPush},</if>
             <if test="musicNum != null">music_num = #{musicNum},</if>
+            <if test="dyCommentStatus != null">dy_comment_status = #{dyCommentStatus},</if>
         </trim>
         where uuid = #{uuid}
     </update>

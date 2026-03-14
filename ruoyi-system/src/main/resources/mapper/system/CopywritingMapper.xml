@@ -58,4 +58,9 @@
         </foreach>
     </delete>
 
+    <select id="selectRandomCopywriting" resultMap="CopywritingResult">
+        <include refid="selectCopywritingVo"/>
+        ORDER BY RAND() LIMIT 1
+    </select>
+
 </mapper>

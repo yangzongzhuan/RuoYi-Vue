@@ -89,4 +89,15 @@ public class CopywritingServiceImpl implements ICopywritingService
     {
         return copywritingMapper.deleteCopywritingById(id);
     }
+
+    /**
+     * 随机查询一条文案
+     *
+     * @return 文案
+     */
+    @Override
+    public Copywriting selectRandomCopywriting()
+    {
+        return copywritingMapper.selectRandomCopywriting();
+    }
 }

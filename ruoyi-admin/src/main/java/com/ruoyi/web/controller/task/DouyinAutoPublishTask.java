@@ -2,8 +2,10 @@ package com.ruoyi.web.controller.task;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ruoyi.system.domain.Copywriting;
 import com.ruoyi.system.domain.PsdTask;
 import com.ruoyi.system.mapper.PsdTaskMapper;
+import com.ruoyi.system.service.ICopywritingService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,6 +41,9 @@ public class DouyinAutoPublishTask {
 
     // 防止重复发送的锁集合（任务ID -> 处理中标识）
     private static final Set<Long> processingTasks = ConcurrentHashMap.newKeySet();
+
+    @Autowired
+    private ICopywritingService copywritingService;
 
     /**
      * 定时任务：每60秒检查一次需要自动发布的任务
@@ -236,11 +241,24 @@ public class DouyinAutoPublishTask {
             String musicType = "fav";
             String musicName = task.getMusicNum() != null ? String.valueOf(task.getMusicNum()) : "1";
 
+            // 从评论表随机获取一条评论内容（如果有评论表的话）
+            String comment = "";
+            try {
+                Copywriting randomComment = copywritingService.selectRandomCopywriting();
+                if (randomComment != null && randomComment.getContent() != null) {
+                    comment = randomComment.getContent();
+                    logger.info("随机获取评论内容: {}", comment);
+                }
+            } catch (Exception e) {
+                logger.warn("获取随机评论失败: {}", e.getMessage());
+            }
+
             Map<String, Object> requestBody = new HashMap<>();
             requestBody.put("account_file", accountFile);
             requestBody.put("folder_path", task.getRealPath());
             requestBody.put("title", copywriterData.get("title"));
             requestBody.put("copywriter", copywriterData.get("copywriter"));
+            requestBody.put("comment", comment);  // 评论内容
             requestBody.put("music_name", musicName);
             requestBody.put("music_type", musicType);
             requestBody.put("publish_type", publishType);

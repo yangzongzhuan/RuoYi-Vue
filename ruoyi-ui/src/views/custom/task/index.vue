@@ -121,6 +121,13 @@
           <span v-else>-</span>
         </template>
       </el-table-column>
+      <el-table-column label="抖音评论状态" align="center" width="100">
+        <template slot-scope="scope">
+          <el-tag v-if="scope.row.dyCommentStatus === '成功'" type="success">成功</el-tag>
+          <el-tag v-else-if="scope.row.dyCommentStatus === '失败'" type="danger">失败</el-tag>
+          <span v-else>-</span>
+        </template>
+      </el-table-column>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button

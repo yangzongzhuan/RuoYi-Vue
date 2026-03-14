@@ -66,4 +66,6 @@ public class PsdTask extends BaseEntity
     private Integer isAutoPush; // 是否自动发布
 
     private Integer musicNum; // 收藏音乐序号
+
+    private String dyCommentStatus; // 抖音评论状态：成功/失败
 }

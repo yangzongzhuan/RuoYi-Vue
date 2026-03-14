@@ -12,6 +12,8 @@ import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletResponse;
 
 import com.ruoyi.system.mapper.PsdTaskMapper;
+import com.ruoyi.system.service.ICopywritingService;
+import com.ruoyi.system.domain.Copywriting;
 import org.springframework.http.*;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -72,8 +74,11 @@ public class PsdTaskController extends BaseController
     @Autowired
     private PsdTaskMapper psdTaskMapper;
 
+    @Autowired
+    private ICopywritingService copywritingService;
+
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
-    
+
     // Python 服务地址
     private static final String PYTHON_SERVICE_URL = "http://localhost:5409";
 
@@ -131,7 +136,7 @@ public class PsdTaskController extends BaseController
     public AjaxResult add(@RequestBody PsdTask psdTask) throws JsonProcessingException {
         ObjectNode config = (ObjectNode) OBJECT_MAPPER.readTree(psdTask.getConfig());
         validatePsdFile(config.path("baseConfig"));
-        
+
         initTask(psdTask);
         psdTaskService.insertPsdTask(psdTask);
         PhotoshopTaskQueue.addTask(psdTask);
@@ -147,12 +152,12 @@ public class PsdTaskController extends BaseController
     public AjaxResult getCoze(@RequestBody PsdTask psdTask) throws JsonProcessingException {
         ObjectNode config = (ObjectNode) OBJECT_MAPPER.readTree(psdTask.getConfig());
         String accountName = config.get("baseConfig").get("accountName").asText();
-        
+
         List<String> nameList = psdMapper.selectAccountByName(accountName)
                 .stream()
                 .distinct()
                 .collect(Collectors.toList());
-        
+
         ArrayNode historyArray = OBJECT_MAPPER.createArrayNode();
         nameList.forEach(historyArray::add);
         config.set("historyName", historyArray);
@@ -208,12 +213,12 @@ public class PsdTaskController extends BaseController
     @PostMapping("/manual")
     public AjaxResult addManual(@RequestBody PsdTask psdTask) throws JsonProcessingException {
         ObjectNode manualData = (ObjectNode) OBJECT_MAPPER.readTree(psdTask.getConfig());
-        
+
         JsonNode baseConfigNode = manualData.path("baseConfig");
         if (baseConfigNode.isMissingNode()) {
             throw new RuntimeException("配置中缺少 baseConfig 字段");
         }
-        
+
         validatePsdFile(baseConfigNode);
 
         JsonNode imageConfigsNode = manualData.path("imageConfigs");
@@ -224,7 +229,7 @@ public class PsdTaskController extends BaseController
         ObjectNode finalConfig = OBJECT_MAPPER.createObjectNode();
         finalConfig.set("baseConfig", baseConfigNode);
         finalConfig.set("imageConfigs", imageConfigsNode);
-        
+
         JsonNode copywriterNode = manualData.path("copywriter");
         if (!copywriterNode.isMissingNode()) {
             finalConfig.set("copywriter", copywriterNode);
@@ -315,14 +320,14 @@ public class PsdTaskController extends BaseController
         try {
             RestTemplate restTemplate = new RestTemplate();
             String url = PYTHON_SERVICE_URL + "/custom/api/douyin/getAccounts";
-            
+
             ResponseEntity<Map> response = restTemplate.getForEntity(url, Map.class);
-            
+
             if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
                 Map<String, Object> body = response.getBody();
                 Map<String, Object> dataMap = (Map<String, Object>) body.get("data");
                 List<List<Object>> accounts = (List<List<Object>>) dataMap.get("data");
-                
+
                 // 过滤出抖音账号（platform = 3）并转换格式
                 // 数组格式：[id, platform, filePath, name, ...]
                 List<Map<String, Object>> douyinAccounts = accounts.stream()
@@ -336,10 +341,10 @@ public class PsdTaskController extends BaseController
                         return result;
                     })
                     .collect(Collectors.toList());
-                
+
                 return AjaxResult.success(douyinAccounts);
             }
-            
+
             return AjaxResult.error("获取账号列表失败");
         } catch (Exception e) {
             logger.error("获取抖音账号列表失败", e);
@@ -357,18 +362,31 @@ public class PsdTaskController extends BaseController
             String accountFile = params.get("accountFile").toString();
             String folderPath = params.get("folderPath").toString();
             String title = params.getOrDefault("title", "").toString();
-            String copywriter = params.getOrDefault("copywriter", "").toString();
+            String copywriter = params.getOrDefault("copywriter", "").toString();  // 作品描述（文案）
+
+            // 从评论表随机获取一条评论内容（如果有评论表的话）
+            String comment = "";
+            try {
+                Copywriting randomComment = copywritingService.selectRandomCopywriting();
+                if (randomComment != null && randomComment.getContent() != null) {
+                    comment = randomComment.getContent();
+                    logger.info("随机获取评论内容: {}", comment);
+                }
+            } catch (Exception e) {
+                logger.warn("获取随机评论失败: {}", e.getMessage());
+            }
+
             String musicName = params.getOrDefault("musicName", "").toString();
             String musicType = params.getOrDefault("musicType", "search").toString();
             String publishType = params.get("publishType").toString();
             String publishTime = params.getOrDefault("publishTime", "").toString();
-            
+
             // 更新任务状态为发布中
             PsdTask psdTask = psdTaskService.selectPsdTaskById(taskId);
             if (psdTask == null) {
                 return AjaxResult.error("任务不存在");
             }
-            
+
             // 如果folderPath为空，尝试使用任务的realPath
             if (folderPath == null || folderPath.trim().isEmpty()) {
                 folderPath = psdTask.getRealPath();
@@ -376,16 +394,16 @@ public class PsdTaskController extends BaseController
                     return AjaxResult.error("文件夹路径为空，请手动输入或等待任务执行完成");
                 }
             }
-            
+
             // 验证文件夹是否存在
             java.io.File folder = new java.io.File(folderPath);
             if (!folder.exists() || !folder.isDirectory()) {
                 return AjaxResult.error("文件夹路径不存在: " + folderPath);
             }
-            
+
             psdTask.setDyStatus("0"); // 0: 发布中
             psdTaskService.updatePsdTask(psdTask);
-            
+
             // 构建回调URL（Java服务需要暴露此接口），端口从配置文件 server.port 读取
             String callbackUrl = "http://localhost:" + serverPort + "/psd/task/douyinCallback";
             logger.info("设置回调 URL: {}", callbackUrl);
@@ -394,29 +412,30 @@ public class PsdTaskController extends BaseController
             RestTemplate restTemplate = new RestTemplate();
             String url = PYTHON_SERVICE_URL + "/custom/api/douyin/publishImage";
             logger.info("准备调用 Python 服务: {}", url);
-            
+
             Map<String, Object> requestBody = new HashMap<>();
             requestBody.put("account_file", accountFile);
             requestBody.put("folder_path", folderPath);
             requestBody.put("title", title);
-            requestBody.put("copywriter", copywriter);
+            requestBody.put("copywriter", copywriter);  // 作品描述（文案）
+            requestBody.put("comment", comment);  // 评论内容
             requestBody.put("music_name", musicName);
             requestBody.put("music_type", musicType);
             requestBody.put("publish_type", publishType);
             requestBody.put("publish_time", publishTime);
             requestBody.put("task_id", taskId.toString());
             requestBody.put("callback_url", callbackUrl);
-            
+
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
             HttpEntity<Map<String, Object>> entity = new HttpEntity<>(requestBody, headers);
-            
+
             ResponseEntity<Map> response = restTemplate.postForEntity(url, entity, Map.class);
-            
+
             if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
                 Map<String, Object> body = response.getBody();
                 Integer code = (Integer) body.get("code");
-                
+
                 if (code == 200) {
                     return AjaxResult.success("发布任务已提交");
                 } else {
@@ -426,15 +445,15 @@ public class PsdTaskController extends BaseController
                     return AjaxResult.error(body.get("msg").toString());
                 }
             }
-            
+
             // 发布失败，更新状态
             psdTask.setDyStatus("2");
             psdTaskService.updatePsdTask(psdTask);
             return AjaxResult.error("调用发布接口失败");
-            
+
         } catch (Exception e) {
             logger.error("发布到抖音失败", e);
-            
+
             // 更新任务状态为失败
             try {
                 Long taskId = Long.valueOf(params.get("taskId").toString());
@@ -446,7 +465,7 @@ public class PsdTaskController extends BaseController
             } catch (Exception ex) {
                 logger.error("更新任务状态失败", ex);
             }
-            
+
             return AjaxResult.error("发布失败: " + e.getMessage());
         }
     }
@@ -470,7 +489,7 @@ public class PsdTaskController extends BaseController
 //
 //            JsonNode configNode = OBJECT_MAPPER.readTree(config);
             String realPath = psdTask.getRealPath();
-            
+
             if (realPath.isEmpty()) {
                 return AjaxResult.error("配置中未找到realPath");
             }
@@ -478,7 +497,7 @@ public class PsdTaskController extends BaseController
             // 构建copywriter.txt文件路径
             String copywriterFilePath = realPath + File.separator + "copywriter.txt";
             File copywriterFile = new File(copywriterFilePath);
-            
+
             if (!copywriterFile.exists()) {
                 return AjaxResult.error("copywriter.txt文件不存在: " + copywriterFilePath);
             }
@@ -503,7 +522,7 @@ public class PsdTaskController extends BaseController
                     content = contentBuilder.toString();
                 }
             }
-            
+
             // 如果文件内容是 JSON，优先从 JSON 的 copywriter 字段中取数据
             String copywriterSource = content;
             String trimmedContent = content.trim();
@@ -526,11 +545,11 @@ public class PsdTaskController extends BaseController
             String[] lines = normalizedCopywriter.split("\\r?\\n");
             String title = "";
             String copywriter = "";
-            
+
             if (lines.length > 0) {
                 // 第一行作为标题，去除#号和空格
                 title = lines[0].replaceFirst("^#+\\s*", "").trim();
-                
+
                 // 剩余行作为文案内容
                 if (lines.length > 1) {
                     copywriter = java.util.Arrays.stream(lines, 1, lines.length)
@@ -541,9 +560,9 @@ public class PsdTaskController extends BaseController
             Map<String, String> result = new HashMap<>();
             result.put("title", title);
             result.put("copywriter", copywriter);
-            
+
             return AjaxResult.success(result);
-            
+
         } catch (Exception e) {
             logger.error("获取copywriter内容失败", e);
             return AjaxResult.error("获取copywriter内容失败: " + e.getMessage());
@@ -562,8 +581,9 @@ public class PsdTaskController extends BaseController
             Integer status = Integer.valueOf(params.get("status").toString());
             String message = params.getOrDefault("message", "").toString();
             String dyPushTime = params.getOrDefault("dyPushTime", "").toString();
+            String dyCommentStatus = params.getOrDefault("dyCommentStatus", "").toString();
 
-            logger.info("解析回调参数 - taskId: {}, status: {}, message: {}, dyPushTime: {}", taskIdStr, status, message, dyPushTime);
+            logger.info("解析回调参数 - taskId: {}, status: {}, message: {}, dyPushTime: {}, dyCommentStatus: {}", taskIdStr, status, message, dyPushTime, dyCommentStatus);
 
             Long taskId = Long.valueOf(taskIdStr);
             PsdTask psdTask = psdTaskService.selectPsdTaskById(taskId);
@@ -573,21 +593,26 @@ public class PsdTaskController extends BaseController
                 return AjaxResult.error("任务不存在");
             }
 
-            logger.info("更新前任务状态: dyStatus={}, dyPushTime={}", psdTask.getDyStatus(), psdTask.getDyPushTime());
+            logger.info("更新前任务状态: dyStatus={}, dyPushTime={}, dyCommentStatus={}", psdTask.getDyStatus(), psdTask.getDyPushTime(), psdTask.getDyCommentStatus());
 
             // 更新任务状态
             // status: 1-成功, 2-失败
             psdTask.setDyStatus(status.toString());
-            
+
             // 更新发布时间
             if (dyPushTime != null && !dyPushTime.isEmpty()) {
                 psdTask.setDyPushTime(dyPushTime);
             }
-            
+
+            // 更新评论状态
+            if (dyCommentStatus != null && !dyCommentStatus.isEmpty()) {
+                psdTask.setDyCommentStatus(dyCommentStatus);
+            }
+
             int updateResult = psdTaskService.updatePsdTask(psdTask);
 
-            logger.info("抖音发布回调成功 - taskId: {}, status: {}, message: {}, dyPushTime: {}, 更新结果: {}",
-                       taskId, status, message, dyPushTime, updateResult);
+            logger.info("抖音发布回调成功 - taskId: {}, status: {}, message: {}, dyPushTime: {}, dyCommentStatus: {}, 更新结果: {}",
+                       taskId, status, message, dyPushTime, dyCommentStatus, updateResult);
 
             return AjaxResult.success("回调处理成功");
 
