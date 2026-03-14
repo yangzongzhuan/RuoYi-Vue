@@ -26,6 +26,7 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.qiniu.common.QiniuException;
 import com.ruoyi.common.utils.SecurityUtils;
+import com.ruoyi.common.utils.WechatNotifyUtils;
 import com.ruoyi.system.coze.utils.CozeWorkflowClient;
 import com.ruoyi.system.domain.PsdTask;
 import com.ruoyi.system.mapper.PSDMapper;
@@ -85,6 +86,10 @@ public class PsdTaskController extends BaseController
     // 当前 Java 服务端口，从配置文件 server.port 读取
     @Value("${server.port}")
     private int serverPort;
+
+    // 企业微信机器人key - 抖音评论失败通知
+    @Value("${wechat.robot.douyin-comment-notify-key:}")
+    private String douyinCommentNotifyKey;
 
     /**
      * 查询psd任务列表
@@ -613,6 +618,32 @@ public class PsdTaskController extends BaseController
 
             logger.info("抖音发布回调成功 - taskId: {}, status: {}, message: {}, dyPushTime: {}, dyCommentStatus: {}, 更新结果: {}",
                        taskId, status, message, dyPushTime, dyCommentStatus, updateResult);
+
+            // 发布成功但评论失败时，发送企业微信通知
+            if (status == 1 && "失败".equals(dyCommentStatus))
+            {
+                try
+                {
+                    String accountName = psdTask.getAccountName() != null ? psdTask.getAccountName() : "未知";
+                    String templateName = psdTask.getTemplateName() != null ? psdTask.getTemplateName() : "未知";
+                    String createTime = psdTask.getCreateDate() != null ? psdTask.getCreateDate().toString() : "未知";
+
+                    logger.info("发布成功但评论失败，发送企业微信通知 - 账号: {}, 模板: {}, 创建时间: {}",
+                               accountName, templateName, createTime);
+
+                    WechatNotifyUtils.sendDouyinCommentFailedNotify(
+                            douyinCommentNotifyKey,
+                            accountName,
+                            templateName,
+                            createTime,
+                            "失败"
+                    );
+                }
+                catch (Exception notifyEx)
+                {
+                    logger.error("发送企业微信通知失败", notifyEx);
+                }
+            }
 
             return AjaxResult.success("回调处理成功");
 
