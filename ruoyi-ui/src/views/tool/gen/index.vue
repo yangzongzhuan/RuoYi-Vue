@@ -180,6 +180,7 @@ hljs.registerLanguage("xml", require("highlight.js/lib/languages/xml"))
 hljs.registerLanguage("html", require("highlight.js/lib/languages/xml"))
 hljs.registerLanguage("vue", require("highlight.js/lib/languages/xml"))
 hljs.registerLanguage("javascript", require("highlight.js/lib/languages/javascript"))
+hljs.registerLanguage("typescript", require("highlight.js/lib/languages/typescript"))
 hljs.registerLanguage("sql", require("highlight.js/lib/languages/sql"))
 
 export default {
