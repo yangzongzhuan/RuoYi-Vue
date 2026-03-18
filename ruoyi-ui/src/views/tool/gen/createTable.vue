@@ -32,7 +32,7 @@ export default {
         this.$modal.msgError("请输入建表语句")
         return
       }
-      createTable({ sql: this.content }).then(res => {
+      createTable({ sql: this.content, tplWebType: 'element-ui' }).then(res => {
         this.$modal.msgSuccess(res.msg)
         if (res.code === 200) {
           this.visible = false
