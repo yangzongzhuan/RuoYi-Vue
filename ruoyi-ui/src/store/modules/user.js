@@ -1,3 +1,4 @@
+import store from '@/store'
 import router from '@/router'
 import { MessageBox, } from 'element-ui'
 import { login, logout, getInfo } from '@/api/login'
@@ -51,6 +52,7 @@ const user = {
         login(username, password, code, uuid).then(res => {
           setToken(res.token)
           commit('SET_TOKEN', res.token)
+          store.dispatch('lock/unlockScreen')
           resolve()
         }).catch(error => {
           reject(error)

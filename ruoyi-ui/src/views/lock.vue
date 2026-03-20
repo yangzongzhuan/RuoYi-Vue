@@ -97,7 +97,7 @@ export default {
         await this.$store.dispatch('lock/unlockScreen')
         this.$router.replace(lockPath)
       } catch (err) {
-        const msg = (err.response && err.response.data && err.response.data.msg) || err.msg || '密码错误，请重新输入'
+        const msg = err.message || err.toString()
         this.showError(msg)
         this.password = ''
         this.$refs.passwordInput && this.$refs.passwordInput.focus()
