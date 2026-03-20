@@ -144,7 +144,7 @@
             size="mini"
             type="text"
             icon="el-icon-view"
-            @click="handleView(scope.row,scope.index)"
+            @click="handleDetail(scope.row,scope.index)"
             v-hasPermi="['monitor:operlog:query']"
           >详细</el-button>
         </template>
@@ -159,58 +159,17 @@
       @pagination="getList"
     />
 
-    <!-- 操作日志详细 -->
-    <el-dialog title="操作日志详细" :visible.sync="open" width="800px" append-to-body>
-      <el-form ref="form" :model="form" label-width="100px" size="mini">
-        <el-row>
-          <el-col :span="12">
-            <el-form-item label="操作模块：">{{ form.title }} / {{ typeFormat(form) }}</el-form-item>
-            <el-form-item
-              label="登录信息："
-            >{{ form.operName }} / {{ form.operIp }} / {{ form.operLocation }}</el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="请求地址：">{{ form.operUrl }}</el-form-item>
-            <el-form-item label="请求方式：">{{ form.requestMethod }}</el-form-item>
-          </el-col>
-          <el-col :span="24">
-            <el-form-item label="操作方法：">{{ form.method }}</el-form-item>
-          </el-col>
-          <el-col :span="24">
-            <el-form-item label="请求参数：">{{ form.operParam }}</el-form-item>
-          </el-col>
-          <el-col :span="24">
-            <el-form-item label="返回参数：">{{ form.jsonResult }}</el-form-item>
-          </el-col>
-          <el-col :span="8">
-            <el-form-item label="操作状态：">
-              <div v-if="form.status === 0">正常</div>
-              <div v-else-if="form.status === 1">失败</div>
-            </el-form-item>
-          </el-col>
-          <el-col :span="8">
-            <el-form-item label="消耗时间：">{{ form.costTime }}毫秒</el-form-item>
-          </el-col>
-          <el-col :span="8">
-            <el-form-item label="操作时间：">{{ parseTime(form.operTime) }}</el-form-item>
-          </el-col>
-          <el-col :span="24">
-            <el-form-item label="异常信息：" v-if="form.status === 1">{{ form.errorMsg }}</el-form-item>
-          </el-col>
-        </el-row>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="open = false">关 闭</el-button>
-      </div>
-    </el-dialog>
+    <operlog-detail :visible.sync="detailVisible" :row="detailRow" />
   </div>
 </template>
 
 <script>
+import OperlogDetail from './detail'
 import { list, delOperlog, cleanOperlog } from "@/api/monitor/operlog"
 
 export default {
   name: "Operlog",
+  components: { OperlogDetail },
   dicts: ['sys_oper_type', 'sys_common_status'],
   data() {
     return {
@@ -227,7 +186,8 @@ export default {
       // 表格数据
       list: [],
       // 是否显示弹出层
-      open: false,
+      detailVisible: false,
+      detailRow: {},
       // 日期范围
       dateRange: [],
       // 默认排序
@@ -260,9 +220,10 @@ export default {
         }
       )
     },
-    // 操作日志类型字典翻译
-    typeFormat(row, column) {
-      return this.selectDictLabel(this.dict.type.sys_oper_type, row.businessType)
+    // 详细按钮操作
+    handleDetail(row) {
+      this.detailRow = row
+      this.detailVisible = true
     },
     /** 搜索按钮操作 */
     handleQuery() {
@@ -286,11 +247,6 @@ export default {
       this.queryParams.orderByColumn = column.prop
       this.queryParams.isAsc = column.order
       this.getList()
-    },
-    /** 详细按钮操作 */
-    handleView(row) {
-      this.open = true
-      this.form = row
     },
     /** 删除按钮操作 */
     handleDelete(row) {
