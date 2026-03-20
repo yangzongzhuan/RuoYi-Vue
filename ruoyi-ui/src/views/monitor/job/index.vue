@@ -241,61 +241,17 @@
     </el-dialog>
 
     <!-- 任务日志详细 -->
-    <el-dialog title="任务详细" :visible.sync="openView" width="700px" append-to-body>
-      <el-form ref="form" :model="form" label-width="120px" size="mini">
-        <el-row>
-          <el-col :span="12">
-            <el-form-item label="任务编号：">{{ form.jobId }}</el-form-item>
-            <el-form-item label="任务名称：">{{ form.jobName }}</el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="任务分组：">{{ jobGroupFormat(form) }}</el-form-item>
-            <el-form-item label="创建时间：">{{ form.createTime }}</el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="cron表达式：">{{ form.cronExpression }}</el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="下次执行时间：">{{ parseTime(form.nextValidTime) }}</el-form-item>
-          </el-col>
-          <el-col :span="24">
-            <el-form-item label="调用目标方法：">{{ form.invokeTarget }}</el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="任务状态：">
-              <div v-if="form.status == 0">正常</div>
-              <div v-else-if="form.status == 1">暂停</div>
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="是否并发：">
-              <div v-if="form.concurrent == 0">允许</div>
-              <div v-else-if="form.concurrent == 1">禁止</div>
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="执行策略：">
-              <div v-if="form.misfirePolicy == 0">默认策略</div>
-              <div v-else-if="form.misfirePolicy == 1">立即执行</div>
-              <div v-else-if="form.misfirePolicy == 2">执行一次</div>
-              <div v-else-if="form.misfirePolicy == 3">放弃执行</div>
-            </el-form-item>
-          </el-col>
-        </el-row>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="openView = false">关 闭</el-button>
-      </div>
-    </el-dialog>
+    <job-detail :visible.sync="openView" :row="form" type="job" />
   </div>
 </template>
 
 <script>
 import { listJob, getJob, delJob, addJob, updateJob, runJob, changeJobStatus } from "@/api/monitor/job"
+import JobDetail from './detail'
 import Crontab from '@/components/Crontab'
 
 export default {
-  components: { Crontab },
+  components: { Crontab, JobDetail },
   name: "Job",
   dicts: ['sys_job_group', 'sys_job_status'],
   data() {

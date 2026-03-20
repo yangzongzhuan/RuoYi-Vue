@@ -65,7 +65,7 @@ public abstract class AbstractQuartzJob implements Job
      * 执行后
      *
      * @param context 工作执行上下文对象
-     * @param sysJob 系统计划任务
+     * @param sysScheduleJob 系统计划任务
      */
     protected void after(JobExecutionContext context, SysJob sysJob, Exception e)
     {
@@ -77,8 +77,8 @@ public abstract class AbstractQuartzJob implements Job
         sysJobLog.setJobGroup(sysJob.getJobGroup());
         sysJobLog.setInvokeTarget(sysJob.getInvokeTarget());
         sysJobLog.setStartTime(startTime);
-        sysJobLog.setStopTime(new Date());
-        long runMs = sysJobLog.getStopTime().getTime() - sysJobLog.getStartTime().getTime();
+        sysJobLog.setEndTime(new Date());
+        long runMs = sysJobLog.getEndTime().getTime() - sysJobLog.getStartTime().getTime();
         sysJobLog.setJobMessage(sysJobLog.getJobName() + " 总共耗时：" + runMs + "毫秒");
         if (e != null)
         {
