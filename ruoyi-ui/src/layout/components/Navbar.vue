@@ -1,3 +1,4 @@
+<!-- 文件路径: @/layout/components/Navbar.vue (假设的原路径) -->
 <template>
   <div class="navbar" :class="'nav' + navType">
     <hamburger id="hamburger-container" :is-active="sidebar.opened" class="hamburger-container" @toggleClick="toggleSideBar" />
@@ -24,6 +25,10 @@
 
         <el-tooltip content="布局大小" effect="dark" placement="bottom">
           <size-select id="size-select" class="right-menu-item hover-effect" />
+        </el-tooltip>
+
+        <el-tooltip content="消息通知" effect="dark" placement="bottom">
+          <header-notice id="header-notice" class="right-menu-item hover-effect" />
         </el-tooltip>
 
       </template>
@@ -61,9 +66,9 @@ import SizeSelect from '@/components/SizeSelect'
 import Search from '@/components/HeaderSearch'
 import RuoYiGit from '@/components/RuoYi/Git'
 import RuoYiDoc from '@/components/RuoYi/Doc'
+import HeaderNotice from './HeaderNotice'
 
 export default {
-  emits: ['setLayout'],
   components: {
     Breadcrumb,
     Logo,
@@ -74,7 +79,8 @@ export default {
     SizeSelect,
     Search,
     RuoYiGit,
-    RuoYiDoc
+    RuoYiDoc,
+    HeaderNotice
   },
   computed: {
     ...mapGetters([
@@ -171,11 +177,6 @@ export default {
     align-items: center;
     overflow: hidden;
     margin-left: 8px;
-  }
-
-  .errLog-container {
-    display: inline-block;
-    vertical-align: top;
   }
 
   .right-menu {
