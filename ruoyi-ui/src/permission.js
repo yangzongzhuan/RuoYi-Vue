@@ -19,12 +19,19 @@ router.beforeEach((to, from, next) => {
   NProgress.start()
   if (getToken()) {
     to.meta.title && store.dispatch('settings/setTitle', to.meta.title)
+    const isLock = store.getters.isLock
     /* has token*/
     if (to.path === '/login') {
       next({ path: '/' })
       NProgress.done()
     } else if (isWhiteList(to.path)) {
       next()
+    } else if (isLock && to.path !== '/lock') {
+      next({ path: '/lock' })
+      NProgress.done()
+    } else if (!isLock && to.path === '/lock') {
+      next({ path: '/' })
+      NProgress.done()
     } else {
       if (store.getters.roles.length === 0) {
         isRelogin.show = true
