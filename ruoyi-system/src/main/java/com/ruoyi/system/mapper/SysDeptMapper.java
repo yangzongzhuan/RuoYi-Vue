@@ -109,6 +109,13 @@ public interface SysDeptMapper
     public int updateDeptChildren(@Param("depts") List<SysDept> depts);
 
     /**
+     * 保存部门排序
+     *
+     * @param dept 部门信息
+     */
+    public void updateDeptSort(SysDept dept);
+
+    /**
      * 删除部门管理信息
      * 
      * @param deptId 部门ID
