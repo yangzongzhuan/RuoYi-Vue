@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import com.ruoyi.common.annotation.DataScope;
 import com.ruoyi.common.constant.UserConstants;
 import com.ruoyi.common.core.domain.TreeSelect;
@@ -277,6 +278,32 @@ public class SysDeptServiceImpl implements ISysDeptService
         if (children.size() > 0)
         {
             deptMapper.updateDeptChildren(children);
+        }
+    }
+
+    /**
+     * 保存部门排序
+     *
+     * @param deptIds 部门ID数组
+     * @param orderNums 排序数组
+     */
+    @Override
+    @Transactional
+    public void updateDeptSort(String[] deptIds, String[] orderNums)
+    {
+        try
+        {
+            for (int i = 0; i < deptIds.length; i++)
+            {
+                SysDept dept = new SysDept();
+                dept.setDeptId(Convert.toLong(deptIds[i]));
+                dept.setOrderNum(Convert.toInt(orderNums[i]));
+                deptMapper.updateDeptSort(dept);
+            }
+        }
+        catch (Exception e)
+        {
+            throw new ServiceException("保存排序异常，请联系管理员");
         }
     }
 
