@@ -133,6 +133,7 @@ public class SysMenuController extends BaseController
     /**
      * 保存菜单排序
      */
+    @PreAuthorize("@ss.hasPermi('system:menu:edit')")
     @Log(title = "保存菜单排序", businessType = BusinessType.UPDATE)
     @PutMapping("/updateSort")
     public AjaxResult updateSort(@RequestBody Map<String, String> params)
