@@ -152,8 +152,12 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         </foreach>
 	</update>
 	
+	<update id="updateDeptSort" parameterType="SysDept">
+		update sys_dept set order_num = #{orderNum} where dept_id = #{deptId}
+	</update>
+	
 	<delete id="deleteDeptById" parameterType="Long">
 		update sys_dept set del_flag = '2' where dept_id = #{deptId}
 	</delete>
 
-</mapper> 
+</mapper>
