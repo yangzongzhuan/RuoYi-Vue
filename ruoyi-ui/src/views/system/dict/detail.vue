@@ -6,7 +6,7 @@
         <span>加载中...</span>
       </div>
       <div v-else-if="!dataList.length" class="drawer-empty">
-        <i class="el-icon-inbox"></i>
+        <i class="el-icon-document"></i>
         <div>暂无字典数据</div>
       </div>
       <template v-else>
