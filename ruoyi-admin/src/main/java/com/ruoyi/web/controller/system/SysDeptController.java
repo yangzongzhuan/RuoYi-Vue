@@ -114,6 +114,7 @@ public class SysDeptController extends BaseController
     /**
      * 保存部门排序
      */
+    @PreAuthorize("@ss.hasPermi('system:dept:edit')")
     @Log(title = "保存部门排序", businessType = BusinessType.UPDATE)
     @PutMapping("/updateSort")
     public AjaxResult updateSort(@RequestBody Map<String, String> params)
