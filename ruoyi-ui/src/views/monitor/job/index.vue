@@ -94,7 +94,11 @@
     <el-table v-loading="loading" :data="jobList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
       <el-table-column label="任务编号" width="100" align="center" prop="jobId" />
-      <el-table-column label="任务名称" align="center" prop="jobName" :show-overflow-tooltip="true" />
+      <el-table-column label="任务名称" align="center" :show-overflow-tooltip="true">
+        <template slot-scope="scope">
+          <a class="link-type" style="cursor:pointer" @click="handleView(scope.row)">{{ scope.row.jobName }}</a>
+        </template>
+      </el-table-column>
       <el-table-column label="任务组名" align="center" prop="jobGroup">
         <template slot-scope="scope">
           <dict-tag :options="dict.type.sys_job_group" :value="scope.row.jobGroup"/>
@@ -133,8 +137,6 @@
             <el-dropdown-menu slot="dropdown">
               <el-dropdown-item command="handleRun" icon="el-icon-caret-right"
                 v-hasPermi="['monitor:job:changeStatus']">执行一次</el-dropdown-item>
-              <el-dropdown-item command="handleView" icon="el-icon-view"
-                v-hasPermi="['monitor:job:query']">任务详细</el-dropdown-item>
               <el-dropdown-item command="handleJobLog" icon="el-icon-s-operation"
                 v-hasPermi="['monitor:job:query']">调度日志</el-dropdown-item>
             </el-dropdown-menu>

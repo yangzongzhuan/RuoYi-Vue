@@ -113,9 +113,7 @@
       <el-table-column label="字典名称" align="center" prop="dictName" :show-overflow-tooltip="true" />
       <el-table-column label="字典类型" align="center" :show-overflow-tooltip="true">
         <template slot-scope="scope">
-        <a class="link-type" style="cursor:pointer" @click="handleViewData(scope.row)">
-          {{ scope.row.dictType }}
-        </a>
+          <a class="link-type" style="cursor:pointer" @click="handleViewData(scope.row)">{{ scope.row.dictType }}</a>
         </template>
       </el-table-column>
       <el-table-column label="状态" align="center" prop="status">
@@ -141,7 +139,7 @@
           <el-button
             size="mini"
             type="text"
-            icon="el-icon-s-fold"
+            icon="el-icon-s-operation"
             @click="handleDataList(scope.row)"
             v-hasPermi="['system:dict:edit']"
           >列表</el-button>
