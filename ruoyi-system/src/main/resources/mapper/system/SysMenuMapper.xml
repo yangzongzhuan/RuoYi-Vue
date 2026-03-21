@@ -203,7 +203,11 @@
 		sysdate()
 		)
 	</insert>
-	
+
+	<update id="updateMenuSort" parameterType="SysMenu">
+	    update sys_menu set order_num = #{orderNum} where menu_id = #{menuId}
+	</update>
+
 	<delete id="deleteMenuById" parameterType="Long">
 	    delete from sys_menu where menu_id = #{menuId}
 	</delete>
