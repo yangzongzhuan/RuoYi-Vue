@@ -113,9 +113,9 @@
       <el-table-column label="字典名称" align="center" prop="dictName" :show-overflow-tooltip="true" />
       <el-table-column label="字典类型" align="center" :show-overflow-tooltip="true">
         <template slot-scope="scope">
-          <router-link :to="'/system/dict-data/index/' + scope.row.dictId" class="link-type">
-            <span>{{ scope.row.dictType }}</span>
-          </router-link>
+        <a class="link-type" style="cursor:pointer" @click="handleViewData(scope.row)">
+          {{ scope.row.dictType }}
+        </a>
         </template>
       </el-table-column>
       <el-table-column label="状态" align="center" prop="status">
@@ -138,6 +138,13 @@
             @click="handleUpdate(scope.row)"
             v-hasPermi="['system:dict:edit']"
           >修改</el-button>
+          <el-button
+            size="mini"
+            type="text"
+            icon="el-icon-s-fold"
+            @click="handleDataList(scope.row)"
+            v-hasPermi="['system:dict:edit']"
+          >列表</el-button>
           <el-button
             size="mini"
             type="text"
@@ -190,14 +197,18 @@
         <el-button @click="cancel">取 消</el-button>
       </div>
     </el-dialog>
+
+    <dict-data-drawer :visible.sync="drawerVisible" :row="drawerRow" />
   </div>
 </template>
 
 <script>
+import DictDataDrawer from './detail'
 import { listType, getType, delType, addType, updateType, refreshCache } from "@/api/system/dict/type"
 
 export default {
   name: "Dict",
+  components: { DictDataDrawer },
   dicts: ['sys_normal_disable'],
   data() {
     return {
@@ -219,6 +230,10 @@ export default {
       title: "",
       // 是否显示弹出层
       open: false,
+      // 字典数据抽屉状态
+      drawerVisible: false,
+      // 字典数据信息
+      drawerRow: {},
       // 日期范围
       dateRange: [],
       // 查询参数
@@ -294,6 +309,15 @@ export default {
       this.ids = selection.map(item => item.dictId)
       this.single = selection.length!=1
       this.multiple = !selection.length
+    },
+    /** 字典数据抽屉显示信息 */
+    handleViewData(row) {
+      this.drawerRow = row
+      this.drawerVisible = true
+    },
+    /** 字典数据列表页面 */
+    handleDataList(row) {
+      this.$tab.openPage("字典数据", '/system/dict-data/index/' + row.dictId)
     },
     /** 修改按钮操作 */
     handleUpdate(row) {
