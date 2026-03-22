@@ -1,3 +1,26 @@
+import store from '@/store'
+import cache from '@/plugins/cache'
+
+const PERSIST_KEY = 'tags-view-visited'
+
+function isPersistEnabled() {
+  return store.state.settings.tagsViewPersist
+}
+
+function saveVisitedViews(views) {
+  if (!isPersistEnabled()) return
+  const toSave = views.filter(v => !(v.meta && v.meta.affix)).map(v => ({ path: v.path, fullPath: v.fullPath, name: v.name, title: v.title, query: v.query, meta: v.meta }))
+  cache.local.setJSON(PERSIST_KEY, toSave)
+}
+
+function loadVisitedViews() {
+  return cache.local.getJSON(PERSIST_KEY) || []
+}
+
+function clearVisitedViews() {
+  cache.local.remove(PERSIST_KEY)
+}
+
 const state = {
   visitedViews: [],
   cachedViews: [],
@@ -20,6 +43,15 @@ const mutations = {
         title: view.meta.title || 'no-name'
       })
     )
+    saveVisitedViews(state.visitedViews)
+  },
+  ADD_VISITED_VIEW_FIRST: (state, view) => {
+    if (state.visitedViews.some(v => v.path === view.path)) return
+    state.visitedViews.unshift(
+      Object.assign({}, view, {
+        title: view.meta.title || 'no-name'
+      })
+    )
   },
   ADD_CACHED_VIEW: (state, view) => {
     if (state.cachedViews.includes(view.name)) return
@@ -35,6 +67,7 @@ const mutations = {
       }
     }
     state.iframeViews = state.iframeViews.filter(item => item.path !== view.path)
+    saveVisitedViews(state.visitedViews)
   },
   DEL_IFRAME_VIEW: (state, view) => {
     state.iframeViews = state.iframeViews.filter(item => item.path !== view.path)
@@ -49,6 +82,7 @@ const mutations = {
       return v.meta.affix || v.path === view.path
     })
     state.iframeViews = state.iframeViews.filter(item => item.path === view.path)
+    saveVisitedViews(state.visitedViews)
   },
   DEL_OTHERS_CACHED_VIEWS: (state, view) => {
     const index = state.cachedViews.indexOf(view.name)
@@ -63,6 +97,7 @@ const mutations = {
     const affixTags = state.visitedViews.filter(tag => tag.meta.affix)
     state.visitedViews = affixTags
     state.iframeViews = []
+    clearVisitedViews()
   },
   DEL_ALL_CACHED_VIEWS: state => {
     state.cachedViews = []
@@ -94,6 +129,7 @@ const mutations = {
       }
       return false
     })
+    saveVisitedViews(state.visitedViews)
   },
   DEL_LEFT_VIEWS: (state, view) => {
     const index = state.visitedViews.findIndex(v => v.path === view.path)
@@ -114,6 +150,7 @@ const mutations = {
       }
       return false
     })
+    saveVisitedViews(state.visitedViews)
   }
 }
 
@@ -127,6 +164,9 @@ const actions = {
   },
   addVisitedView({ commit }, view) {
     commit('ADD_VISITED_VIEW', view)
+  },
+  addAffixView({ commit }, view) {
+    commit('ADD_VISITED_VIEW_FIRST', view)
   },
   addCachedView({ commit }, view) {
     commit('ADD_CACHED_VIEW', view)
@@ -216,6 +256,13 @@ const actions = {
     return new Promise(resolve => {
       commit('DEL_LEFT_VIEWS', view)
       resolve([...state.visitedViews])
+    })
+  },
+  // 恢复持久化的 tags
+  loadPersistedViews({ commit }) {
+    const views = loadVisitedViews()
+    views.forEach(view => {
+      commit('ADD_VISITED_VIEW', view)
     })
   },
 }
