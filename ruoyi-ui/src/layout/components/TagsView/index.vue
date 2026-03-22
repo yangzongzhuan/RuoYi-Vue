@@ -1,6 +1,12 @@
 <template>
   <div id="tags-view-container" class="tags-view-container">
-    <scroll-pane ref="scrollPane" class="tags-view-wrapper" @scroll="handleScroll">
+    <!-- 左切换箭头 -->
+    <span class="tags-nav-btn tags-nav-btn--left" :class="{ disabled: !canScrollLeft }" @click="scrollLeft">
+      <i class="el-icon-arrow-left" />
+    </span>
+
+    <!-- 标签滚动区 -->
+    <scroll-pane ref="scrollPane" class="tags-view-wrapper" @scroll="handleScroll" @updateArrows="updateArrowState">
       <router-link
         v-for="tag in visitedViews"
         ref="tag"
@@ -10,15 +16,42 @@
         tag="span"
         class="tags-view-item"
         :style="activeStyle(tag)"
-        @click.middle.native="!isAffix(tag)?closeSelectedTag(tag):''"
-        @contextmenu.prevent.native="openMenu(tag,$event)"
+        @click.middle.native="!isAffix(tag) ? closeSelectedTag(tag) : ''"
+        @contextmenu.prevent.native="openMenu(tag, $event)"
       >
         <svg-icon v-if="tagsIcon && tag.meta && tag.meta.icon && tag.meta.icon !== '#'" :icon-class="tag.meta.icon" />
         {{ tag.title }}
         <span v-if="!isAffix(tag)" class="el-icon-close" @click.prevent.stop="closeSelectedTag(tag)" />
       </router-link>
     </scroll-pane>
-    <ul v-show="visible" :style="{left:left+'px',top:top+'px'}" class="contextmenu">
+
+    <!-- 右切换箭头 -->
+    <span class="tags-nav-btn tags-nav-btn--right" :class="{ disabled: !canScrollRight }" @click="scrollRight">
+      <i class="el-icon-arrow-right" />
+    </span>
+
+    <!-- 下拉操作菜单 -->
+    <el-dropdown class="tags-action-dropdown" trigger="click" placement="bottom-end" @command="handleDropdownCommand">
+      <span class="tags-action-btn">
+        <i class="el-icon-arrow-down" />
+      </span>
+      <el-dropdown-menu slot="dropdown" class="tags-dropdown-menu">
+        <el-dropdown-item command="refresh" icon="el-icon-refresh-right">刷新页面</el-dropdown-item>
+        <el-dropdown-item v-if="!isAffix(selectedDropdownTag)" command="close" icon="el-icon-close">关闭当前</el-dropdown-item>
+        <el-dropdown-item command="closeOthers" icon="el-icon-circle-close">关闭其他</el-dropdown-item>
+        <el-dropdown-item command="closeLeft" :disabled="isFirstView()" icon="el-icon-back">关闭左侧</el-dropdown-item>
+        <el-dropdown-item command="closeRight" :disabled="isLastView()" icon="el-icon-right">关闭右侧</el-dropdown-item>
+        <el-dropdown-item command="closeAll" icon="el-icon-circle-close" divided>全部关闭</el-dropdown-item>
+      </el-dropdown-menu>
+    </el-dropdown>
+
+    <!-- 全屏按钮 -->
+    <span class="tags-action-btn tags-fullscreen-btn" :title="isFullscreen ? '退出全屏' : '全屏'" @click="toggleFullscreen">
+      <i :class="isFullscreen ? 'el-icon-aim' : 'el-icon-full-screen'" />
+    </span>
+
+    <!-- 右键上下文菜单 -->
+    <ul v-show="visible" :style="{ left: left + 'px', top: top + 'px' }" class="contextmenu">
       <li @click="refreshSelectedTag(selectedTag)"><i class="el-icon-refresh-right"></i> 刷新页面</li>
       <li v-if="!isAffix(selectedTag)" @click="closeSelectedTag(selectedTag)"><i class="el-icon-close"></i> 关闭当前</li>
       <li @click="closeOthersTags"><i class="el-icon-circle-close"></i> 关闭其他</li>
@@ -41,7 +74,10 @@ export default {
       top: 0,
       left: 0,
       selectedTag: {},
-      affixTags: []
+      affixTags: [],
+      canScrollLeft: false,
+      canScrollRight: false,
+      isFullscreen: false
     }
   },
   computed: {
@@ -56,6 +92,9 @@ export default {
     },
     tagsIcon() {
       return this.$store.state.settings.tagsIcon
+    },
+    selectedDropdownTag() {
+      return this.visitedViews.find(v => this.isActive(v)) || {}
     }
   },
   watch: {
@@ -69,11 +108,22 @@ export default {
       } else {
         document.body.removeEventListener('click', this.closeMenu)
       }
+    },
+    visitedViews() {
+      this.$nextTick(() => {
+        this.updateArrowState()
+      })
     }
   },
   mounted() {
     this.initTags()
     this.addTags()
+    window.addEventListener('resize', this.updateArrowState)
+    document.addEventListener('fullscreenchange', this.onFullscreenChange)
+  },
+  beforeDestroy() {
+    window.removeEventListener('resize', this.updateArrowState)
+    document.removeEventListener('fullscreenchange', this.onFullscreenChange)
   },
   methods: {
     isActive(route) {
@@ -87,18 +137,20 @@ export default {
       }
     },
     isAffix(tag) {
-      return tag.meta && tag.meta.affix
+      return tag && tag.meta && tag.meta.affix
     },
     isFirstView() {
       try {
-        return this.selectedTag.fullPath === '/index' || this.selectedTag.fullPath === this.visitedViews[1].fullPath
+        const tag = this.selectedTag && this.selectedTag.fullPath ? this.selectedTag : this.selectedDropdownTag
+        return tag.fullPath === '/index' || tag.fullPath === this.visitedViews[1].fullPath
       } catch (err) {
         return false
       }
     },
     isLastView() {
       try {
-        return this.selectedTag.fullPath === this.visitedViews[this.visitedViews.length - 1].fullPath
+        const tag = this.selectedTag && this.selectedTag.fullPath ? this.selectedTag : this.selectedDropdownTag
+        return tag.fullPath === this.visitedViews[this.visitedViews.length - 1].fullPath
       } catch (err) {
         return false
       }
@@ -127,7 +179,6 @@ export default {
     initTags() {
       const affixTags = this.affixTags = this.filterAffixTags(this.routes)
       for (const tag of affixTags) {
-        // Must have tag name
         if (tag.name) {
           this.$store.dispatch('tagsView/addVisitedView', tag)
         }
@@ -145,7 +196,6 @@ export default {
         for (const tag of tags) {
           if (tag.to.path === this.$route.path) {
             this.$refs.scrollPane.moveToTarget(tag)
-            // when query is different then update
             if (tag.to.fullPath !== this.$route.fullPath) {
               this.$store.dispatch('tagsView/updateVisitedView', this.$route)
             }
@@ -153,6 +203,57 @@ export default {
           }
         }
       })
+    },
+    scrollLeft() {
+      if (!this.canScrollLeft) return
+      this.$refs.scrollPane.scrollToStart()
+    },
+    scrollRight() {
+      if (!this.canScrollRight) return
+      this.$refs.scrollPane.scrollToEnd()
+    },
+    updateArrowState() {
+      this.$nextTick(() => {
+        if (this.$refs.scrollPane) {
+          const state = this.$refs.scrollPane.getScrollState()
+          this.canScrollLeft = state.canLeft
+          this.canScrollRight = state.canRight
+        }
+      })
+    },
+    toggleFullscreen() {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen()
+      } else {
+        document.exitFullscreen()
+      }
+    },
+    onFullscreenChange() {
+      this.isFullscreen = !!document.fullscreenElement
+    },
+    handleDropdownCommand(command) {
+      const tag = this.selectedDropdownTag
+      this.selectedTag = tag
+      switch (command) {
+        case 'refresh':
+          this.refreshSelectedTag(tag)
+          break
+        case 'close':
+          this.closeSelectedTag(tag)
+          break
+        case 'closeOthers':
+          this.closeOthersTags()
+          break
+        case 'closeLeft':
+          this.closeLeftTags()
+          break
+        case 'closeRight':
+          this.closeRightTags()
+          break
+        case 'closeAll':
+          this.closeAllTags(tag)
+          break
+      }
     },
     refreshSelectedTag(view) {
       this.$tab.refreshPage(view)
@@ -182,7 +283,7 @@ export default {
       })
     },
     closeOthersTags() {
-      this.$router.push(this.selectedTag.fullPath).catch(()=>{})
+      this.$router.push(this.selectedTag.fullPath).catch(() => {})
       this.$tab.closeOtherPage(this.selectedTag).then(() => {
         this.moveToCurrentTag()
       })
@@ -200,10 +301,7 @@ export default {
       if (latestView) {
         this.$router.push(latestView.fullPath)
       } else {
-        // now the default is to redirect to the home page if there is no tags-view,
-        // you can adjust it according to your needs.
-        if (view.name === 'Dashboard') {
-          // to reload home page
+        if (view && view.name === 'Dashboard') {
           this.$router.replace({ path: '/redirect' + view.fullPath })
         } else {
           this.$router.push('/')
@@ -211,18 +309,7 @@ export default {
       }
     },
     openMenu(tag, e) {
-      const menuMinWidth = 105
-      const offsetLeft = this.$el.getBoundingClientRect().left // container margin left
-      const offsetWidth = this.$el.offsetWidth // container width
-      const maxLeft = offsetWidth - menuMinWidth // left boundary
-      const left = e.clientX - offsetLeft + 15 // 15: margin right
-
-      if (left > maxLeft) {
-        this.left = maxLeft
-      } else {
-        this.left = left
-      }
-
+      this.left = e.clientX
       this.top = e.clientY
       this.visible = true
       this.selectedTag = tag
@@ -232,6 +319,7 @@ export default {
     },
     handleScroll() {
       this.closeMenu()
+      this.updateArrowState()
     }
   }
 }
@@ -243,8 +331,52 @@ export default {
   width: 100%;
   background: #fff;
   border-bottom: 1px solid #d8dce5;
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, .12), 0 0 3px 0 rgba(0, 0, 0, .04);
+  display: flex;
+  align-items: center;
+
+  $btn-width: 28px;
+  $btn-color: #71717a;
+  $btn-hover-bg: #f0f2f5;
+  $btn-hover-color: #303133;
+  $btn-disabled-color: #c0c4cc;
+  $divider: 1px solid #d8dce5;
+
+  .tags-nav-btn {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: $btn-width;
+    height: 34px;
+    cursor: pointer;
+    color: $btn-color;
+    font-size: 13px;
+    user-select: none;
+    transition: background 0.15s, color 0.15s;
+
+    &:hover:not(.disabled) {
+      background: $btn-hover-bg;
+      color: $btn-hover-color;
+    }
+
+    &.disabled {
+      color: $btn-disabled-color;
+      cursor: not-allowed;
+    }
+
+    &--left {
+      border-right: $divider;
+    }
+
+    &--right {
+      border-left: $divider;
+    }
+  }
+
   .tags-view-wrapper {
+    flex: 1;
+    min-width: 0;
+
     .tags-view-item {
       display: inline-block;
       position: relative;
@@ -257,9 +389,9 @@ export default {
       padding: 0 8px;
       font-size: 12px;
       margin-left: 5px;
-      margin-top: 4px;
+
       &:first-of-type {
-        margin-left: 15px;
+        margin-left: 6px;
       }
       &:last-of-type {
         margin-right: 15px;
@@ -286,11 +418,40 @@ export default {
     content: none !important;
   }
 
+  .tags-action-dropdown {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+  }
+
+  .tags-action-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: $btn-width;
+    height: 34px;
+    cursor: pointer;
+    color: $btn-color;
+    font-size: 13px;
+    border-left: $divider;
+    user-select: none;
+    transition: background 0.15s, color 0.15s;
+
+    &:hover {
+      background: $btn-hover-bg;
+      color: $btn-hover-color;
+    }
+  }
+
+  .tags-fullscreen-btn {
+    border-left: $divider;
+  }
+
   .contextmenu {
     margin: 0;
     background: #fff;
     z-index: 3000;
-    position: absolute;
+    position: fixed;
     list-style-type: none;
     padding: 5px 0;
     border-radius: 4px;
@@ -298,6 +459,7 @@ export default {
     font-weight: 400;
     color: #333;
     box-shadow: 2px 2px 3px 0 rgba(0, 0, 0, .3);
+
     li {
       margin: 0;
       padding: 7px 16px;
@@ -311,7 +473,6 @@ export default {
 </style>
 
 <style lang="scss">
-//reset element css of el-icon-close
 .tags-view-wrapper {
   .tags-view-item {
     .el-icon-close {
