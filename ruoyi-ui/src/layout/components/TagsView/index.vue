@@ -223,7 +223,10 @@ export default {
     },
     toggleFullscreen() {
       if (!document.fullscreenElement) {
-        document.documentElement.requestFullscreen()
+        const appMain = document.querySelector('.app-main')
+        if (appMain) {
+          appMain.requestFullscreen()
+        }
       } else {
         document.exitFullscreen()
       }

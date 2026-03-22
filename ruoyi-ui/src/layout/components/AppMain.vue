@@ -51,6 +51,14 @@ export default {
   width: 100%;
   position: relative;
   overflow: hidden;
+
+  &:fullscreen,
+  &:-webkit-full-screen,
+  &:-moz-full-screen,
+  &:-ms-fullscreen {
+    background: #fff;
+    overflow-y: auto;
+  }
 }
 
 .fixed-header + .app-main {
