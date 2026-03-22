@@ -28,8 +28,32 @@ export default {
   methods: {
     smoothScrollTo(target) {
       const $scrollWrapper = this.scrollWrapper
-      $scrollWrapper.scrollTo({ left: target, behavior: 'smooth' })
-      setTimeout(() => this.$emit('updateArrows'), 350)
+      const start = $scrollWrapper.scrollLeft
+      const distance = target - start
+      const duration = 300
+      let startTime = null
+
+      function ease(t, b, c, d) {
+        t /= d / 2
+        if (t < 1) return c / 2 * t * t + b
+        t--
+        return -c / 2 * (t * (t - 2) - 1) + b
+      }
+
+      const emit = this.$emit.bind(this)
+      function step(timestamp) {
+        if (!startTime) startTime = timestamp
+        const elapsed = timestamp - startTime
+        $scrollWrapper.scrollLeft = ease(elapsed, start, distance, duration)
+        if (elapsed < duration) {
+          requestAnimationFrame(step)
+        } else {
+          $scrollWrapper.scrollLeft = target
+          emit('updateArrows')
+        }
+      }
+
+      requestAnimationFrame(step)
     },
     handleScroll(e) {
       const eventDelta = e.wheelDelta || -e.deltaY * 40
