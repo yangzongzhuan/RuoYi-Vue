@@ -66,6 +66,11 @@
         </div>
 
         <div class="drawer-item">
+          <span>持久化标签页</span>
+          <el-switch v-model="tagsViewPersist" :disabled="!tagsView" class="drawer-switch" />
+        </div>
+
+        <div class="drawer-item">
           <span>显示页签图标</span>
           <el-switch v-model="tagsIcon" :disabled="!tagsView" class="drawer-switch" />
         </div>
@@ -123,6 +128,20 @@ export default {
           key: 'fixedHeader',
           value: val
         })
+      }
+    },
+    tagsViewPersist: {
+      get() {
+        return this.$store.state.settings.tagsViewPersist
+      },
+      set(val) {
+        this.$store.dispatch('settings/changeSetting', {
+          key: 'tagsViewPersist',
+          value: val
+        })
+        if (!val) {
+          this.$cache.local.remove('tags-view-visited')
+        }
       }
     },
     tagsView: {
@@ -237,6 +256,7 @@ export default {
             "navType":${this.navType},
             "tagsView":${this.tagsView},
             "tagsIcon":${this.tagsIcon},
+            "tagsViewPersist":${this.tagsViewPersist},
             "fixedHeader":${this.fixedHeader},
             "sidebarLogo":${this.sidebarLogo},
             "dynamicTitle":${this.dynamicTitle},

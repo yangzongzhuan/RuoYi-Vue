@@ -177,10 +177,13 @@ export default {
       return tags
     },
     initTags() {
+      if (this.$store.state.settings.tagsViewPersist) {
+        this.$store.dispatch('tagsView/loadPersistedViews')
+      }
       const affixTags = this.affixTags = this.filterAffixTags(this.routes)
       for (const tag of affixTags) {
         if (tag.name) {
-          this.$store.dispatch('tagsView/addVisitedView', tag)
+          this.$store.dispatch('tagsView/addAffixView', tag)
         }
       }
     },
