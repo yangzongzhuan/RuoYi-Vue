@@ -1,4 +1,3 @@
-<!-- 文件路径: @/layout/components/Navbar.vue (假设的原路径) -->
 <template>
   <div class="navbar" :class="'nav' + navType">
     <hamburger id="hamburger-container" :is-active="sidebar.opened" class="hamburger-container" @toggleClick="toggleSideBar" />
