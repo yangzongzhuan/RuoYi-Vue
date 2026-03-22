@@ -132,3 +132,9 @@ deepseek:
   api:
     key: sk-47478f6d0a9949a4b6d2ed4408a3c74e
     url: https://api.deepseek.com/v1/chat/completions
+
+# 企业微信机器人配置
+wechat:
+  robot:
+    # 抖音评论失败通知机器人key
+    douyin-comment-notify-key: 65532a8e-3495-4c8f-baad-53f9445f7772
