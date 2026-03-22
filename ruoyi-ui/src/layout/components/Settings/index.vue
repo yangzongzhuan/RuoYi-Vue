@@ -139,9 +139,6 @@ export default {
           key: 'tagsViewPersist',
           value: val
         })
-        if (!val) {
-          this.$cache.local.remove('tags-view-visited')
-        }
       }
     },
     tagsView: {
@@ -250,6 +247,9 @@ export default {
     },
     saveSetting() {
       this.$modal.loading("正在保存到本地，请稍候...")
+      if (!this.tagsViewPersist) {
+        this.$cache.local.remove('tags-view-visited')
+      }
       this.$cache.local.set(
         "layout-setting",
         `{
@@ -269,6 +269,7 @@ export default {
     },
     resetSetting() {
       this.$modal.loading("正在清除设置缓存并刷新，请稍候...")
+      this.$cache.local.remove('tags-view-visited')
       this.$cache.local.remove("layout-setting")
       setTimeout("window.location.reload()", 1000)
     }
