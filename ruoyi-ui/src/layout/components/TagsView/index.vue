@@ -36,18 +36,18 @@
         <i class="el-icon-arrow-down" />
       </span>
       <el-dropdown-menu slot="dropdown" class="tags-dropdown-menu">
-        <el-dropdown-item command="refresh" icon="el-icon-refresh-right">刷新页面</el-dropdown-item>
         <el-dropdown-item v-if="!isAffix(selectedDropdownTag)" command="close" icon="el-icon-close">关闭当前</el-dropdown-item>
         <el-dropdown-item command="closeOthers" icon="el-icon-circle-close">关闭其他</el-dropdown-item>
         <el-dropdown-item command="closeLeft" :disabled="isFirstView()" icon="el-icon-back">关闭左侧</el-dropdown-item>
         <el-dropdown-item command="closeRight" :disabled="isLastView()" icon="el-icon-right">关闭右侧</el-dropdown-item>
-        <el-dropdown-item command="closeAll" icon="el-icon-circle-close" divided>全部关闭</el-dropdown-item>
+        <el-dropdown-item command="closeAll" icon="el-icon-circle-close">全部关闭</el-dropdown-item>
+        <el-dropdown-item command="fullscreen" icon="el-icon-full-screen" divided>全屏显示</el-dropdown-item>
       </el-dropdown-menu>
     </el-dropdown>
 
-    <!-- 全屏按钮 -->
-    <span class="tags-action-btn tags-fullscreen-btn" :title="isFullscreen ? '退出全屏' : '全屏'" @click="toggleFullscreen">
-      <i :class="isFullscreen ? 'el-icon-aim' : 'el-icon-full-screen'" />
+    <!-- 刷新按钮 -->
+    <span class="tags-action-btn tags-refresh-btn" title="刷新页面" @click="refreshSelectedTag(selectedDropdownTag)">
+      <i class="el-icon-refresh-right" /> 刷新
     </span>
 
     <!-- 右键上下文菜单 -->
@@ -244,6 +244,9 @@ export default {
         case 'refresh':
           this.refreshSelectedTag(tag)
           break
+        case 'fullscreen':
+          this.toggleFullscreen()
+          break
         case 'close':
           this.closeSelectedTag(tag)
           break
@@ -395,6 +398,7 @@ export default {
       padding: 0 8px;
       font-size: 12px;
       margin-left: 5px;
+      border-radius: 3px;
 
       &:first-of-type {
         margin-left: 6px;
@@ -449,8 +453,8 @@ export default {
     }
   }
 
-  .tags-fullscreen-btn {
-    border-left: $divider;
+  .tags-refresh-btn {
+    width: 60px;
   }
 
   .contextmenu {
