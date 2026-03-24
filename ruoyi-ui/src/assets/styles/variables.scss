@@ -9,32 +9,17 @@ $yellow:#FEC171;
 $panGreen: #30B08F;
 
 // 默认菜单主题风格
-$base-menu-color:#bfcbd9;
-$base-menu-color-active:#f4f4f5;
-$base-menu-background:#304156;
+$base-menu-color: #bfcbd9;
+$base-menu-color-active: #ffffff;
+$base-menu-background: #1a1f2e;
 $base-logo-title-color: #ffffff;
 
 $base-menu-light-color:rgba(0,0,0,.70);
 $base-menu-light-background:#ffffff;
 $base-logo-light-title-color: #001529;
 
-$base-sub-menu-background:#1f2d3d;
-$base-sub-menu-hover:#001528;
-
-// 自定义暗色菜单风格
-/**
-$base-menu-color:hsla(0,0%,100%,.65);
-$base-menu-color-active:#fff;
-$base-menu-background:#001529;
-$base-logo-title-color: #ffffff;
-
-$base-menu-light-color:rgba(0,0,0,.70);
-$base-menu-light-background:#ffffff;
-$base-logo-light-title-color: #001529;
-
-$base-sub-menu-background:#000c17;
-$base-sub-menu-hover:#001528;
-*/
+$base-sub-menu-background: #141824;
+$base-sub-menu-hover: rgba(255,255,255,.06);
 
 $base-sidebar-width: 200px;
 
