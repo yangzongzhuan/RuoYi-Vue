@@ -41,7 +41,10 @@
         <el-dropdown-item command="closeLeft" :disabled="isFirstView()" icon="el-icon-back">关闭左侧</el-dropdown-item>
         <el-dropdown-item command="closeRight" :disabled="isLastView()" icon="el-icon-right">关闭右侧</el-dropdown-item>
         <el-dropdown-item command="closeAll" icon="el-icon-circle-close">全部关闭</el-dropdown-item>
-        <el-dropdown-item command="fullscreen" icon="el-icon-full-screen" divided>全屏显示</el-dropdown-item>
+        <el-dropdown-item command="fullscreen" divided>
+          <template v-if="!isFullscreen"><i class="el-icon-full-screen"></i>全屏显示</template>
+          <template v-else><i class="el-icon-close"></i>退出全屏</template>
+        </el-dropdown-item>
       </el-dropdown-menu>
     </el-dropdown>
 
@@ -77,7 +80,8 @@ export default {
       affixTags: [],
       canScrollLeft: false,
       canScrollRight: false,
-      isFullscreen: false
+      isFullscreen: false,
+      hiddenElements: []
     }
   },
   computed: {
@@ -119,13 +123,19 @@ export default {
     this.initTags()
     this.addTags()
     window.addEventListener('resize', this.updateArrowState)
-    document.addEventListener('fullscreenchange', this.onFullscreenChange)
+    window.addEventListener('keydown', this.handleKeyDown)
   },
   beforeDestroy() {
     window.removeEventListener('resize', this.updateArrowState)
-    document.removeEventListener('fullscreenchange', this.onFullscreenChange)
+    window.removeEventListener('keydown', this.handleKeyDown)
   },
   methods: {
+    handleKeyDown(event) {
+      // 当按下Esc键且处于全屏状态时，退出全屏
+      if (event.key === 'Escape' && this.isFullscreen) {
+        this.toggleFullscreen()
+      }
+    },
     isActive(route) {
       return route.path === this.$route.path
     },
@@ -225,17 +235,39 @@ export default {
       })
     },
     toggleFullscreen() {
-      if (!document.fullscreenElement) {
-        const appMain = document.querySelector('.app-main')
-        if (appMain) {
-          appMain.requestFullscreen()
-        }
+      const mainContainer = document.querySelector('.main-container')
+      const navbar = document.querySelector('.navbar')
+      const sidebar = document.querySelector('.sidebar-container')
+      if (!mainContainer) return
+
+      if (!this.isFullscreen) {
+        mainContainer.classList.add('fullscreen-mode')
+        document.body.style.overflow = 'hidden'
+        const elementsToHide = [
+          { el: navbar, originalDisplay: (navbar && navbar.style.display) || '' }, 
+          { el: sidebar, originalDisplay: (sidebar && sidebar.style.display) || '' }
+        ]
+        elementsToHide.forEach(item => {
+          if (item.el && item.el.style.display !== 'none') {
+            item.originalDisplay = item.el.style.display
+            item.el.style.display = 'none'
+            this.hiddenElements.push(item)
+          }
+        })
+        this.isFullscreen = true
       } else {
-        document.exitFullscreen()
+        mainContainer.classList.remove('fullscreen-mode')
+        document.body.style.overflow = ''
+        this.hiddenElements.forEach(item => {
+          if (item.el) {
+            item.el.style.display = item.originalDisplay
+          }
+        })
+        this.hiddenElements = []
+        const btn = document.querySelector('.tags-action-btn')
+        if (btn) btn.blur()
+        this.isFullscreen = false
       }
-    },
-    onFullscreenChange() {
-      this.isFullscreen = !!document.fullscreenElement
     },
     handleDropdownCommand(command) {
       const tag = this.selectedDropdownTag
@@ -504,5 +536,42 @@ export default {
       }
     }
   }
+}
+
+/* 页签全屏模式样式 */
+.main-container.fullscreen-mode {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.main-container.fullscreen-mode .fixed-header {
+  display: block !important;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  width: 100% !important;
+  z-index: 1000;
+}
+
+.main-container.fullscreen-mode .fixed-header .navbar {
+  display: none !important;
+}
+
+.main-container.fullscreen-mode .app-main {
+  position: fixed;
+  top: 34px;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  margin: 0 !important;
+  padding: 0 !important;
+  height: calc(100vh - 34px) !important;
+  min-height: calc(100vh - 34px) !important;
+  overflow: auto;
 }
 </style>
