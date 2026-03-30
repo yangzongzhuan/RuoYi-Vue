@@ -163,8 +163,16 @@
     />
 
     <!-- 添加或修改${functionName}对话框 -->
-    <el-dialog :title="title" v-model="open" width="500px" append-to-body>
-      <el-form ref="${businessName}Ref" :model="form" :rules="rules" label-width="80px">
+#if($table.formColNum == 2)
+#set($dialogWidth = "800px")
+#elseif($table.formColNum == 3)
+#set($dialogWidth = "1100px")
+#else
+#set($dialogWidth = "500px")
+#end
+    <el-dialog :title="title" v-model="open" width="${dialogWidth}" append-to-body>
+      <el-form ref="${businessName}Ref" :model="form" :rules="rules" label-width="100px">
+        <el-row>
 #foreach($column in $columns)
 #set($field=$column.javaField)
 #if($column.insert && !$column.pk)
@@ -177,96 +185,121 @@
 #end
 #set($dictType=$column.dictType)
 #if($column.htmlType == "input")
-        <el-form-item label="${comment}" prop="${field}">
-          <el-input v-model="form.${field}" placeholder="请输入${comment}" />
-        </el-form-item>
+          <el-col :span="${colSpan}">
+            <el-form-item label="${comment}" prop="${field}">
+              <el-input v-model="form.${field}" placeholder="请输入${comment}" />
+            </el-form-item>
+          </el-col>
 #elseif($column.htmlType == "imageUpload")
-        <el-form-item label="${comment}" prop="${field}">
-          <image-upload v-model="form.${field}"/>
-        </el-form-item>
+          <el-col :span="${colSpan}">
+            <el-form-item label="${comment}" prop="${field}">
+              <image-upload v-model="form.${field}"/>
+            </el-form-item>
+          </el-col>
 #elseif($column.htmlType == "fileUpload")
-        <el-form-item label="${comment}" prop="${field}">
-          <file-upload v-model="form.${field}"/>
-        </el-form-item>
+          <el-col :span="${colSpan}">
+            <el-form-item label="${comment}" prop="${field}">
+              <file-upload v-model="form.${field}"/>
+            </el-form-item>
+          </el-col>
 #elseif($column.htmlType == "editor")
-        <el-form-item label="${comment}">
-          <editor v-model="form.${field}" :min-height="192"/>
-        </el-form-item>
+          <el-col :span="24">
+            <el-form-item label="${comment}">
+              <editor v-model="form.${field}" :min-height="192"/>
+            </el-form-item>
+          </el-col>
 #elseif($column.htmlType == "select" && "" != $dictType)
-        <el-form-item label="${comment}" prop="${field}">
-          <el-select v-model="form.${field}" placeholder="请选择${comment}">
-            <el-option
-              v-for="dict in ${dictType}"
-              :key="dict.value"
-              :label="dict.label"
+          <el-col :span="${colSpan}">
+            <el-form-item label="${comment}" prop="${field}">
+              <el-select v-model="form.${field}" placeholder="请选择${comment}">
+                <el-option
+                  v-for="dict in ${dictType}"
+                  :key="dict.value"
+                  :label="dict.label"
 #if($column.javaType == "Integer" || $column.javaType == "Long")
-              :value="parseInt(dict.value)"
+                  :value="parseInt(dict.value)"
 #else
-              :value="dict.value"
+                  :value="dict.value"
 #end
-            ></el-option>
-          </el-select>
-        </el-form-item>
+                ></el-option>
+              </el-select>
+            </el-form-item>
+          </el-col>
 #elseif($column.htmlType == "select" && $dictType)
-        <el-form-item label="${comment}" prop="${field}">
-          <el-select v-model="form.${field}" placeholder="请选择${comment}">
-            <el-option label="请选择字典生成" value="" />
-          </el-select>
-        </el-form-item>
+          <el-col :span="${colSpan}">
+            <el-form-item label="${comment}" prop="${field}">
+              <el-select v-model="form.${field}" placeholder="请选择${comment}">
+                <el-option label="请选择字典生成" value="" />
+              </el-select>
+            </el-form-item>
+          </el-col>
 #elseif($column.htmlType == "checkbox" && "" != $dictType)
-        <el-form-item label="${comment}" prop="${field}">
-          <el-checkbox-group v-model="form.${field}">
-            <el-checkbox
-              v-for="dict in ${dictType}"
-              :key="dict.value"
-              :label="dict.value">
-              {{dict.label}}
-            </el-checkbox>
-          </el-checkbox-group>
-        </el-form-item>
+          <el-col :span="${colSpan}">
+            <el-form-item label="${comment}" prop="${field}">
+              <el-checkbox-group v-model="form.${field}">
+                <el-checkbox
+                  v-for="dict in ${dictType}"
+                  :key="dict.value"
+                  :label="dict.value">
+                  {{dict.label}}
+                </el-checkbox>
+              </el-checkbox-group>
+            </el-form-item>
+          </el-col>
 #elseif($column.htmlType == "checkbox" && $dictType)
-        <el-form-item label="${comment}" prop="${field}">
-          <el-checkbox-group v-model="form.${field}">
-            <el-checkbox>请选择字典生成</el-checkbox>
-          </el-checkbox-group>
-        </el-form-item>
+          <el-col :span="${colSpan}">
+            <el-form-item label="${comment}" prop="${field}">
+              <el-checkbox-group v-model="form.${field}">
+                <el-checkbox>请选择字典生成</el-checkbox>
+              </el-checkbox-group>
+            </el-form-item>
+          </el-col>
 #elseif($column.htmlType == "radio" && "" != $dictType)
-        <el-form-item label="${comment}" prop="${field}">
-          <el-radio-group v-model="form.${field}">
-            <el-radio
-              v-for="dict in ${dictType}"
-              :key="dict.value"
+          <el-col :span="${colSpan}">
+            <el-form-item label="${comment}" prop="${field}">
+              <el-radio-group v-model="form.${field}">
+                <el-radio
+                  v-for="dict in ${dictType}"
+                  :key="dict.value"
 #if($column.javaType == "Integer" || $column.javaType == "Long")
-              :label="parseInt(dict.value)"
+                  :label="parseInt(dict.value)"
 #else
-              :label="dict.value"
+                  :label="dict.value"
 #end
-            >{{dict.label}}</el-radio>
-          </el-radio-group>
-        </el-form-item>
+                >{{dict.label}}</el-radio>
+              </el-radio-group>
+            </el-form-item>
+          </el-col>
 #elseif($column.htmlType == "radio" && $dictType)
-        <el-form-item label="${comment}" prop="${field}">
-          <el-radio-group v-model="form.${field}">
-            <el-radio label="1">请选择字典生成</el-radio>
-          </el-radio-group>
-        </el-form-item>
+          <el-col :span="${colSpan}">
+            <el-form-item label="${comment}" prop="${field}">
+              <el-radio-group v-model="form.${field}">
+                <el-radio label="1">请选择字典生成</el-radio>
+              </el-radio-group>
+            </el-form-item>
+          </el-col>
 #elseif($column.htmlType == "datetime")
-        <el-form-item label="${comment}" prop="${field}">
-          <el-date-picker clearable
-            v-model="form.${field}"
-            type="date"
-            value-format="YYYY-MM-DD"
-            placeholder="请选择${comment}">
-          </el-date-picker>
-        </el-form-item>
+          <el-col :span="${colSpan}">
+            <el-form-item label="${comment}" prop="${field}">
+              <el-date-picker clearable
+                v-model="form.${field}"
+                type="date"
+                value-format="YYYY-MM-DD"
+                placeholder="请选择${comment}">
+              </el-date-picker>
+            </el-form-item>
+          </el-col>
 #elseif($column.htmlType == "textarea")
-        <el-form-item label="${comment}" prop="${field}">
-          <el-input v-model="form.${field}" type="textarea" placeholder="请输入内容" />
-        </el-form-item>
+          <el-col :span="24">
+            <el-form-item label="${comment}" prop="${field}">
+              <el-input v-model="form.${field}" type="textarea" placeholder="请输入内容" />
+            </el-form-item>
+          </el-col>
 #end
 #end
 #end
 #end
+        </el-row>
 #if($table.sub)
         <el-divider content-position="center">${subTable.functionName}信息</el-divider>
         <el-row :gutter="10" class="mb8">
