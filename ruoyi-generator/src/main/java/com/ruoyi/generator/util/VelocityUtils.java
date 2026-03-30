@@ -60,6 +60,7 @@ public class VelocityUtils
         velocityContext.put("basePackage", getPackagePrefix(packageName));
         velocityContext.put("packageName", packageName);
         velocityContext.put("author", genTable.getFunctionAuthor());
+        velocityContext.put("colSpan", getColSpan(genTable.getFormColNum()));
         velocityContext.put("datetime", DateUtils.getDate());
         velocityContext.put("pkColumn", genTable.getPkColumn());
         velocityContext.put("importList", getImportList(genTable));
@@ -433,5 +434,24 @@ public class VelocityUtils
             }
         }
         return num;
+    }
+
+    /**
+     * 获取表单 el-col span
+     * 
+     * @param formColNum 表单布局方式（1单列 2双列 3三列）
+     * @return span 数值字符串
+     */
+    public static String getColSpan(int formColNum)
+    {
+        if (formColNum == 2)
+        {
+            return "12";
+        }
+        else if (formColNum == 3)
+        {
+            return "8";
+        }
+        return "24";
     }
 }
