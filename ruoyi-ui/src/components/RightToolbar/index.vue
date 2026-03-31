@@ -38,6 +38,8 @@
 </template>
 
 <script>
+import cache from '@/plugins/cache'
+
 export default {
   name: "RightToolbar",
   data() {
@@ -76,6 +78,11 @@ export default {
       type: Number,
       default: 10
     },
+    /* 列显隐状态记忆的 localStorage key（传入则启用记忆，不传则不记忆） */
+    storageKey: {
+      type: String,
+      default: ""
+    }
   },
   computed: {
     style() {
@@ -103,6 +110,23 @@ export default {
     }
   },
   created() {
+    // 如果传入了 storageKey，从 localStorage 恢复列显隐状态
+    if (this.storageKey) {
+      try {
+        const saved = cache.local.getJSON(this.storageKey)
+        if (saved && typeof saved === 'object') {
+          if (Array.isArray(this.columns)) {
+            this.columns.forEach((col, index) => {
+              if (saved[index] !== undefined) col.visible = saved[index]
+            })
+          } else {
+            Object.keys(this.columns).forEach(key => {
+              if (saved[key] !== undefined) this.columns[key].visible = saved[key]
+            })
+          }
+        }
+      } catch (e) {}
+    }
     if (this.showColumnsType == 'transfer') {
       // transfer穿梭显隐列初始默认隐藏列
       if (Array.isArray(this.columns)) {
@@ -168,6 +192,7 @@ export default {
           this.columns[key].visible = !data.includes(index)
         })
       }
+      this.saveStorage()
     },
     // 打开显隐列dialog
     showColumn() {
@@ -180,6 +205,7 @@ export default {
       } else {
         this.columns[key].visible = event
       }
+      this.saveStorage()
     },
     // 切换全选/反选
     toggleCheckAll() {
@@ -189,6 +215,20 @@ export default {
       } else {
         Object.values(this.columns).forEach((col) => (col.visible = newValue))
       }
+      this.saveStorage()
+    },
+    // 将当前列显隐状态持久化到 localStorage
+    saveStorage() {
+      if (!this.storageKey) return
+      try {
+        let state = {}
+        if (Array.isArray(this.columns)) {
+          this.columns.forEach((col, index) => { state[index] = col.visible })
+        } else {
+          Object.keys(this.columns).forEach(key => { state[key] = this.columns[key].visible })
+        }
+        cache.local.setJSON(this.storageKey, state)
+      } catch (e) {}
     }
   },
 }
