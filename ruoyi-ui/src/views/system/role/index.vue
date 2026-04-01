@@ -451,7 +451,7 @@ export default {
     // 多选框选中数据
     handleSelectionChange(selection) {
       this.ids = selection.map(item => item.roleId)
-      this.single = selection.length!=1
+      this.single = selection.length != 1
       this.multiple = !selection.length
     },
     // 更多操作触发
@@ -547,12 +547,12 @@ export default {
       this.title = "分配数据权限"
     },
     /** 分配用户操作 */
-    handleAuthUser: function(row) {
+    handleAuthUser(row) {
       const roleId = row.roleId
       this.$router.push("/system/role-auth/user/" + roleId)
     },
     /** 提交按钮 */
-    submitForm: function() {
+    submitForm() {
       this.$refs["form"].validate(valid => {
         if (valid) {
           if (this.form.roleId != undefined) {
@@ -574,7 +574,7 @@ export default {
       })
     },
     /** 提交按钮（数据权限） */
-    submitDataScope: function() {
+    submitDataScope() {
       if (this.form.roleId != undefined) {
         this.form.deptIds = this.getDeptAllCheckedKeys()
         dataScope(this.form).then(() => {
