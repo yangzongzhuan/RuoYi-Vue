@@ -379,7 +379,7 @@ export default {
       this.dateRange = []
       this.resetForm("queryForm")
       this.queryParams.deptId = undefined
-      this.$refs.deptTree.setCurrentKey(null)
+      this.$refs.deptTreeRef.setCurrentKey(null)
       this.handleQuery()
     },
     // 多选框选中数据
