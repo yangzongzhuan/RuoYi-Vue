@@ -546,6 +546,8 @@ export default {
   width: 100vw;
   height: 100vh;
   overflow: hidden;
+  margin-left: 0 !important;
+  transition: none !important;
 }
 
 .main-container.fullscreen-mode .fixed-header {
@@ -556,6 +558,7 @@ export default {
   right: 0;
   width: 100% !important;
   z-index: 1000;
+  transition: none !important;
 }
 
 .main-container.fullscreen-mode .fixed-header .navbar {
