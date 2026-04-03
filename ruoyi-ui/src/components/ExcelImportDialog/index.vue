@@ -5,7 +5,7 @@
       <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
       <div class="el-upload__tip text-center" slot="tip">
         <div class="el-upload__tip" slot="tip">
-          <el-checkbox v-model="updateSupport" /> {{ updateSupportLabel }}
+          <el-checkbox v-model="updateSupport"> {{ updateSupportLabel }} </el-checkbox>
         </div>
         <span>仅允许导入xls、xlsx格式文件。</span>
         <el-link v-if="templateUrl" type="primary" :underline="false" style="font-size: 12px; vertical-align: baseline" @click="handleDownloadTemplate">下载模板</el-link>
