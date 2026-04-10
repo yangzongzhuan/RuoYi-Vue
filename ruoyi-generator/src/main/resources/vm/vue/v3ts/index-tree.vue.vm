@@ -313,7 +313,7 @@ import type { TreeSelect } from '@/types/api/common'
 const { proxy } = getCurrentInstance()
 #if(${dicts} != '')
 #set($dictsNoSymbol=$dicts.replace("'", ""))
-const { ${dictsNoSymbol} } = proxy.useDict(${dicts})
+const { ${dictsNoSymbol} } = useDict(${dicts})
 #end
 
 const ${businessName}List = ref<any[]>([])
