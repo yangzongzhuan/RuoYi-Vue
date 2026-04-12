@@ -153,6 +153,15 @@
 #end
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
+#if($genView)
+          <el-button
+            size="mini"
+            type="text"
+            icon="el-icon-view"
+            @click="handleViewData(scope.row)"
+            v-hasPermi="['${permissionPrefix}:query']"
+          >详情</el-button>
+#end
           <el-button
             size="mini"
             type="text"
@@ -179,6 +188,10 @@
       @pagination="getList"
     />
 
+#if($genView)
+    <!-- ${functionName}详情抽屉 -->
+    <${businessName}-view-drawer ref="${businessName}ViewRef" />
+#end
     <!-- 添加或修改${functionName}对话框 -->
 #if($table.formColNum == 2)
 #set($dialogWidth = "800px")
@@ -387,9 +400,15 @@
 
 <script>
 import { list${BusinessName}, get${BusinessName}, del${BusinessName}, add${BusinessName}, update${BusinessName} } from "@/api/${moduleName}/${businessName}"
+#if($genView)
+import ${BusinessName}ViewDrawer from "./view"
+#end
 
 export default {
   name: "${BusinessName}",
+#if($genView)
+  components: { ${BusinessName}ViewDrawer },
+#end
 #if(${dicts} != '')
   dicts: [${dicts}],
 #end
@@ -622,6 +641,12 @@ export default {
     /** 复选框选中数据 */
     handle${subClassName}SelectionChange(selection) {
       this.checked${subClassName} = selection.map(item => item.index)
+    },
+#end
+#if($genView)
+    /** 详情按钮操作 */
+    handleViewData(row) {
+      this.#[[$]]#refs["${businessName}ViewRef"].open(row.${pkColumn.javaField})
     },
 #end
     /** 导出按钮操作 */
