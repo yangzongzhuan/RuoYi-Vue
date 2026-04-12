@@ -1,0 +1,86 @@
+<template>
+  <el-drawer title="${functionName}详情" :visible.sync="visible" direction="rtl" size="60%" append-to-body :before-close="handleClose" custom-class="detail-drawer">
+    <div v-loading="loading" class="drawer-content">
+      <h4 class="section-header">基本信息</h4>
+#set($i = 0)
+#foreach($column in $columns)
+#if(!$column.pk && $column.list)
+#set($dictType=$column.dictType)
+#set($javaField=$column.javaField)
+#set($parentheseIndex=$column.columnComment.indexOf("（"))
+#if($parentheseIndex != -1)
+#set($comment=$column.columnComment.substring(0, $parentheseIndex))
+#else
+#set($comment=$column.columnComment)
+#end
+#if($i % 2 == 0)
+      <el-row :gutter="20" class="mb8">
+#end
+        <el-col :span="12">
+          <div class="info-item">
+            <label class="info-label">${comment}：</label>
+            <span class="info-value plaintext">
+#if("" != $dictType)
+#if($column.htmlType == "checkbox")
+              <dict-tag :options="dict.type.${dictType}" :value="info.${javaField} ? info.${javaField}.split(',') : []" />
+#else
+              <dict-tag :options="dict.type.${dictType}" :value="info.${javaField}" />
+#end
+#elseif($column.htmlType == "datetime")
+              {{ parseTime(info.${javaField}, '{y}-{m}-{d}') }}
+#else
+              {{ info.${javaField} }}
+#end
+            </span>
+          </div>
+        </el-col>
+#set($i = $i + 1)
+#if($i % 2 == 0)
+      </el-row>
+#end
+#end
+#end
+#if($i % 2 != 0)
+      </el-row>
+#end
+    </div>
+  </el-drawer>
+</template>
+
+<script>
+import { get${BusinessName} } from '@/api/${moduleName}/${businessName}'
+
+export default {
+  name: '${BusinessName}ViewDrawer',
+#foreach($column in $columns)
+#if("" != $column.dictType)
+#set($hasDicts = true)
+#break
+#end
+#end
+#if($hasDicts)
+  dicts: [#foreach($column in $columns)#if("" != $column.dictType)'${column.dictType}'#if($foreach.hasNext), #end#end#end],
+#end
+  data() {
+    return {
+      visible: false,
+      loading: false,
+      info: {}
+    }
+  },
+  methods: {
+    open(${pkColumn.javaField}) {
+      this.visible = true
+      this.loading = true
+      get${BusinessName}(${pkColumn.javaField}).then(res => {
+        this.info = res.data || {}
+      }).finally(() => {
+        this.loading = false
+      })
+    },
+    handleClose() {
+      this.visible = false
+    }
+  }
+}
+</script>

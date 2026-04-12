@@ -183,6 +183,7 @@ export default {
           const genTable = Object.assign({}, basicForm.model, genForm.model)
           genTable.columns = this.columns
           genTable.params = {
+            genView: genTable.view ? '1' : '0',
             treeCode: genTable.treeCode,
             treeName: genTable.treeName,
             treeParentCode: genTable.treeParentCode,
