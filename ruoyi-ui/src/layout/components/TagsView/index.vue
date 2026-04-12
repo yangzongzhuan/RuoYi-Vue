@@ -1,5 +1,5 @@
 <template>
-  <div id="tags-view-container" class="tags-view-container">
+  <div id="tags-view-container" class="tags-view-container" :class="{ 'tags-view-container--chrome': tagsViewStyle === 'chrome' }" :style="chromeVars">
     <!-- 左切换箭头 -->
     <span class="tags-nav-btn tags-nav-btn--left" :class="{ disabled: !canScrollLeft }" @click="scrollLeft">
       <i class="el-icon-arrow-left" />
@@ -15,11 +15,11 @@
         :to="{ path: tag.path, query: tag.query, fullPath: tag.fullPath }"
         tag="span"
         class="tags-view-item"
-        :style="activeStyle(tag)"
+        :style="tagActiveStyle(tag)"
         @click.middle.native="!isAffix(tag) ? closeSelectedTag(tag) : ''"
         @contextmenu.prevent.native="openMenu(tag, $event)"
       >
-        <svg-icon v-if="tagsIcon && tag.meta && tag.meta.icon && tag.meta.icon !== '#'" :icon-class="tag.meta.icon" />
+        <svg-icon v-if="tagsIcon && tag.meta && tag.meta.icon && tag.meta.icon !== '#'" :icon-class="tag.meta.icon" style="margin-right: 3px;" />
         {{ tag.title }}
         <span v-if="!isAffix(tag)" class="el-icon-close" @click.prevent.stop="closeSelectedTag(tag)" />
       </router-link>
@@ -97,8 +97,20 @@ export default {
     tagsIcon() {
       return this.$store.state.settings.tagsIcon
     },
+    tagsViewStyle() {
+      return this.$store.state.settings.tagsViewStyle
+    },
     selectedDropdownTag() {
       return this.visitedViews.find(v => this.isActive(v)) || {}
+    },
+    chromeVars() {
+      if (this.tagsViewStyle !== 'chrome') return {}
+      const primary = this.theme || '#409EFF'
+      return {
+        '--chrome-tab-active-bg': this.mixHexWithWhite(primary, 0.15),
+        '--chrome-tab-text-active': primary,
+        '--chrome-wing-r': '14px'
+      }
     }
   },
   watch: {
@@ -136,11 +148,21 @@ export default {
         this.toggleFullscreen()
       }
     },
+    mixHexWithWhite(hex, ratio) {
+      const clean = hex.replace('#', '')
+      const r = parseInt(clean.substring(0, 2), 16)
+      const g = parseInt(clean.substring(2, 4), 16)
+      const b = parseInt(clean.substring(4, 6), 16)
+      const mr = Math.round(r * ratio + 255 * (1 - ratio))
+      const mg = Math.round(g * ratio + 255 * (1 - ratio))
+      const mb = Math.round(b * ratio + 255 * (1 - ratio))
+      return `rgb(${mr}, ${mg}, ${mb})`
+    },
     isActive(route) {
       return route.path === this.$route.path
     },
-    activeStyle(tag) {
-      if (!this.isActive(tag)) return {}
+    tagActiveStyle(tag) {
+      if (!this.isActive(tag) || this.tagsViewStyle !== 'card') return {}
       return {
         "background-color": this.theme,
         "border-color": this.theme
@@ -367,13 +389,16 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+$tags-bar-height: 34px;
+
 .tags-view-container {
-  height: 34px;
+  height: $tags-bar-height;
   width: 100%;
   background: #fff;
   border-bottom: 1px solid #d8dce5;
   display: flex;
   align-items: center;
+  overflow: hidden;
 
   $btn-width: 28px;
   $btn-color: #71717a;
@@ -388,7 +413,7 @@ export default {
     align-items: center;
     justify-content: center;
     width: $btn-width;
-    height: 34px;
+    height: $tags-bar-height;
     cursor: pointer;
     color: $btn-color;
     font-size: 13px;
@@ -405,18 +430,14 @@ export default {
       cursor: not-allowed;
     }
 
-    &--left {
-      border-right: $divider;
-    }
-
-    &--right {
-      border-left: $divider;
-    }
+    &--left  { border-right: $divider; }
+    &--right { border-left: $divider; }
   }
 
   .tags-view-wrapper {
     flex: 1;
     min-width: 0;
+    height: 100%;
 
     .tags-view-item {
       display: inline-block;
@@ -432,31 +453,27 @@ export default {
       margin-left: 5px;
       border-radius: 3px;
 
-      &:first-of-type {
-        margin-left: 6px;
-      }
-      &:last-of-type {
-        margin-right: 15px;
-      }
-      &.active {
-        background-color: #42b983;
-        color: #fff;
-        border-color: #42b983;
-        &::before {
-          content: '';
-          background: #fff;
-          display: inline-block;
-          width: 8px;
-          height: 8px;
-          border-radius: 50%;
-          position: relative;
-          margin-right: 2px;
-        }
-      }
+      &:first-of-type { margin-left: 6px; }
+      &:last-of-type  { margin-right: 15px; }
+    }
+  }
+  &:not(.tags-view-container--chrome) .tags-view-wrapper .tags-view-item.active {
+    background-color: #42b983;
+    color: #fff;
+    border-color: #42b983;
+    &::before {
+      content: '';
+      background: #fff;
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      position: relative;
+      margin-right: 2px;
     }
   }
 
-  .tags-view-item.active.has-icon::before {
+  &:not(.tags-view-container--chrome) .tags-view-wrapper .tags-view-item.active.has-icon::before {
     content: none !important;
   }
 
@@ -471,7 +488,7 @@ export default {
     align-items: center;
     justify-content: center;
     width: $btn-width;
-    height: 34px;
+    height: $tags-bar-height;
     cursor: pointer;
     color: $btn-color;
     font-size: 13px;
@@ -511,11 +528,174 @@ export default {
       }
     }
   }
+  &.tags-view-container--chrome {
+    --chrome-strip-bg: #ffffff;
+    --chrome-strip-border: #e4e7ed;
+    --chrome-tab-text: #606266;
+
+    overflow: visible;
+    background: var(--chrome-strip-bg);
+    border-bottom: 1px solid var(--chrome-strip-border);
+    align-items: flex-end;
+
+    .tags-nav-btn {
+      align-self: stretch;
+      height: auto;
+      min-height: $tags-bar-height;
+      border-color: var(--chrome-strip-border);
+    }
+
+    .tags-action-btn {
+      border-color: var(--chrome-strip-border);
+    }
+
+    .tags-view-wrapper {
+      .tags-view-item {
+        display: inline-flex !important;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        z-index: 1;
+        height: 30px;
+        min-height: 30px;
+        margin: 0 0 -1px;
+        padding: 0 12px;
+        font-size: 13px;
+        font-weight: 400;
+        line-height: 1.2;
+        border: none !important;
+        border-radius: 0;
+        background: transparent !important;
+        color: var(--chrome-tab-text) !important;
+        padding-top: 0 !important;
+        box-shadow: none !important;
+        transition: background 0.12s ease, color 0.12s ease, border-radius 0.12s ease;
+
+        &::before,
+        &::after {
+          content: '' !important;
+          display: block !important;
+          position: absolute;
+          bottom: 0;
+          width: var(--chrome-wing-r);
+          height: var(--chrome-wing-r);
+          margin: 0 !important;
+          pointer-events: none;
+          background: transparent !important;
+          border-radius: 0 !important;
+          transition: box-shadow 0.12s ease;
+        }
+
+        &::before {
+          left: calc(-1 * var(--chrome-wing-r));
+          border-bottom-right-radius: var(--chrome-wing-r) !important;
+          box-shadow: none;
+        }
+
+        &::after {
+          right: calc(-1 * var(--chrome-wing-r));
+          border-bottom-left-radius: var(--chrome-wing-r) !important;
+          box-shadow: none;
+        }
+
+        &:first-of-type { margin-left: 6px; }
+        &:last-of-type  { margin-right: 10px; }
+
+        &:not(.active) + .tags-view-item:not(.active) {
+          border-left: 1px solid #e4e7ed;
+          padding-left: 11px;
+        }
+
+        &:hover:not(.active) {
+          background: #f5f7fa !important;
+          border-radius: 6px 6px 0 0;
+          color: #303133 !important;
+        }
+
+        &.active {
+          height: 31px;
+          min-height: 31px;
+          padding: 0 14px;
+          color: var(--chrome-tab-text-active) !important;
+          font-weight: 500;
+          background: var(--chrome-tab-active-bg) !important;
+          border: none !important;
+          border-radius: var(--chrome-wing-r) var(--chrome-wing-r) 0 0;
+          box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+
+          &::before {
+            box-shadow: calc(var(--chrome-wing-r) * 0.5) calc(var(--chrome-wing-r) * 0.5) 0 calc(var(--chrome-wing-r) * 0.5) var(--chrome-tab-active-bg);
+          }
+
+          &::after {
+            box-shadow: calc(var(--chrome-wing-r) * -0.5) calc(var(--chrome-wing-r) * 0.5) 0 calc(var(--chrome-wing-r) * 0.5) var(--chrome-tab-active-bg);
+          }
+        }
+        .el-icon-close {
+          margin-left: 3px;
+          &:before {
+            vertical-align: -2px;
+          }
+        }
+      }
+    }
+  }
 }
 </style>
 
 <style lang="scss">
 .tags-view-wrapper {
+  .el-scrollbar {
+    height: 100%;
+    overflow: hidden;
+  }
+
+  .el-scrollbar__wrap {
+    height: 34px !important;
+    display: flex;
+    align-items: center;
+    overflow-x: auto;
+    overflow-y: hidden;
+    
+    &::-webkit-scrollbar {
+      width: 0;
+      height: 0;
+    }
+    
+    .tags-view-container:hover & {
+      &::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+      }
+      
+      &::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      
+      &::-webkit-scrollbar-thumb {
+        background-color: rgba(0, 0, 0, 0.2);
+        border-radius: 3px;
+        transition: background-color 0.2s;
+        
+        &:hover {
+          background-color: rgba(0, 0, 0, 0.4);
+        }
+      }
+    }
+    
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  .el-scrollbar__bar {
+    opacity: 0;
+    transition: opacity 0.3s;
+    
+    .tags-view-container:hover & {
+      opacity: 1;
+    }
+  }
+
   .tags-view-item {
     .el-icon-close {
       width: 16px;
