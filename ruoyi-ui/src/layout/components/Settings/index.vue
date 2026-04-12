@@ -61,7 +61,7 @@
         <h3 class="drawer-title">系统布局配置</h3>
 
         <div class="drawer-item">
-          <span>开启 Tags-Views</span>
+          <span>开启页签</span>
           <el-switch v-model="tagsView" class="drawer-switch" />
         </div>
 
@@ -73,6 +73,14 @@
         <div class="drawer-item">
           <span>显示页签图标</span>
           <el-switch v-model="tagsIcon" :disabled="!tagsView" class="drawer-switch" />
+        </div>
+
+        <div class="drawer-item">
+          <span>标签页样式</span>
+          <el-radio-group v-model="tagsViewStyle" :disabled="!tagsView" size="mini" class="drawer-switch">
+            <el-radio-button label="card">卡片</el-radio-button>
+            <el-radio-button label="chrome">谷歌</el-radio-button>
+          </el-radio-group>
         </div>
 
         <div class="drawer-item">
@@ -159,6 +167,17 @@ export default {
       set(val) {
         this.$store.dispatch('settings/changeSetting', {
           key: 'tagsIcon',
+          value: val
+        })
+      }
+    },
+    tagsViewStyle: {
+      get() {
+        return this.$store.state.settings.tagsViewStyle
+      },
+      set(val) {
+        this.$store.dispatch('settings/changeSetting', {
+          key: 'tagsViewStyle',
           value: val
         })
       }
@@ -256,6 +275,7 @@ export default {
             "navType":${this.navType},
             "tagsView":${this.tagsView},
             "tagsIcon":${this.tagsIcon},
+            "tagsViewStyle":"${this.tagsViewStyle}",
             "tagsViewPersist":${this.tagsViewPersist},
             "fixedHeader":${this.fixedHeader},
             "sidebarLogo":${this.sidebarLogo},
