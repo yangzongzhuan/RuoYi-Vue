@@ -148,6 +148,9 @@
 #end
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template #default="scope">
+#if($genView)
+          <el-button link type="primary" icon="View" @click="handleViewData(scope.row)" v-hasPermi="['${permissionPrefix}:query']">详情</el-button>
+#end
           <el-button link type="primary" icon="Edit" @click="handleUpdate(scope.row)" v-hasPermi="['${permissionPrefix}:edit']">修改</el-button>
           <el-button link type="primary" icon="Delete" @click="handleDelete(scope.row)" v-hasPermi="['${permissionPrefix}:remove']">删除</el-button>
         </template>
@@ -162,6 +165,10 @@
       @pagination="getList"
     />
 
+#if($genView)
+    <!-- ${functionName}详情抽屉 -->
+    <${businessName}-view-drawer ref="${businessName}ViewRef" />
+#end
     <!-- 添加或修改${functionName}对话框 -->
 #if($table.formColNum == 2)
 #set($dialogWidth = "800px")
@@ -381,6 +388,9 @@
 
 <script setup name="${BusinessName}">
 import { list${BusinessName}, get${BusinessName}, del${BusinessName}, add${BusinessName}, update${BusinessName} } from "@/api/${moduleName}/${businessName}"
+#if($genView)
+import ${BusinessName}ViewDrawer from "./view"
+#end
 
 const { proxy } = getCurrentInstance()
 #if(${dicts} != '')
@@ -417,7 +427,7 @@ const data = reactive({
     pageSize: 10,
     #foreach ($column in $columns)
 #if($column.query)
-    $column.javaField: null#if($foreach.count != $columns.size()),#end
+    $column.javaField: undefined#if($foreach.count != $columns.size()),#end
 #end
 #end
   },
@@ -465,13 +475,13 @@ function getList() {
   })
 }
 
-// 取消按钮
+/** 取消按钮 */
 function cancel() {
   open.value = false
   reset()
 }
 
-// 表单重置
+/** 表单重置 */
 function reset() {
   form.value = {
 #foreach ($column in $columns)
@@ -506,7 +516,7 @@ function resetQuery() {
   handleQuery()
 }
 
-// 多选框选中数据
+/** 多选框选中数据 */
 function handleSelectionChange(selection) {
   ids.value = selection.map(item => item.${pkColumn.javaField})
   single.value = selection.length != 1
@@ -586,7 +596,7 @@ function handleAdd${subClassName}() {
 #foreach($column in $subTable.columns)
 #if($column.pk || $column.javaField == ${subTableFkclassName})
 #elseif($column.list && "" != $javaField)
-  obj.$column.javaField = ""
+  obj.$column.javaField = undefined
 #end
 #end
   ${subclassName}List.value.push(obj)
@@ -608,6 +618,13 @@ function handleDelete${subClassName}() {
 /** 复选框选中数据 */
 function handle${subClassName}SelectionChange(selection) {
   checked${subClassName}.value = selection.map(item => item.index)
+}
+
+#end
+#if($genView)
+/** 详情按钮操作 */
+function handleViewData(row) {
+  proxy.#[[$]]#refs["${businessName}ViewRef"].open(row.${pkColumn.javaField})
 }
 
 #end

@@ -136,6 +136,9 @@
 #end
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template #default="scope">
+#if($genView)
+          <el-button link type="primary" icon="View" @click="handleViewData(scope.row)" v-hasPermi="['${permissionPrefix}:query']">详情</el-button>
+#end
           <el-button link type="primary" icon="Edit" @click="handleUpdate(scope.row)" v-hasPermi="['${permissionPrefix}:edit']">修改</el-button>
           <el-button link type="primary" icon="Plus" @click="handleAdd(scope.row)" v-hasPermi="['${permissionPrefix}:add']">新增</el-button>
           <el-button link type="primary" icon="Delete" @click="handleDelete(scope.row)" v-hasPermi="['${permissionPrefix}:remove']">删除</el-button>
@@ -143,6 +146,10 @@
       </el-table-column>
     </el-table>
 
+#if($genView)
+    <!-- ${functionName}详情抽屉 -->
+    <${businessName}-view-drawer ref="${businessName}ViewRef" />
+#end
     <!-- 添加或修改${functionName}对话框 -->
 #if($table.formColNum == 2)
 #set($dialogWidth = "800px")
@@ -307,6 +314,9 @@
 
 <script setup lang="ts" name="${BusinessName}">
 import { list${BusinessName}, get${BusinessName}, del${BusinessName}, add${BusinessName}, update${BusinessName} } from "@/api/${moduleName}/${businessName}"
+#if($genView)
+import ${BusinessName}ViewDrawer from "./view"
+#end
 import type { ${ClassName}, ${BusinessName}QueryParams } from "@/types/api/${moduleName}/${businessName}"
 import type { TreeSelect } from '@/types/api/common'
 
@@ -393,13 +403,13 @@ function getTreeselect() {
   })
 }
 	
-// 取消按钮
+/** 取消按钮 */
 function cancel() {
   open.value = false
   reset()
 }
 
-// 表单重置
+/** 表单重置 */
 function reset() {
   form.value = {
 #foreach ($column in $columns)
@@ -451,6 +461,13 @@ function toggleExpandAll() {
     refreshTable.value = true
   })
 }
+#if($genView)
+
+/** 详情按钮操作 */
+function handleViewData(row: ${ClassName}) {
+  proxy.#[[$]]#refs["${businessName}ViewRef"].open(row.${pkColumn.javaField})
+}
+#end
 
 /** 修改按钮操作 */
 async function handleUpdate(row: ${ClassName}) {

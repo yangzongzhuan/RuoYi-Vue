@@ -139,6 +139,15 @@
 #end
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
+#if($genView)
+          <el-button
+            size="mini"
+            type="text"
+            icon="el-icon-view"
+            @click="handleViewData(scope.row)"
+            v-hasPermi="['${permissionPrefix}:query']"
+          >详情</el-button>
+#end
           <el-button
             size="mini"
             type="text"
@@ -164,6 +173,10 @@
       </el-table-column>
     </el-table>
 
+#if($genView)
+    <!-- ${functionName}详情抽屉 -->
+    <${businessName}-view-drawer ref="${businessName}ViewRef" />
+#end
     <!-- 添加或修改${functionName}对话框 -->
 #if($table.formColNum == 2)
 #set($dialogWidth = "800px")
@@ -319,6 +332,9 @@
 
 <script>
 import { list${BusinessName}, get${BusinessName}, del${BusinessName}, add${BusinessName}, update${BusinessName} } from "@/api/${moduleName}/${businessName}"
+#if($genView)
+import ${BusinessName}ViewDrawer from "./view"
+#end
 import Treeselect from "@riophae/vue-treeselect"
 import "@riophae/vue-treeselect/dist/vue-treeselect.css"
 
@@ -328,6 +344,9 @@ export default {
   dicts: [${dicts}],
 #end
   components: {
+#if($genView)
+    ${BusinessName}ViewDrawer,
+#end
     Treeselect
   },
   data() {
@@ -483,6 +502,12 @@ export default {
         this.refreshTable = true
       })
     },
+#if($genView)
+    /** 详情按钮操作 */
+    handleViewData(row) {
+      this.#[[$]]#refs["${businessName}ViewRef"].open(row.${pkColumn.javaField})
+    },
+#end
     /** 修改按钮操作 */
     handleUpdate(row) {
       this.reset()
