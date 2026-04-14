@@ -73,7 +73,7 @@ export function markNoticeReadAll(ids) {
 export function listNoticeReadUsers(query) {
   return request({
     url: '/system/notice/readUsers/list',
-    method: 'post',
+    method: 'get',
     params: query
   })
 }
