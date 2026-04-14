@@ -23,38 +23,24 @@
       <span v-if="unreadCount > 0" class="notice-badge">{{ unreadCount }}</span>
     </div>
 
-    <el-dialog :title="previewTitle" :visible.sync="previewVisible" width="680px" append-to-body custom-class="notice-preview-dialog">
-      <div class="notice-preview-meta">
-        <el-tag size="small" :type="previewNoticeType === '1' ? 'warning' : 'success'">
-          {{ previewNoticeType === '1' ? '通知' : '公告' }}
-        </el-tag>
-        <span class="notice-preview-info"><i class="el-icon-user"></i> {{ previewCreateBy }}</span>
-        <span class="notice-preview-info"><i class="el-icon-time"></i> {{ previewCreateTime }}</span>
-      </div>
-      <div class="notice-preview-divider"></div>
-      <div class="notice-preview-content" v-html="previewContent"></div>
-    </el-dialog>
+    <notice-detail-view ref="noticeViewRef" />
   </div>
 </template>
 
 <script>
-import { listNoticeTop, markNoticeRead, markNoticeReadAll, getNotice } from '@/api/system/notice'
+import NoticeDetailView from './DetailView'
+import { listNoticeTop, markNoticeRead, markNoticeReadAll } from '@/api/system/notice'
 
 export default {
   name: 'HeaderNotice',
+  components: { NoticeDetailView },
   data() {
     return {
       noticeList: [], // 通知列表
       unreadCount: 0, // 未读数量
       noticeLoading: false, // 加载状态
       noticeVisible: false, // 弹出层显示状态
-      noticeLeaveTimer: null, // 鼠标离开计时器
-      previewVisible: false, // 预览弹窗显示状态
-      previewTitle: '', // 预览弹窗标题
-      previewContent: '', // 预览弹窗内容
-      previewNoticeType: '', // 预览弹窗类型
-      previewCreateBy: '', // 预览弹窗创建人
-      previewCreateTime: '' // 预览弹窗创建时间
+      noticeLeaveTimer: null // 鼠标离开计时器
     }
   },
   mounted() {
@@ -99,15 +85,7 @@ export default {
         if (idx !== -1) this.$set(this.noticeList, idx, { ...item, isRead: true })
         this.unreadCount = Math.max(0, this.unreadCount - 1)
       }
-      getNotice(item.noticeId).then(res => {
-        const notice = res.data
-        this.previewTitle = notice.noticeTitle
-        this.previewContent = notice.noticeContent
-        this.previewNoticeType = notice.noticeType
-        this.previewCreateBy = notice.createBy
-        this.previewCreateTime = notice.createTime
-        this.previewVisible = true
-      })
+      this.$refs.noticeViewRef.open(item.noticeId)
     },
     // 全部已读
     markAllRead() {
@@ -199,31 +177,5 @@ export default {
   flex-shrink: 0;
   font-size: 11px;
   color: #bbb;
-}
-::v-deep .notice-preview-dialog {
-  .el-dialog__body { padding: 0 20px 20px; }
-  .notice-preview-meta {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    padding: 12px 0;
-    font-size: 12px;
-    color: #888;
-    .notice-preview-info { display: flex; align-items: center; gap: 4px; }
-  }
-  .notice-preview-divider {
-    height: 1px;
-    background: linear-gradient(to right, transparent, #e2e8f0, transparent);
-    margin-bottom: 16px;
-  }
-  .notice-preview-content {
-    font-size: 14px;
-    line-height: 1.85;
-    color: #2d3748;
-    word-break: break-word;
-    img { max-width: 100%; border-radius: 4px; }
-    p { margin: 0 0 1em; }
-    a { color: #409EFF; text-decoration: underline; }
-  }
 }
 </style>
