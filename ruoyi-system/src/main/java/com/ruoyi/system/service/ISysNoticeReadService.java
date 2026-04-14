@@ -1,6 +1,7 @@
 package com.ruoyi.system.service;
 
 import java.util.List;
+import java.util.Map;
 import com.ruoyi.system.domain.SysNotice;
 
 /**
@@ -42,6 +43,15 @@ public interface ISysNoticeReadService
      * @param noticeIds 公告ID数组
      */
     public void markReadBatch(Long userId, Long[] noticeIds);
+
+    /**
+     * 查询已阅读某公告的用户列表
+     *
+     * @param noticeId  公告ID
+     * @param searchValue 搜索值
+     * @return 已读用户列表
+     */
+    public List<Map<String, Object>> selectReadUsersByNoticeId(Long noticeId, String searchValue);
 
     /**
      * 删除公告时清理对应已读记录
