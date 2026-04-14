@@ -72,12 +72,11 @@
     <el-table v-loading="loading" :data="noticeList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
       <el-table-column label="序号" align="center" prop="noticeId" width="100" />
-      <el-table-column
-        label="公告标题"
-        align="center"
-        prop="noticeTitle"
-        :show-overflow-tooltip="true"
-      />
+      <el-table-column label="公告标题" align="center" :show-overflow-tooltip="true">
+        <template slot-scope="scope">
+          <a class="link-type" style="cursor:pointer" @click="handleViewData(scope.row)">{{ scope.row.noticeTitle }}</a>
+        </template>
+      </el-table-column>
       <el-table-column label="公告类型" align="center" prop="noticeType" width="100">
         <template slot-scope="scope">
           <dict-tag :options="dict.type.sys_notice_type" :value="scope.row.noticeType"/>
@@ -166,14 +165,18 @@
         <el-button @click="cancel">取 消</el-button>
       </div>
     </el-dialog>
+
+    <notice-detail-view ref="noticeViewRef" />
   </div>
 </template>
 
 <script>
+import NoticeDetailView from "@/layout/components/HeaderNotice/DetailView"
 import { listNotice, getNotice, delNotice, addNotice, updateNotice } from "@/api/system/notice"
 
 export default {
   name: "Notice",
+  components: { NoticeDetailView },
   dicts: ['sys_notice_status', 'sys_notice_type'],
   data() {
     return {
@@ -296,6 +299,10 @@ export default {
           }
         }
       })
+    },
+    /** 查看公告详情 */
+    handleViewData(row) {
+      this.$refs.noticeViewRef.open(row)
     },
     /** 删除按钮操作 */
     handleDelete(row) {
