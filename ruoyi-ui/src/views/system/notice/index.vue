@@ -98,6 +98,13 @@
           <el-button
             size="mini"
             type="text"
+            icon="el-icon-user"
+            @click="handleReadUsers(scope.row)"
+            v-hasPermi="['system:notice:list']"
+          >阅读用户</el-button>
+          <el-button
+            size="mini"
+            type="text"
             icon="el-icon-edit"
             @click="handleUpdate(scope.row)"
             v-hasPermi="['system:notice:edit']"
@@ -167,16 +174,18 @@
     </el-dialog>
 
     <notice-detail-view ref="noticeViewRef" />
+    <read-users-dialog ref="readUsersRef" />
   </div>
 </template>
 
 <script>
 import NoticeDetailView from "@/layout/components/HeaderNotice/DetailView"
+import ReadUsersDialog from "./ReadUsers"
 import { listNotice, getNotice, delNotice, addNotice, updateNotice } from "@/api/system/notice"
 
 export default {
   name: "Notice",
-  components: { NoticeDetailView },
+  components: { NoticeDetailView, ReadUsersDialog },
   dicts: ['sys_notice_status', 'sys_notice_type'],
   data() {
     return {
@@ -303,6 +312,10 @@ export default {
     /** 查看公告详情 */
     handleViewData(row) {
       this.$refs.noticeViewRef.open(row)
+    },
+    /** 查看已读用户 */
+    handleReadUsers(row) {
+      this.$refs.readUsersRef.open(row)
     },
     /** 删除按钮操作 */
     handleDelete(row) {

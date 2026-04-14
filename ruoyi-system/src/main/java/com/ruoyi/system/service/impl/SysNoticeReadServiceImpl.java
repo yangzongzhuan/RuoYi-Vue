@@ -1,10 +1,11 @@
 package com.ruoyi.system.service.impl;
 
 import java.util.List;
+import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import com.ruoyi.system.domain.SysNoticeRead;
 import com.ruoyi.system.domain.SysNotice;
+import com.ruoyi.system.domain.SysNoticeRead;
 import com.ruoyi.system.mapper.SysNoticeReadMapper;
 import com.ruoyi.system.service.ISysNoticeReadService;
 
@@ -60,6 +61,15 @@ public class SysNoticeReadServiceImpl implements ISysNoticeReadService
             return;
         }
         noticeReadMapper.insertNoticeReadBatch(userId, noticeIds);
+    }
+
+    /**
+     * 查询已阅读某公告的用户列表
+     */
+    @Override
+    public List<Map<String, Object>> selectReadUsersByNoticeId(Long noticeId, String searchValue)
+    {
+        return noticeReadMapper.selectReadUsersByNoticeId(noticeId, searchValue);
     }
 
     /**
