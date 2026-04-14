@@ -127,7 +127,7 @@ public class SysNoticeController extends BaseController
      * 已读用户列表数据
      */
     @PreAuthorize("@ss.hasPermi('system:notice:list')")
-    @PostMapping("/readUsers/list")
+    @GetMapping("/readUsers/list")
     @ResponseBody
     public TableDataInfo readUsersList(Long noticeId, String searchValue)
     {
