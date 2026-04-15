@@ -5,7 +5,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import com.fasterxml.jackson.annotation.JacksonAnnotationsInside;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import tools.jackson.databind.annotation.JsonSerialize;
 import com.ruoyi.common.config.serializer.SensitiveJsonSerializer;
 import com.ruoyi.common.enums.DesensitizedType;
 
@@ -15,7 +15,7 @@ import com.ruoyi.common.enums.DesensitizedType;
  * @author ruoyi
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.FIELD)
+@Target({ ElementType.FIELD, ElementType.METHOD })
 @JacksonAnnotationsInside
 @JsonSerialize(using = SensitiveJsonSerializer.class)
 public @interface Sensitive
