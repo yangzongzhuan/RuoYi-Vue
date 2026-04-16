@@ -94,6 +94,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <set>
             <if test="columnComment != null">column_comment = #{columnComment},</if>
             <if test="javaType != null">java_type = #{javaType},</if>
+            <if test="columnType != null">column_type = #{columnType},</if>
             <if test="javaField != null">java_field = #{javaField},</if>
             <if test="isInsert != null">is_insert = #{isInsert},</if>
             <if test="isEdit != null">is_edit = #{isEdit},</if>
