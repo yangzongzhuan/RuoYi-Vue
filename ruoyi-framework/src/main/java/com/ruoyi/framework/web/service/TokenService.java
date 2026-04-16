@@ -1,9 +1,9 @@
 package com.ruoyi.framework.web.service;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
-import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +22,7 @@ import com.ruoyi.common.utils.uuid.IdUtils;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * token验证处理
@@ -228,5 +229,42 @@ public class TokenService
     private String getTokenKey(String uuid)
     {
         return CacheConstants.LOGIN_TOKEN_KEY + uuid;
+    }
+
+    /**
+     * 角色权限变更后，刷新所有持有该角色的在线用户权限
+     *
+     * @param roleId            变更的角色ID
+     * @param permissionService 权限服务
+     */
+    public void refreshPermissionByRoleId(Long roleId, SysPermissionService permissionService)
+    {
+        // 扫描所有在线 token
+        String pattern = CacheConstants.LOGIN_TOKEN_KEY + "*";
+        Collection<String> keys = redisCache.keys(pattern);
+        if (keys == null || keys.isEmpty())
+        {
+            return;
+        }
+        for (String key : keys)
+        {
+            LoginUser loginUser = redisCache.getCacheObject(key);
+            if (loginUser == null || loginUser.getUser() == null || loginUser.getUser().isAdmin())
+            {
+                // 管理员拥有所有权限，跳过
+                continue;
+            }
+            // 判断该用户是否拥有此角色
+            boolean hasRole = loginUser.getUser().getRoles() != null
+                    && loginUser.getUser().getRoles().stream().anyMatch(r -> roleId.equals(r.getRoleId()));
+            if (!hasRole)
+            {
+                continue;
+            }
+            // 刷新权限缓存
+            loginUser.setPermissions(permissionService.getMenuPermission(loginUser.getUser()));
+            refreshToken(loginUser);
+            log.info("角色[{}]权限变更，已刷新在线用户[{}]的权限缓存", roleId, loginUser.getUsername());
+        }
     }
 }
