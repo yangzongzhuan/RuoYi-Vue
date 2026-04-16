@@ -19,10 +19,8 @@ import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.core.domain.entity.SysDept;
 import com.ruoyi.common.core.domain.entity.SysRole;
 import com.ruoyi.common.core.domain.entity.SysUser;
-import com.ruoyi.common.core.domain.model.LoginUser;
 import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.common.enums.BusinessType;
-import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.common.utils.poi.ExcelUtil;
 import com.ruoyi.framework.web.service.SysPermissionService;
 import com.ruoyi.framework.web.service.TokenService;
@@ -128,14 +126,8 @@ public class SysRoleController extends BaseController
         
         if (roleService.updateRole(role) > 0)
         {
-            // 更新缓存用户权限
-            LoginUser loginUser = getLoginUser();
-            if (StringUtils.isNotNull(loginUser.getUser()) && !loginUser.getUser().isAdmin())
-            {
-                loginUser.setUser(userService.selectUserByUserName(loginUser.getUser().getUserName()));
-                loginUser.setPermissions(permissionService.getMenuPermission(loginUser.getUser()));
-                tokenService.setLoginUser(loginUser);
-            }
+            // 刷新所有持有该角色的在线用户权限
+            tokenService.refreshPermissionByRoleId(role.getRoleId(), permissionService);
             return success();
         }
         return error("修改角色'" + role.getRoleName() + "'失败，请联系管理员");
