@@ -1,9 +1,9 @@
 <template>
-  <el-form ref="form" :model="user" :rules="rules" label-width="80px">
+  <el-form ref="form" :model="user" :rules="formRules" label-width="80px">
     <el-form-item label="旧密码" prop="oldPassword">
       <el-input v-model="user.oldPassword" placeholder="请输入旧密码" type="password" show-password/>
     </el-form-item>
-    <el-form-item label="新密码" prop="newPassword">
+    <el-form-item label="新密码" prop="newPassword" :rules="infoPwdValidator">
       <el-input v-model="user.newPassword" placeholder="请输入新密码" type="password" show-password/>
     </el-form-item>
     <el-form-item label="确认密码" prop="confirmPassword">
@@ -18,35 +18,36 @@
 
 <script>
 import { updateUserPwd } from "@/api/system/user"
+import passwordRule from "@/utils/passwordRule"
 
 export default {
+  mixins: [passwordRule],
   data() {
-    const equalToPassword = (rule, value, callback) => {
-      if (this.user.newPassword !== value) {
-        callback(new Error("两次输入的密码不一致"))
-      } else {
-        callback()
-      }
-    }
     return {
       user: {
         oldPassword: undefined,
         newPassword: undefined,
         confirmPassword: undefined
-      },
-      // 表单校验
-      rules: {
+      }
+    }
+  },
+  computed: {
+    formRules() {
+      return {
         oldPassword: [
           { required: true, message: "旧密码不能为空", trigger: "blur" }
         ],
-        newPassword: [
-          { required: true, message: "新密码不能为空", trigger: "blur" },
-          { min: 6, max: 20, message: "长度在 6 到 20 个字符", trigger: "blur" },
-          { pattern: /^[^<>"'|\\]+$/, message: "不能包含非法字符：< > \" ' \\\ |", trigger: "blur" }
-        ],
         confirmPassword: [
           { required: true, message: "确认密码不能为空", trigger: "blur" },
-          { required: true, validator: equalToPassword, trigger: "blur" }
+          {
+            validator: (rule, value, callback) => {
+              if (this.user.newPassword !== value) {
+                callback(new Error("两次输入的密码不一致"))
+              } else {
+                callback()
+              }
+            }, trigger: "blur"
+          }
         ]
       }
     }

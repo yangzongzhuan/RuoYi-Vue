@@ -7,7 +7,7 @@
           <svg-icon slot="prefix" icon-class="user" class="el-input__icon input-icon" />
         </el-input>
       </el-form-item>
-      <el-form-item prop="password">
+      <el-form-item prop="password" :rules="registerPwdValidator">
         <el-input
           v-model="registerForm.password"
           type="password"
@@ -68,18 +68,12 @@
 
 <script>
 import { getCodeImg, register } from "@/api/login"
+import passwordRule from "@/utils/passwordRule"
 import defaultSettings from '@/settings'
 
 export default {
-  name: "Register",
+  mixins: [passwordRule],
   data() {
-    const equalToPassword = (rule, value, callback) => {
-      if (this.registerForm.password !== value) {
-        callback(new Error("两次输入的密码不一致"))
-      } else {
-        callback()
-      }
-    }
     return {
       title: process.env.VUE_APP_TITLE,
       footerContent: defaultSettings.footerContent,
@@ -91,24 +85,31 @@ export default {
         code: "",
         uuid: ""
       },
-      registerRules: {
+      loading: false,
+      captchaEnabled: true
+    }
+  },
+  computed: {
+    registerRules() {
+      return {
         username: [
           { required: true, trigger: "blur", message: "请输入您的账号" },
           { min: 2, max: 20, message: '用户账号长度必须介于 2 和 20 之间', trigger: 'blur' }
         ],
-        password: [
-          { required: true, trigger: "blur", message: "请输入您的密码" },
-          { min: 5, max: 20, message: "用户密码长度必须介于 5 和 20 之间", trigger: "blur" },
-          { pattern: /^[^<>"'|\\]+$/, message: "不能包含非法字符：< > \" ' \\\ |", trigger: "blur" }
-        ],
         confirmPassword: [
-          { required: true, trigger: "blur", message: "请再次输入您的密码" },
-          { required: true, validator: equalToPassword, trigger: "blur" }
+          { required: true, message: "请再次输入您的密码", trigger: "blur" },
+          {
+            validator: (rule, value, callback) => {
+              if (this.registerForm.password !== value) {
+                callback(new Error("两次输入的密码不一致"))
+              } else {
+                callback()
+              }
+            }, trigger: "blur"
+          }
         ],
         code: [{ required: true, trigger: "change", message: "请输入验证码" }]
-      },
-      loading: false,
-      captchaEnabled: true
+      }
     }
   },
   created() {
