@@ -116,7 +116,7 @@
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item v-if="form.userId == undefined" label="用户密码" prop="password">
+            <el-form-item v-if="form.userId == undefined" label="用户密码" prop="password" :rules="pwdValidator">
               <el-input v-model="form.password" placeholder="请输入用户密码" type="password" maxlength="20" show-password />
             </el-form-item>
           </el-col>
@@ -181,9 +181,11 @@ import "@riophae/vue-treeselect/dist/vue-treeselect.css"
 import TreePanel from "@/components/TreePanel"
 import ExcelImportDialog from "@/components/ExcelImportDialog"
 import UserViewDrawer from "./view"
+import passwordRule from "@/utils/passwordRule"
 
 export default {
   name: "User",
+  mixins: [passwordRule],
   dicts: ['sys_normal_disable', 'sys_user_sex'],
   components: { Treeselect, TreePanel, ExcelImportDialog, UserViewDrawer },
   data() {
@@ -247,11 +249,6 @@ export default {
         ],
         nickName: [
           { required: true, message: "用户昵称不能为空", trigger: "blur" }
-        ],
-        password: [
-          { required: true, message: "用户密码不能为空", trigger: "blur" },
-          { min: 5, max: 20, message: '用户密码长度必须介于 5 和 20 之间', trigger: 'blur' },
-          { pattern: /^[^<>"'|\\]+$/, message: "不能包含非法字符：< > \" ' \\\ |", trigger: "blur" }
         ],
         email: [
           {
@@ -405,17 +402,11 @@ export default {
     },
     /** 重置密码按钮操作 */
     handleResetPwd(row) {
-      this.$prompt('请输入"' + row.userName + '"的新密码', "提示", {
+      this.$prompt(`请输入「${row.userName}」的新密码`, "重置密码", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         closeOnClickModal: false,
-        inputPattern: /^.{5,20}$/,
-        inputErrorMessage: "用户密码长度必须介于 5 和 20 之间",
-        inputValidator: (value) => {
-          if (/<|>|"|'|\||\\/.test(value)) {
-            return "不能包含非法字符：< > \" ' \\\ |"
-          }
-        },
+        inputValidator: this.pwdPromptValidator
       }).then(({ value }) => {
         resetUserPwd(row.userId, value).then(() => {
           this.$modal.msgSuccess("修改成功，新密码是：" + value)
