@@ -55,8 +55,17 @@ public class ResourcesConfig implements WebMvcConfigurer
     public CorsFilter corsFilter()
     {
         CorsConfiguration config = new CorsConfiguration();
-        // 设置访问源地址
-        config.addAllowedOriginPattern("*");
+        // 设置访问源地址（从配置注入，不再硬编码 *）
+        // 支持通过环境变量 CORS_ALLOWED_ORIGINS 注入多个域名，逗号分隔
+        String origins = System.getenv().getOrDefault("CORS_ALLOWED_ORIGINS", "");
+        if (origins.isBlank())
+        {
+            origins = "http://localhost:80"; // 安全默认值：仅本机
+        }
+        for (String origin : origins.split(","))
+        {
+            config.addAllowedOriginPattern(origin.trim());
+        }
         // 设置访问源请求头
         config.addAllowedHeader("*");
         // 设置访问源请求方法

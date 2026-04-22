@@ -40,6 +40,14 @@ public class DruidConfig
         return druidProperties.dataSource(dataSource);
     }
 
+    /**
+     * 获取主库数据源（用于配置校验）
+     */
+    public DruidDataSource getMasterDataSource()
+    {
+        return SpringUtils.getBean("masterDataSource");
+    }
+
     @Bean
     @ConfigurationProperties("spring.datasource.druid.slave")
     @ConditionalOnProperty(prefix = "spring.datasource.druid.slave", name = "enabled", havingValue = "true")
@@ -47,6 +55,14 @@ public class DruidConfig
     {
         DruidDataSource dataSource = DruidDataSourceBuilder.create().build();
         return druidProperties.dataSource(dataSource);
+    }
+
+    /**
+     * 获取从库数据源（用于配置校验）
+     */
+    public DruidDataSource getSlaveDataSource()
+    {
+        return SpringUtils.getBean("slaveDataSource");
     }
 
     @Bean(name = "dynamicDataSource")

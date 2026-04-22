@@ -3,7 +3,6 @@ package com.ruoyi.common.xss;
 import com.ruoyi.common.utils.StringUtils;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
@@ -13,7 +12,17 @@ import java.util.regex.Pattern;
  */
 public class XssValidator implements ConstraintValidator<Xss, String>
 {
-    private static final String HTML_PATTERN = "<(\\S*?)[^>]*>.*?|<.*? />";
+    /** 匹配常见 HTML 标签 */
+    private static final Pattern HTML_TAG_PATTERN = Pattern.compile(
+        "<(\\w+)[^>]*>.*?</\\1>|<(\\w+)[^>]*/?>",
+        Pattern.CASE_INSENSITIVE | Pattern.DOTALL
+    );
+
+    /** 匹配事件属性（onxxx=）和 javascript: 伪协议 */
+    private static final Pattern DANGEROUS_ATTR_PATTERN = Pattern.compile(
+        "\\bon\\w+\\s*=|javascript\\s*:|vbscript\\s*:|data\\s*:",
+        Pattern.CASE_INSENSITIVE
+    );
 
     @Override
     public boolean isValid(String value, ConstraintValidatorContext constraintValidatorContext)
@@ -27,13 +36,7 @@ public class XssValidator implements ConstraintValidator<Xss, String>
 
     public static boolean containsHtml(String value)
     {
-        StringBuilder sHtml = new StringBuilder();
-        Pattern pattern = Pattern.compile(HTML_PATTERN);
-        Matcher matcher = pattern.matcher(value);
-        while (matcher.find())
-        {
-            sHtml.append(matcher.group());
-        }
-        return pattern.matcher(sHtml).matches();
+        return HTML_TAG_PATTERN.matcher(value).find()
+                || DANGEROUS_ATTR_PATTERN.matcher(value).find();
     }
 }

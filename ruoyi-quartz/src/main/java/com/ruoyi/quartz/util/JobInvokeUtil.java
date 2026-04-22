@@ -4,6 +4,9 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.LinkedList;
 import java.util.List;
+import com.ruoyi.common.constant.ScheduleConstants;
+import com.ruoyi.common.exception.job.TaskException;
+import com.ruoyi.common.exception.job.TaskException.Code;
 import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.common.utils.spring.SpringUtils;
 import com.ruoyi.quartz.domain.SysJob;
@@ -24,19 +27,12 @@ public class JobInvokeUtil
     {
         String invokeTarget = sysJob.getInvokeTarget();
         String beanName = getBeanName(invokeTarget);
+        validateInvokeTarget(invokeTarget, beanName);
+
+        Object bean = SpringUtils.getBean(beanName);
         String methodName = getMethodName(invokeTarget);
         List<Object[]> methodParams = getMethodParams(invokeTarget);
-
-        if (!isValidClassName(beanName))
-        {
-            Object bean = SpringUtils.getBean(beanName);
-            invokeMethod(bean, methodName, methodParams);
-        }
-        else
-        {
-            Object bean = Class.forName(beanName).getDeclaredConstructor().newInstance();
-            invokeMethod(bean, methodName, methodParams);
-        }
+        invokeMethod(bean, methodName, methodParams);
     }
 
     /**
@@ -63,19 +59,32 @@ public class JobInvokeUtil
     }
 
     /**
-     * 校验是否为为class包名
-     * 
-     * @param invokeTarget 名称
-     * @return true是 false否
+     * 仅允许调用 Spring 容器里的白名单任务 Bean，彻底禁用 Class.forName 任意类执行路径。
      */
-    public static boolean isValidClassName(String invokeTarget)
+    private static void validateInvokeTarget(String invokeTarget, String beanName) throws TaskException
     {
-        return StringUtils.countMatches(invokeTarget, ".") > 1;
+        if (StringUtils.countMatches(StringUtils.substringBefore(invokeTarget, "("), ".") > 1)
+        {
+            throw new TaskException("invokeTarget 不允许使用类名方式调用，只允许配置受管 Spring Bean", Code.CONFIG_ERROR);
+        }
+
+        if (!SpringUtils.containsBean(beanName))
+        {
+            throw new TaskException("任务目标 Bean 不存在: " + beanName, Code.CONFIG_ERROR);
+        }
+
+        Class<?> beanType = SpringUtils.getType(beanName);
+        String beanPackageName = beanType == null || beanType.getPackage() == null ? "" : beanType.getPackage().getName();
+        if (!StringUtils.startsWithAny(beanPackageName, ScheduleConstants.JOB_WHITELIST_STR)
+                || StringUtils.startsWithAny(beanPackageName, ScheduleConstants.JOB_ERROR_STR))
+        {
+            throw new TaskException("任务目标 Bean 不在授权范围内: " + beanName, Code.CONFIG_ERROR);
+        }
     }
 
     /**
      * 获取bean名称
-     * 
+     *
      * @param invokeTarget 目标字符串
      * @return bean名称
      */
@@ -87,7 +96,7 @@ public class JobInvokeUtil
 
     /**
      * 获取bean方法
-     * 
+     *
      * @param invokeTarget 目标字符串
      * @return method方法
      */
@@ -99,7 +108,7 @@ public class JobInvokeUtil
 
     /**
      * 获取method方法参数相关列表
-     * 
+     *
      * @param invokeTarget 目标字符串
      * @return method方法相关参数列表
      */
@@ -146,7 +155,7 @@ public class JobInvokeUtil
 
     /**
      * 获取参数类型
-     * 
+     *
      * @param methodParams 参数相关列表
      * @return 参数类型列表
      */
@@ -164,7 +173,7 @@ public class JobInvokeUtil
 
     /**
      * 获取参数值
-     * 
+     *
      * @param methodParams 参数相关列表
      * @return 参数值列表
      */

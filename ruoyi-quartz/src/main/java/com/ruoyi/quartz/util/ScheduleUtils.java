@@ -131,11 +131,11 @@ public class ScheduleUtils
         int count = StringUtils.countMatches(packageName, ".");
         if (count > 1)
         {
-            return StringUtils.startsWithAny(invokeTarget, Constants.JOB_WHITELIST_STR);
+            return StringUtils.startsWithAny(invokeTarget, ScheduleConstants.JOB_WHITELIST_STR);
         }
         Object obj = SpringUtils.getBean(StringUtils.split(invokeTarget, ".")[0]);
         String beanPackageName = obj.getClass().getPackage().getName();
-        return StringUtils.startsWithAny(beanPackageName, Constants.JOB_WHITELIST_STR)
-                && !StringUtils.startsWithAny(beanPackageName, Constants.JOB_ERROR_STR);
+        return StringUtils.startsWithAny(beanPackageName, ScheduleConstants.JOB_WHITELIST_STR)
+                && !StringUtils.startsWithAny(beanPackageName, ScheduleConstants.JOB_ERROR_STR);
     }
 }

@@ -12,6 +12,17 @@ public class ScheduleConstants
     /** 执行目标key */
     public static final String TASK_PROPERTIES = "TASK_PROPERTIES";
 
+    /**
+     * 定时任务白名单配置（仅允许访问的包名，如其他需要可以自行添加）
+     */
+    public static final String[] JOB_WHITELIST_STR = { "com.ruoyi.quartz.task" };
+
+    /**
+     * 定时任务违规的字符
+     */
+    public static final String[] JOB_ERROR_STR = { "java.net.URL", "javax.naming.InitialContext", "org.yaml.snakeyaml",
+            "org.springframework", "org.apache", "com.ruoyi.common.utils.file", "com.ruoyi.common.config", "com.ruoyi.generator" };
+
     /** 默认 */
     public static final String MISFIRE_DEFAULT = "0";
 
