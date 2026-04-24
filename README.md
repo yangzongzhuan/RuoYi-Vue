@@ -1,3 +1,72 @@
+<!-- ENTERPRISE_BASE_V2_OVERVIEW -->
+# Enterprise Base V2 Backend
+
+基于 **RuoYi-Vue Spring Boot 3** 分支改造的企业管理基座后端，当前分支为 `security-p0-p1-hardening`。
+
+## 仓库
+
+- 后端：`https://github.com/zwd0313/RuoYi-Vue`（分支：`security-p0-p1-hardening`）
+- 前端：`https://github.com/zwd0313/enterprise-base-v2-frontend`
+
+## 当前状态
+
+- 已完成 P0+P1 安全加固并在阿里云正式环境覆盖部署。
+- 已运行端口：`8086`（阿里云 `47.110.139.136`）。
+- 已对接 React + Ant Design 前端，前端端口：`3002`。
+- 已验证接口：`/login`、`/getInfo`、`/system/user/profile`、系统管理与系统监控主要列表接口。
+
+## 主要加固内容
+
+- JWT 弱密钥校验：要求 `token.secret` 不低于 32 位。
+- 定时任务调用目标 RCE 风险收敛。
+- Druid/Swagger 等生产暴露风险收敛。
+- CORS、XSS、凭证配置等安全配置加固。
+- Druid 从库未启用时容错，避免配置校验阻断启动。
+
+## 技术栈
+
+- Java 17
+- Spring Boot 3
+- Spring Security
+- MyBatis
+- MySQL 8
+- Redis
+- Quartz
+- Druid
+
+## 本地构建
+
+```bash
+mvn clean package -DskipTests
+```
+
+启动入口：`ruoyi-admin`。
+
+```bash
+cd ruoyi-admin
+mvn spring-boot:run
+```
+
+默认端口见 `ruoyi-admin/src/main/resources/application.yml`。
+
+## 配置注意事项
+
+生产环境不要提交真实密钥。以下配置应通过安全方式注入或在服务器私有配置中维护：
+
+- `token.secret`：至少 32 位随机字符串
+- 数据库账号与密码
+- Redis 密码
+- CORS 允许来源
+- Swagger/Druid 是否启用
+
+## 前端适配说明
+
+新前端仓库为 React + TypeScript 实现，不再使用本仓库内置的 `ruoyi-ui` 作为主前端。当前前端对 RuoYi 原始响应格式做了兼容，包括顶层分页 `{ rows, total }` 和菜单/部门树形列表组装。
+
+---
+
+## 上游 RuoYi 说明
+
 <p align="center">
 	<img alt="logo" src="https://oscimg.oschina.net/oscnet/up-d3d0a9303e11d522a06cd263f3079027715.png">
 </p>
