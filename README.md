@@ -6,13 +6,13 @@
 ## 仓库
 
 - 后端：`https://github.com/zwd0313/RuoYi-Vue`（分支：`security-p0-p1-hardening`）
-- 前端：`https://github.com/zwd0313/enterprise-base-v2-frontend`
+- 管理中台前端：`https://github.com/zwd0313/enterprise-base-v2-frontend`
 
 ## 当前状态
 
 - 已完成 P0+P1 安全加固并在阿里云正式环境覆盖部署。
 - 已运行端口：`8086`（阿里云 `47.110.139.136`）。
-- 已对接 React + Ant Design 前端，前端端口：`3002`。
+- 已对接 React + Ant Design 管理中台前端，前端端口：`3002`。
 - 已验证接口：`/login`、`/getInfo`、`/system/user/profile`、系统管理与系统监控主要列表接口。
 
 ## 主要加固内容
@@ -61,7 +61,9 @@ mvn spring-boot:run
 
 ## 前端适配说明
 
-新前端仓库为 React + TypeScript 实现，不再使用本仓库内置的 `ruoyi-ui` 作为主前端。当前前端对 RuoYi 原始响应格式做了兼容，包括顶层分页 `{ rows, total }` 和菜单/部门树形列表组装。
+当前 `enterprise-base-v2-frontend` 明确定位为 **管理中台 / 后台管理端**，用于系统管理、权限配置、组织架构、日志审计、参数配置与监控运维；业务前台将单独建设新前端。
+
+管理中台为 React + TypeScript 实现，不再使用本仓库内置的 `ruoyi-ui` 作为主前端。当前前端对 RuoYi 原始响应格式做了兼容，包括顶层分页 `{ rows, total }` 和菜单/部门树形列表组装。
 
 ---
 
