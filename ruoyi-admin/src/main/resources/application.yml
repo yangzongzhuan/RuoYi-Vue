@@ -20,6 +20,12 @@ server:
   servlet:
     # 应用的访问路径
     context-path: /
+    encoding:
+      enabled: true
+      charset: UTF-8
+      force: true
+      forceRequest: true
+      forceResponse: true
   tomcat:
     # tomcat的URI编码
     uri-encoding: UTF-8
@@ -63,6 +69,8 @@ spring:
   jackson:
     time-zone: GMT+8
     date-format: yyyy-MM-dd HH:mm:ss
+    generator: { write_dates_as_timestamps: false }
+    charset: UTF-8
   # 服务模块
   devtools:
     restart:

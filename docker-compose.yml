@@ -1,0 +1,87 @@
+services:
+  # MySQL 数据库
+  mysql:
+    image: mysql:8.0
+    container_name: ruoyi-mysql
+    restart: always
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: ruoyi123456
+      MYSQL_DATABASE: ry-vue
+      TZ: Asia/Shanghai
+      LANG: en_US.UTF-8
+      LC_ALL: en_US.UTF-8
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./sql:/docker-entrypoint-initdb.d
+    command:
+      --default-authentication-plugin=mysql_native_password
+      --character-set-server=utf8mb4
+      --collation-server=utf8mb4_unicode_ci
+      --skip-character-set-client-handshake
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks:
+      - ruoyi-network
+
+  # Redis 缓存
+  redis:
+    image: redis:7-alpine
+    container_name: ruoyi-redis
+    restart: always
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - ruoyi-network
+
+  # 后端 Spring Boot
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    container_name: ruoyi-backend
+    restart: always
+    ports:
+      - "8091:8080"
+    environment:
+      SPRING_PROFILES_ACTIVE: druid
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/ruoyi?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai&useSSL=false&allowPublicKeyRetrieval=true
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: ruoyi123456
+      SPRING_DATA_REDIS_HOST: redis
+      SPRING_DATA_REDIS_PORT: 6379
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    networks:
+      - ruoyi-network
+
+  # 前端 Nginx
+  frontend:
+    build:
+      context: ./ruoyi-ui
+      dockerfile: Dockerfile.nginx
+    container_name: ruoyi-frontend
+    restart: always
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    networks:
+      - ruoyi-network
+
+volumes:
+  mysql_data:
+  redis_data:
+
+networks:
+  ruoyi-network:
+    driver: bridge

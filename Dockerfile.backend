@@ -1,0 +1,42 @@
+# 后端 Dockerfile - 多阶段构建
+FROM maven:3.9-eclipse-temurin-17-alpine AS builder
+
+WORKDIR /app
+
+# 复制 pom.xml 和依赖
+COPY pom.xml .
+COPY ruoyi-admin/pom.xml ./ruoyi-admin/pom.xml
+COPY ruoyi-framework/pom.xml ./ruoyi-framework/pom.xml
+COPY ruoyi-system/pom.xml ./ruoyi-system/pom.xml
+COPY ruoyi-quartz/pom.xml ./ruoyi-quartz/pom.xml
+COPY ruoyi-generator/pom.xml ./ruoyi-generator/pom.xml
+COPY ruoyi-common/pom.xml ./ruoyi-common/pom.xml
+RUN mvn dependency:go-offline -B
+
+# 复制源代码并构建
+COPY ruoyi-admin/src ./ruoyi-admin/src
+COPY ruoyi-framework/src ./ruoyi-framework/src
+COPY ruoyi-system/src ./ruoyi-system/src
+COPY ruoyi-quartz/src ./ruoyi-quartz/src
+COPY ruoyi-generator/src ./ruoyi-generator/src
+COPY ruoyi-common/src ./ruoyi-common/src
+RUN mvn clean package -DskipTests -B
+
+# 运行阶段
+FROM eclipse-temurin:17-jre-alpine
+
+WORKDIR /app
+
+# 创建上传目录
+RUN mkdir -p /app/uploadPath
+
+# 从构建阶段复制 jar 文件
+COPY --from=builder /app/ruoyi-admin/target/ruoyi-admin.jar ./ruoyi-admin.jar
+
+# 复制配置文件
+COPY ruoyi-admin/src/main/resources/application.yml ./config/
+COPY ruoyi-admin/src/main/resources/application-druid.yml ./config/
+
+EXPOSE 8080
+
+ENTRYPOINT ["java", "-jar", "ruoyi-admin.jar", "--spring.config.location=file:./config/"]

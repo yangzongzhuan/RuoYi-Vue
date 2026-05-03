@@ -1,0 +1,11 @@
+.git
+target/
+logs/
+*.md
+sql/
+doc/
+bin/
+Dockerfile*
+docker-compose*
+.dockerignore
+.gitignore
