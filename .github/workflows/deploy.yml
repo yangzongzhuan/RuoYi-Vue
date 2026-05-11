@@ -22,4 +22,5 @@ jobs:
           key: ${{ secrets.SERVER_SSH_KEY }}
           script: |
             cd /opt/RuoYi-Vue
-            ./ry.sh
+            chmod -R +x *.sh
+            ./ry.sh start
