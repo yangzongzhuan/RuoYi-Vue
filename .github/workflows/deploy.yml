@@ -5,7 +5,7 @@ on:
     branches:
       - master
       - hai_dev
-
+#test
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -17,9 +17,9 @@ jobs:
       - name: Deploy to Server
         uses: appleboy/ssh-action@master
         with:
-          host: ${{ secrets.HOST }}
-          username: ${{ secrets.SER }}
-          key: ${{ secrets.SSH_KEY }}
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
           script: |
             cd /opt/Ruoyi-Vue
             ./deploy.sh
