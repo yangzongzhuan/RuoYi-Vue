@@ -22,4 +22,4 @@ jobs:
           key: ${{ secrets.SERVER_SSH_KEY }}
           script: |
             cd /opt/RuoYi-Vue
-            ./deploy.sh
+            ./ry.sh
