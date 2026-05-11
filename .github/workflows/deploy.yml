@@ -23,4 +23,4 @@ jobs:
           script: |
             cd /opt/RuoYi-Vue
             chmod -R +x *.sh
-            ./ry.sh start
+            bash ./ry.sh restart
