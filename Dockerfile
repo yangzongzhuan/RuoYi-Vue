@@ -8,7 +8,7 @@ WORKDIR /app
 # 注意：这需要你在 GitHub Actions 步骤中先进行 mvn clean package
 COPY ./ruoyi-admin/target/ruoyi-admin.jar /app/app.jar
 
-# 4. 暴露后端端口（RuoYi 默认是 8080）
+# 4. 暴露后端端口（RuoYi 默认是 8080）1
 EXPOSE 8080
 
 # 5. 启动命令
