@@ -7,11 +7,11 @@ ruoyi:
   # 版权年份
   copyrightYear: 2026
   # 文件路径 示例（ Windows配置D:/ruoyi/uploadPath，Linux配置 /home/ruoyi/uploadPath）
-  profile: D:/ruoyi/uploadPath
+  profile: /opt/ruoyi/uploadPath
   # 获取ip地址开关
   addressEnabled: false
   # 验证码类型 math 数字计算 char 字符验证1
-  captchaType: none
+  captchaType: math
 
 # 开发环境配置
 server:
@@ -72,7 +72,7 @@ spring:
     # redis 配置
     redis:
       # 地址
-      host: 47.116.209.164
+      host: redis
       # 端口，默认为6379
       port: 6379
       # 数据库索引
