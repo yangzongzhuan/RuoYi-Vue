@@ -15,10 +15,10 @@ jobs:
         uses: actions/checkout@v4
 
       # 1. 设置 Java 环境并进行 Maven 打包
-      - name: Set up JDK 8
+      - name: Set up JDK 17
         uses: actions/setup-java@v3
         with:
-          java-version: '8'
+          java-version: '17'
           distribution: 'temurin'
           cache: maven
 
