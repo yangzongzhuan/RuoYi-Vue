@@ -72,9 +72,37 @@ jobs:
           curl -X POST "${{ secrets.FEISHU_WEBHOOK }}" \
             -H "Content-Type: application/json" \
             -d '{
-              "msg_type": "text",
-              "content": {
-                "text": "✅ 若依系统自动部署成功\n分支：${{ github.ref_name }}\n提交人：${{ github.actor }}\n提交信息：${{ github.event.head_commit.message }}\n访问地址：http://47.116.209.164"
+              "msg_type": "interactive",
+              "card": {
+                "config": {
+                  "wide_screen_mode": true
+                },
+                "header": {
+                  "title": {
+                    "tag": "plain_text",
+                    "content": "✅ 若依系统部署成功"
+                  },
+                  "template": "green"
+                },
+                "elements": [
+                  {
+                    "tag": "div",
+                    "text": {
+                      "tag": "lark_md",
+                      "content": "**项目：** 若依前后端分离系统\n**分支：** ${{ github.ref_name }}\n**提交人：** ${{ github.actor }}\n**提交信息：** ${{ github.event.head_commit.message }}"
+                    }
+                  },
+                  {
+                    "tag": "hr"
+                  },
+                  {
+                    "tag": "div",
+                    "text": {
+                      "tag": "lark_md",
+                      "content": "**部署状态：** ✅ 成功\n**访问地址：** [点击访问系统](http://47.116.209.164)\n**流水线：** [查看 GitHub Actions](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})"
+                    }
+                  }
+                ]
               }
             }'
           
@@ -85,8 +113,36 @@ jobs:
           curl -X POST "${{ secrets.FEISHU_WEBHOOK }}" \
             -H "Content-Type: application/json" \
             -d '{
-              "msg_type": "text",
-              "content": {
-                "text": "❌ 若依系统自动部署失败\n分支：${{ github.ref_name }}\n提交人：${{ github.actor }}\n提交信息：${{ github.event.head_commit.message }}\n请去 GitHub Actions 查看日志。"
+              "msg_type": "interactive",
+              "card": {
+                "config": {
+                  "wide_screen_mode": true
+                },
+                "header": {
+                  "title": {
+                    "tag": "plain_text",
+                    "content": "❌ 若依系统部署失败"
+                  },
+                  "template": "red"
+                },
+                "elements": [
+                  {
+                    "tag": "div",
+                    "text": {
+                      "tag": "lark_md",
+                      "content": "**项目：** 若依前后端分离系统\n**分支：** ${{ github.ref_name }}\n**提交人：** ${{ github.actor }}\n**提交信息：** ${{ github.event.head_commit.message }}"
+                    }
+                  },
+                  {
+                    "tag": "hr"
+                  },
+                  {
+                    "tag": "div",
+                    "text": {
+                      "tag": "lark_md",
+                      "content": "**部署状态：** ❌ 失败\n**流水线：** [点击查看失败日志](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})"
+                    }
+                  }
+                ]
               }
             }'
