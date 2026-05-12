@@ -35,6 +35,18 @@
             <artifactId>druid-spring-boot-4-starter</artifactId>
         </dependency>
 
+        <!-- Agent4J -->
+        <dependency>
+            <groupId>ink.icoding.llm</groupId>
+            <artifactId>agent4j</artifactId>
+        </dependency>
+
+        <!-- SSE支持 -->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-webmvc</artifactId>
+        </dependency>
+
     </dependencies>
 
 </project>
