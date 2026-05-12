@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - master
+      - hai_dev
 
 jobs:
   build-and-deploy:
