@@ -1,11 +1,11 @@
-name: Auto Deploy
+name: Auto Deploy (Docker Version)
 
 on:
   push:
     branches:
       - master
       - hai_dev
-#test1
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -14,6 +14,18 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      # 1. 设置 Java 环境并进行 Maven 打包
+      - name: Set up JDK 8
+        uses: actions/setup-java@v3
+        with:
+          java-version: '8'
+          distribution: 'temurin'
+          cache: maven
+
+      - name: Build with Maven
+        run: mvn clean package -DskipTests
+
+      # 2. 部署到服务器并运行 Docker
       - name: Deploy to Server
         uses: appleboy/ssh-action@master
         with:
@@ -21,6 +33,20 @@ jobs:
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SERVER_SSH_KEY }}
           script: |
+            # 停止并删除旧容器（如果有）
+            docker stop ruoyi-app || true
+            docker rm ruoyi-app || true
+            
+            # 进入目录（假设你依然需要同步代码，或者你可以直接在这里构建）
+            # 建议在服务器上构建镜像，或者在 Actions 里构建好 push 到仓库
             cd /opt/RuoYi-Vue
-            chmod -R +x *.sh
-            bash ./ry.sh restart
+            
+            # 根据当前的源码构建 Docker 镜像
+            docker build -t ruoyi-image:latest .
+            
+            # 运行新容器：将宿主机的 8080 映射到容器的 8080
+            docker run -d \
+              --name ruoyi-app \
+              -p 8080:8080 \
+              --restart always \
+              ruoyi-image:latest
