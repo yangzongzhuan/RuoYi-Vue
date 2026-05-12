@@ -64,3 +64,29 @@ jobs:
             cd /opt/ruoyi
             docker compose restart backend nginx
             docker ps
+            
+
+      - name: 飞书通知部署成功
+        if: success()
+        run: |
+          curl -X POST "${{ secrets.FEISHU_WEBHOOK }}" \
+            -H "Content-Type: application/json" \
+            -d '{
+              "msg_type": "text",
+              "content": {
+                "text": "✅ 若依系统自动部署成功\n分支：${{ github.ref_name }}\n提交人：${{ github.actor }}\n提交信息：${{ github.event.head_commit.message }}\n访问地址：http://47.116.209.164"
+              }
+            }'
+          
+
+      - name: 飞书通知部署失败
+        if: failure()
+        run: |
+          curl -X POST "${{ secrets.FEISHU_WEBHOOK }}" \
+            -H "Content-Type: application/json" \
+            -d '{
+              "msg_type": "text",
+              "content": {
+                "text": "❌ 若依系统自动部署失败\n分支：${{ github.ref_name }}\n提交人：${{ github.actor }}\n提交信息：${{ github.event.head_commit.message }}\n请去 GitHub Actions 查看日志。"
+              }
+            }'
