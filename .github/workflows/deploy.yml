@@ -1,13 +1,49 @@
-name: Deploy RuoYi Vue
+name: CI CD RuoYi Vue
 
 on:
   push:
     branches:
       - master
       - hai_dev
+    paths-ignore:
+      - '*.md'
+      - 'doc/**'
+      - 'logs/**'
+      - 'tests/allure-results/**'
+      - 'tests/allure-report/**'
 
 jobs:
+  api-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 拉取代码
+        uses: actions/checkout@v4
+
+      - name: 设置 Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: 安装测试依赖
+        run: |
+          python -m pip install --upgrade pip
+          pip install pytest requests pyyaml allure-pytest
+
+      - name: 执行接口自动化测试
+        run: |
+          rm -rf tests/allure-results
+          pytest tests/test_login.py -v --alluredir=tests/allure-results
+
+      - name: 上传 Allure 原始结果
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: allure-results
+          path: tests/allure-results
+
   build-and-deploy:
+    needs: api-test
     runs-on: ubuntu-latest
 
     steps:
@@ -64,7 +100,6 @@ jobs:
             cd /opt/ruoyi
             docker compose restart backend nginx
             docker ps
-            
 
       - name: 飞书通知部署成功
         if: success()
@@ -99,13 +134,12 @@ jobs:
                     "tag": "div",
                     "text": {
                       "tag": "lark_md",
-                      "content": "**部署状态：** ✅ 成功\n**访问地址：** [点击访问系统](http://47.116.209.164)\n**流水线：** [查看 GitHub Actions](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})"
+                      "content": "**测试状态：** ✅ 已通过\n**部署状态：** ✅ 成功\n**访问地址：** [点击访问系统](http://47.116.209.164)\n**流水线：** [查看 GitHub Actions](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})"
                     }
                   }
                 ]
               }
             }'
-          
 
       - name: 飞书通知部署失败
         if: failure()
