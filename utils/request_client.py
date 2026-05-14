@@ -26,7 +26,7 @@ class RequestClient:
             response = self.session.post(
                 url,
                 json=json_data,
-                timeout=kwargs.get("timeout", 10)
+                timeout=kwargs.get("timeout", 30)
             )
 
             allure.attach(
