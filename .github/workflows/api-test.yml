@@ -6,6 +6,11 @@ on:
       - master
       - hai_dev
 
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
 jobs:
   api-test:
     runs-on: ubuntu-latest
@@ -44,17 +49,33 @@ jobs:
         run: |
           allure generate tests/allure-results -o tests/allure-report --clean
 
-      - name: 上传 Allure HTML 报告
+      - name: 上传 Pages 报告文件
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-pages-artifact@v3
         with:
-          name: allure-report
           path: tests/allure-report
 
+  deploy-report:
+    needs: api-test
+    if: always()
+    runs-on: ubuntu-latest
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    permissions:
+      pages: write
+      id-token: write
+
+    steps:
+      - name: 发布 Allure 报告到 GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+
       - name: 飞书通知测试结果
-        if: always()
         run: |
-          if [ "${{ job.status }}" = "success" ]; then
+          if [ "${{ needs.api-test.result }}" = "success" ]; then
             STATUS="✅ 接口自动化测试通过"
             COLOR="green"
           else
@@ -92,7 +113,7 @@ jobs:
                     "tag": "div",
                     "text": {
                       "tag": "lark_md",
-                      "content": "**测试报告：** [点击查看 GitHub Actions](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})"
+                      "content": "**Allure报告：** [点击查看测试报告](${{ steps.deployment.outputs.page_url }})\n**流水线：** [查看 GitHub Actions](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})"
                     }
                   }
                 ]
