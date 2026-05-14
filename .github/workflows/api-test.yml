@@ -1,24 +1,3 @@
-      - name: 安装 Allure
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y default-jre
-          wget https://github.com/allure-framework/allure2/releases/download/2.29.0/allure-2.29.0.tgz
-          tar -zxvf allure-2.29.0.tgz
-          sudo mv allure-2.29.0 /opt/allure
-          sudo ln -s /opt/allure/bin/allure /usr/bin/allure
-
-      - name: 生成 Allure HTML 报告
-        run: |
-          allure generate tests/allure-results -o tests/allure-report --clean
-
-      - name: 上传 Allure HTML 报告
-        uses: actions/upload-artifact@v4
-        with:
-          name: allure-report
-          path: tests/allure-report
-
-
-
 name: API Test
 
 on:
@@ -47,20 +26,35 @@ jobs:
 
       - name: 执行接口自动化测试
         run: |
-          rm -rf tests/allure-results
+          rm -rf tests/allure-results tests/allure-report
           pytest tests/test_login.py -v --alluredir=tests/allure-results
 
-      - name: 上传 Allure 原始结果
+      - name: 安装 Allure
+        if: always()
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y default-jre
+          wget https://github.com/allure-framework/allure2/releases/download/2.29.0/allure-2.29.0.tgz
+          tar -zxvf allure-2.29.0.tgz
+          sudo mv allure-2.29.0 /opt/allure
+          sudo ln -s /opt/allure/bin/allure /usr/bin/allure
+
+      - name: 生成 Allure HTML 报告
+        if: always()
+        run: |
+          allure generate tests/allure-results -o tests/allure-report --clean
+
+      - name: 上传 Allure HTML 报告
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: allure-results
-          path: tests/allure-results
+          name: allure-report
+          path: tests/allure-report
 
       - name: 飞书通知测试结果
         if: always()
         run: |
-          if [ "${{ job.status }}" == "success" ]; then
+          if [ "${{ job.status }}" = "success" ]; then
             STATUS="✅ 接口自动化测试通过"
             COLOR="green"
           else
