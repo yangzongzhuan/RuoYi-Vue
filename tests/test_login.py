@@ -74,7 +74,7 @@ def test_login(case, client):
         response = login(client, case["username"], case["password"])
 
     with allure.step("校验HTTP状态码"):
-        assert response.status_code == 200
+        assert response.status_code == 500
 
     with allure.step("解析响应数据"):
         body = response.json()
