@@ -13,29 +13,64 @@ permissions:
 
 jobs:
   detect-changes:
+
     runs-on: ubuntu-latest
+
     outputs:
+
       system_changed: ${{ steps.filter.outputs.system }}
+
     steps:
+
       - name: 拉取代码
+
         uses: actions/checkout@v4
 
-      - name: 判断是否修改系统代码
-        id: filter
-        uses: dorny/paths-filter@v3
         with:
+
+          fetch-depth: 0
+
+      - name: 判断是否修改系统代码
+
+        id: filter
+
+        uses: dorny/paths-filter@v3
+
+        with:
+
+          list-files: shell
+
           filters: |
+            
             system:
+            
               - 'ruoyi-admin/**'
+            
               - 'ruoyi-common/**'
+            
               - 'ruoyi-framework/**'
+            
               - 'ruoyi-generator/**'
+            
               - 'ruoyi-quartz/**'
+            
               - 'ruoyi-system/**'
+            
               - 'ruoyi-ui/**'
+            
               - 'pom.xml'
+            
               - 'Dockerfile'
+            
               - 'docker-compose.yml'
+
+      - name: 打印变更判断结果
+
+        run: |
+          
+          echo "system_changed=${{ steps.filter.outputs.system }}"
+          
+          echo "system_files=${{ steps.filter.outputs.system_files }}"
 
   api-test:
     needs: detect-changes
@@ -147,10 +182,15 @@ jobs:
             }'
 
   build-and-deploy:
+
     needs:
+
       - detect-changes
+
       - api-test
+
     if: ${{ needs.api-test.result == 'success' && needs.detect-changes.outputs.system_changed == 'true' }}
+
     runs-on: ubuntu-latest
 
     steps:
