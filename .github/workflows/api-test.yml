@@ -1,3 +1,24 @@
+      - name: 安装 Allure
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y default-jre
+          wget https://github.com/allure-framework/allure2/releases/download/2.29.0/allure-2.29.0.tgz
+          tar -zxvf allure-2.29.0.tgz
+          sudo mv allure-2.29.0 /opt/allure
+          sudo ln -s /opt/allure/bin/allure /usr/bin/allure
+
+      - name: 生成 Allure HTML 报告
+        run: |
+          allure generate tests/allure-results -o tests/allure-report --clean
+
+      - name: 上传 Allure HTML 报告
+        uses: actions/upload-artifact@v4
+        with:
+          name: allure-report
+          path: tests/allure-report
+
+
+
 name: API Test
 
 on:
@@ -35,3 +56,51 @@ jobs:
         with:
           name: allure-results
           path: tests/allure-results
+
+      - name: 飞书通知测试结果
+        if: always()
+        run: |
+          if [ "${{ job.status }}" == "success" ]; then
+            STATUS="✅ 接口自动化测试通过"
+            COLOR="green"
+          else
+            STATUS="❌ 接口自动化测试失败"
+            COLOR="red"
+          fi
+
+          curl -X POST "${{ secrets.FEISHU_WEBHOOK }}" \
+            -H "Content-Type: application/json" \
+            -d '{
+              "msg_type": "interactive",
+              "card": {
+                "config": {
+                  "wide_screen_mode": true
+                },
+                "header": {
+                  "title": {
+                    "tag": "plain_text",
+                    "content": "'"${STATUS}"'"
+                  },
+                  "template": "'"${COLOR}"'"
+                },
+                "elements": [
+                  {
+                    "tag": "div",
+                    "text": {
+                      "tag": "lark_md",
+                      "content": "**项目：** 若依接口自动化测试\n**分支：** ${{ github.ref_name }}\n**提交人：** ${{ github.actor }}\n**提交信息：** ${{ github.event.head_commit.message }}"
+                    }
+                  },
+                  {
+                    "tag": "hr"
+                  },
+                  {
+                    "tag": "div",
+                    "text": {
+                      "tag": "lark_md",
+                      "content": "**测试报告：** [点击查看 GitHub Actions](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})"
+                    }
+                  }
+                ]
+              }
+            }'
