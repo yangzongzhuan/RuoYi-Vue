@@ -1,0 +1,249 @@
+name: CI CD RuoYi Vue
+
+on:
+  push:
+    branches:
+      - master
+      - hai_dev
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  detect-changes:
+    runs-on: ubuntu-latest
+    outputs:
+      system_changed: ${{ steps.filter.outputs.system }}
+    steps:
+      - name: 拉取代码
+        uses: actions/checkout@v4
+
+      - name: 判断是否修改系统代码
+        id: filter
+        uses: dorny/paths-filter@v3
+        with:
+          filters: |
+            system:
+              - 'ruoyi-admin/**'
+              - 'ruoyi-common/**'
+              - 'ruoyi-framework/**'
+              - 'ruoyi-generator/**'
+              - 'ruoyi-quartz/**'
+              - 'ruoyi-system/**'
+              - 'ruoyi-ui/**'
+              - 'pom.xml'
+              - 'Dockerfile'
+              - 'docker-compose.yml'
+
+  api-test:
+    needs: detect-changes
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 拉取代码
+        uses: actions/checkout@v4
+
+      - name: 设置 Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: 安装测试依赖
+        run: |
+          python -m pip install --upgrade pip
+          pip install pytest requests pyyaml allure-pytest
+
+      - name: 执行接口自动化测试
+        run: |
+          rm -rf tests/allure-results tests/allure-report
+          pytest tests/test_login.py -v --alluredir=tests/allure-results
+
+      - name: 安装 Allure
+        if: always()
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y default-jre
+          wget https://github.com/allure-framework/allure2/releases/download/2.29.0/allure-2.29.0.tgz
+          tar -zxvf allure-2.29.0.tgz
+          sudo mv allure-2.29.0 /opt/allure
+          sudo ln -s /opt/allure/bin/allure /usr/bin/allure
+
+      - name: 生成 Allure HTML 报告
+        if: always()
+        run: |
+          allure generate tests/allure-results -o tests/allure-report --clean
+
+      - name: 上传 Pages 报告文件
+        if: always()
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: tests/allure-report
+
+  deploy-report:
+    needs: api-test
+    if: always()
+    runs-on: ubuntu-latest
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    permissions:
+      pages: write
+      id-token: write
+
+    steps:
+      - name: 发布 Allure 报告到 GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+
+      - name: 飞书通知测试结果
+        run: |
+          if [ "${{ needs.api-test.result }}" = "success" ]; then
+            STATUS="✅ 接口自动化测试通过"
+            COLOR="green"
+          else
+            STATUS="❌ 接口自动化测试失败"
+            COLOR="red"
+          fi
+
+          curl -X POST "${{ secrets.FEISHU_WEBHOOK }}" \
+            -H "Content-Type: application/json" \
+            -d '{
+              "msg_type": "interactive",
+              "card": {
+                "config": {
+                  "wide_screen_mode": true
+                },
+                "header": {
+                  "title": {
+                    "tag": "plain_text",
+                    "content": "'"${STATUS}"'"
+                  },
+                  "template": "'"${COLOR}"'"
+                },
+                "elements": [
+                  {
+                    "tag": "div",
+                    "text": {
+                      "tag": "lark_md",
+                      "content": "**项目：** 若依接口自动化测试\n**分支：** ${{ github.ref_name }}\n**提交人：** ${{ github.actor }}\n**提交信息：** ${{ github.event.head_commit.message }}"
+                    }
+                  },
+                  {
+                    "tag": "hr"
+                  },
+                  {
+                    "tag": "div",
+                    "text": {
+                      "tag": "lark_md",
+                      "content": "**Allure报告：** [点击查看测试报告](${{ steps.deployment.outputs.page_url }})\n**流水线：** [查看 GitHub Actions](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})"
+                    }
+                  }
+                ]
+              }
+            }'
+
+  build-and-deploy:
+    needs:
+      - detect-changes
+      - api-test
+    if: ${{ needs.api-test.result == 'success' && needs.detect-changes.outputs.system_changed == 'true' }}
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 拉取代码
+        uses: actions/checkout@v4
+
+      - name: 设置 JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: 后端打包
+        run: mvn clean package -DskipTests
+
+      - name: 设置 Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 14
+
+      - name: 前端打包
+        working-directory: ruoyi-ui
+        run: |
+          npm install
+          npm run build:prod
+
+      - name: 上传后端 jar 到服务器
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          source: "ruoyi-admin/target/ruoyi-admin.jar"
+          target: "/opt/ruoyi/backend/"
+          strip_components: 2
+
+      - name: 上传前端 dist 到服务器
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          source: "ruoyi-ui/dist/**"
+          target: "/opt/ruoyi/frontend/dist"
+          strip_components: 2
+
+      - name: 重启服务
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          script: |
+            cd /opt/ruoyi
+            docker compose restart backend nginx
+            docker ps
+
+      - name: 飞书通知部署成功
+        if: success()
+        run: |
+          curl -X POST "${{ secrets.FEISHU_WEBHOOK }}" \
+            -H "Content-Type: application/json" \
+            -d '{
+              "msg_type": "interactive",
+              "card": {
+                "config": {
+                  "wide_screen_mode": true
+                },
+                "header": {
+                  "title": {
+                    "tag": "plain_text",
+                    "content": "✅ 若依系统部署成功"
+                  },
+                  "template": "green"
+                },
+                "elements": [
+                  {
+                    "tag": "div",
+                    "text": {
+                      "tag": "lark_md",
+                      "content": "**项目：** 若依前后端分离系统\n**分支：** ${{ github.ref_name }}\n**提交人：** ${{ github.actor }}\n**提交信息：** ${{ github.event.head_commit.message }}"
+                    }
+                  },
+                  {
+                    "tag": "hr"
+                  },
+                  {
+                    "tag": "div",
+                    "text": {
+                      "tag": "lark_md",
+                      "content": "**测试状态：** ✅ 已通过\n**部署状态：** ✅ 成功\n**访问地址：** [点击访问系统](http://47.116.209.164)\n**流水线：** [查看 GitHub Actions](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})"
+                    }
+                  }
+                ]
+              }
+            }'
