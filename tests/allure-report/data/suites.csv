@@ -1,0 +1,4 @@
+"DESCRIPTION","DURATION IN MS","NAME","PARENT SUITE","START TIME","STATUS","STOP TIME","SUB SUITE","SUITE","TEST CLASS","TEST METHOD"
+"","250","管理员登陆成功","tests","2026-05-14","passed","2026-05-14","","test_login","",""
+"","66","用户名错误登陆失败","tests","2026-05-14","passed","2026-05-14","","test_login","",""
+"","155","密码错误登陆失败","tests","2026-05-14","passed","2026-05-14","","test_login","",""
