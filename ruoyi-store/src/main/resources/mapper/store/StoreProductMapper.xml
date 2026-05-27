@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.store.mapper.StoreProductMapper">
+
+    <resultMap type="StoreProduct" id="StoreProductResult">
+        <result property="productId"    column="product_id"    />
+        <result property="productCode"    column="product_code"    />
+        <result property="productName"    column="product_name"    />
+        <result property="categoryId"    column="category_id"    />
+        <result property="categoryName"    column="category_name"    />
+        <result property="specification"    column="specification"    />
+        <result property="unit"    column="unit"    />
+        <result property="costPrice"    column="cost_price"    />
+        <result property="salePrice"    column="sale_price"    />
+        <result property="stockQuantity"    column="stock_quantity"    />
+        <result property="safetyStock"    column="safety_stock"    />
+        <result property="productImage"    column="product_image"    />
+        <result property="barcode"    column="barcode"    />
+        <result property="status"    column="status"    />
+        <result property="delFlag"    column="del_flag"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"    column="remark"    />
+    </resultMap>
+
+    <sql id="selectStoreProductVo">
+        select p.product_id, p.product_code, p.product_name, p.category_id, c.category_name,
+               p.specification, p.unit, p.cost_price, p.sale_price, p.stock_quantity,
+               p.safety_stock, p.product_image, p.barcode, p.status, p.del_flag,
+               p.create_by, p.create_time, p.update_by, p.update_time, p.remark
+        from store_product p
+        left join store_category c on p.category_id = c.category_id
+    </sql>
+
+    <select id="selectStoreProductList" parameterType="StoreProduct" resultMap="StoreProductResult">
+        <include refid="selectStoreProductVo"/>
+        <where>
+            <if test="productCode != null  and productCode != ''"> and p.product_code = #{productCode}</if>
+            <if test="productName != null  and productName != ''"> and p.product_name like concat('%', #{productName}, '%')</if>
+            <if test="categoryId != null "> and p.category_id = #{categoryId}</if>
+            <if test="status != null  and status != ''"> and p.status = #{status}</if>
+            and p.del_flag = '0'
+        </where>
+        order by p.create_time desc
+    </select>
+
+    <select id="selectStoreProductByProductId" parameterType="Long" resultMap="StoreProductResult">
+        <include refid="selectStoreProductVo"/>
+        where p.product_id = #{productId}
+    </select>
+
+    <insert id="insertStoreProduct" parameterType="StoreProduct" useGeneratedKeys="true" keyProperty="productId">
+        insert into store_product
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="productCode != null and productCode != ''">product_code,</if>
+            <if test="productName != null and productName != ''">product_name,</if>
+            <if test="categoryId != null">category_id,</if>
+            <if test="specification != null">specification,</if>
+            <if test="unit != null">unit,</if>
+            <if test="costPrice != null">cost_price,</if>
+            <if test="salePrice != null">sale_price,</if>
+            <if test="stockQuantity != null">stock_quantity,</if>
+            <if test="safetyStock != null">safety_stock,</if>
+            <if test="productImage != null">product_image,</if>
+            <if test="barcode != null">barcode,</if>
+            <if test="status != null">status,</if>
+            <if test="delFlag != null">del_flag,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="remark != null">remark,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="productCode != null and productCode != ''">#{productCode},</if>
+            <if test="productName != null and productName != ''">#{productName},</if>
+            <if test="categoryId != null">#{categoryId},</if>
+            <if test="specification != null">#{specification},</if>
+            <if test="unit != null">#{unit},</if>
+            <if test="costPrice != null">#{costPrice},</if>
+            <if test="salePrice != null">#{salePrice},</if>
+            <if test="stockQuantity != null">#{stockQuantity},</if>
+            <if test="safetyStock != null">#{safetyStock},</if>
+            <if test="productImage != null">#{productImage},</if>
+            <if test="barcode != null">#{barcode},</if>
+            <if test="status != null">#{status},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="remark != null">#{remark},</if>
+         </trim>
+    </insert>
+
+    <update id="updateStoreProduct" parameterType="StoreProduct">
+        update store_product
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="productCode != null and productCode != ''">product_code = #{productCode},</if>
+            <if test="productName != null and productName != ''">product_name = #{productName},</if>
+            <if test="categoryId != null">category_id = #{categoryId},</if>
+            <if test="specification != null">specification = #{specification},</if>
+            <if test="unit != null">unit = #{unit},</if>
+            <if test="costPrice != null">cost_price = #{costPrice},</if>
+            <if test="salePrice != null">sale_price = #{salePrice},</if>
+            <if test="stockQuantity != null">stock_quantity = #{stockQuantity},</if>
+            <if test="safetyStock != null">safety_stock = #{safetyStock},</if>
+            <if test="productImage != null">product_image = #{productImage},</if>
+            <if test="barcode != null">barcode = #{barcode},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+        </trim>
+        where product_id = #{productId}
+    </update>
+
+    <delete id="deleteStoreProductByProductId" parameterType="Long">
+        update store_product set del_flag = '2' where product_id = #{productId}
+    </delete>
+
+    <delete id="deleteStoreProductByProductIds" parameterType="String">
+        update store_product set del_flag = '2' where product_id in
+        <foreach item="productId" collection="array" open="(" separator="," close=")">
+            #{productId}
+        </foreach>
+    </delete>
+
+    <select id="selectProductCount" resultType="Long">
+        select count(*) from store_product where del_flag = '0'
+    </select>
+
+    <select id="selectLowStockCount" resultType="Long">
+        select count(*) from store_product where del_flag = '0' and stock_quantity &lt;= safety_stock
+    </select>
+
+    <select id="selectTotalStockValue" resultType="java.math.BigDecimal">
+        select coalesce(sum(stock_quantity * cost_price), 0) from store_product where del_flag = '0'
+    </select>
+
+    <select id="selectLowStockList" resultType="java.util.HashMap">
+        select
+            product_name as productName,
+            stock_quantity as stockQuantity,
+            safety_stock as safetyStock
+        from store_product
+        where del_flag = '0' and stock_quantity &lt;= safety_stock
+        order by (stock_quantity - safety_stock)
+        limit 10
+    </select>
+</mapper>

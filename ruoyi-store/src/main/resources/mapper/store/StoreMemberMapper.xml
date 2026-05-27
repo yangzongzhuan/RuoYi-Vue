@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.store.mapper.StoreMemberMapper">
+
+    <resultMap type="com.ruoyi.store.domain.StoreMember" id="StoreMemberResult">
+        <result property="memberId"    column="member_id"    />
+        <result property="memberName"    column="member_name"    />
+        <result property="phone"    column="phone"    />
+        <result property="gender"    column="gender"    />
+        <result property="birthday"    column="birthday"    />
+        <result property="levelId"    column="level_id"    />
+        <result property="levelName"    column="level_name"    />
+        <result property="balance"    column="balance"    />
+        <result property="points"    column="points"    />
+        <result property="totalAmount"    column="total_amount"    />
+        <result property="totalOrders"    column="total_orders"    />
+        <result property="lastTime"    column="last_time"    />
+        <result property="status"    column="status"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"    column="remark"    />
+    </resultMap>
+
+    <sql id="selectStoreMemberVo">
+        select m.member_id, m.member_name, m.phone, m.gender, m.birthday, m.level_id, l.level_name,
+               m.balance, m.points, m.total_amount, m.total_orders, m.last_time, m.status,
+               m.create_by, m.create_time, m.update_by, m.update_time, m.remark
+        from store_member m
+        left join store_member_level l on m.level_id = l.level_id
+    </sql>
+
+    <select id="selectStoreMemberList" parameterType="com.ruoyi.store.domain.StoreMember" resultMap="StoreMemberResult">
+        <include refid="selectStoreMemberVo"/>
+        <where>
+            <if test="memberName != null  and memberName != ''"> and m.member_name like concat('%', #{memberName}, '%')</if>
+            <if test="phone != null  and phone != ''"> and m.phone = #{phone}</if>
+            <if test="gender != null  and gender != ''"> and m.gender = #{gender}</if>
+            <if test="levelId != null "> and m.level_id = #{levelId}</if>
+            <if test="status != null  and status != ''"> and m.status = #{status}</if>
+        </where>
+        order by m.create_time desc
+    </select>
+
+    <select id="selectStoreMemberByMemberId" parameterType="Long" resultMap="StoreMemberResult">
+        <include refid="selectStoreMemberVo"/>
+        where m.member_id = #{memberId}
+    </select>
+
+    <insert id="insertStoreMember" parameterType="com.ruoyi.store.domain.StoreMember" useGeneratedKeys="true" keyProperty="memberId">
+        insert into store_member
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="memberName != null">member_name,</if>
+            <if test="phone != null and phone != ''">phone,</if>
+            <if test="gender != null">gender,</if>
+            <if test="birthday != null">birthday,</if>
+            <if test="levelId != null">level_id,</if>
+            <if test="balance != null">balance,</if>
+            <if test="points != null">points,</if>
+            <if test="totalAmount != null">total_amount,</if>
+            <if test="totalOrders != null">total_orders,</if>
+            <if test="lastTime != null">last_time,</if>
+            <if test="status != null">status,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="remark != null">remark,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="memberName != null">#{memberName},</if>
+            <if test="phone != null and phone != ''">#{phone},</if>
+            <if test="gender != null">#{gender},</if>
+            <if test="birthday != null">#{birthday},</if>
+            <if test="levelId != null">#{levelId},</if>
+            <if test="balance != null">#{balance},</if>
+            <if test="points != null">#{points},</if>
+            <if test="totalAmount != null">#{totalAmount},</if>
+            <if test="totalOrders != null">#{totalOrders},</if>
+            <if test="lastTime != null">#{lastTime},</if>
+            <if test="status != null">#{status},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="remark != null">#{remark},</if>
+        </trim>
+    </insert>
+
+    <update id="updateStoreMember" parameterType="com.ruoyi.store.domain.StoreMember">
+        update store_member
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="memberName != null">member_name = #{memberName},</if>
+            <if test="phone != null and phone != ''">phone = #{phone},</if>
+            <if test="gender != null">gender = #{gender},</if>
+            <if test="birthday != null">birthday = #{birthday},</if>
+            <if test="levelId != null">level_id = #{levelId},</if>
+            <if test="balance != null">balance = #{balance},</if>
+            <if test="points != null">points = #{points},</if>
+            <if test="totalAmount != null">total_amount = #{totalAmount},</if>
+            <if test="totalOrders != null">total_orders = #{totalOrders},</if>
+            <if test="lastTime != null">last_time = #{lastTime},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+        </trim>
+        where member_id = #{memberId}
+    </update>
+
+    <delete id="deleteStoreMemberByMemberId" parameterType="Long">
+        delete from store_member where member_id = #{memberId}
+    </delete>
+
+    <delete id="deleteStoreMemberByMemberIds" parameterType="String">
+        delete from store_member where member_id in
+        <foreach item="memberId" collection="array" open="(" separator="," close=")">
+            #{memberId}
+        </foreach>
+    </delete>
+
+    <select id="selectMemberCount" resultType="Long">
+        select count(*) from store_member
+    </select>
+
+    <select id="selectMemberLevelDistribution" resultType="java.util.HashMap">
+        select
+            l.level_name as levelName,
+            count(m.member_id) as memberCount
+        from store_member_level l
+        left join store_member m on l.level_id = m.level_id
+        group by l.level_id, l.level_name
+        order by l.level_id
+    </select>
+
+    <select id="selectLast7DaysNewMemberStats" resultType="java.util.HashMap">
+        select
+            date(create_time) as statDate,
+            count(*) as memberCount
+        from store_member
+        where create_time &gt;= date_sub(curdate(), interval 6 day)
+        group by date(create_time)
+        order by statDate
+    </select>
+
+    <select id="selectMemberConsumeRank" resultType="java.util.HashMap">
+        select
+            member_name as memberName,
+            total_amount as totalAmount,
+            total_orders as totalOrders
+        from store_member
+        order by total_amount desc
+        limit 10
+    </select>
+</mapper>
