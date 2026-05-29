@@ -93,4 +93,13 @@ public class StoreProductServiceImpl implements IStoreProductService
     {
         return storeProductMapper.deleteStoreProductByProductId(productId);
     }
+
+    /**
+     * 根据条码查询商品
+     */
+    @Override
+    public StoreProduct selectStoreProductByBarcode(String barcode)
+    {
+        return storeProductMapper.selectStoreProductByBarcode(barcode);
+    }
 }

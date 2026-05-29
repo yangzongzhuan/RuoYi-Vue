@@ -59,4 +59,34 @@ public class StoreMemberServiceImpl implements IStoreMemberService
     {
         return storeMemberMapper.deleteStoreMemberByMemberId(memberId);
     }
+
+    @Override
+    public int deductBalance(Long memberId, java.math.BigDecimal amount)
+    {
+        StoreMember member = storeMemberMapper.selectStoreMemberByMemberId(memberId);
+        if (member == null || member.getBalance().compareTo(amount) < 0)
+        {
+            throw new RuntimeException("会员余额不足");
+        }
+        member.setBalance(member.getBalance().subtract(amount));
+        return storeMemberMapper.updateStoreMember(member);
+    }
+
+    @Override
+    public int addPoints(Long memberId, Long points)
+    {
+        StoreMember member = storeMemberMapper.selectStoreMemberByMemberId(memberId);
+        if (member == null)
+        {
+            throw new RuntimeException("会员不存在");
+        }
+        member.setPoints(member.getPoints() + points);
+        return storeMemberMapper.updateStoreMember(member);
+    }
+
+    @Override
+    public StoreMember selectStoreMemberByPhone(String phone)
+    {
+        return storeMemberMapper.selectStoreMemberByPhone(phone);
+    }
 }

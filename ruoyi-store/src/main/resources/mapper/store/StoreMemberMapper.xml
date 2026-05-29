@@ -155,4 +155,9 @@
         order by total_amount desc
         limit 10
     </select>
+
+    <select id="selectStoreMemberByPhone" parameterType="String" resultMap="StoreMemberResult">
+        <include refid="selectStoreMemberVo"/>
+        where m.phone = #{phone}
+    </select>
 </mapper>

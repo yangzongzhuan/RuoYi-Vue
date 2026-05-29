@@ -58,4 +58,30 @@ public interface IStoreMemberService
      * @return 结果
      */
     public int deleteStoreMemberByMemberId(Long memberId);
+
+    /**
+     * 根据手机号查询会员
+     *
+     * @param phone 手机号
+     * @return 会员
+     */
+    public StoreMember selectStoreMemberByPhone(String phone);
+
+    /**
+     * 扣减会员余额
+     *
+     * @param memberId 会员ID
+     * @param amount 扣减金额
+     * @return 结果
+     */
+    public int deductBalance(Long memberId, java.math.BigDecimal amount);
+
+    /**
+     * 增加会员积分
+     *
+     * @param memberId 会员ID
+     * @param points 积分
+     * @return 结果
+     */
+    public int addPoints(Long memberId, Long points);
 }

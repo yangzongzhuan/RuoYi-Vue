@@ -58,4 +58,12 @@ public interface IStoreProductService
      * @return 结果
      */
     public int deleteStoreProductByProductId(Long productId);
+
+    /**
+     * 根据条码查询商品
+     *
+     * @param barcode 条码
+     * @return 商品
+     */
+    public StoreProduct selectStoreProductByBarcode(String barcode);
 }

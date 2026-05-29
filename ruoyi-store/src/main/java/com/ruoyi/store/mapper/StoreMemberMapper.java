@@ -79,4 +79,9 @@ public interface StoreMemberMapper
      * 会员消费排行TOP10
      */
     public List<Map<String, Object>> selectMemberConsumeRank();
+
+    /**
+     * 根据手机号查询会员
+     */
+    public StoreMember selectStoreMemberByPhone(String phone);
 }

@@ -79,4 +79,9 @@ public interface StoreProductMapper
      * 低库存商品列表
      */
     public List<Map<String, Object>> selectLowStockList();
+
+    /**
+     * 根据条码查询商品
+     */
+    public StoreProduct selectStoreProductByBarcode(String barcode);
 }
