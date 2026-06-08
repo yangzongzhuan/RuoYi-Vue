@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.app.mapper.AppVersionMapper">
+
+    <resultMap type="AppVersion" id="AppVersionResult">
+        <id     property="id"                  column="id"                  />
+        <result property="appId"               column="app_id"              />
+        <result property="appName"             column="app_name"            />
+        <result property="platform"            column="platform"            />
+        <result property="version"             column="version"             />
+        <result property="versionCode"         column="version_code"        />
+        <result property="updateType"          column="update_type"         />
+        <result property="downloadUrl"         column="download_url"        />
+        <result property="updateLog"           column="update_log"          />
+        <result property="packageSize"         column="package_size"        />
+        <result property="md5"                 column="md5"                 />
+        <result property="minSupportVersion"   column="min_support_version" />
+        <result property="status"              column="status"              />
+        <result property="publishTime"         column="publish_time"        />
+        <result property="createBy"            column="create_by"           />
+        <result property="createTime"          column="create_time"         />
+        <result property="updateBy"            column="update_by"           />
+        <result property="updateTime"          column="update_time"         />
+        <result property="remark"              column="remark"              />
+    </resultMap>
+
+    <sql id="selectAppVersionVo">
+        select id, app_id, app_name, platform, version, version_code, update_type,
+               download_url, update_log, package_size, md5, min_support_version,
+               status, publish_time, create_by, create_time, update_by, update_time, remark
+        from sys_app_version
+    </sql>
+
+    <select id="selectAppVersionById" parameterType="Long" resultMap="AppVersionResult">
+        <include refid="selectAppVersionVo"/>
+        where id = #{id}
+    </select>
+
+    <select id="selectAppVersionList" parameterType="AppVersion" resultMap="AppVersionResult">
+        <include refid="selectAppVersionVo"/>
+        <where>
+            <if test="appId != null and appId != ''">
+                AND app_id = #{appId}
+            </if>
+            <if test="appName != null and appName != ''">
+                AND app_name like concat('%', #{appName}, '%')
+            </if>
+            <if test="platform != null and platform != ''">
+                AND platform = #{platform}
+            </if>
+            <if test="version != null and version != ''">
+                AND version like concat('%', #{version}, '%')
+            </if>
+            <if test="updateType != null and updateType != ''">
+                AND update_type = #{updateType}
+            </if>
+            <if test="status != null and status != ''">
+                AND status = #{status}
+            </if>
+            <if test="params.beginTime != null and params.beginTime != ''">
+                AND date_format(publish_time, '%Y%m%d') &gt;= date_format(#{params.beginTime}, '%Y%m%d')
+            </if>
+            <if test="params.endTime != null and params.endTime != ''">
+                AND date_format(publish_time, '%Y%m%d') &lt;= date_format(#{params.endTime}, '%Y%m%d')
+            </if>
+        </where>
+        order by version_code desc
+    </select>
+
+    <!-- 取某应用某平台 status=0 的最大 version_code -->
+    <select id="selectLatestByAppAndPlatform" resultMap="AppVersionResult">
+        <include refid="selectAppVersionVo"/>
+        where app_id = #{appId} and platform = #{platform} and status = '0'
+        order by version_code desc
+        limit 1
+    </select>
+
+    <select id="checkVersionUnique" parameterType="AppVersion" resultMap="AppVersionResult">
+        <include refid="selectAppVersionVo"/>
+        where app_id = #{appId} and platform = #{platform} and version = #{version}
+        <if test="id != null">
+            and id != #{id}
+        </if>
+        limit 1
+    </select>
+
+    <insert id="insertAppVersion" parameterType="AppVersion" useGeneratedKeys="true" keyProperty="id">
+        insert into sys_app_version (
+            <if test="appId != null and appId != ''">app_id,</if>
+            <if test="appName != null and appName != ''">app_name,</if>
+            <if test="platform != null and platform != ''">platform,</if>
+            <if test="version != null and version != ''">version,</if>
+            <if test="versionCode != null">version_code,</if>
+            <if test="updateType != null and updateType != ''">update_type,</if>
+            <if test="downloadUrl != null and downloadUrl != ''">download_url,</if>
+            <if test="updateLog != null">update_log,</if>
+            <if test="packageSize != null">package_size,</if>
+            <if test="md5 != null and md5 != ''">md5,</if>
+            <if test="minSupportVersion != null and minSupportVersion != ''">min_support_version,</if>
+            <if test="status != null and status != ''">status,</if>
+            <if test="publishTime != null">publish_time,</if>
+            <if test="createBy != null and createBy != ''">create_by,</if>
+            <if test="remark != null and remark != ''">remark,</if>
+            create_time
+        ) values (
+            <if test="appId != null and appId != ''">#{appId},</if>
+            <if test="appName != null and appName != ''">#{appName},</if>
+            <if test="platform != null and platform != ''">#{platform},</if>
+            <if test="version != null and version != ''">#{version},</if>
+            <if test="versionCode != null">#{versionCode},</if>
+            <if test="updateType != null and updateType != ''">#{updateType},</if>
+            <if test="downloadUrl != null and downloadUrl != ''">#{downloadUrl},</if>
+            <if test="updateLog != null">#{updateLog},</if>
+            <if test="packageSize != null">#{packageSize},</if>
+            <if test="md5 != null and md5 != ''">#{md5},</if>
+            <if test="minSupportVersion != null and minSupportVersion != ''">#{minSupportVersion},</if>
+            <if test="status != null and status != ''">#{status},</if>
+            <if test="publishTime != null">#{publishTime},</if>
+            <if test="createBy != null and createBy != ''">#{createBy},</if>
+            <if test="remark != null and remark != ''">#{remark},</if>
+            sysdate()
+        )
+    </insert>
+
+    <update id="updateAppVersion" parameterType="AppVersion">
+        update sys_app_version
+        <set>
+            <if test="appId != null and appId != ''">app_id = #{appId},</if>
+            <if test="appName != null and appName != ''">app_name = #{appName},</if>
+            <if test="platform != null and platform != ''">platform = #{platform},</if>
+            <if test="version != null and version != ''">version = #{version},</if>
+            <if test="versionCode != null">version_code = #{versionCode},</if>
+            <if test="updateType != null and updateType != ''">update_type = #{updateType},</if>
+            <if test="downloadUrl != null and downloadUrl != ''">download_url = #{downloadUrl},</if>
+            <if test="updateLog != null">update_log = #{updateLog},</if>
+            <if test="packageSize != null">package_size = #{packageSize},</if>
+            <if test="md5 != null and md5 != ''">md5 = #{md5},</if>
+            <if test="minSupportVersion != null and minSupportVersion != ''">min_support_version = #{minSupportVersion},</if>
+            <if test="status != null and status != ''">status = #{status},</if>
+            <if test="publishTime != null">publish_time = #{publishTime},</if>
+            <if test="updateBy != null and updateBy != ''">update_by = #{updateBy},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            update_time = sysdate()
+        </set>
+        where id = #{id}
+    </update>
+
+    <update id="changeStatus" parameterType="AppVersion">
+        update sys_app_version
+        <set>
+            <if test="status != null and status != ''">status = #{status},</if>
+            <if test="updateBy != null and updateBy != ''">update_by = #{updateBy},</if>
+            update_time = sysdate()
+        </set>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteAppVersionById" parameterType="Long">
+        delete from sys_app_version where id = #{id}
+    </delete>
+
+    <delete id="deleteAppVersionByIds" parameterType="Long">
+        delete from sys_app_version where id in
+        <foreach collection="array" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>
