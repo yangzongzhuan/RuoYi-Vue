@@ -268,6 +268,7 @@
               <el-upload
                 ref="uploadRef"
                 :headers="uploadHeaders"
+                :action="uploadUrl"
                 :http-request="customUpload"
                 :before-upload="beforeUpload"
                 :show-file-list="false"

@@ -1,4 +1,5 @@
 import request from '@/utils/request'
+import axios from 'axios'
 
 // 查询APP版本列表
 export function listVersion(query) {
