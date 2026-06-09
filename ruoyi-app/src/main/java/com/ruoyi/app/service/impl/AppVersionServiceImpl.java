@@ -10,6 +10,8 @@ import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.DigestUtils;
@@ -32,6 +34,8 @@ import com.ruoyi.framework.config.ServerConfig;
 @Service
 public class AppVersionServiceImpl implements IAppVersionService
 {
+    private static final Logger log = LoggerFactory.getLogger(AppVersionServiceImpl.class);
+
     /** APK/IPA/HAP 文件扩展名白名单 */
     private static final List<String> ALLOW_EXTS = Arrays.asList("apk", "ipa", "hap");
 
@@ -201,5 +205,29 @@ public class AppVersionServiceImpl implements IAppVersionService
         resp.setSize(size);
         resp.setMd5(md5);
         return resp;
+    }
+
+    @Override
+    public String downloadById(Long id)
+    {
+        AppVersion v = appVersionMapper.selectAppVersionById(id);
+        if (v == null)
+        {
+            throw new ServiceException("版本不存在");
+        }
+        if (StringUtils.isEmpty(v.getDownloadUrl()))
+        {
+            throw new ServiceException("下载地址未配置");
+        }
+        try
+        {
+            // 计数失败不阻塞下载,仅记录日志
+            appVersionMapper.incrementDownloadCount(id);
+        }
+        catch (Exception e)
+        {
+            log.warn("递增下载次数失败,id={}", id, e);
+        }
+        return v.getDownloadUrl();
     }
 }

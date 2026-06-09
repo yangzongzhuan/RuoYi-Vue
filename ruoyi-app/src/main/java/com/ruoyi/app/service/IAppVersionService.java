@@ -68,4 +68,13 @@ public interface IAppVersionService
      * @return 包含 url、fileName、originalName、size、md5 的响应
      */
     public AppVersionUploadResponse uploadApk(MultipartFile file, String appId, String platform, Integer versionCode) throws Exception;
+
+    /**
+     * APP 端下载代理:递增计数,返回 downloadUrl。
+     * 版本不存在或地址为空时抛 ServiceException。
+     *
+     * @param id 版本主键
+     * @return 真实下载地址(Controller 再决定 302 外链 or 本地)
+     */
+    public String downloadById(Long id);
 }

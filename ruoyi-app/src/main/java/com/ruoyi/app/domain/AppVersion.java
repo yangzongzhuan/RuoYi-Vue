@@ -111,6 +111,9 @@ public class AppVersion extends BaseEntity
     public void setPublishTime(Date publishTime) { this.publishTime = publishTime; }
     public Date getPublishTime() { return publishTime; }
 
+    public void setDownloadCount(Integer downloadCount) { this.downloadCount = downloadCount; }
+    public Integer getDownloadCount() { return downloadCount; }
+
     @Override
     public String toString() {
         return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
@@ -128,6 +131,7 @@ public class AppVersion extends BaseEntity
                 .append("minSupportVersion", getMinSupportVersion())
                 .append("status", getStatus())
                 .append("publishTime", getPublishTime())
+                .append("downloadCount", getDownloadCount())
                 .append("createBy", getCreateBy())
                 .append("createTime", getCreateTime())
                 .append("updateBy", getUpdateBy())

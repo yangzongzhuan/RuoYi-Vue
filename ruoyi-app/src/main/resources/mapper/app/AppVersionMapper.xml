@@ -19,6 +19,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="minSupportVersion"   column="min_support_version" />
         <result property="status"              column="status"              />
         <result property="publishTime"         column="publish_time"        />
+        <result property="downloadCount"       column="download_count"      />
         <result property="createBy"            column="create_by"           />
         <result property="createTime"          column="create_time"         />
         <result property="updateBy"            column="update_by"           />
@@ -154,6 +155,13 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="updateBy != null and updateBy != ''">update_by = #{updateBy},</if>
             update_time = sysdate()
         </set>
+        where id = #{id}
+    </update>
+
+    <!-- 下载次数 +1,用于公开下载代理接口 -->
+    <update id="incrementDownloadCount" parameterType="Long">
+        update sys_app_version
+        set download_count = download_count + 1
         where id = #{id}
     </update>
 

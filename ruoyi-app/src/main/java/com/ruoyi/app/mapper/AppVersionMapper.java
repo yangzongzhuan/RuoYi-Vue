@@ -1,6 +1,7 @@
 package com.ruoyi.app.mapper;
 
 import java.util.List;
+import org.apache.ibatis.annotations.Param;
 import com.ruoyi.app.domain.AppVersion;
 
 /**
@@ -64,4 +65,9 @@ public interface AppVersionMapper
      * 切换状态
      */
     public int changeStatus(AppVersion appVersion);
+
+    /**
+     * 递增下载次数(+1)
+     */
+    public int incrementDownloadCount(@Param("id") Long id);
 }
