@@ -263,26 +263,21 @@
           </el-col>
           <el-col :span="24">
             <el-form-item label="下载地址" prop="downloadUrl">
-              <el-input v-model="form.downloadUrl" placeholder="支持右侧按钮上传,也可粘贴外链" style="width: calc(100% - 220px)" />
-              <el-button :loading="uploadLoading" icon="el-icon-upload2" size="small" style="margin-left: 8px" @click="triggerUpload">上传 APK</el-button>
+              <el-input v-model="form.downloadUrl" placeholder="支持点击右侧按钮上传,也可粘贴外链" style="width: calc(100% - 280px)" />
+              <!-- el-upload 用 default slot 触发,避免 display:none 隐藏导致 input 不渲染 -->
+              <el-upload
+                ref="uploadRef"
+                :headers="uploadHeaders"
+                :http-request="customUpload"
+                :before-upload="beforeUpload"
+                :show-file-list="false"
+                accept=".apk,.ipa,.hap"
+                style="display: inline-block; margin-left: 8px"
+              >
+                <el-button :loading="uploadLoading" icon="el-icon-upload2" size="small">上传 APK</el-button>
+              </el-upload>
               <el-link v-if="form.md5" type="info" :underline="false" style="margin-left: 8px">MD5: {{ form.md5 }}</el-link>
             </el-form-item>
-            <!-- 隐藏的 el-upload,点击"上传 APK"时手动 submit -->
-            <el-upload
-              ref="uploadRef"
-              :headers="uploadHeaders"
-              :action="uploadUrl"
-              :data="uploadExtra"
-              :before-upload="beforeUpload"
-              :on-success="onUploadSuccess"
-              :on-error="onUploadError"
-              :show-file-list="false"
-              :auto-upload="false"
-              accept=".apk,.ipa,.hap"
-              style="display:none"
-            >
-              <el-button ref="hiddenBtn" />
-            </el-upload>
           </el-col>
           <el-col :span="24">
             <el-form-item label="更新日志" prop="updateLog">
@@ -383,7 +378,6 @@ export default {
       // 上传相关
       uploadHeaders: { Authorization: 'Bearer ' + getToken() },
       uploadUrl: process.env.VUE_APP_BASE_API + '/app/version/upload',
-      uploadExtra: {},
       uploadLoading: false
     }
   },
@@ -520,51 +514,57 @@ export default {
         `appversion_${new Date().getTime()}.xlsx`
       )
     },
-    /** 触发上传:校验元数据,组装 uploadExtra 后手动 submit */
-    triggerUpload() {
+    /** 上传前校验:元数据 / 扩展名 / 大小 */
+    beforeUpload(file) {
+      // 1. 必填元数据
       if (!this.form.appId || !this.form.platform || this.form.versionCode == null) {
         this.$modal.msgError('请先填写应用ID/平台/版本Code')
-        return
+        return false
       }
-      this.uploadExtra = {
-        appId: this.form.appId,
-        platform: this.form.platform,
-        versionCode: this.form.versionCode
-      }
-      this.$refs.uploadRef.submit()
-    },
-    /** 上传前校验扩展名与大小 */
-    beforeUpload(file) {
+      // 2. 扩展名
       const allowExt = ['apk', 'ipa', 'hap']
       const ext = (file.name.split('.').pop() || '').toLowerCase()
       if (!allowExt.includes(ext)) {
         this.$modal.msgError('仅支持 apk/ipa/hap 格式')
         return false
       }
-      const isLt200M = file.size / 1024 / 1024 < 200
-      if (!isLt200M) {
+      // 3. 大小限制
+      if (file.size / 1024 / 1024 >= 200) {
         this.$modal.msgError('文件大小不能超过 200MB')
         return false
       }
       this.uploadLoading = true
       return true
     },
-    /** 上传成功:回填 downloadUrl/packageSize/md5 */
-    onUploadSuccess(res) {
-      this.uploadLoading = false
-      if (res && res.code === 200) {
-        this.form.downloadUrl = res.data.url
-        this.form.packageSize = res.data.size
-        this.form.md5 = res.data.md5
-        this.$modal.msgSuccess('上传成功,字段已自动回填')
-      } else {
-        this.$modal.msgError((res && res.msg) || '上传失败')
-      }
-    },
-    /** 上传失败 */
-    onUploadError() {
-      this.uploadLoading = false
-      this.$modal.msgError('上传失败')
+    /** 自定义上传:覆盖 el-upload 默认行为,直接调 uploadApk */
+    customUpload(option) {
+      const formData = new FormData()
+      formData.append('file', option.file)
+      formData.append('appId', this.form.appId)
+      formData.append('platform', this.form.platform)
+      formData.append('versionCode', this.form.versionCode)
+      uploadApk(formData)
+        .then((res) => {
+          const data = res && res.data
+          if (data && data.code === 200) {
+            this.form.downloadUrl = data.data.url
+            this.form.packageSize = data.data.size
+            this.form.md5 = data.data.md5
+            this.$modal.msgSuccess('上传成功,字段已自动回填')
+            option.onSuccess(data)
+          } else {
+            const msg = (data && data.msg) || '上传失败'
+            this.$modal.msgError(msg)
+            option.onError(new Error(msg))
+          }
+        })
+        .catch((err) => {
+          this.$modal.msgError('上传失败:' + (err.message || '网络错误'))
+          option.onError(err)
+        })
+        .finally(() => {
+          this.uploadLoading = false
+        })
     }
   }
 }
