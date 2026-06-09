@@ -64,12 +64,12 @@ export function exportVersion(query) {
 }
 
 // 上传APK/IPA/HAP安装包
-// 使用 axios 直接发请求,避免 RuoYi 通用 request 工具将 FormData 错误序列化为 JSON
+// 不要显式设置 Content-Type,axios 检测到 data 是 FormData 时会自动设置
+// `multipart/form-data; boundary=...`,否则服务器无法解析 body,连接会被重置
 export function uploadApk(data) {
   return axios({
     url: process.env.VUE_APP_BASE_API + '/app/version/upload',
     method: 'post',
-    data: data,
-    headers: { 'Content-Type': 'multipart/form-data' }
+    data: data
   })
 }
