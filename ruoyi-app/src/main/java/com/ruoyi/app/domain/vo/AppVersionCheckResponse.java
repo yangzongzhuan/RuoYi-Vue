@@ -16,6 +16,9 @@ public class AppVersionCheckResponse implements Serializable
 {
     private static final long serialVersionUID = 1L;
 
+    /** 版本主键(供 APP 端调 /api/app/version/download/{id} 用) */
+    private Long id;
+
     /** 是否有更新 */
     private Boolean hasUpdate;
 
@@ -76,4 +79,7 @@ public class AppVersionCheckResponse implements Serializable
 
     public Date getPublishTime() { return publishTime; }
     public void setPublishTime(Date publishTime) { this.publishTime = publishTime; }
+
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
 }

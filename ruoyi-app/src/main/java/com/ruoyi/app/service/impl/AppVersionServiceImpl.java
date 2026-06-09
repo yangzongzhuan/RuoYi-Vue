@@ -117,6 +117,7 @@ public class AppVersionServiceImpl implements IAppVersionService
             resp.setForceUpdate(false);
             return resp;
         }
+        resp.setId(latest.getId());
         resp.setLatestVersion(latest.getVersion());
         resp.setLatestVersionCode(latest.getVersionCode());
         resp.setUpdateType(latest.getUpdateType());
