@@ -61,3 +61,14 @@ export function exportVersion(query) {
     responseType: 'blob'
   })
 }
+
+// 上传APK/IPA/HAP安装包
+// 使用 axios 直接发请求,避免 RuoYi 通用 request 工具将 FormData 错误序列化为 JSON
+export function uploadApk(data) {
+  return axios({
+    url: process.env.VUE_APP_BASE_API + '/app/version/upload',
+    method: 'post',
+    data: data,
+    headers: { 'Content-Type': 'multipart/form-data' }
+  })
+}

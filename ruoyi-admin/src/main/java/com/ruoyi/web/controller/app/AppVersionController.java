@@ -12,8 +12,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 import com.ruoyi.app.domain.AppVersion;
+import com.ruoyi.app.domain.vo.AppVersionUploadResponse;
 import com.ruoyi.app.service.IAppVersionService;
 import com.ruoyi.common.annotation.Log;
 import com.ruoyi.common.core.controller.BaseController;
@@ -113,5 +116,20 @@ public class AppVersionController extends BaseController
     public AjaxResult changeStatus(@RequestBody AppVersion appVersion)
     {
         return toAjax(appVersionService.changeStatus(appVersion.getId(), appVersion.getStatus(), getUsername()));
+    }
+
+    /**
+     * 上传 APK/IPA/HAP 安装包
+     */
+    @PreAuthorize("@ss.hasPermi('app:version:add') or @ss.hasPermi('app:version:edit')")
+    @Log(title = "APP版本管理", businessType = BusinessType.INSERT)
+    @PostMapping("/upload")
+    public AjaxResult uploadApk(@RequestParam("file") MultipartFile file,
+                                @RequestParam("appId") String appId,
+                                @RequestParam("platform") String platform,
+                                @RequestParam("versionCode") Integer versionCode) throws Exception
+    {
+        AppVersionUploadResponse data = appVersionService.uploadApk(file, appId, platform, versionCode);
+        return success(data);
     }
 }

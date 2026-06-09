@@ -263,8 +263,26 @@
           </el-col>
           <el-col :span="24">
             <el-form-item label="下载地址" prop="downloadUrl">
-              <el-input v-model="form.downloadUrl" placeholder="请输入下载/应用市场链接" />
+              <el-input v-model="form.downloadUrl" placeholder="支持右侧按钮上传,也可粘贴外链" style="width: calc(100% - 220px)" />
+              <el-button :loading="uploadLoading" icon="el-icon-upload2" size="small" style="margin-left: 8px" @click="triggerUpload">上传 APK</el-button>
+              <el-link v-if="form.md5" type="info" :underline="false" style="margin-left: 8px">MD5: {{ form.md5 }}</el-link>
             </el-form-item>
+            <!-- 隐藏的 el-upload,点击"上传 APK"时手动 submit -->
+            <el-upload
+              ref="uploadRef"
+              :headers="uploadHeaders"
+              :action="uploadUrl"
+              :data="uploadExtra"
+              :before-upload="beforeUpload"
+              :on-success="onUploadSuccess"
+              :on-error="onUploadError"
+              :show-file-list="false"
+              :auto-upload="false"
+              accept=".apk,.ipa,.hap"
+              style="display:none"
+            >
+              <el-button ref="hiddenBtn" />
+            </el-upload>
           </el-col>
           <el-col :span="24">
             <el-form-item label="更新日志" prop="updateLog">
@@ -294,8 +312,10 @@ import {
   addVersion,
   updateVersion,
   changeVersionStatus,
-  exportVersion
+  exportVersion,
+  uploadApk
 } from '@/api/app/version'
+import { getToken } from '@/utils/auth'
 
 export default {
   name: 'AppVersion',
@@ -359,10 +379,16 @@ export default {
         downloadUrl: [
           { required: true, message: '下载地址不能为空', trigger: 'blur' }
         ]
-      }
+      },
+      // 上传相关
+      uploadHeaders: { Authorization: 'Bearer ' + getToken() },
+      uploadUrl: process.env.VUE_APP_BASE_API + '/app/version/upload',
+      uploadExtra: {},
+      uploadLoading: false
     }
   },
   created() {
+    this.uploadHeaders = { Authorization: 'Bearer ' + getToken() }
     this.getList()
   },
   methods: {
@@ -493,6 +519,52 @@ export default {
         { ...this.queryParams },
         `appversion_${new Date().getTime()}.xlsx`
       )
+    },
+    /** 触发上传:校验元数据,组装 uploadExtra 后手动 submit */
+    triggerUpload() {
+      if (!this.form.appId || !this.form.platform || this.form.versionCode == null) {
+        this.$modal.msgError('请先填写应用ID/平台/版本Code')
+        return
+      }
+      this.uploadExtra = {
+        appId: this.form.appId,
+        platform: this.form.platform,
+        versionCode: this.form.versionCode
+      }
+      this.$refs.uploadRef.submit()
+    },
+    /** 上传前校验扩展名与大小 */
+    beforeUpload(file) {
+      const allowExt = ['apk', 'ipa', 'hap']
+      const ext = (file.name.split('.').pop() || '').toLowerCase()
+      if (!allowExt.includes(ext)) {
+        this.$modal.msgError('仅支持 apk/ipa/hap 格式')
+        return false
+      }
+      const isLt200M = file.size / 1024 / 1024 < 200
+      if (!isLt200M) {
+        this.$modal.msgError('文件大小不能超过 200MB')
+        return false
+      }
+      this.uploadLoading = true
+      return true
+    },
+    /** 上传成功:回填 downloadUrl/packageSize/md5 */
+    onUploadSuccess(res) {
+      this.uploadLoading = false
+      if (res && res.code === 200) {
+        this.form.downloadUrl = res.data.url
+        this.form.packageSize = res.data.size
+        this.form.md5 = res.data.md5
+        this.$modal.msgSuccess('上传成功,字段已自动回填')
+      } else {
+        this.$modal.msgError((res && res.msg) || '上传失败')
+      }
+    },
+    /** 上传失败 */
+    onUploadError() {
+      this.uploadLoading = false
+      this.$modal.msgError('上传失败')
     }
   }
 }

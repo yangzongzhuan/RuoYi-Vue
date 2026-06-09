@@ -1,8 +1,10 @@
 package com.ruoyi.app.service;
 
 import java.util.List;
+import org.springframework.web.multipart.MultipartFile;
 import com.ruoyi.app.domain.AppVersion;
 import com.ruoyi.app.domain.vo.AppVersionCheckResponse;
+import com.ruoyi.app.domain.vo.AppVersionUploadResponse;
 
 /**
  * APP版本管理 服务层
@@ -55,4 +57,15 @@ public interface IAppVersionService
      * @return 响应对象
      */
     public AppVersionCheckResponse checkUpdate(String appId, String platform, Integer versionCode);
+
+    /**
+     * 上传 APK/IPA/HAP 安装包
+     *
+     * @param file        上传的文件
+     * @param appId       应用ID
+     * @param platform    平台(用于命名)
+     * @param versionCode 版本Code(用于命名)
+     * @return 包含 url、fileName、originalName、size、md5 的响应
+     */
+    public AppVersionUploadResponse uploadApk(MultipartFile file, String appId, String platform, Integer versionCode) throws Exception;
 }
