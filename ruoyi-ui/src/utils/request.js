@@ -24,11 +24,11 @@ const service = axios.create({
 service.interceptors.request.use(config => {
   // 上传文件场景:删除默认的 application/json,让 axios 0.30.x 重新生成
   // `multipart/form-data; boundary=...`,否则后端报 "Current request is not a multipart request"
-  if (typeof FormData !== 'undefined' && config.data instanceof FormData) {
-    if (config.headers && 'Content-Type' in config.headers) {
-      delete config.headers['Content-Type']
-    }
-  }
+  // if (typeof FormData !== 'undefined' && config.data instanceof FormData) {
+  //   if (config.headers && 'Content-Type' in config.headers) {
+  //     delete config.headers['Content-Type']
+  //   }
+  // }
   // 是否需要设置 token
   const isToken = (config.headers || {}).isToken === false
   // 是否需要防止数据重复提交

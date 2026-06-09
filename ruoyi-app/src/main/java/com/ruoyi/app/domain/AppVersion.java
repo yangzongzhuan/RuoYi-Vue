@@ -60,6 +60,9 @@ public class AppVersion extends BaseEntity
     /** 最低支持版本 */
     private String minSupportVersion;
 
+    /** 下载次数 */
+    private Integer downloadCount;
+
     /** 状态(0正常 1停用) */
     @Excel(name = "状态", readConverterExp = "0=正常,1=停用")
     private String status;

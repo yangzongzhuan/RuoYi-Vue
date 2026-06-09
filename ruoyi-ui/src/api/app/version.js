@@ -71,6 +71,9 @@ export function uploadApk(data) {
   return request({
     url: '/app/version/upload',
     method: 'post',
-    data: data
+    data: data,
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    }
   })
 }

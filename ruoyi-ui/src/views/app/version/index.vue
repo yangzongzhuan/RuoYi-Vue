@@ -132,14 +132,9 @@
         </template>
       </el-table-column>
       <el-table-column label="包大小(MB)" align="center" prop="packageSize" width="110" />
-      <el-table-column label="状态" align="center" prop="status" width="100">
+      <el-table-column label="状态" align="center" key="status" >
         <template slot-scope="scope">
-          <el-switch
-            v-model="scope.row.status === '0'"
-            @change="(val) => handleStatusChange(scope.row, val ? '0' : '1')"
-            active-color="#13ce66"
-            inactive-color="#ff4949"
-          />
+          <el-switch v-model="scope.row.status" active-value="0" inactive-value="1" @change="handleStatusChange(scope.row)"></el-switch>
         </template>
       </el-table-column>
       <el-table-column label="发布时间" align="center" prop="publishTime" width="170">
@@ -263,7 +258,7 @@
           </el-col>
           <el-col :span="24">
             <el-form-item label="下载地址" prop="downloadUrl">
-              <el-input v-model="form.downloadUrl" placeholder="支持点击右侧按钮上传,也可粘贴外链" style="width: calc(100% - 280px)" />
+              <el-input v-model="form.downloadUrl" placeholder="支持点击右侧按钮上传,也可粘贴外链" style="width: calc(100% - 150px)" />
               <!-- el-upload 用 default slot 触发,避免 display:none 隐藏导致 input 不渲染 -->
               <el-upload
                 ref="uploadRef"
@@ -458,8 +453,8 @@ export default {
       })
     },
     /** 状态切换 */
-    handleStatusChange(row, status) {
-      const text = status === '0' ? '启用' : '停用'
+    handleStatusChange(row) {
+      const text = row.status === '0' ? '启用' : '停用'
       this.$modal
         .confirm('确认要"' + text + '""' + row.appName + '"的版本 ' + row.version + ' 吗?')
         .then(() => {
@@ -470,7 +465,7 @@ export default {
         })
         .catch(() => {
           // 失败回滚 UI 状态
-          row.status = status === '0' ? '1' : '0'
+          row.status = row.status === '0' ? '1' : '0'
         })
     },
     /** 提交按钮 */
