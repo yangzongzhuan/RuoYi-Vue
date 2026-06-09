@@ -1,5 +1,4 @@
 import request from '@/utils/request'
-import axios from 'axios'
 
 // 查询APP版本列表
 export function listVersion(query) {
@@ -64,11 +63,13 @@ export function exportVersion(query) {
 }
 
 // 上传APK/IPA/HAP安装包
-// 不要显式设置 Content-Type,axios 检测到 data 是 FormData 时会自动设置
+// 走 request 拦截器,自动从 Admin-Token cookie 取 token 并注入 Authorization 头
+// (直接用 axios 会绕过拦截器,导致后端 JwtAuthenticationTokenFilter 401)
+// 不显式设 Content-Type:axios 检测到 data 是 FormData 时会自动写
 // `multipart/form-data; boundary=...`,否则服务器无法解析 body,连接会被重置
 export function uploadApk(data) {
-  return axios({
-    url: process.env.VUE_APP_BASE_API + '/app/version/upload',
+  return request({
+    url: '/app/version/upload',
     method: 'post',
     data: data
   })

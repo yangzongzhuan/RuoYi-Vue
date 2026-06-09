@@ -537,7 +537,9 @@ export default {
       this.uploadLoading = true
       return true
     },
-    /** 自定义上传:覆盖 el-upload 默认行为,直接调 uploadApk */
+    /** 自定义上传:覆盖 el-upload 默认行为,直接调 uploadApk
+     *  uploadApk 已改为走 request 拦截器,res 已是 RuoYi 业务数据 {code,msg,data},
+     *  不再是 axios 的 {data:{code,msg,data}} */
     customUpload(option) {
       const formData = new FormData()
       formData.append('file', option.file)
@@ -546,15 +548,15 @@ export default {
       formData.append('versionCode', this.form.versionCode)
       uploadApk(formData)
         .then((res) => {
-          const data = res && res.data
-          if (data && data.code === 200) {
-            this.form.downloadUrl = data.data.url
-            this.form.packageSize = data.data.size
-            this.form.md5 = data.data.md5
+          if (res && res.code === 200) {
+            const data = res.data || {}
+            this.form.downloadUrl = data.url
+            this.form.packageSize = data.size
+            this.form.md5 = data.md5
             this.$modal.msgSuccess('上传成功,字段已自动回填')
-            option.onSuccess(data)
+            option.onSuccess(res)
           } else {
-            const msg = (data && data.msg) || '上传失败'
+            const msg = (res && res.msg) || '上传失败'
             this.$modal.msgError(msg)
             option.onError(new Error(msg))
           }

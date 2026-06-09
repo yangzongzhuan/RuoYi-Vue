@@ -120,9 +120,11 @@ public class AppVersionController extends BaseController
 
     /**
      * 上传 APK/IPA/HAP 安装包
-     * 仅要求登录(不挂 app:version:add/edit 权限,沿用 RuoYi 既有 CommonController.uploadFile 模式),
-     * 真正的数据写入仍由 add/edit 接口的权限保护。
+     * 与 add/edit 共用 app:version:add | app:version:edit 权限字符;
+     * 真实的数据写入仍由 add/edit 的 @PreAuthorize 保护,此处不降级权限。
+     * 调用方须在 Authorization 头携带有效 token(JwtAuthenticationTokenFilter 校验)。
      */
+    @PreAuthorize("@ss.hasPermi('app:version:add') or @ss.hasPermi('app:version:edit')")
     @Log(title = "APP版本管理", businessType = BusinessType.INSERT)
     @PostMapping("/upload")
     public AjaxResult uploadApk(@RequestParam("file") MultipartFile file,
