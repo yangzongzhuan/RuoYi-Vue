@@ -63,10 +63,6 @@ export function exportVersion(query) {
 }
 
 // 上传APK/IPA/HAP安装包
-// 走 request 拦截器,自动从 Admin-Token cookie 取 token 并注入 Authorization 头
-// (直接用 axios 会绕过拦截器,导致后端 JwtAuthenticationTokenFilter 401)
-// 不显式设 Content-Type:axios 检测到 data 是 FormData 时会自动写
-// `multipart/form-data; boundary=...`,否则服务器无法解析 body,连接会被重置
 export function uploadApk(data) {
   return request({
     url: '/app/version/upload',
