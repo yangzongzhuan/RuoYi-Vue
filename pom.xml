@@ -41,7 +41,7 @@
     <dependencyManagement>
         <dependencies>
 
-            <!-- 覆盖SpringFramework的依赖配置-->
+            <!-- 覆盖SpringFramework的依赖配置 -->
             <dependency>
                 <groupId>org.springframework</groupId>
                 <artifactId>spring-framework-bom</artifactId>

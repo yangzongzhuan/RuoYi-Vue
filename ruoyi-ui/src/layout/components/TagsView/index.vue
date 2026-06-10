@@ -693,9 +693,30 @@ $tags-bar-height: 34px;
   .el-scrollbar__bar {
     opacity: 0;
     transition: opacity 0.3s;
-    
+    z-index: 10;
+
     .tags-view-container:hover & {
       opacity: 1;
+    }
+  }
+
+  .tags-view-container--chrome & {
+    .el-scrollbar {
+      position: relative;
+    }
+
+    .el-scrollbar__wrap {
+      &::-webkit-scrollbar {
+        width: 0 !important;
+        height: 0 !important;
+      }
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+    }
+
+    .el-scrollbar__bar.is-horizontal {
+      z-index: 20;
+      height: 6px !important;
     }
   }
 
