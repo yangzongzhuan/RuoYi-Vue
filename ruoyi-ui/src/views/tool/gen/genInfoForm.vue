@@ -316,7 +316,7 @@ export default {
     },
     /** 选择生成模板触发 */
     tplSelectChange(value) {
-      if(value !== 'sub') {
+      if (value !== 'sub') {
         this.info.subTableName = ''
         this.info.subTableFkName = ''
       }

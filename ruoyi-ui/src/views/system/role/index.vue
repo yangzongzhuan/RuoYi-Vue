@@ -527,7 +527,7 @@ export default {
     },
     /** 选择角色权限范围触发 */
     dataScopeSelectChange(value) {
-      if(value !== '2') {
+      if (value !== '2') {
         this.$refs.dept.setCheckedKeys([])
       }
     },

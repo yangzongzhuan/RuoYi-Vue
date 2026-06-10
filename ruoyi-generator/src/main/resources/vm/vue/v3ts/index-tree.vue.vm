@@ -315,7 +315,7 @@
 <script setup lang="ts" name="${BusinessName}">
 import { list${BusinessName}, get${BusinessName}, del${BusinessName}, add${BusinessName}, update${BusinessName} } from "@/api/${moduleName}/${businessName}"
 #if($genView)
-import ${BusinessName}ViewDrawer from "./view"
+import ${BusinessName}ViewDrawer from "./view.vue"
 #end
 import type { ${ClassName}, ${BusinessName}QueryParams } from "@/types/api/${moduleName}/${businessName}"
 import type { TreeSelect } from '@/types/api/common'

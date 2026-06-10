@@ -262,7 +262,7 @@ export default {
         this.$modal.msgError("请选择要生成的数据")
         return
       }
-      if(row.genType === "1") {
+      if (row.genType === "1") {
         genCode(row.tableName).then(() => {
           this.$modal.msgSuccess("成功生成到自定义路径：" + row.genPath)
         })

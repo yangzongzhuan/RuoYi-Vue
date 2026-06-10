@@ -76,10 +76,10 @@ export default {
       this.routers.map((router) => {
         for (var item in router.children) {
           if (router.children[item].parentPath === undefined) {
-            if(router.path === "/") {
+            if (router.path === "/") {
               router.children[item].path = "/" + router.children[item].path
             } else {
-              if(!isHttp(router.children[item].path)) {
+              if (!isHttp(router.children[item].path)) {
                 router.children[item].path = router.path + "/" + router.children[item].path
               }
             }
@@ -100,7 +100,7 @@ export default {
           activePath = "/" + tmpPath.substring(0, tmpPath.indexOf("/"))
           this.$store.dispatch('app/toggleSideBarHide', false)
         }
-      } else if(!this.$route.children) {
+      } else if (!this.$route.children) {
         activePath = path
         this.$store.dispatch('app/toggleSideBarHide', true)
       }
@@ -156,7 +156,7 @@ export default {
           }
         })
       }
-      if(routes.length > 0) {
+      if (routes.length > 0) {
         this.$store.commit("SET_SIDEBAR_ROUTERS", routes)
       } else {
         this.$store.dispatch('app/toggleSideBarHide', true)

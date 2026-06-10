@@ -34,7 +34,7 @@ export default {
     }
   },
   created() {
-    if(this.defaultTheme !== ORIGINAL_THEME) {
+    if (this.defaultTheme !== ORIGINAL_THEME) {
       this.setTheme(this.defaultTheme)
     }
   },

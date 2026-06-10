@@ -394,7 +394,7 @@ import type { ${ClassName}, ${BusinessName}QueryParams } from "@/types/api/${mod
 #end
 import { list${BusinessName}, get${BusinessName}, del${BusinessName}, add${BusinessName}, update${BusinessName} } from "@/api/${moduleName}/${businessName}"
 #if($genView)
-import ${BusinessName}ViewDrawer from "./view"
+import ${BusinessName}ViewDrawer from "./view.vue"
 #end
 
 const { proxy } = getCurrentInstance()

@@ -1,7 +1,7 @@
 import store from '@/store'
 import router from '@/router'
 import cache from '@/plugins/cache'
-import { MessageBox, } from 'element-ui'
+import { MessageBox } from 'element-ui'
 import { login, logout, getInfo } from '@/api/login'
 import { getToken, setToken, removeToken } from '@/utils/auth'
 import { isHttp, isEmpty } from "@/utils/validate"

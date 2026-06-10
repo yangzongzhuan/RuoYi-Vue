@@ -123,7 +123,7 @@ const mutations = {
       if (i > -1) {
         state.cachedViews.splice(i, 1)
       }
-      if(item.meta.link) {
+      if (item.meta.link) {
         const fi = state.iframeViews.findIndex(v => v.path === item.path)
         state.iframeViews.splice(fi, 1)
       }
@@ -144,7 +144,7 @@ const mutations = {
       if (i > -1) {
         state.cachedViews.splice(i, 1)
       }
-      if(item.meta.link) {
+      if (item.meta.link) {
         const fi = state.iframeViews.findIndex(v => v.path === item.path)
         state.iframeViews.splice(fi, 1)
       }
