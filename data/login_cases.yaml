@@ -1,0 +1,14 @@
+- case_name: 管理员登陆成功
+  username: admin
+  password: admin123
+  success: true
+
+- case_name: 用户名错误登陆失败
+  username: not_exist_user
+  password: admin123
+  success: false
+
+- case_name: 密码错误登陆失败
+  username: admin
+  password: wrong123
+  success: false
