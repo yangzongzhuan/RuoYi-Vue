@@ -167,7 +167,7 @@ public class ReflectUtils
             Class<?>[] cs = method.getParameterTypes();
             for (int i = 0; i < cs.length; i++)
             {
-                if (args[i] != null && !args[i].getClass().equals(cs[i]))
+                if (args[i] != null && !args[i].getClass().equals(cs[i]) && !cs[i].isAssignableFrom(args[i].getClass()))
                 {
                     if (cs[i] == String.class)
                     {
