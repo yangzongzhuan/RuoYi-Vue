@@ -14,15 +14,16 @@
 若依是一套全部开源的快速开发平台，毫无保留给个人及企业免费使用。
 
 * 本仓库为RuoYi-Vue的Spring Boot 3 的版本，保持同步更新。
-* 后端采用Spring Boot3、Spring Security、Redis & Jwt。
-* 权限认证使用Jwt，支持多终端认证系统。
-* 支持加载动态权限菜单，多方式轻松权限控制。
-* 高效率开发，使用代码生成器可以一键生成前后端代码。
+* 前端采用Vue、Element（提供 Vue2/Vue3/TS 多版本）。
+* 后端采用Spring Boot、Spring Security、Redis & Jwt。
+* 基于Jwt的Token认证，支持多终端（Web、App、小程序）无缝接入。
+* 支持加载动态权限菜单，多方式轻松权限控制，细粒度到按钮级别。
+* 内置强大代码生成器，一键生成前后端代码（java、vue、xml、sql），支持 CRUD 下载。
 * 阿里云折扣场：[点我进入](http://aly.ruoyi.vip)，腾讯云秒杀场：[点我进入](http://txy.ruoyi.vip)&nbsp;&nbsp;
 
 # 版本分支
 
-RuoYi-Vue 后端项目提供 Spring Boot 2.x / 3.x / 4.x 多版本分支的并行维护。
+RuoYi-Vue 后端项目提供 Spring Boot 2.x / 3.x / 4.x 多版本分支的并行维护
 
 | 名称              | 说明                      | 地址                                                    |
 | :---------------- | :------------------------ | :------------------------------------------------------ |
@@ -30,16 +31,16 @@ RuoYi-Vue 后端项目提供 Spring Boot 2.x / 3.x / 4.x 多版本分支的并�
 | springboot3 分支  | Spring Boot 3.x (JDK 17+) | https://gitee.com/y_project/RuoYi-Vue/tree/springboot3  |
 | springboot2 分支  | Spring Boot 2.x (JDK 8+)  | https://gitee.com/y_project/RuoYi-Vue/tree/springboot2  |  
 
-RuoYi-Vue 前端项目提供 Vue 2.x / 3.x / JavaScript TypeScript 版本均可混用搭配
+RuoYi-Vue 前端项目提供 Vue 2.x / 3.x / JavaScript / TypeScript 版本，均可混用搭配
 
-| 项目名称      | **RuoYi-Vue** | **RuoYi-Vue3** | **RuoYi-Vue3-TypeScript**   |
-| :---          | :---          | :---           | :---                        |
-| **前端框架**  | Vue 2        | Vue 3          | Vue 3                       |
-| **脚本语言**  | JavaScript   | JavaScript     | TypeScript                  |
-| **构建工具**  | Vue CLI      | Vite           | Vite                        |
-| **UI 组件库** | Element UI   | Element Plus   | Element Plus                |
-| **状态管理**  | Vuex         | Pinia          | Pinia                       |
-| **路由管理**  | Vue Router 3 | Vue Router 4   | Vue Router 4                |
+| 项目名称      | **RuoYi-Vue2** | **RuoYi-Vue3** | **RuoYi-Vue3-TypeScript**   |
+| :---          | :---           | :---           | :---                        |
+| **前端框架**  | Vue 2         | Vue 3          | Vue 3                       |
+| **脚本语言**  | JavaScript    | JavaScript     | TypeScript                  |
+| **构建工具**  | Vue CLI       | Vite           | Vite                        |
+| **UI 组件库** | Element UI    | Element Plus   | Element Plus                |
+| **状态管理**  | Vuex          | Pinia          | Pinia                       |
+| **路由管理**  | Vue Router 3  | Vue Router 4   | Vue Router 4                |
 | **核心特点**  | 1. 技术栈经典稳定<br>2. 社区资料丰富<br>3. 当前维护重心已转移 | 1. 现代前端技术栈<br>2. 开发体验与性能更优<br>3. 官方主推的活跃版本 | 1. 类型加持，减少沟通成本<br>2. 开发时有提示，效率更高<br>3. 多人协作企业级开发项目 |
 | **仓库地址**  | [RuoYi-Vue2](https://gitcode.com/yangzongzhuan/RuoYi-Vue2) | [RuoYi-Vue3](https://gitcode.com/yangzongzhuan/RuoYi-Vue3) | [RuoYi-Vue3-TypeScript](https://gitcode.com/yangzongzhuan/RuoYi-Vue3/tree/typescript) |
 
