@@ -388,6 +388,9 @@
 
 <script setup name="${BusinessName}">
 import { list${BusinessName}, get${BusinessName}, del${BusinessName}, add${BusinessName}, update${BusinessName} } from "@/api/${moduleName}/${businessName}"
+#if(${dicts} != '')
+import { useDict } from '@/utils/dict'
+#end
 #if($genView)
 import ${BusinessName}ViewDrawer from "./view"
 #end
