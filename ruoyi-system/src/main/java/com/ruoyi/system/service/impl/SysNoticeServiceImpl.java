@@ -1,8 +1,11 @@
 package com.ruoyi.system.service.impl;
 
 import java.util.List;
+import org.jsoup.Jsoup;
+import org.jsoup.safety.Safelist;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.system.domain.SysNotice;
 import com.ruoyi.system.mapper.SysNoticeMapper;
 import com.ruoyi.system.service.ISysNoticeService;
@@ -51,6 +54,7 @@ public class SysNoticeServiceImpl implements ISysNoticeService
     @Override
     public int insertNotice(SysNotice notice)
     {
+        sanitizeContent(notice);
         return noticeMapper.insertNotice(notice);
     }
 
@@ -63,7 +67,20 @@ public class SysNoticeServiceImpl implements ISysNoticeService
     @Override
     public int updateNotice(SysNotice notice)
     {
+        sanitizeContent(notice);
         return noticeMapper.updateNotice(notice);
+    }
+
+    /**
+     * 富文本净化：按白名单剥除可执行载体（script 标签、on* 事件属性等），保留常规富文本标签。
+     * 公告内容前端以 v-html 渲染，服务端入库前净化可阻断存储型 XSS。
+     */
+    private void sanitizeContent(SysNotice notice)
+    {
+        if (StringUtils.isNotEmpty(notice.getNoticeContent()))
+        {
+            notice.setNoticeContent(Jsoup.clean(notice.getNoticeContent(), Safelist.relaxed()));
+        }
     }
 
     /**
