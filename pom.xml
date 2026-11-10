@@ -24,12 +24,12 @@
         <swagger.version>3.0.0</swagger.version>
         <kaptcha.version>2.3.3</kaptcha.version>
         <pagehelper.boot.version>1.4.7</pagehelper.boot.version>
-        <fastjson.version>2.0.64</fastjson.version>
-        <oshi.version>7.4.4</oshi.version>
+        <fastjson.version>2.0.66</fastjson.version>
+        <oshi.version>7.7.3</oshi.version>
         <commons.io.version>2.22.0</commons.io.version>
         <poi.version>4.1.2</poi.version>
         <velocity.version>2.3</velocity.version>
-        <jwt.version>0.9.1</jwt.version>
+        <jwt.version>0.13.0</jwt.version>
         <!-- override dependency version -->
         <tomcat.version>9.0.112</tomcat.version>
         <logback.version>1.2.13</logback.version>
@@ -172,8 +172,22 @@
             <!-- Token生成与解析-->
             <dependency>
                 <groupId>io.jsonwebtoken</groupId>
-                <artifactId>jjwt</artifactId>
+                <artifactId>jjwt-api</artifactId>
                 <version>${jwt.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>io.jsonwebtoken</groupId>
+                <artifactId>jjwt-impl</artifactId>
+                <version>${jwt.version}</version>
+                <scope>runtime</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>io.jsonwebtoken</groupId>
+                <artifactId>jjwt-jackson</artifactId>
+                <version>${jwt.version}</version>
+                <scope>runtime</scope>
             </dependency>
 
             <!-- 验证码 -->
