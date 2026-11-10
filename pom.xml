@@ -17,20 +17,19 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <java.version>17</java.version>
-        <spring-boot.version>4.1.0</spring-boot.version>
+        <spring-boot.version>4.1.2</spring-boot.version>
         <mybatis-spring-boot.version>4.1.0</mybatis-spring-boot.version>
         <druid.version>1.2.28</druid.version>
-        <yauaa.version>8.2.0</yauaa.version>
+        <yauaa.version>8.3.0</yauaa.version>
         <kaptcha.version>2.3.3</kaptcha.version>
         <pagehelper.boot.version>4.1.1</pagehelper.boot.version>
-        <fastjson.version>2.0.64</fastjson.version>
-        <oshi.version>7.4.4</oshi.version>
+        <fastjson.version>2.0.66</fastjson.version>
+        <oshi.version>7.7.3</oshi.version>
         <commons.io.version>2.22.0</commons.io.version>
-        <poi.version>5.5.1</poi.version>
-        <velocity.version>2.3</velocity.version>
-        <jwt.version>0.9.1</jwt.version>
-        <jaxb-api.version>2.3.1</jaxb-api.version>
-        <springdoc.version>3.1.0</springdoc.version>
+        <poi.version>6.0.0</poi.version>
+        <velocity.version>2.4.1</velocity.version>
+        <jwt.version>0.13.0</jwt.version>
+        <springdoc.version>3.2.0</springdoc.version>
     </properties>
 
     <!-- 依赖声明 -->
@@ -71,12 +70,6 @@
                 <groupId>org.mybatis.spring.boot</groupId>
                 <artifactId>mybatis-spring-boot-starter</artifactId>
                 <version>${mybatis-spring-boot.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>javax.xml.bind</groupId>
-                <artifactId>jaxb-api</artifactId>
-                <version>${jaxb-api.version}</version>
             </dependency>
 
             <!-- 获取系统信息 -->
@@ -124,8 +117,22 @@
             <!-- Token生成与解析-->
             <dependency>
                 <groupId>io.jsonwebtoken</groupId>
-                <artifactId>jjwt</artifactId>
+                <artifactId>jjwt-api</artifactId>
                 <version>${jwt.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>io.jsonwebtoken</groupId>
+                <artifactId>jjwt-impl</artifactId>
+                <version>${jwt.version}</version>
+                <scope>runtime</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>io.jsonwebtoken</groupId>
+                <artifactId>jjwt-jackson</artifactId>
+                <version>${jwt.version}</version>
+                <scope>runtime</scope>
             </dependency>
 
             <!-- 验证码 -->
@@ -188,7 +195,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.13.0</version>
+                <version>3.16.0</version>
                 <configuration>
                     <parameters>true</parameters>
                     <source>${java.version}</source>
