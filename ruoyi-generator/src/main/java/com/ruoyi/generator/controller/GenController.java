@@ -30,7 +30,6 @@ import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.common.core.text.Convert;
 import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.utils.SecurityUtils;
-import com.ruoyi.common.utils.sql.SqlUtil;
 import com.ruoyi.generator.config.GenConfig;
 import com.ruoyi.generator.domain.GenTable;
 import com.ruoyi.generator.domain.GenTableColumn;
@@ -132,19 +131,34 @@ public class GenController extends BaseController
     {
         try
         {
-            SqlUtil.filterKeyword(sql);
             List<SQLStatement> sqlStatements = SQLUtils.parseStatements(sql, DbType.mysql);
+            if (sqlStatements.isEmpty())
+            {
+                return error("创建表失败，未解析到有效SQL语句");
+            }
+            // 语句类型白名单：仅允许 CREATE TABLE，其余语句（drop/insert 等）明确拒绝并说明原因。
+            // 不再对整条 DDL 做去空白子串黑名单扫描——会把 sleep_time 等合法列名误伤
+            String violation = null;
+            for (SQLStatement sqlStatement : sqlStatements)
+            {
+                if (!(sqlStatement instanceof MySqlCreateTableStatement))
+                {
+                    violation = sqlStatement.getClass().getSimpleName();
+                    break;
+                }
+            }
+            if (violation != null)
+            {
+                return error("创建表失败，仅允许 CREATE TABLE 语句，检测到其他语句类型：" + violation);
+            }
             List<String> tableNames = new ArrayList<>();
             for (SQLStatement sqlStatement : sqlStatements)
             {
-                if (sqlStatement instanceof MySqlCreateTableStatement)
+                MySqlCreateTableStatement createTableStatement = (MySqlCreateTableStatement) sqlStatement;
+                if (genTableService.createTable(createTableStatement.toString()))
                 {
-                    MySqlCreateTableStatement createTableStatement = (MySqlCreateTableStatement) sqlStatement;
-                    if (genTableService.createTable(createTableStatement.toString()))
-                    {
-                        String tableName = createTableStatement.getTableName().replaceAll("`", "");
-                        tableNames.add(tableName);
-                    }
+                    String tableName = createTableStatement.getTableName().replaceAll("`", "");
+                    tableNames.add(tableName);
                 }
             }
             List<GenTable> tableList = genTableService.selectDbTableListByNames(tableNames.toArray(new String[tableNames.size()]));
