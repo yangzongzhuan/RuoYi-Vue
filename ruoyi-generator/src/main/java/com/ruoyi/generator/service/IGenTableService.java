@@ -84,6 +84,14 @@ public interface IGenTableService
     public void importGenTable(List<GenTable> tableList, String tplWebType, String operName);
 
     /**
+     * 根据表名称查询已导入的代码生成业务表
+     * 
+     * @param tableName 表名称
+     * @return 已导入的表信息（未导入返回null）
+     */
+    public GenTable selectGenTableByName(String tableName);
+
+    /**
      * 预览代码
      * 
      * @param tableId 表编号

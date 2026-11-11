@@ -68,6 +68,12 @@ public class GenTableServiceImpl implements IGenTableService
         return genTable;
     }
 
+    @Override
+    public GenTable selectGenTableByName(String tableName)
+    {
+        return genTableMapper.selectGenTableByName(tableName);
+    }
+
     /**
      * 查询业务列表
      * 
@@ -177,6 +183,12 @@ public class GenTableServiceImpl implements IGenTableService
             for (GenTable table : tableList)
             {
                 String tableName = table.getTableName();
+                // 已导入过的表直接跳过：与界面列表（db/list 排除已导入表）口径一致，
+                // 避免接口重复导入产生 gen_table 重复行与列信息翻倍
+                if (StringUtils.isNotNull(genTableMapper.selectGenTableByName(tableName)))
+                {
+                    continue;
+                }
                 table.setTplWebType(tplWebType);
                 GenUtils.initTable(table, operName);
                 int row = genTableMapper.insertGenTable(table);

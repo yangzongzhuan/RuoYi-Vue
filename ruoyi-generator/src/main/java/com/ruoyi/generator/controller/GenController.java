@@ -30,6 +30,7 @@ import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.common.core.text.Convert;
 import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.utils.SecurityUtils;
+import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.common.utils.sql.SqlUtil;
 import com.ruoyi.generator.config.GenConfig;
 import com.ruoyi.generator.domain.GenTable;
@@ -118,7 +119,29 @@ public class GenController extends BaseController
         String[] tableNames = Convert.toStrArray(tables);
         // 查询表信息
         List<GenTable> tableList = genTableService.selectDbTableListByNames(tableNames);
-        genTableService.importGenTable(tableList, tplWebType, SecurityUtils.getUsername());
+        // 已导入过的表跳过并在文案中说明（与界面列表排除已导入表口径一致）
+        List<GenTable> toImport = new ArrayList<>();
+        List<String> alreadyImported = new ArrayList<>();
+        for (GenTable table : tableList)
+        {
+            if (StringUtils.isNotNull(genTableService.selectGenTableByName(table.getTableName())))
+            {
+                alreadyImported.add(table.getTableName());
+            }
+            else
+            {
+                toImport.add(table);
+            }
+        }
+        if (toImport.isEmpty() && !alreadyImported.isEmpty())
+        {
+            return error("导入失败，表【" + String.join("、", alreadyImported) + "】已导入");
+        }
+        genTableService.importGenTable(toImport, tplWebType, SecurityUtils.getUsername());
+        if (!alreadyImported.isEmpty())
+        {
+            return success("导入成功；已跳过重复导入的表：" + String.join("、", alreadyImported));
+        }
         return success();
     }
 

@@ -688,7 +688,8 @@ create table gen_table (
   update_by         varchar(64)     default ''                 comment '更新者',
   update_time       datetime                                   comment '更新时间',
   remark            varchar(500)    default null               comment '备注',
-  primary key (table_id)
+  primary key (table_id),
+  unique key uk_table_name (table_name)
 ) engine=innodb auto_increment=1 comment = '代码生成业务表';
 
 
