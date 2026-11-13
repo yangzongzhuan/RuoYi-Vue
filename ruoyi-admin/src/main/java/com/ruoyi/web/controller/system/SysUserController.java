@@ -87,6 +87,7 @@ public class SysUserController extends BaseController
         return success(message);
     }
 
+    @PreAuthorize("@ss.hasPermi('system:user:import')")
     @PostMapping("/importTemplate")
     public void importTemplate(HttpServletResponse response)
     {
