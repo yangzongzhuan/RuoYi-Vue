@@ -17,8 +17,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import com.ruoyi.common.annotation.Log;
 import com.ruoyi.common.constant.CacheConstants;
 import com.ruoyi.common.core.domain.AjaxResult;
+import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.system.domain.SysCache;
 
@@ -94,7 +96,8 @@ public class CacheController
         return AjaxResult.success(sysCache);
     }
 
-    @PreAuthorize("@ss.hasPermi('monitor:cache:list')")
+    @Log(title = "缓存监控", businessType = BusinessType.CLEAN)
+    @PreAuthorize("@ss.hasPermi('monitor:cache:clear')")
     @DeleteMapping("/clearCacheName/{cacheName}")
     public AjaxResult clearCacheName(@PathVariable String cacheName)
     {
@@ -103,15 +106,30 @@ public class CacheController
         return AjaxResult.success();
     }
 
-    @PreAuthorize("@ss.hasPermi('monitor:cache:list')")
+    @Log(title = "缓存监控", businessType = BusinessType.CLEAN)
+    @PreAuthorize("@ss.hasPermi('monitor:cache:clear')")
     @DeleteMapping("/clearCacheKey/{cacheKey}")
     public AjaxResult clearCacheKey(@PathVariable String cacheKey)
     {
+        boolean managed = false;
+        for (SysCache cache : caches)
+        {
+            if (cacheKey.startsWith(cache.getCacheName()))
+            {
+                managed = true;
+                break;
+            }
+        }
+        if (!managed)
+        {
+            return AjaxResult.error("缓存键名不属于缓存监控页管理的缓存，禁止删除");
+        }
         redisTemplate.delete(cacheKey);
         return AjaxResult.success();
     }
 
-    @PreAuthorize("@ss.hasPermi('monitor:cache:list')")
+    @Log(title = "缓存监控", businessType = BusinessType.CLEAN)
+    @PreAuthorize("@ss.hasPermi('monitor:cache:clear')")
     @DeleteMapping("/clearCacheAll")
     public AjaxResult clearCacheAll()
     {
