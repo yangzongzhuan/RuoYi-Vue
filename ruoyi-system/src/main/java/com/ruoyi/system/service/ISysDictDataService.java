@@ -51,6 +51,14 @@ public interface ISysDictDataService
     public int insertDictData(SysDictData dictData);
 
     /**
+     * 校验字典数据在同类型内是否唯一（字典值类型内唯一）
+     * 
+     * @param dictData 字典数据信息
+     * @return 结果
+     */
+    public boolean checkDictDataUnique(SysDictData dictData);
+
+    /**
      * 修改保存字典数据信息
      * 
      * @param dictData 字典数据信息

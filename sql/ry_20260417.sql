@@ -493,7 +493,8 @@ create table sys_dict_data
   update_by        varchar(64)     default ''                 comment '更新者',
   update_time      datetime                                   comment '更新时间',
   remark           varchar(500)    default null               comment '备注',
-  primary key (dict_code)
+  primary key (dict_code),
+  unique key uk_dict_type_value (dict_type, dict_value)
 ) engine=innodb auto_increment=100 comment = '字典数据表';
 
 insert into sys_dict_data values(1,  1,  '男',       '0',       'sys_user_sex',        '',   '',        'Y', '0', 'admin', sysdate(), '', null, '性别男');

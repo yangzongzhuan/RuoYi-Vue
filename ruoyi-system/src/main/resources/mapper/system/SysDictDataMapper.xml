@@ -25,6 +25,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		from sys_dict_data
     </sql>
 
+	<select id="checkDictDataUnique" parameterType="SysDictData" resultMap="SysDictDataResult">
+		<include refid="selectDictDataVo"/>
+		where dict_type = #{dictType} and dict_value = #{dictValue} limit 1
+	</select>
+
 	<select id="selectDictDataList" parameterType="SysDictData" resultMap="SysDictDataResult">
 	    <include refid="selectDictDataVo"/>
 		<where>
