@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import com.ruoyi.common.constant.CacheConstants;
 import com.ruoyi.common.constant.Constants;
+import com.ruoyi.common.core.domain.entity.SysUser;
 import com.ruoyi.common.core.domain.model.LoginUser;
 import com.ruoyi.common.core.redis.RedisCache;
 import com.ruoyi.common.utils.ServletUtils;
@@ -23,6 +24,7 @@ import com.ruoyi.common.utils.http.UserAgentUtils;
 import com.ruoyi.common.utils.ip.AddressUtils;
 import com.ruoyi.common.utils.ip.IpUtils;
 import com.ruoyi.common.utils.uuid.IdUtils;
+import com.ruoyi.system.service.ISysUserService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
@@ -58,6 +60,9 @@ public class TokenService
 
     @Autowired
     private RedisCache redisCache;
+
+    @Autowired
+    private ISysUserService userService;
 
     /**
      * 获取用户身份信息
@@ -282,10 +287,58 @@ public class TokenService
             {
                 continue;
             }
-            // 刷新权限缓存
-            loginUser.setPermissions(permissionService.getMenuPermission(loginUser.getUser()));
+            // 从库中重取用户与角色后刷新权限（会话缓存的角色状态/绑定可能是变更前的旧值）
+            SysUser freshUser = userService.selectUserById(loginUser.getUser().getUserId());
+            if (freshUser == null)
+            {
+                redisCache.deleteObject(key);
+                continue;
+            }
+            loginUser.setUser(freshUser);
+            loginUser.setPermissions(permissionService.getMenuPermission(freshUser));
             refreshToken(loginUser);
             log.info("角色[{}]权限变更，已刷新在线用户[{}]的权限缓存", roleId, loginUser.getUsername());
+        }
+    }
+
+    /**
+     * 用户角色绑定变更后，刷新该用户全部在线会话的权限缓存
+     *
+     * @param username          用户名
+     * @param permissionService 权限服务
+     */
+    public void refreshPermissionByUsername(String username, SysPermissionService permissionService)
+    {
+        if (StringUtils.isEmpty(username))
+        {
+            return;
+        }
+        Collection<String> keys = redisCache.keys(CacheConstants.LOGIN_TOKEN_KEY + "*");
+        if (keys == null || keys.isEmpty())
+        {
+            return;
+        }
+        for (String key : keys)
+        {
+            LoginUser loginUser = redisCache.getCacheObject(key);
+            if (loginUser == null || loginUser.getUser() == null || loginUser.getUser().isAdmin())
+            {
+                continue;
+            }
+            if (!username.equals(loginUser.getUsername()))
+            {
+                continue;
+            }
+            SysUser freshUser = userService.selectUserById(loginUser.getUser().getUserId());
+            if (freshUser == null)
+            {
+                redisCache.deleteObject(key);
+                continue;
+            }
+            loginUser.setUser(freshUser);
+            loginUser.setPermissions(permissionService.getMenuPermission(freshUser));
+            refreshToken(loginUser);
+            log.info("用户[{}]角色绑定变更，已刷新其在线会话权限缓存", username);
         }
     }
 }

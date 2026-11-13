@@ -31,6 +31,8 @@ import com.ruoyi.system.service.ISysDeptService;
 import com.ruoyi.system.service.ISysPostService;
 import com.ruoyi.system.service.ISysRoleService;
 import com.ruoyi.system.service.ISysUserService;
+import com.ruoyi.framework.web.service.SysPermissionService;
+import com.ruoyi.framework.web.service.TokenService;
 
 /**
  * 用户信息
@@ -52,6 +54,12 @@ public class SysUserController extends BaseController
 
     @Autowired
     private ISysPostService postService;
+
+    @Autowired
+    private TokenService tokenService;
+
+    @Autowired
+    private SysPermissionService permissionService;
 
     /**
      * 获取用户列表
@@ -168,7 +176,12 @@ public class SysUserController extends BaseController
             return error("修改用户'" + user.getUserName() + "'失败，邮箱账号已存在");
         }
         user.setUpdateBy(getUsername());
-        return toAjax(userService.updateUser(user));
+        int rows = userService.updateUser(user);
+        if (rows > 0)
+        {
+            tokenService.refreshPermissionByUsername(user.getUserName(), permissionService);
+        }
+        return toAjax(rows);
     }
 
     /**
@@ -241,6 +254,11 @@ public class SysUserController extends BaseController
         userService.checkUserDataScope(userId);
         roleService.checkRoleDataScope(roleIds);
         userService.insertUserAuth(userId, roleIds);
+        SysUser user = userService.selectUserById(userId);
+        if (user != null)
+        {
+            tokenService.refreshPermissionByUsername(user.getUserName(), permissionService);
+        }
         return success();
     }
 
