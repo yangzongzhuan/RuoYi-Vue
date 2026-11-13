@@ -69,6 +69,7 @@ public class SysConfigController extends BaseController
     /**
      * 根据参数键名查询参数值
      */
+    @PreAuthorize("@ss.hasPermi('system:config:query')")
     @GetMapping(value = "/configKey/{configKey}")
     public AjaxResult getConfigKey(@PathVariable String configKey)
     {
