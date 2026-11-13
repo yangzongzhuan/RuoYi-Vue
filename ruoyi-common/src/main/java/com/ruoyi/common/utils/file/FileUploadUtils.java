@@ -103,7 +103,7 @@ public class FileUploadUtils
             throws FileSizeLimitExceededException, IOException, FileNameLengthLimitExceededException,
             InvalidExtensionException
     {
-        return upload(baseDir, file, allowedExtension, false);
+        return upload(baseDir, file, allowedExtension, true);
     }
     
     /**
