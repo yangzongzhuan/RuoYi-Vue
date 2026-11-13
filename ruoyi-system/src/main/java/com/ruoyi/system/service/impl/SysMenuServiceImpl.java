@@ -382,6 +382,44 @@ public class SysMenuServiceImpl implements ISysMenuService
     }
 
     /**
+     * 校验上级菜单是否会形成子孙环（新上级是自身或自身的子孙）
+     * 
+     * @param menu 菜单信息
+     * @return 结果
+     */
+    @Override
+    public boolean checkParentCycle(SysMenu menu)
+    {
+        Long menuId = menu.getMenuId();
+        Long parentId = menu.getParentId();
+        if (StringUtils.isNull(menuId) || StringUtils.isNull(parentId) || parentId == 0L)
+        {
+            return UserConstants.NOT_CYCLE;
+        }
+        if (menuId.longValue() == parentId.longValue())
+        {
+            return UserConstants.CYCLE;
+        }
+        // 沿新上级的祖先链上溯：若遇到自身，说明新上级在自身子树内，移动将形成环
+        Long cursor = parentId;
+        int guard = 0;
+        while (StringUtils.isNotNull(cursor) && cursor.longValue() != 0L && guard++ < 100)
+        {
+            SysMenu parent = menuMapper.selectMenuById(cursor);
+            if (StringUtils.isNull(parent))
+            {
+                break;
+            }
+            if (parent.getMenuId().longValue() == menuId.longValue())
+            {
+                return UserConstants.CYCLE;
+            }
+            cursor = parent.getParentId();
+        }
+        return UserConstants.NOT_CYCLE;
+    }
+
+    /**
      * 校验路由名称是否唯一
      *
      * @param menu 菜单信息

@@ -151,6 +151,14 @@ public interface ISysMenuService
     public boolean checkMenuNameUnique(SysMenu menu);
 
     /**
+     * 校验上级菜单是否会形成子孙环（新上级是自身或自身的子孙）
+     * 
+     * @param menu 菜单信息
+     * @return 结果
+     */
+    public boolean checkParentCycle(SysMenu menu);
+
+    /**
      * 校验路由组合是否唯一
      *
      * @param menu 菜单信息

@@ -68,6 +68,12 @@ public class UserConstants
     public final static boolean NOT_UNIQUE = false;
 
     /**
+     * 存在环/无环
+     */
+    public final static boolean CYCLE = true;
+    public final static boolean NOT_CYCLE = false;
+
+    /**
      * 用户名长度限制
      */
     public static final int USERNAME_MIN_LENGTH = 2;
