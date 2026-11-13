@@ -42,11 +42,12 @@ spring:
             webStatFilter: 
                 enabled: true
             statViewServlet:
-                enabled: true
+                # 监控台默认关闭：开启需运维显式配置（配合 allow 白名单与自定义强口令）
+                enabled: false
                 # 设置白名单，不填则允许所有访问
                 allow:
                 url-pattern: /druid/*
-                # 控制台管理用户名和密码
+                # 控制台管理用户名和密码（请勿使用默认值，部署时注入强凭据）
                 login-username: ruoyi
                 login-password: 123456
             filter:
