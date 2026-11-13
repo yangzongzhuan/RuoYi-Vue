@@ -133,7 +133,14 @@ public class ScheduleUtils
         {
             return StringUtils.startsWithAny(invokeTarget, Constants.JOB_WHITELIST_STR);
         }
-        Object obj = SpringUtils.getBean(StringUtils.split(invokeTarget, ".")[0]);
+        String beanName = StringUtils.split(invokeTarget, ".")[0];
+        // bean 不存在时直接判不在白名单：避免 getBean 抛 NoSuchBeanDefinitionException
+        // 以未处理异常形态回显内部报错（应走「目标字符串不在白名单内」业务拒绝文案）
+        if (!SpringUtils.containsBean(beanName))
+        {
+            return false;
+        }
+        Object obj = SpringUtils.getBean(beanName);
         String beanPackageName = obj.getClass().getPackage().getName();
         return StringUtils.startsWithAny(beanPackageName, Constants.JOB_WHITELIST_STR)
                 && !StringUtils.startsWithAny(beanPackageName, Constants.JOB_ERROR_STR);
