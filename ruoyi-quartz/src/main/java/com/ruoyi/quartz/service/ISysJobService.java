@@ -21,6 +21,14 @@ public interface ISysJobService
     public List<SysJob> selectJobList(SysJob job);
 
     /**
+     * 校验任务名称在任务组内是否唯一
+     * 
+     * @param job 调度任务信息
+     * @return 结果
+     */
+    public boolean checkJobNameUnique(SysJob job);
+
+    /**
      * 通过调度任务ID查询调度信息
      * 
      * @param jobId 调度任务ID

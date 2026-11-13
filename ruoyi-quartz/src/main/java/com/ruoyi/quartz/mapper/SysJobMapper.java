@@ -1,6 +1,7 @@
 package com.ruoyi.quartz.mapper;
 
 import java.util.List;
+import org.apache.ibatis.annotations.Param;
 import com.ruoyi.quartz.domain.SysJob;
 
 /**
@@ -17,6 +18,15 @@ public interface SysJobMapper
      * @return 操作日志集合
      */
     public List<SysJob> selectJobList(SysJob job);
+
+    /**
+     * 校验任务名称在任务组内是否唯一
+     * 
+     * @param jobName 任务名称
+     * @param jobGroup 任务组名
+     * @return 调度任务信息
+     */
+    public SysJob checkJobNameUnique(@Param("jobName") String jobName, @Param("jobGroup") String jobGroup);
 
     /**
      * 查询所有调度任务

@@ -10,7 +10,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.ruoyi.common.constant.ScheduleConstants;
+import com.ruoyi.common.constant.UserConstants;
 import com.ruoyi.common.exception.job.TaskException;
+import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.quartz.domain.SysJob;
 import com.ruoyi.quartz.mapper.SysJobMapper;
 import com.ruoyi.quartz.service.ISysJobService;
@@ -55,6 +57,24 @@ public class SysJobServiceImpl implements ISysJobService
     public List<SysJob> selectJobList(SysJob job)
     {
         return jobMapper.selectJobList(job);
+    }
+
+    /**
+     * 校验任务名称在任务组内是否唯一
+     * 
+     * @param job 调度任务信息
+     * @return 结果
+     */
+    @Override
+    public boolean checkJobNameUnique(SysJob job)
+    {
+        Long jobId = StringUtils.isNull(job.getJobId()) ? -1L : job.getJobId();
+        SysJob info = jobMapper.checkJobNameUnique(job.getJobName(), job.getJobGroup());
+        if (StringUtils.isNotNull(info) && info.getJobId().longValue() != jobId.longValue())
+        {
+            return UserConstants.NOT_UNIQUE;
+        }
+        return UserConstants.UNIQUE;
     }
 
     /**

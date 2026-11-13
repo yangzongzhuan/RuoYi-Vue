@@ -25,6 +25,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		from sys_job
     </sql>
 	
+	<select id="checkJobNameUnique" resultMap="SysJobResult">
+		<include refid="selectJobVo"/>
+		where job_name = #{jobName} and job_group = #{jobGroup} limit 1
+	</select>
+	
 	<select id="selectJobList" parameterType="SysJob" resultMap="SysJobResult">
 		<include refid="selectJobVo"/>
 		<where>

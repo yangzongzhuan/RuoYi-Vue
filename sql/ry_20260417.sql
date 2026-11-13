@@ -594,7 +594,8 @@ create table sys_job (
   update_by           varchar(64)   default ''                 comment '更新者',
   update_time         datetime                                 comment '更新时间',
   remark              varchar(500)  default ''                 comment '备注信息',
-  primary key (job_id, job_name, job_group)
+  primary key (job_id, job_name, job_group),
+  unique key uk_job_name_group (job_name, job_group)
 ) engine=innodb auto_increment=100 comment = '定时任务调度表';
 
 insert into sys_job values(1, '系统默认（无参）', 'DEFAULT', 'ryTask.ryNoParams',        '0/10 * * * * ?', '3', '1', '1', 'admin', sysdate(), '', null, '');
