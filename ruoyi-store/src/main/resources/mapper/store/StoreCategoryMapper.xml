@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.store.mapper.StoreCategoryMapper">
+    
+    <resultMap type="StoreCategory" id="StoreCategoryResult">
+        <result property="categoryId"    column="category_id"    />
+        <result property="parentId"    column="parent_id"    />
+        <result property="categoryName"    column="category_name"    />
+        <result property="orderNum"    column="order_num"    />
+        <result property="status"    column="status"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"    column="remark"    />
+    </resultMap>
+
+    <sql id="selectStoreCategoryVo">
+        select category_id, parent_id, category_name, order_num, status, create_by, create_time, update_by, update_time, remark from store_category
+    </sql>
+
+    <select id="selectStoreCategoryList" parameterType="StoreCategory" resultMap="StoreCategoryResult">
+        <include refid="selectStoreCategoryVo"/>
+        <where>  
+            <if test="parentId != null "> and parent_id = #{parentId}</if>
+            <if test="categoryName != null  and categoryName != ''"> and category_name like concat('%', #{categoryName}, '%')</if>
+            <if test="orderNum != null "> and order_num = #{orderNum}</if>
+            <if test="status != null  and status != ''"> and status = #{status}</if>
+        </where>
+    </select>
+    
+    <select id="selectStoreCategoryByCategoryId" parameterType="Long" resultMap="StoreCategoryResult">
+        <include refid="selectStoreCategoryVo"/>
+        where category_id = #{categoryId}
+    </select>
+
+    <insert id="insertStoreCategory" parameterType="StoreCategory" useGeneratedKeys="true" keyProperty="categoryId">
+        insert into store_category
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="parentId != null">parent_id,</if>
+            <if test="categoryName != null and categoryName != ''">category_name,</if>
+            <if test="orderNum != null">order_num,</if>
+            <if test="status != null">status,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="remark != null">remark,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="parentId != null">#{parentId},</if>
+            <if test="categoryName != null and categoryName != ''">#{categoryName},</if>
+            <if test="orderNum != null">#{orderNum},</if>
+            <if test="status != null">#{status},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="remark != null">#{remark},</if>
+         </trim>
+    </insert>
+
+    <update id="updateStoreCategory" parameterType="StoreCategory">
+        update store_category
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="parentId != null">parent_id = #{parentId},</if>
+            <if test="categoryName != null and categoryName != ''">category_name = #{categoryName},</if>
+            <if test="orderNum != null">order_num = #{orderNum},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+        </trim>
+        where category_id = #{categoryId}
+    </update>
+
+    <delete id="deleteStoreCategoryByCategoryId" parameterType="Long">
+        delete from store_category where category_id = #{categoryId}
+    </delete>
+
+    <delete id="deleteStoreCategoryByCategoryIds" parameterType="String">
+        delete from store_category where category_id in 
+        <foreach item="categoryId" collection="array" open="(" separator="," close=")">
+            #{categoryId}
+        </foreach>
+    </delete>
+</mapper>
