@@ -118,9 +118,9 @@ public class SysMenuController extends BaseController
         {
             return error("修改菜单'" + menu.getMenuName() + "'失败，地址必须以http(s)://开头");
         }
-        else if (menu.getMenuId().equals(menu.getParentId()))
+        else if (menuService.checkParentCycle(menu))
         {
-            return error("修改菜单'" + menu.getMenuName() + "'失败，上级菜单不能选择自己");
+            return error("修改菜单'" + menu.getMenuName() + "'失败，上级菜单不能选择自己或自己的子菜单");
         }
         else if (!menuService.checkRouteConfigUnique(menu))
         {
