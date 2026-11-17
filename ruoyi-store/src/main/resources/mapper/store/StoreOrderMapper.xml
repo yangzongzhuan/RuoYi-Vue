@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.store.mapper.StoreOrderMapper">
+
+    <resultMap type="com.ruoyi.store.domain.StoreOrder" id="StoreOrderResult">
+        <result property="orderId"    column="order_id"    />
+        <result property="orderNo"    column="order_no"    />
+        <result property="memberId"    column="member_id"    />
+        <result property="memberName"    column="member_name"    />
+        <result property="orderType"    column="order_type"    />
+        <result property="orderStatus"    column="order_status"    />
+        <result property="payType"    column="pay_type"    />
+        <result property="totalAmount"    column="total_amount"    />
+        <result property="discountAmount"    column="discount_amount"    />
+        <result property="payAmount"    column="pay_amount"    />
+        <result property="pointsUsed"    column="points_used"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"    column="remark"    />
+    </resultMap>
+
+    <resultMap type="com.ruoyi.store.domain.StoreOrder" id="StoreOrderWithItemsResult" extends="StoreOrderResult">
+        <collection property="items" ofType="com.ruoyi.store.domain.StoreOrderItem" column="order_id"
+                    select="com.ruoyi.store.mapper.StoreOrderItemMapper.selectStoreOrderItemByOrderId"/>
+    </resultMap>
+
+    <sql id="selectStoreOrderVo">
+        select o.order_id, o.order_no, o.member_id, m.member_name, o.order_type, o.order_status, o.pay_type,
+               o.total_amount, o.discount_amount, o.pay_amount, o.points_used,
+               o.create_by, o.create_time, o.update_by, o.update_time, o.remark
+        from store_order o
+        left join store_member m on o.member_id = m.member_id
+    </sql>
+
+    <select id="selectStoreOrderList" parameterType="com.ruoyi.store.domain.StoreOrder" resultMap="StoreOrderResult">
+        <include refid="selectStoreOrderVo"/>
+        <where>
+            <if test="orderNo != null  and orderNo != ''"> and o.order_no = #{orderNo}</if>
+            <if test="memberId != null "> and o.member_id = #{memberId}</if>
+            <if test="memberName != null  and memberName != ''"> and m.member_name like concat('%', #{memberName}, '%')</if>
+            <if test="orderType != null  and orderType != ''"> and o.order_type = #{orderType}</if>
+            <if test="orderStatus != null  and orderStatus != ''"> and o.order_status = #{orderStatus}</if>
+            <if test="payType != null  and payType != ''"> and o.pay_type = #{payType}</if>
+            <if test="params.beginTime != null and params.beginTime != ''"><!-- 开始时间检索 -->
+                and o.create_time &gt;= #{params.beginTime}
+            </if>
+            <if test="params.endTime != null and params.endTime != ''"><!-- 结束时间检索 -->
+                and o.create_time &lt;= #{params.endTime}
+            </if>
+        </where>
+        order by o.create_time desc
+    </select>
+
+    <select id="selectStoreOrderByOrderId" parameterType="Long" resultMap="StoreOrderWithItemsResult">
+        <include refid="selectStoreOrderVo"/>
+        where o.order_id = #{orderId}
+    </select>
+
+    <insert id="insertStoreOrder" parameterType="com.ruoyi.store.domain.StoreOrder" useGeneratedKeys="true" keyProperty="orderId">
+        insert into store_order
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="orderNo != null and orderNo != ''">order_no,</if>
+            <if test="memberId != null">member_id,</if>
+            <if test="orderType != null">order_type,</if>
+            <if test="orderStatus != null">order_status,</if>
+            <if test="payType != null">pay_type,</if>
+            <if test="totalAmount != null">total_amount,</if>
+            <if test="discountAmount != null">discount_amount,</if>
+            <if test="payAmount != null">pay_amount,</if>
+            <if test="pointsUsed != null">points_used,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="remark != null">remark,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="orderNo != null and orderNo != ''">#{orderNo},</if>
+            <if test="memberId != null">#{memberId},</if>
+            <if test="orderType != null">#{orderType},</if>
+            <if test="orderStatus != null">#{orderStatus},</if>
+            <if test="payType != null">#{payType},</if>
+            <if test="totalAmount != null">#{totalAmount},</if>
+            <if test="discountAmount != null">#{discountAmount},</if>
+            <if test="payAmount != null">#{payAmount},</if>
+            <if test="pointsUsed != null">#{pointsUsed},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="remark != null">#{remark},</if>
+        </trim>
+    </insert>
+
+    <update id="updateStoreOrder" parameterType="com.ruoyi.store.domain.StoreOrder">
+        update store_order
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="orderNo != null and orderNo != ''">order_no = #{orderNo},</if>
+            <if test="memberId != null">member_id = #{memberId},</if>
+            <if test="orderType != null">order_type = #{orderType},</if>
+            <if test="orderStatus != null">order_status = #{orderStatus},</if>
+            <if test="payType != null">pay_type = #{payType},</if>
+            <if test="totalAmount != null">total_amount = #{totalAmount},</if>
+            <if test="discountAmount != null">discount_amount = #{discountAmount},</if>
+            <if test="payAmount != null">pay_amount = #{payAmount},</if>
+            <if test="pointsUsed != null">points_used = #{pointsUsed},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+        </trim>
+        where order_id = #{orderId}
+    </update>
+
+    <delete id="deleteStoreOrderByOrderId" parameterType="Long">
+        delete from store_order where order_id = #{orderId}
+    </delete>
+
+    <delete id="deleteStoreOrderByOrderIds" parameterType="String">
+        delete from store_order where order_id in
+        <foreach item="orderId" collection="array" open="(" separator="," close=")">
+            #{orderId}
+        </foreach>
+    </delete>
+
+    <select id="selectTodayOrderStats" resultType="java.util.HashMap">
+        select
+            count(*) as orderCount,
+            coalesce(sum(pay_amount), 0) as orderAmount
+        from store_order
+        where date(create_time) = curdate()
+        and order_status = '1'
+    </select>
+
+    <select id="selectMonthOrderStats" resultType="java.util.HashMap">
+        select
+            count(*) as orderCount,
+            coalesce(sum(pay_amount), 0) as orderAmount
+        from store_order
+        where date_format(create_time, '%Y-%m') = date_format(curdate(), '%Y-%m')
+        and order_status = '1'
+    </select>
+
+    <select id="selectLast7DaysOrderStats" resultType="java.util.HashMap">
+        select
+            date(create_time) as statDate,
+            count(*) as orderCount,
+            coalesce(sum(pay_amount), 0) as orderAmount
+        from store_order
+        where create_time &gt;= date_sub(curdate(), interval 6 day)
+        and order_status = '1'
+        group by date(create_time)
+        order by statDate
+    </select>
+
+    <select id="selectPayTypeStats" resultType="java.util.HashMap">
+        select
+            pay_type as payType,
+            count(*) as orderCount,
+            coalesce(sum(pay_amount), 0) as orderAmount
+        from store_order
+        where order_status = '1'
+        and pay_type is not null
+        group by pay_type
+    </select>
+
+    <select id="selectProductSalesRank" resultType="java.util.HashMap">
+        select
+            i.product_name as productName,
+            sum(i.quantity) as totalQuantity,
+            sum(i.subtotal) as totalAmount
+        from store_order_item i
+        left join store_order o on i.order_id = o.order_id
+        where o.order_status = '1'
+        group by i.product_id, i.product_name
+        order by totalAmount desc
+        limit 10
+    </select>
+</mapper>
