@@ -154,6 +154,7 @@ public class SysMenu extends BaseEntity
         this.query = query;
     }
 
+    @Size(min = 0, max = 50, message = "路由名称长度不能超过50个字符")
     public String getRouteName()
     {
         return routeName;
