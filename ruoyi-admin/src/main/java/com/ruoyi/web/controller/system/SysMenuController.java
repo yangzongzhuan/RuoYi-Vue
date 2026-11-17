@@ -68,6 +68,7 @@ public class SysMenuController extends BaseController
     /**
      * 加载对应角色菜单列表树
      */
+    @PreAuthorize("@ss.hasPermi('system:role:query')")
     @GetMapping(value = "/roleMenuTreeselect/{roleId}")
     public AjaxResult roleMenuTreeselect(@PathVariable("roleId") Long roleId)
     {
