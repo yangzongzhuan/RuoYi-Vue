@@ -3,6 +3,7 @@ package com.ruoyi.common.core.domain.entity;
 import java.util.Set;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
@@ -108,6 +109,7 @@ public class SysRole extends BaseEntity
 
     @NotBlank(message = "权限字符不能为空")
     @Size(min = 0, max = 100, message = "权限字符长度不能超过100个字符")
+    @Pattern(regexp = "^[^,]+$", message = "权限字符不能包含逗号")
     public String getRoleKey()
     {
         return roleKey;
