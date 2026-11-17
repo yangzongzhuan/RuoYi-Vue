@@ -1,6 +1,8 @@
 package com.ruoyi.web.controller.system;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import jakarta.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.ArrayUtils;
@@ -31,6 +33,7 @@ import com.ruoyi.system.service.ISysDeptService;
 import com.ruoyi.system.service.ISysPostService;
 import com.ruoyi.system.service.ISysRoleService;
 import com.ruoyi.system.service.ISysUserService;
+import com.ruoyi.framework.web.service.TokenService;
 
 /**
  * 用户信息
@@ -52,6 +55,9 @@ public class SysUserController extends BaseController
 
     @Autowired
     private ISysPostService postService;
+
+    @Autowired
+    private TokenService tokenService;
 
     /**
      * 获取用户列表
@@ -183,7 +189,13 @@ public class SysUserController extends BaseController
         {
             return error("当前用户不能删除");
         }
-        return toAjax(userService.deleteUserByIds(userIds));
+        List<String> usernames = Arrays.stream(userIds).map(id -> {
+            SysUser u = userService.selectUserById(id);
+            return u != null ? u.getUserName() : null;
+        }).filter(Objects::nonNull).collect(Collectors.toList());
+        int rows = userService.deleteUserByIds(userIds);
+        usernames.forEach(tokenService::delLoginUserByUsername);
+        return toAjax(rows);
     }
 
     /**
@@ -198,7 +210,16 @@ public class SysUserController extends BaseController
         userService.checkUserDataScope(user.getUserId());
         user.setPassword(SecurityUtils.encryptPassword(user.getPassword()));
         user.setUpdateBy(getUsername());
-        return toAjax(userService.resetPwd(user));
+        int rows = userService.resetPwd(user);
+        if (rows > 0)
+        {
+            SysUser target = userService.selectUserById(user.getUserId());
+            if (target != null)
+            {
+                tokenService.delLoginUserByUsername(target.getUserName());
+            }
+        }
+        return toAjax(rows);
     }
 
     /**
@@ -212,7 +233,16 @@ public class SysUserController extends BaseController
         userService.checkUserAllowed(user);
         userService.checkUserDataScope(user.getUserId());
         user.setUpdateBy(getUsername());
-        return toAjax(userService.updateUserStatus(user));
+        int rows = userService.updateUserStatus(user);
+        if (rows > 0 && StringUtils.equals("1", user.getStatus()))
+        {
+            SysUser target = userService.selectUserById(user.getUserId());
+            if (target != null)
+            {
+                tokenService.delLoginUserByUsername(target.getUserName());
+            }
+        }
+        return toAjax(rows);
     }
 
     /**
