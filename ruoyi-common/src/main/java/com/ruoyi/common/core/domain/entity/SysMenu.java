@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
@@ -217,6 +218,7 @@ public class SysMenu extends BaseEntity
     }
 
     @Size(min = 0, max = 100, message = "权限标识长度不能超过100个字符")
+    @Pattern(regexp = "^[a-zA-Z0-9:_|-]*$", message = "权限标识只能包含字母、数字、冒号、下划线和横竖线")
     public String getPerms()
     {
         return perms;
