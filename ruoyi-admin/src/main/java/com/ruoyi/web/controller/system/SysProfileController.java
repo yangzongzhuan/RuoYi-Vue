@@ -132,7 +132,7 @@ public class SysProfileController extends BaseController
             if (userService.updateUserAvatar(loginUser.getUserId(), avatar))
             {
                 String oldAvatar = loginUser.getUser().getAvatar();
-                if (StringUtils.isNotEmpty(oldAvatar))
+                if (StringUtils.isNotEmpty(oldAvatar) && FileUtils.checkAllowDownload(oldAvatar))
                 {
                     FileUtils.deleteFile(RuoYiConfig.getProfile() + FileUtils.stripPrefix(oldAvatar));
                 }
