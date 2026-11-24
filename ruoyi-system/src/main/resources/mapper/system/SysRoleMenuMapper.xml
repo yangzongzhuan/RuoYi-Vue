@@ -30,5 +30,17 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 			(#{item.roleId},#{item.menuId})
 		</foreach>
 	</insert>
+
+    <select id="selectRoleIdsByMenuId" resultType="Long">
+        select distinct role_id from sys_role_menu where menu_id = #{menuId}
+    </select>
+
+
+    <insert id="batchInsertRoleMenuIgnore">
+        insert ignore into sys_role_menu(role_id, menu_id) values
+        <foreach item="item" index="index" collection="list" separator=",">
+            (#{item.roleId},#{item.menuId})
+        </foreach>
+    </insert>
 	
 </mapper> 
