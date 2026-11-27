@@ -103,12 +103,33 @@ public class SysDeptController extends BaseController
         {
             return error("修改部门'" + dept.getDeptName() + "'失败，上级部门不能是自己");
         }
+        else if (isDescendantOfSelf(dept.getParentId(), deptId))
+        {
+            return error("修改部门'" + dept.getDeptName() + "'失败，上级部门不能是其子孙");
+        }
         else if (StringUtils.equals(UserConstants.DEPT_DISABLE, dept.getStatus()) && deptService.selectNormalChildrenDeptById(deptId) > 0)
         {
             return error("该部门包含未停用的子部门！");
         }
         dept.setUpdateBy(getUsername());
         return toAjax(deptService.updateDept(dept));
+    }
+
+    /**
+     * 判断新的上级部门是否为自身的子孙（其祖先链中出现自身 id 即构成环）
+     * 
+     * @param parentId 新的上级部门ID
+     * @param deptId 当前部门ID
+     * @return 结果
+     */
+    private boolean isDescendantOfSelf(Long parentId, Long deptId)
+    {
+        SysDept parent = deptService.selectDeptById(parentId);
+        if (StringUtils.isNull(parent) || StringUtils.isEmpty(parent.getAncestors()))
+        {
+            return false;
+        }
+        return ("," + parent.getAncestors() + ",").contains("," + deptId + ",");
     }
 
     /**
