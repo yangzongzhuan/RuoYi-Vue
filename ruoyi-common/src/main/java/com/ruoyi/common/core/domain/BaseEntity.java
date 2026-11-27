@@ -7,6 +7,7 @@ import java.util.Map;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import jakarta.validation.constraints.Size;
 
 /**
  * Entity基类
@@ -92,6 +93,7 @@ public class BaseEntity implements Serializable
         this.updateTime = updateTime;
     }
 
+    @Size(min = 0, max = 500, message = "备注长度不能超过500个字符")
     public String getRemark()
     {
         return remark;
