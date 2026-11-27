@@ -157,7 +157,13 @@ public class SysRoleController extends BaseController
         roleService.checkRoleAllowed(role);
         roleService.checkRoleDataScope(role.getRoleId());
         role.setUpdateBy(getUsername());
-        return toAjax(roleService.updateRoleStatus(role));
+        if (roleService.updateRoleStatus(role) > 0)
+        {
+            // 刷新所有持有该角色的在线用户权限（停用即失效，启用即恢复）
+            tokenService.refreshPermissionByRoleId(role.getRoleId(), permissionService);
+            return success();
+        }
+        return error("修改角色'" + role.getRoleName() + "'失败，请联系管理员");
     }
 
     /**
@@ -168,7 +174,12 @@ public class SysRoleController extends BaseController
     @DeleteMapping("/{roleIds}")
     public AjaxResult remove(@PathVariable Long[] roleIds)
     {
-        return toAjax(roleService.deleteRoleByIds(roleIds));
+        int rows = roleService.deleteRoleByIds(roleIds);
+        for (Long roleId : roleIds)
+        {
+            tokenService.refreshPermissionByRoleId(roleId, permissionService);
+        }
+        return toAjax(rows);
     }
 
     /**
@@ -213,7 +224,9 @@ public class SysRoleController extends BaseController
     @PutMapping("/authUser/cancel")
     public AjaxResult cancelAuthUser(@RequestBody SysUserRole userRole)
     {
-        return toAjax(roleService.deleteAuthUser(userRole));
+        int rows = roleService.deleteAuthUser(userRole);
+        refreshUserSessions(new Long[] { userRole.getUserId() });
+        return toAjax(rows);
     }
 
     /**
@@ -224,7 +237,9 @@ public class SysRoleController extends BaseController
     @PutMapping("/authUser/cancelAll")
     public AjaxResult cancelAuthUserAll(Long roleId, Long[] userIds)
     {
-        return toAjax(roleService.deleteAuthUsers(roleId, userIds));
+        int rows = roleService.deleteAuthUsers(roleId, userIds);
+        refreshUserSessions(userIds);
+        return toAjax(rows);
     }
 
     /**
@@ -236,7 +251,9 @@ public class SysRoleController extends BaseController
     public AjaxResult selectAuthUserAll(Long roleId, Long[] userIds)
     {
         roleService.checkRoleDataScope(roleId);
-        return toAjax(roleService.insertAuthUsers(roleId, userIds));
+        int rows = roleService.insertAuthUsers(roleId, userIds);
+        refreshUserSessions(userIds);
+        return toAjax(rows);
     }
 
     /**
@@ -250,5 +267,24 @@ public class SysRoleController extends BaseController
         ajax.put("checkedKeys", deptService.selectDeptListByRoleId(roleId));
         ajax.put("depts", deptService.selectDeptTreeList(new SysDept()));
         return ajax;
+    }
+
+    /**
+     * 用户角色绑定变更后刷新其在线会话权限缓存
+     */
+    private void refreshUserSessions(Long[] userIds)
+    {
+        if (userIds == null)
+        {
+            return;
+        }
+        for (Long userId : userIds)
+        {
+            SysUser user = userService.selectUserById(userId);
+            if (user != null)
+            {
+                tokenService.refreshPermissionByUsername(user.getUserName(), permissionService);
+            }
+        }
     }
 }
