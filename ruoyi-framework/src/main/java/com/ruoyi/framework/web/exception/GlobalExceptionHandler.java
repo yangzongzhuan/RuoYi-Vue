@@ -76,6 +76,17 @@ public class GlobalExceptionHandler
     }
 
     /**
+     * 数据库访问异常（完整堆栈只落日志，不把数据库报错原文返回给调用方）
+     */
+    @ExceptionHandler(DataAccessException.class)
+    public AjaxResult handleDataAccessException(DataAccessException e, HttpServletRequest request)
+    {
+        String requestURI = request.getRequestURI();
+        log.error("请求地址'{}',数据处理异常.", requestURI, e);
+        return AjaxResult.error("数据处理失败，请联系管理员");
+    }
+
+    /**
      * 请求路径中缺少必需的路径变量
      */
     @ExceptionHandler(MissingPathVariableException.class)
