@@ -288,4 +288,31 @@ public class TokenService
             log.info("角色[{}]权限变更，已刷新在线用户[{}]的权限缓存", roleId, loginUser.getUsername());
         }
     }
+
+    /**
+     * 按用户名强制下线该用户的全部登录会话（停用/重置密码/删除账号后旧令牌应立即失效）
+     *
+     * @param username 用户名
+     */
+    public void delLoginUserByUsername(String username)
+    {
+        if (StringUtils.isEmpty(username))
+        {
+            return;
+        }
+        Collection<String> keys = redisCache.keys(CacheConstants.LOGIN_TOKEN_KEY + "*");
+        if (keys == null || keys.isEmpty())
+        {
+            return;
+        }
+        for (String key : keys)
+        {
+            LoginUser loginUser = redisCache.getCacheObject(key);
+            if (loginUser != null && username.equals(loginUser.getUsername()))
+            {
+                redisCache.deleteObject(key);
+                log.info("用户[{}]账号状态变更，已清除其登录会话", username);
+            }
+        }
+    }
 }
