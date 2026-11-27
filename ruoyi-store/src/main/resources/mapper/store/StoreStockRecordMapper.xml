@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.store.mapper.StoreStockRecordMapper">
+
+    <resultMap type="com.ruoyi.store.domain.StoreStockRecord" id="StoreStockRecordResult">
+        <result property="recordId"    column="record_id"    />
+        <result property="productId"    column="product_id"    />
+        <result property="productName"    column="product_name"    />
+        <result property="recordType"    column="record_type"    />
+        <result property="quantity"    column="quantity"    />
+        <result property="beforeStock"    column="before_stock"    />
+        <result property="afterStock"    column="after_stock"    />
+        <result property="supplierId"    column="supplier_id"    />
+        <result property="supplierName"    column="supplier_name"    />
+        <result property="recordNo"    column="record_no"    />
+        <result property="operateType"    column="operate_type"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="remark"    column="remark"    />
+    </resultMap>
+
+    <sql id="selectStoreStockRecordVo">
+        select r.record_id, r.product_id, p.product_name, r.record_type, r.quantity, r.before_stock, r.after_stock,
+               r.supplier_id, s.supplier_name, r.record_no, r.operate_type, r.create_by, r.create_time, r.remark
+        from store_stock_record r
+        left join store_product p on r.product_id = p.product_id
+        left join store_supplier s on r.supplier_id = s.supplier_id
+    </sql>
+
+    <select id="selectStoreStockRecordList" parameterType="com.ruoyi.store.domain.StoreStockRecord" resultMap="StoreStockRecordResult">
+        <include refid="selectStoreStockRecordVo"/>
+        <where>
+            <if test="productId != null "> and r.product_id = #{productId}</if>
+            <if test="productName != null  and productName != ''"> and p.product_name like concat('%', #{productName}, '%')</if>
+            <if test="recordType != null  and recordType != ''"> and r.record_type = #{recordType}</if>
+            <if test="operateType != null  and operateType != ''"> and r.operate_type = #{operateType}</if>
+            <if test="supplierId != null "> and r.supplier_id = #{supplierId}</if>
+            <if test="recordNo != null  and recordNo != ''"> and r.record_no = #{recordNo}</if>
+            <if test="params.beginTime != null and params.beginTime != ''"><!-- 开始时间检索 -->
+                and r.create_time &gt;= #{params.beginTime}
+            </if>
+            <if test="params.endTime != null and params.endTime != ''"><!-- 结束时间检索 -->
+                and r.create_time &lt;= #{params.endTime}
+            </if>
+        </where>
+        order by r.create_time desc
+    </select>
+
+    <select id="selectStoreStockRecordByRecordId" parameterType="Long" resultMap="StoreStockRecordResult">
+        <include refid="selectStoreStockRecordVo"/>
+        where r.record_id = #{recordId}
+    </select>
+
+    <insert id="insertStoreStockRecord" parameterType="com.ruoyi.store.domain.StoreStockRecord" useGeneratedKeys="true" keyProperty="recordId">
+        insert into store_stock_record
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="productId != null">product_id,</if>
+            <if test="recordType != null">record_type,</if>
+            <if test="quantity != null">quantity,</if>
+            <if test="beforeStock != null">before_stock,</if>
+            <if test="afterStock != null">after_stock,</if>
+            <if test="supplierId != null">supplier_id,</if>
+            <if test="recordNo != null">record_no,</if>
+            <if test="operateType != null">operate_type,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="remark != null">remark,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="productId != null">#{productId},</if>
+            <if test="recordType != null">#{recordType},</if>
+            <if test="quantity != null">#{quantity},</if>
+            <if test="beforeStock != null">#{beforeStock},</if>
+            <if test="afterStock != null">#{afterStock},</if>
+            <if test="supplierId != null">#{supplierId},</if>
+            <if test="recordNo != null">#{recordNo},</if>
+            <if test="operateType != null">#{operateType},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="remark != null">#{remark},</if>
+        </trim>
+    </insert>
+
+    <update id="updateStoreStockRecord" parameterType="com.ruoyi.store.domain.StoreStockRecord">
+        update store_stock_record
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="productId != null">product_id = #{productId},</if>
+            <if test="recordType != null">record_type = #{recordType},</if>
+            <if test="quantity != null">quantity = #{quantity},</if>
+            <if test="beforeStock != null">before_stock = #{beforeStock},</if>
+            <if test="afterStock != null">after_stock = #{afterStock},</if>
+            <if test="supplierId != null">supplier_id = #{supplierId},</if>
+            <if test="recordNo != null">record_no = #{recordNo},</if>
+            <if test="operateType != null">operate_type = #{operateType},</if>
+            <if test="remark != null">remark = #{remark},</if>
+        </trim>
+        where record_id = #{recordId}
+    </update>
+
+    <delete id="deleteStoreStockRecordByRecordId" parameterType="Long">
+        delete from store_stock_record where record_id = #{recordId}
+    </delete>
+
+    <delete id="deleteStoreStockRecordByRecordIds" parameterType="String">
+        delete from store_stock_record where record_id in
+        <foreach item="recordId" collection="array" open="(" separator="," close=")">
+            #{recordId}
+        </foreach>
+    </delete>
+
+    <select id="selectLast7DaysStockStats" resultType="java.util.HashMap">
+        select
+            date(create_time) as statDate,
+            sum(case when record_type = '1' then quantity else 0 end) as inQuantity,
+            sum(case when record_type = '2' then quantity else 0 end) as outQuantity
+        from store_stock_record
+        where create_time &gt;= date_sub(curdate(), interval 6 day)
+        group by date(create_time)
+        order by statDate
+    </select>
+</mapper>
